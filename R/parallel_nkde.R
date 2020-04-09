@@ -1,6 +1,6 @@
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-##### worker functions ####
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#### worker functions ####
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 #' Worker function for the nkde_grided.mc function.
 #' @param i The row index of the spatiale grid to use
@@ -24,74 +24,80 @@
 #' @importFrom rgeos gCentroid gLength gBuffer gIntersects
 #' @examples
 #' #This is an internal function, no example provided
-exe_nkde <- function(i,grid,lines,lixels,points,kernel,kernel_range,snap_dist,digits,tol){
-  #extracting the analyzed pixels
-  quadra <- grid[i]
-  test_lixels <- as.vector(gIntersects(lixels,quadra,byid=T))
-  if(any(test_lixels)==FALSE){
-    return()
-  }else{
-    selected_lixels <- subset(lixels,test_lixels)
-    if (nrow(selected_lixels)>0){
-      #extracting the needed lines
-      ext <- raster::extent(selected_lixels)
-      poly <- as(ext, 'SpatialPolygons')
-      raster::crs(poly) <- raster::crs(selected_lixels)
-      buff <- gBuffer(poly,width=kernel_range)
-      test_lines <- as.vector(gIntersects(lines,buff,byid=T))
-      selected_lines <- subset(lines,test_lines)
-      #extracting the needed points
-      test_points <- as.vector(gIntersects(points,buff,byid=T))
-      selected_points <- subset(points,test_points)
-      ##performing the real job
-      #step3 : extraire le centroid ce ces lixels
-      lixelscenters <- gCentroid(selected_lixels,byid = T)
-      lixelscenters <- SpatialPointsDataFrame(lixelscenters,selected_lixels@data)
-      #step4 : combiner les evenements et les centres de lixels
-      lixelscenters$type <- "lixel"
-      lixelscenters$OID <- 1:nrow(lixelscenters)
+exe_nkde <- function(i, grid, lines, lixels, points, kernel, kernel_range, snap_dist, digits, tol) {
+    # extracting the analyzed pixels
+    quadra <- grid[i]
+    test_lixels <- as.vector(gIntersects(lixels, quadra, byid = T))
+    if (any(test_lixels) == FALSE) {
+        return()
+    } else {
+        selected_lixels <- subset(lixels, test_lixels)
+        if (nrow(selected_lixels) > 0) {
+            # extracting the needed lines
+            ext <- raster::extent(selected_lixels)
+            poly <- as(ext, "SpatialPolygons")
+            raster::crs(poly) <- raster::crs(selected_lixels)
+            buff <- gBuffer(poly, width = kernel_range)
+            test_lines <- as.vector(gIntersects(lines, buff, byid = T))
+            selected_lines <- subset(lines, test_lines)
+            # extracting the needed points
+            test_points <- as.vector(gIntersects(points, buff, byid = T))
+            selected_points <- subset(points, test_points)
+            ## performing the real job step3 : extraire le centroid ce ces lixels
+            lixelscenters <- gCentroid(selected_lixels, byid = T)
+            lixelscenters <- SpatialPointsDataFrame(lixelscenters, selected_lixels@data)
+            # step4 : combiner les evenements et les centres de lixels
+            lixelscenters$type <- "lixel"
+            lixelscenters$OID <- 1:nrow(lixelscenters)
 
-      if(any(test_points)==FALSE){
-        selected_lixels$density<-0
-        return(selected_lixels)
-      }
+            if (any(test_points) == FALSE) {
+                selected_lixels$density <- 0
+                return(selected_lixels)
+            }
 
-      selected_points$type <- "event"
-      selected_points$OID <- 1:nrow(selected_points)
-      allpts <- rbind(lixelscenters[c("type","OID")],selected_points[c("type","OID")])
+            selected_points$type <- "event"
+            selected_points$OID <- 1:nrow(selected_points)
+            allpts <- rbind(lixelscenters[c("type", "OID")],
+                            selected_points[c("type","OID")])
 
-      #step 5 : snapper ces points sur les lignes
-      snapped_points <- maptools::snapPointsToLines(allpts, selected_lines,maxDist = snap_dist)
-      snapped_points$spOID <- sp_char_index(coordinates(snapped_points),digits = digits)
+            # step 5 : snapper ces points sur les lignes
+            snapped_points <- maptools::snapPointsToLines(allpts, selected_lines,
+                maxDist = snap_dist)
+            snapped_points$spOID <- sp_char_index(coordinates(snapped_points),
+                digits = digits)
 
-      #step6 : ajouter ces points comme vertices
-      newlines <- add_vertices_lines(selected_lines,snapped_points,tol=tol, show_progress=F)
+            # step6 : ajouter ces points comme vertices
+            newlines <- add_vertices_lines(selected_lines, snapped_points,
+                tol = tol, show_progress = F)
 
 
-      #step7 : couversion vers des lignes simple
-      lines2 <- simple_lines(newlines)
+            # step7 : couversion vers des lignes simple
+            lines2 <- simple_lines(newlines)
 
-      #step8 : generation et dessin du graph
-      ListNet <- build_graph(lines2,digits = digits)
-      Graph <- ListNet$graph
+            # step8 : generation et dessin du graph
+            ListNet <- build_graph(lines2, digits = digits)
+            Graph <- ListNet$graph
 
-      #step9 : retrouver les points de depart
-      start_pts <- subset(snapped_points,snapped_points$type=="lixel")
-      origins <- find_vertices(ListNet$spvertices,start_pts,tol = tol,digits = digits)
+            # step9 : retrouver les points de depart
+            start_pts <- subset(snapped_points, snapped_points$type == "lixel")
+            origins <- find_vertices(ListNet$spvertices, start_pts, tol = tol,
+                digits = digits)
 
-      end_pts <- subset(snapped_points,snapped_points$type=="event")
-      destinations <- find_vertices(ListNet$spvertices,end_pts,tol = tol,digits = digits)
+            end_pts <- subset(snapped_points, snapped_points$type == "event")
+            destinations <- find_vertices(ListNet$spvertices, end_pts, tol = tol,
+                digits = digits)
 
-      Values <- calc_NKDE(Graph,origins,destinations,kernel=kernel,range = kernel_range, weights=selected_points$tmpweight)
-      selected_lixels$density <- Values
-      return(selected_lixels)
+            Values <- calc_NKDE(Graph, origins, destinations, kernel = kernel,
+                range = kernel_range, weights = selected_points$tmpweight)
+            selected_lixels$density <- Values
+            return(selected_lixels)
+        }
     }
-  }
 }
 
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-##### launching functions ####
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#### launching functions ####
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 #' Gridded version of nkde with multicore support.
 #'
@@ -136,45 +142,44 @@ exe_nkde <- function(i,grid,lines,lixels,points,kernel,kernel_range,snap_dist,di
 #'       lx_length = 150,
 #'       mindist = 50,
 #'       kernel_range = 800,
-#'       kernel="quartic",
+#'       kernel='quartic',
 #'       grid_shape=c(5,5)
 #' )
-nkde_grided.mc <- function(lines,points,snap_dist,lx_length,kernel_range, kernel="quartic",tol=0.1,digits=3,mindist=NULL,weights=NULL,grid_shape=c(2,2), show_progress=TRUE){
-  #adjusting the weights if needed
-  if (is.null(weights)){
-    W <- rep(1,nrow(points))
-  }else{
-    W <- points[[weights]]
-  }
-  points$tmpweight <- W
-  print("generating the grid...")
-  grid <- build_grid(grid_shape,spatial=lines)
-  ##step2 : generer les lixels
-  print("generating the lixels...")
-  lixels <- lixelize_lines(lines,lx_length = lx_length, mindist=mindist)
-  lixels$lxid <- 1:nrow(lixels)
-  ##step3 : lancer les iterations
-  print("starting the calculation on the grid")
-  remaininglixels <- lixels
-  iseq <- 1:length(grid)
-  if (show_progress){
-    progressr::with_progress({
-      p <- progressr::progressor(along = iseq)
-      values <- future.apply::future_lapply(iseq,function(i){
-        p(sprintf("i=%g", i))
-        return(exe_nkde(i,grid,lines,lixels,points,kernel,kernel_range,snap_dist,digits,tol))
-      })
-    })
-  }else{
-    values <-  future.apply::future_lapply(iseq,exe_nkde,grid=grid,lines=lines,
-                     lixels=lixels,points=points,
-                     kernel_range=kernel_range, kernel=kernel,
-                     snap_dist=snap_dist,digits=digits,tol=tol)
-  }
-  print("Combining the results from processes ...")
-  okvalues <- values[lengths(values) != 0]
-  alllixels <- do.call("rbind",okvalues)
-  alllixels <- alllixels[!duplicated(alllixels$lxid), ]
-  return(alllixels)
+nkde_grided.mc <- function(lines, points, snap_dist, lx_length, kernel_range, kernel = "quartic", tol = 0.1, digits = 3, mindist = NULL, weights = NULL, grid_shape = c(2, 2), show_progress = TRUE) {
+    # adjusting the weights if needed
+    if (is.null(weights)) {
+        W <- rep(1, nrow(points))
+    } else {
+        W <- points[[weights]]
+    }
+    points$tmpweight <- W
+    print("generating the grid...")
+    grid <- build_grid(grid_shape, spatial = lines)
+    ## step2 : generer les lixels
+    print("generating the lixels...")
+    lixels <- lixelize_lines(lines, lx_length = lx_length, mindist = mindist)
+    lixels$lxid <- 1:nrow(lixels)
+    ## step3 : lancer les iterations
+    print("starting the calculation on the grid")
+    iseq <- 1:length(grid)
+    if (show_progress) {
+        progressr::with_progress({
+            p <- progressr::progressor(along = iseq)
+            values <- future.apply::future_lapply(iseq, function(i) {
+                p(sprintf("i=%g", i))
+                return(exe_nkde(i, grid, lines, lixels, points, kernel,
+                  kernel_range, snap_dist, digits, tol))
+            })
+        })
+    } else {
+        values <- future.apply::future_lapply(iseq, exe_nkde, grid = grid,
+            lines = lines, lixels = lixels, points = points,
+            kernel_range = kernel_range, kernel = kernel,
+            snap_dist = snap_dist, digits = digits, tol = tol)
+    }
+    print("Combining the results from processes ...")
+    okvalues <- values[lengths(values) != 0]
+    alllixels <- do.call("rbind", okvalues)
+    alllixels <- alllixels[!duplicated(alllixels$lxid), ]
+    return(alllixels)
 }
-
