@@ -39,7 +39,8 @@ exe_line_ext_listw <- function(i, lines, grid, maxdistance, digits, matrice_type
         test_lines2 <- as.vector(gIntersects(lines, buff, byid = T))
         graph_lines <- subset(lines, test_lines2)
         # generating the network
-        result_graph <- build_graph(graph_lines, digits = digits, attrs = T)
+        result_graph <- build_graph(graph_lines, digits = digits,
+            attrs = T, line_weight = "line_weight")
         graph <- result_graph$graph
         graphdf <- igraph::as_long_data_frame(graph)
         # extracting the starting and ending points
@@ -155,8 +156,11 @@ exe_line_center_listw <- function(i, lines, centers, grid, maxdistance, digits, 
         graph_centers <- subset(centers, test_lines2)
         # generating the simpe lines
         graph_lines2 <- simple_lines(graph_lines)
+        graph_lines2$lx_length <- gLength(graph_lines2,byid=T)
+        graph_lines2$lx_weight <- (graph_lines2$lx_length / graph_lines2$line_length) * graph_lines2$line_weight
         # generating the network
-        result_graph <- build_graph(graph_lines2, digits = digits, attrs = T)
+        result_graph <- build_graph(graph_lines2, digits = digits,
+            attrs = T, line_weight = "lx_weight")
         graph <- result_graph$graph
         graphdf <- igraph::as_long_data_frame(graph)
         # finding the interesting vertices
@@ -231,6 +235,9 @@ exe_line_center_listw <- function(i, lines, centers, grid, maxdistance, digits, 
 #' @param lines A SpatialLinesDataFrame
 #' @param maxdistance The maximum distance between two observation to
 #' considere them as neighbours.
+#' @param line_weight The ponderation to use for lines. Default is "length"
+#' (the geographical length), but can be the name of a column. The value is
+#' considered proportional with the geographical length of the lines.
 #' @param dist_func Indicates the function to use to convert the distance
 #' between observation in spatial weights. Can be 'identity', 'inverse',
 #' 'squared inverse' or a function with one parameter x that will be
@@ -264,10 +271,23 @@ exe_line_center_listw <- function(i, lines, centers, grid, maxdistance, digits, 
 #'    ## R CMD check: make sure any open connections are closed afterward
 #'    if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
 #'}
-line_ext_listw_gridded.mc <- function(lines, maxdistance, dist_func = "inverse", matrice_type = "B", grid_shape = c(2, 2), verbose = "progressbar", mindist = 10, digits = 3) {
+line_ext_listw_gridded.mc <- function(lines, maxdistance, line_weight="length", dist_func = "inverse", matrice_type = "B", grid_shape = c(2, 2), verbose = "progressbar", mindist = 10, digits = 3) {
     if(verbose %in% c("silent","progressbar")==F){
         stop("the verbose argument must be 'silent' or 'progressbar'")
     }
+
+    #adjusting the weights of the lines
+    lines$line_length <- gLength(lines,byid=T)
+    if(line_weight=="length"){
+        lines$line_weight <- gLength(lines,byid=T)
+    }else {
+        lines$line_weight <- lines[[line_weight]]
+    }
+    if(min(lines$line_weight)<=0){
+        stop("the weights of the lines must be superior to 0")
+    }
+
+
     ## checking the matrix type
     if (matrice_type %in% c("B", "W") == F) {
         stop("Matrice type must be B (binary) or W (row standardized)")
@@ -345,6 +365,9 @@ line_ext_listw_gridded.mc <- function(lines, maxdistance, dist_func = "inverse",
 #' @param lines A SpatialLinesDataFrame
 #' @param maxdistance The maximum distance between two observation to
 #' considere them as neighbours.
+#' @param line_weight The ponderation to use for lines. Default is "length"
+#' (the geographical length), but can be the name of a column. The value is
+#' considered proportional with the geographical length of the lines.
 #' @param dist_func Indicates the function to use to convert the distance
 #' between observation in spatial weights. Can be 'identity', 'inverse',
 #' 'squared inverse' or a function with one parameter x that will be
@@ -374,10 +397,21 @@ line_ext_listw_gridded.mc <- function(lines, maxdistance, dist_func = "inverse",
 #'    ## R CMD check: make sure any open connections are closed afterward
 #'    if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
 #'}
-line_center_listw_gridded.mc <- function(lines, maxdistance, dist_func = "inverse", matrice_type = "B", grid_shape = c(2, 2), digits = 3, verbose = "progressbar") {
+line_center_listw_gridded.mc <- function(lines, maxdistance, line_weight="length", dist_func = "inverse", matrice_type = "B", grid_shape = c(2, 2), digits = 3, verbose = "progressbar") {
     if(verbose %in% c("silent","progressbar")==F){
         stop("the verbose argument must be 'silent' or 'progressbar'")
     }
+    #adjusting the weights of the lines
+    lines$line_length <- gLength(lines,byid=T)
+    if(line_weight=="length"){
+        lines$line_weight <- gLength(lines,byid=T)
+    }else {
+        lines$line_weight <- lines[[line_weight]]
+    }
+    if(min(lines$line_weight)<=0){
+        stop("the weights of the lines must be superior to 0")
+    }
+
     show_progress <- verbose=="progressbar"
     ## checking the matrix type
     if (matrice_type %in% c("B", "W") == F) {

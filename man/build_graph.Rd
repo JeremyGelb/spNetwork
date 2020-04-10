@@ -4,12 +4,14 @@
 \alias{build_graph}
 \title{generate an igraph object from a SpatialLinesDataFrame}
 \usage{
-build_graph(lines, digits, attrs = FALSE)
+build_graph(lines, digits, line_weight, attrs = FALSE)
 }
 \arguments{
 \item{lines}{A SpatialLinesDataFrame}
 
 \item{digits}{The number of digits to keep from the coordinates}
+
+\item{line_weight}{The name of a field that represent the cost to use a line}
 
 \item{attrs}{A boolean indicating if the original lines attributes
 must be added to the graph lines}

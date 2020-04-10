@@ -9,6 +9,7 @@ nkde_grided(
   points,
   snap_dist,
   lx_length,
+  line_weight = "length",
   kernel_range,
   kernel = "quartic",
   tol = 0.1,
@@ -27,6 +28,10 @@ nkde_grided(
 \item{snap_dist}{The maximum distance snapping between points and lines}
 
 \item{lx_length}{The expected length of a lixel}
+
+\item{line_weight}{The ponderation to use for lines. Default is "length"
+(the geographical length), but can be the name of a column. The value is
+considered proportional with the geographical length of the lines.}
 
 \item{kernel_range}{The range of the kernel function}
 

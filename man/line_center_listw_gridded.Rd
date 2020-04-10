@@ -7,6 +7,7 @@
 line_center_listw_gridded(
   lines,
   maxdistance,
+  line_weight = "length",
   dist_func = "inverse",
   matrice_type = "B",
   grid_shape = c(2, 2),
@@ -19,6 +20,10 @@ line_center_listw_gridded(
 
 \item{maxdistance}{The maximum distance between two observation to
 considere them as neighbours.}
+
+\item{line_weight}{The ponderation to use for lines. Default is "length"
+(the geographical length), but can be the name of a column. The value is
+considered proportional with the geographical length of the lines.}
 
 \item{dist_func}{Indicates the function to use to convert the distance
 between observation in spatial weights. Can be 'identity', 'inverse',
@@ -48,7 +53,7 @@ of each other lines.
 }
 \examples{
 data(mtl_network)
-listw <- line_center_listw_gridded(mtl_network,maxdistance=800,
-        dist_func = 'squared inverse', matrice_type='B',
-        grid_shape = c(5,5))
+listw <- line_center_listw_gridded(mtl_network,maxdistance=500,
+        line_weight = "length",dist_func = 'squared inverse',
+        matrice_type='B', grid_shape = c(5,5))
 }

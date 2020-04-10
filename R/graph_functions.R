@@ -2,6 +2,7 @@
 #'
 #' @param lines A SpatialLinesDataFrame
 #' @param digits The number of digits to keep from the coordinates
+#' @param line_weight The name of a field that represent the cost to use a line
 #' @param attrs A boolean indicating if the original lines attributes
 #' must be added to the graph lines
 #' @return A list containing the folowing elements:
@@ -17,7 +18,7 @@
 #' @importFrom sp coordinates SpatialPoints SpatialPointsDataFrame
 #' @examples
 #' #This is an internal function, no example provided
-build_graph <- function(lines, digits, attrs = FALSE) {
+build_graph <- function(lines, digits, line_weight, attrs = FALSE) {
     # extracting lines coordinates lines_coords <-
     extremites <- lines_extremities(lines)
     start_coords <- extremites@data[extremites$pttype == "start", c("X","Y")]
@@ -25,9 +26,12 @@ build_graph <- function(lines, digits, attrs = FALSE) {
     # extracting the coordinates of the starting and end points start_coords
     start <- sp_char_index(start_coords, digits)
     end <- sp_char_index(end_coords, digits)
+
+    weights <- lines[[line_weight]]
+
     # building the line list
-    linelist <- data.frame(start = start, end = end, weight = rgeos::gLength(lines,
-        byid = T), graph_id = 1:nrow(lines))
+    linelist <- data.frame(start = start, end = end, weight = weights,
+        graph_id = 1:nrow(lines))
     if (attrs) {
         linelist <- cbind(linelist, lines@data)
     }

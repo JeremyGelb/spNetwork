@@ -112,8 +112,10 @@ future::plan(future::multiprocess(workers=4))
 lixels <- nkde_grided.mc(mtl_network,bike_accidents,
             snap_dist = 150,
             lx_length=200,mindist=50,
+            line_weight = "length",
             kernel_range = 800, kernel='quartic',
             weights=NULL, grid_shape = c(5,5),
             verbose = "progressbar")
 
+if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
 ```

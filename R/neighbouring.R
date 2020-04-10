@@ -37,6 +37,9 @@ select_dist_function <- function(dist_func = "inverse") {
 #' @param lines A SpatialLinesDataFrame
 #' @param maxdistance The maximum distance between two observation to
 #' considere them as neighbours.
+#' @param line_weight The ponderation to use for lines. Default is "length"
+#' (the geographical length), but can be the name of a column. The value is
+#' considered proportional with the geographical length of the lines.
 #' @param dist_func The function to use to convert the distance
 #' between observation in spatial weights. Can be 'identity', 'inverse',
 #' 'squared inverse' or a function with one parameter x, returning one numeric
@@ -63,13 +66,24 @@ select_dist_function <- function(dist_func = "inverse") {
 #' @examples
 #' data(mtl_network)
 #' listw <- line_ext_listw_gridded(mtl_network,maxdistance=800,
-#'         dist_func = 'squared inverse', matrice_type='B',
-#'         grid_shape = c(5,5),
-#'         mindist = 10)
-line_ext_listw_gridded <- function(lines, maxdistance, dist_func = "inverse", matrice_type = "B", grid_shape = c(2, 2), verbose = "all", mindist = 10, digits = 3) {
+#'         line_weight = "length", dist_func = 'squared inverse',
+#'         matrice_type='B', grid_shape = c(5,5), mindist = 10)
+line_ext_listw_gridded <- function(lines, maxdistance, line_weight = "length", dist_func = "inverse", matrice_type = "B", grid_shape = c(2, 2), verbose = "all", mindist = 10, digits = 3) {
     if(verbose %in% c("silent","progressbar","text","all")==F){
         stop("the verbose argument must be 'all', 'silent', 'progressbar' or 'text'")
     }
+
+    #adjusting the weights of the lines
+    lines$line_length <- gLength(lines,byid=T)
+    if(line_weight=="length"){
+        lines$line_weight <- gLength(lines,byid=T)
+    }else {
+        lines$line_weight <- lines[[line_weight]]
+    }
+    if(min(lines$line_weight)<=0){
+        stop("the weights of the lines must be superior to 0")
+    }
+
     ## checking the matrix type
     if (matrice_type %in% c("B", "W", "C", "U", "minmax", "S") == F) {
         stop("Matrice type must be B, W, C, U, minmax, or S.
@@ -127,7 +141,8 @@ line_ext_listw_gridded <- function(lines, maxdistance, dist_func = "inverse", ma
             test_lines2 <- as.vector(gIntersects(lines, buff, byid = T))
             graph_lines <- subset(lines, test_lines2)
             # generating the network
-            result_graph <- build_graph(graph_lines, digits = digits, attrs = T)
+            result_graph <- build_graph(graph_lines, digits = digits,
+                attrs = T, line_weight = 'line_weight')
             graph <- result_graph$graph
             graphdf <- igraph::as_long_data_frame(graph)
             # extracting the starting and ending points
@@ -171,8 +186,7 @@ line_ext_listw_gridded <- function(lines, maxdistance, dist_func = "inverse", ma
                     setTxtProgressBar(pb, j)
                 }
                 line <- selected_lines[j, ]
-                dfdistances <- data.frame(dest = colnames(matdist), distance = matdist[j,
-                  ])
+                dfdistances <- data.frame(dest = colnames(matdist), distance = matdist[j,])
                 # now filtering the two long distances and NA
                 dfdistances <- subset(dfdistances, dfdistances$distance <
                   maxdistance & is.na(dfdistances$distance) == FALSE)
@@ -258,6 +272,9 @@ line_ext_listw_gridded <- function(lines, maxdistance, dist_func = "inverse", ma
 #' @param lines A SpatialLinesDataFrame
 #' @param maxdistance The maximum distance between two observation to
 #' considere them as neighbours.
+#' @param line_weight The ponderation to use for lines. Default is "length"
+#' (the geographical length), but can be the name of a column. The value is
+#' considered proportional with the geographical length of the lines.
 #' @param dist_func Indicates the function to use to convert the distance
 #' between observation in spatial weights. Can be 'identity', 'inverse',
 #' 'squared inverse' or a function with one parameter x that will be
@@ -280,13 +297,25 @@ line_ext_listw_gridded <- function(lines, maxdistance, dist_func = "inverse", ma
 #' @export
 #' @examples
 #' data(mtl_network)
-#' listw <- line_center_listw_gridded(mtl_network,maxdistance=800,
-#'         dist_func = 'squared inverse', matrice_type='B',
-#'         grid_shape = c(5,5))
-line_center_listw_gridded <- function(lines, maxdistance, dist_func = "inverse", matrice_type = "B", grid_shape = c(2, 2), verbose = "all", digits = 3) {
+#' listw <- line_center_listw_gridded(mtl_network,maxdistance=500,
+#'         line_weight = "length",dist_func = 'squared inverse',
+#'         matrice_type='B', grid_shape = c(5,5))
+line_center_listw_gridded <- function(lines, maxdistance, line_weight = "length", dist_func = "inverse", matrice_type = "B", grid_shape = c(2, 2), verbose = "all", digits = 3) {
     if(verbose %in% c("silent","progressbar","text","all")==F){
         stop("the verbose argument must be 'all', 'silent', 'progressbar' or 'text'")
     }
+
+    ##adjusting the weights of the lines
+    lines$line_length <- gLength(lines,byid=T)
+    if(line_weight=="length"){
+        lines$line_weight <- gLength(lines,byid=T)
+    }else {
+        lines$line_weight <- lines[[line_weight]]
+    }
+    if(min(lines$line_weight)<=0){
+        stop("the weights of the lines must be superior to 0")
+    }
+
     ## checking the matrix type
     if (matrice_type %in% c("B", "W") == F) {
         stop("Matrice type must be B (binary) or W (row standardized)")
@@ -357,8 +386,12 @@ line_center_listw_gridded <- function(lines, maxdistance, dist_func = "inverse",
             graph_centers <- subset(centers, test_lines2)
             # generating the simpe lines
             graph_lines2 <- simple_lines(graph_lines)
+            graph_lines2$lx_length <- gLength(graph_lines2,byid=T)
+            graph_lines2$lx_weight <- (graph_lines2$lx_length / graph_lines2$line_length) * graph_lines2$line_weight
+
             # generating the network
-            result_graph <- build_graph(graph_lines2, digits = digits, attrs = T)
+            result_graph <- build_graph(graph_lines2, digits = digits,
+                attrs = T, line_weight = "lx_weight")
             graph <- result_graph$graph
             graphdf <- igraph::as_long_data_frame(graph)
             # finding the interesting vertices

@@ -64,6 +64,7 @@ exe_nkde <- function(i, grid, lines, lixels, points, kernel, kernel_range, snap_
                 maxDist = snap_dist)
             snapped_points$spOID <- sp_char_index(coordinates(snapped_points),
                 digits = digits)
+            snapped_points <- cbind(snapped_points,allpts)
 
             # step6 : adding these points as vertices
             invisible(capture.output(newlines <- add_vertices_lines(selected_lines,
@@ -73,8 +74,12 @@ exe_nkde <- function(i, grid, lines, lixels, points, kernel, kernel_range, snap_
             # step7 : converting lines as simple lines
             lines2 <- simple_lines(newlines)
 
+            #now adjusting the weights of the lixels
+            lines2$lx_length <- gLength(lines2,byid=T)
+            lines2$lx_weight <- (lines2$lx_length / lines2$line_length) * lines2$line_weight
+
             # step8 : generating the graph
-            ListNet <- build_graph(lines2, digits = digits)
+            ListNet <- build_graph(lines2, digits = digits,line_weight='lx_weight')
             Graph <- ListNet$graph
 
             # step9 : find starting points
@@ -113,6 +118,9 @@ exe_nkde <- function(i, grid, lines, lixels, points, kernel, kernel_range, snap_
 #' @param points The events to use in the kernel density estimation
 #' @param snap_dist The maximum distance snapping between points and lines
 #' @param lx_length The expected length of a lixel
+#' @param line_weight The ponderation to use for lines. Default is "length"
+#' (the geographical length), but can be the name of a column. The value is
+#' considered proportional with the geographical length of the lines.
 #' @param kernel_range The range of the kernel function
 #' @param kernel The name of the kernel function to use (must be one of
 #' quartic, gaussian or epanechnikov). Default is Quartic
@@ -140,6 +148,7 @@ exe_nkde <- function(i, grid, lines, lixels, points, kernel, kernel_range, snap_
 #' lixels_nkde <- nkde_grided.mc(mtl_network, bike_accidents,
 #'       snap_dist = 150,
 #'       lx_length = 150,
+#'       line_weight = "length",
 #'       mindist = 50,
 #'       kernel_range = 800,
 #'       kernel='quartic',
@@ -149,9 +158,20 @@ exe_nkde <- function(i, grid, lines, lixels, points, kernel, kernel_range, snap_
 #'    ## R CMD check: make sure any open connections are closed afterward
 #'    if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
 #'}
-nkde_grided.mc <- function(lines, points, snap_dist, lx_length, kernel_range, kernel = "quartic", tol = 0.1, digits = 3, mindist = NULL, weights = NULL, grid_shape = c(2, 2), verbose = "progressbar") {
+nkde_grided.mc <- function(lines, points, snap_dist, lx_length, line_weight="length", kernel_range, kernel = "quartic", tol = 0.1, digits = 3, mindist = NULL, weights = NULL, grid_shape = c(2, 2), verbose = "progressbar") {
     if(verbose %in% c("silent","progressbar")==F){
         stop("the verbose argument must be 'silent' or 'progressbar'")
+    }
+
+    #adjusting the weights of the lines
+    lines$line_length <- gLength(lines,byid=T)
+    if(line_weight=="length"){
+        lines$line_weight <- gLength(lines,byid=T)
+    }else {
+        lines$line_weight <- lines[[line_weight]]
+    }
+    if(min(lines$line_weight)<=0){
+        stop("the weights of the lines must be superior to 0")
     }
 
     # adjusting the weights if needed

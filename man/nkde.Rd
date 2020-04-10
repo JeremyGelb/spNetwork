@@ -12,6 +12,7 @@ nkde(
   snap_dist,
   lx_length,
   kernel_range,
+  line_weight = "length",
   kernel = "quartic",
   weights = NULL,
   tol = 0.1,
@@ -30,6 +31,10 @@ nkde(
 \item{lx_length}{The normal length of a lixel}
 
 \item{kernel_range}{The range of the kernel function}
+
+\item{line_weight}{The ponderation to use for lines. Default is "length"
+(the geographical length), but can be the name of a column. The value is
+considered proportional with the geographical length of the lines.}
 
 \item{kernel}{The name of the kernel function to use (must be one of
 quartic, gaussian or epanechnikov). Default is Quartic.}
@@ -64,5 +69,5 @@ estimate for each lixels centroids
 data(mtl_network)
 data(bike_accidents)
 lixels <- nkde(mtl_network,bike_accidents, snap_dist = 150,
-      lx_length = 150, kernel_range = 800, mindist=50)
+      lx_length = 150, line_weight="length", kernel_range = 800, mindist=50)
 }
