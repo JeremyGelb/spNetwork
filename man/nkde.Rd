@@ -17,7 +17,7 @@ nkde(
   tol = 0.1,
   digits = 3,
   mindist = NULL,
-  show_progress = T
+  verbose = "text"
 )
 }
 \arguments{
@@ -47,7 +47,10 @@ errors}
 \item{mindist}{The minimum length of a lixel. Defaut is NULL. If NULL,
 mindist is set as lx_length/10}
 
-\item{show_progress}{A boolean indicating if a progress bar must be displayed}
+\item{verbose}{A string indicating how the advance of the process is
+displayed. Default is text. "text" show only the main steps, "progressbar"
+show main steps and progress bar for intermediar steps, "silent" show
+nothing}
 }
 \value{
 Vector of kernel densities (one for each origin)
@@ -59,6 +62,7 @@ estimate for each lixels centroids
 }
 \examples{
 data(mtl_network)
-lixels <- nkde(mtl_network, snap_dist = 150,
+data(bike_accidents)
+lixels <- nkde(mtl_network,bike_accidents, snap_dist = 150,
       lx_length = 150, kernel_range = 800, mindist=50)
 }

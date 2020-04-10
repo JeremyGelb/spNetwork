@@ -8,14 +8,15 @@ nkde_grided.mc(
   lines,
   points,
   snap_dist,
-  lixel_length,
+  lx_length,
   kernel_range,
   kernel = "quartic",
   tol = 0.1,
   digits = 3,
+  mindist = NULL,
   weights = NULL,
   grid_shape = c(2, 2),
-  show_progress = TRUE
+  verbose = "progressbar"
 )
 }
 \arguments{
@@ -25,7 +26,7 @@ nkde_grided.mc(
 
 \item{snap_dist}{The maximum distance snapping between points and lines}
 
-\item{lixel_length}{The expected length of a lixel}
+\item{lx_length}{The expected length of a lixel}
 
 \item{kernel_range}{The range of the kernel function}
 
@@ -37,17 +38,18 @@ quartic, gaussian or epanechnikov). Default is Quartic}
 \item{digits}{The number of digits to keep in the coordinates of the
 geometries}
 
+\item{mindist}{The minimum length of a lixel. Defaut is NULL. If NULL,
+mindist is set as lixel_length/10}
+
 \item{weights}{A vector of weights for the events. Default is NULL
 if NULL, all the events have a weight of 1.}
 
 \item{grid_shape}{A vector of length 2 indicating the shape of the grid to
 use for splitting the dataset. Default is c(2,2)}
 
-\item{show_progress}{A boolean indicating if a plot should be displayed to
-track the progressing of the calculation.}
-
-\item{mindist}{The minimum length of a lixel. Defaut is NULL. If NULL,
-mindist is set as lixel_length/10}
+\item{verbose}{A string indicating how the advance of the process is
+displayed. Default is progressbar "progressbar" shows main steps and
+progress bar for intermediar steps, "silent" show nothing}
 }
 \value{
 Vector of kernel densities (one for each origin)
@@ -66,12 +68,16 @@ nkde_grided will be slightely more efficient.
 data(mtl_network)
 data(bike_accidents)
 future::plan(future::multiprocess(workers=2))
-lixels_nkde <- nkde_grided.mc(mtl_network, bike_accident,
+lixels_nkde <- nkde_grided.mc(mtl_network, bike_accidents,
       snap_dist = 150,
       lx_length = 150,
       mindist = 50,
       kernel_range = 800,
-      kernel="quartic",
+      kernel='quartic',
       grid_shape=c(5,5)
 )
+\dontshow{
+   ## R CMD check: make sure any open connections are closed afterward
+   if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
+}
 }

@@ -9,16 +9,9 @@
 #' calculation
 #' @param maxdistance The maximum distance between two observation to
 #' considere them as neighbours.
-#' @param dist_func Indicates the function to use to convert the distance
-#' between observation in spatial weights. Can be 'identity', 'inverse',
-#' 'squared inverse' or a function with one parameter x that will be
-#' vectorized internally
+#' @param vdist_func A function to convert distance in spatial weights
 #' @param matrice_type The type of the weighting scheme. Can be 'B' for Binary,
 #' 'W' for row weighted, see the documentation of spdep::nb2listw for details
-#' @param grid_shape A vector of length 2 indicating the shape of the grid to
-#' use for splitting the dataset. Default is c(2,2)
-#' @param show_progress A boolean indicating if a plot should be displayed to
-#' track the progressing of the calculation.
 #' @param mindist Indicates the minimum value to replace 0 with. Two lines that
 #' share a vertex have a 0 distance between them, wich could create some
 #' trouble in the weightings of the neighbouring object.
@@ -39,7 +32,7 @@ exe_line_ext_listw <- function(i, lines, grid, maxdistance, digits, matrice_type
     } else {
         selected_lines <- subset(lines, test_lines)
         ext <- raster::extent(selected_lines)
-        poly <- as(ext, "SpatialPolygons")
+        poly <- methods::as(ext, "SpatialPolygons")
         raster::crs(poly) <- raster::crs(selected_lines)
         # selecting the lines close to build the network
         buff <- gBuffer(poly, width = maxdistance)
@@ -123,20 +116,17 @@ exe_line_ext_listw <- function(i, lines, grid, maxdistance, digits, matrice_type
 #' Worker function for the line_center_listw_gridded.mc function.
 #' @param i The row index of the spatiale grid to use
 #' @param lines The SpatialLinesDataFrame to use as a network
+#' @param centers The centers of the lines (SpatialPointsDataFrame)
 #' @param grid The SpatialPolygons object reprsenting the grid for splitted
 #' calculation
 #' @param maxdistance The maximum distance between two observation to
 #' considere them as neighbours.
-#' @param dist_func Indicates the function to use to convert the distance
+#' @param vdist_func Indicates the function to use to convert the distance
 #' between observation in spatial weights. Can be 'identity', 'inverse',
 #' 'squared inverse' or a function with one parameter x that will be
 #' vectorized internally
 #' @param matrice_type The type of the weighting scheme. Can be 'B' for Binary,
 #' 'W' for row weighted, see the documentation of spdep::nb2listw for details
-#' @param grid_shape A vector of length 2 indicating the shape of the grid to
-#' use for splitting the dataset. Default is c(2,2)
-#' @param show_progress A boolean indicating if a plot should be displayed to
-#' track the progressing of the calculation.
 #' @param digits the number of digits to keep in the spatial coordinates (
 #' simplification used to reduce risk of topological error)
 #' @return A list, containing a neighbours list and a weights list
@@ -156,7 +146,7 @@ exe_line_center_listw <- function(i, lines, centers, grid, maxdistance, digits, 
         selected_centers <- subset(centers, test_lines)
         # selecting the lines close to build the network
         ext <- raster::extent(selected_lines)
-        poly <- as(ext, "SpatialPolygons")
+        poly <- methods::as(ext, "SpatialPolygons")
         raster::crs(poly) <- raster::crs(selected_lines)
         # selecting the lines close to build the network
         buff <- gBuffer(poly, width = maxdistance)
@@ -249,8 +239,9 @@ exe_line_center_listw <- function(i, lines, centers, grid, maxdistance, digits, 
 #' 'W' for row weighted, see the documentation of spdep::nb2listw for details
 #' @param grid_shape A vector of length 2 indicating the shape of the grid to
 #' use for splitting the dataset. Default is c(2,2)
-#' @param show_progress A boolean indicating if a plot should be displayed to
-#' track the progressing of the calculation.
+#' @param verbose A string indicating how the advance of the process is
+#' displayed. Default is progressbar "progressbar" shows main steps and
+#' progress bar for intermediar steps, "silent" show nothing
 #' @param mindist Indicates the minimum value to replace 0 with. Two lines that
 #' share a vertex have a 0 distance between them, wich could create some
 #' trouble in the weightings of the neighbouring object.
@@ -258,7 +249,7 @@ exe_line_center_listw <- function(i, lines, centers, grid, maxdistance, digits, 
 #' simplification used to reduce risk of topological error)
 #' @return A listw object (spdep like)
 #' @importFrom sp coordinates  SpatialPoints SpatialPointsDataFrame
-#' @importFrom utils txtProgressBar setTxtProgressBar
+#' @importFrom utils txtProgressBar setTxtProgressBar capture.output
 #' @importFrom rgeos gCentroid gLength gBuffer gIntersects
 #' @importFrom dplyr left_join group_by summarize summarize_all
 #' @export
@@ -269,7 +260,14 @@ exe_line_center_listw <- function(i, lines, centers, grid, maxdistance, digits, 
 #'         dist_func = 'squared inverse', matrice_type='B',
 #'         grid_shape = c(5,5),
 #'         mindist = 10)
-line_ext_listw_gridded.mc <- function(lines, maxdistance, dist_func = "inverse", matrice_type = "B", grid_shape = c(2, 2), show_progress = TRUE, mindist = 10, digits = 3) {
+#' \dontshow{
+#'    ## R CMD check: make sure any open connections are closed afterward
+#'    if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
+#'}
+line_ext_listw_gridded.mc <- function(lines, maxdistance, dist_func = "inverse", matrice_type = "B", grid_shape = c(2, 2), verbose = "progressbar", mindist = 10, digits = 3) {
+    if(verbose %in% c("silent","progressbar")==F){
+        stop("the verbose argument must be 'silent' or 'progressbar'")
+    }
     ## checking the matrix type
     if (matrice_type %in% c("B", "W") == F) {
         stop("Matrice type must be B (binary) or W (row standardized)")
@@ -278,10 +276,15 @@ line_ext_listw_gridded.mc <- function(lines, maxdistance, dist_func = "inverse",
     vdist_func <- select_dist_function(dist_func)
     ## setting the OID : tmpid
     lines$tmpid <- 1:nrow(lines)
-    print("generating the grid...")
+    if(verbose != "silent"){
+        print("generating the grid...")
+    }
     grid <- build_grid(grid_shape, spatial = lines)
     ## step3 : startint the iterations
-    print("starting the calculation on the grid")
+    if(verbose != "silent"){
+        print("starting the calculation on the grid")
+    }
+    show_progress <- verbose=="progressbar"
     iseq <- 1:length(grid)
     if (show_progress) {
         progressr::with_progress({
@@ -300,7 +303,10 @@ line_ext_listw_gridded.mc <- function(lines, maxdistance, dist_func = "inverse",
             mindist = mindist, vdist_func = vdist_func)
     }
     # now, combining everything
-    print("combining all the matrices ...")
+    if(verbose != "silent"){
+        print("combining all the matrices ...")
+    }
+
     okvalues <- values[lengths(values) != 0]
     nblist <- do.call("c", lapply(okvalues, function(value) {
         return(value[[1]])
@@ -318,7 +324,9 @@ line_ext_listw_gridded.mc <- function(lines, maxdistance, dist_func = "inverse",
     ## setting the nb attributes
     attr(ordered_nblist, "class") <- "nb"
     attr(ordered_nblist, "region.id") <- as.character(lines$tmpid)
-    print("finally generating the listw object ...")
+    if(verbose != "silent"){
+        print("finally generating the listw object ...")
+    }
     # setting the final listw attributes
     listw <- spdep::nb2listw(ordered_nblist, glist = ordered_weights,
                     zero.policy = T, style = matrice_type)
@@ -345,16 +353,14 @@ line_ext_listw_gridded.mc <- function(lines, maxdistance, dist_func = "inverse",
 #' 'W' for row weighted, see the documentation of spdep::nb2listw for details
 #' @param grid_shape A vector of length 2 indicating the shape of the grid to
 #' use for splitting the dataset. Default is c(2,2)
-#' @param show_progress A boolean indicating if a plot should be displayed to
-#' track the progressing of the calculation.
-#' @param mindist Indicates the minimum value to replace 0 with. Two lines that
-#' share a vertex have a 0 distance between them, wich could create some
-#' trouble in the weightings of the neighbouring object.
+#' @param verbose A string indicating how the advance of the process is
+#' displayed. Default is progressbar "progressbar" shows main steps and
+#' progress bar for intermediar steps, "silent" show nothing
 #' @param digits the number of digits to keep in the spatial coordinates (
 #' simplification used to reduce risk of topological error)
 #' @return A listw object (spdep like)
 #' @importFrom sp coordinates  SpatialPoints SpatialPointsDataFrame
-#' @importFrom utils txtProgressBar setTxtProgressBar
+#' @importFrom utils txtProgressBar setTxtProgressBar capture.output
 #' @importFrom rgeos gCentroid gLength gBuffer gIntersects
 #' @importFrom dplyr left_join group_by summarize summarize_all
 #' @export
@@ -364,7 +370,15 @@ line_ext_listw_gridded.mc <- function(lines, maxdistance, dist_func = "inverse",
 #' listw <- line_center_listw_gridded.mc(mtl_network,maxdistance=800,
 #'         dist_func = 'squared inverse', matrice_type='B',
 #'         grid_shape = c(5,5))
-line_center_listw_gridded.mc <- function(lines, maxdistance, dist_func = "inverse", matrice_type = "B", grid_shape = c(2, 2), digits = 3, show_progress = TRUE) {
+#' \dontshow{
+#'    ## R CMD check: make sure any open connections are closed afterward
+#'    if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
+#'}
+line_center_listw_gridded.mc <- function(lines, maxdistance, dist_func = "inverse", matrice_type = "B", grid_shape = c(2, 2), digits = 3, verbose = "progressbar") {
+    if(verbose %in% c("silent","progressbar")==F){
+        stop("the verbose argument must be 'silent' or 'progressbar'")
+    }
+    show_progress <- verbose=="progressbar"
     ## checking the matrix type
     if (matrice_type %in% c("B", "W") == F) {
         stop("Matrice type must be B (binary) or W (row standardized)")
@@ -374,15 +388,30 @@ line_center_listw_gridded.mc <- function(lines, maxdistance, dist_func = "invers
     ## setting the OID : tmpid
     lines$tmpid <- 1:nrow(lines)
     ## generating the centers of the lines
-    print("generating the centers of the lines...")
+    if(verbose != "silent"){
+        print("generating the centers of the lines...")
+    }
     centers <- lines_center(lines)
     ## add vertices to lines
-    print("adding these vertices to lines (only once do not worry)...")
-    lines <- add_center_lines.mc(lines, show_progress)
-    print("generating the grid...")
+    if(verbose != "silent"){
+        print("adding these vertices to lines (only once do not worry)...")
+    }
+    if (show_progress){
+        lines <- add_center_lines.mc(lines, show_progress)
+    }else {
+        invisible(capture.output(lines <- add_center_lines.mc(lines, show_progress)))
+    }
+
+    if(verbose != "silent"){
+        print("generating the grid...")
+    }
     grid <- build_grid(grid_shape, spatial = lines)
+
     ## step3 : start the iteration process
-    print("starting the calculation on the grid")
+    if(verbose != "silent"){
+        print("starting the calculation on the grid")
+    }
+
     iseq <- 1:length(grid)
     if (show_progress) {
         progressr::with_progress({
@@ -403,7 +432,10 @@ line_center_listw_gridded.mc <- function(lines, maxdistance, dist_func = "invers
             vdist_func = vdist_func)
     }
     # now, combining everything
-    print("combining all the matrices ...")
+    if(verbose != "silent"){
+        print("combining all the matrices ...")
+    }
+
     okvalues <- values[lengths(values) != 0]
     nblist <- do.call("c", lapply(okvalues, function(value) {
         return(value[[1]])
@@ -421,8 +453,9 @@ line_center_listw_gridded.mc <- function(lines, maxdistance, dist_func = "invers
     ## setting the nb attributes
     attr(ordered_nblist, "class") <- "nb"
     attr(ordered_nblist, "region.id") <- as.character(lines$tmpid)
-    print("finally generating the listw object ...")
-    ## setting the final listw attributes
+    if(verbose != "silent"){
+        print("finally generating the listw object ...")
+    }
     listw <- spdep::nb2listw(ordered_nblist, glist = ordered_weights,
                 zero.policy = T, style = matrice_type)
     return(listw)

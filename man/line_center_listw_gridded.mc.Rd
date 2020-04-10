@@ -12,7 +12,7 @@ line_center_listw_gridded.mc(
   matrice_type = "B",
   grid_shape = c(2, 2),
   digits = 3,
-  show_progress = TRUE
+  verbose = "progressbar"
 )
 }
 \arguments{
@@ -22,12 +22,12 @@ line_center_listw_gridded.mc(
 considere them as neighbours.}
 
 \item{dist_func}{Indicates the function to use to convert the distance
-between observation in spatial weights. Can be "identity", "inverse",
-"squared inverse" or a function with one parameter x that will be
+between observation in spatial weights. Can be 'identity', 'inverse',
+'squared inverse' or a function with one parameter x that will be
 vectorized internally}
 
-\item{matrice_type}{The type of the weighting scheme. Can be "B" for Binary,
-"W" for row weighted, see the documentation of spdep::nb2listw for details}
+\item{matrice_type}{The type of the weighting scheme. Can be 'B' for Binary,
+'W' for row weighted, see the documentation of spdep::nb2listw for details}
 
 \item{grid_shape}{A vector of length 2 indicating the shape of the grid to
 use for splitting the dataset. Default is c(2,2)}
@@ -35,12 +35,9 @@ use for splitting the dataset. Default is c(2,2)}
 \item{digits}{the number of digits to keep in the spatial coordinates (
 simplification used to reduce risk of topological error)}
 
-\item{show_progress}{A boolean indicating if a plot should be displayed to
-track the progressing of the calculation.}
-
-\item{mindist}{Indicates the minimum value to replace 0 with. Two lines that
-share a vertex have a 0 distance between them, wich could create some
-trouble in the weightings of the neighbouring object.}
+\item{verbose}{A string indicating how the advance of the process is
+displayed. Default is progressbar "progressbar" shows main steps and
+progress bar for intermediar steps, "silent" show nothing}
 }
 \value{
 A listw object (spdep like)
@@ -53,6 +50,10 @@ of each other lines.
 data(mtl_network)
 future::plan(future::multiprocess(workers=2))
 listw <- line_center_listw_gridded.mc(mtl_network,maxdistance=800,
-        dist_func = "squared inverse", matrice_type="B",
+        dist_func = 'squared inverse', matrice_type='B',
         grid_shape = c(5,5))
+\dontshow{
+   ## R CMD check: make sure any open connections are closed afterward
+   if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
+}
 }

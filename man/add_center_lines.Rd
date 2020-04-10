@@ -5,12 +5,10 @@
 \title{Add to each line of a SpatialLinesDataFrame an additionnal vertex at its
 center}
 \usage{
-add_center_lines(lines, show_progress = T)
+add_center_lines(lines)
 }
 \arguments{
 \item{lines}{The SpatialLinesDataframe to use}
-
-\item{show_progress}{A boolean indicating if a progress bar must be displayed}
 }
 \value{
 An object of class SpatialLinesDataframe (package sp)

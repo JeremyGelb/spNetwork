@@ -23,4 +23,8 @@ center (multicore version).
 }
 \examples{
 #This is an internal function, no example provided
+\dontshow{
+   ## R CMD check: make sure any open connections are closed afterward
+   if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
+}
 }

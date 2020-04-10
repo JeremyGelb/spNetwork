@@ -7,7 +7,7 @@
 simple_lines(lines)
 }
 \arguments{
-\item{line}{The SpatialLinesDataframe to modify}
+\item{lines}{The SpatialLinesDataframe to modify}
 }
 \value{
 An object of class SpatialLinesDataFrame (package sp)

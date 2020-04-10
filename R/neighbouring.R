@@ -45,8 +45,10 @@ select_dist_function <- function(dist_func = "inverse") {
 #' 'W' for row weighted, see the documentation of spdep::nb2listw for details.
 #' @param grid_shape A vector of length 2 indicating the shape of the grid to
 #' use for splitting the dataset. Default is c(2,2)
-#' @param show_progress A boolean indicating if a plot should be displayed to
-#' track the progressing of the calculation.
+#' @param verbose A string indicating how the advance of the process is
+#' displayed. Default is all. "text" show only the main steps, "progressbar"
+#' show main steps and progress bar for intermediar steps, "all" add a plot
+#' of the grid to follow visually the processing, "silent" show nothing
 #' @param mindist Indicates the minimum value to replace 0 with. Two lines that
 #' share a vertex have a 0 distance between them, wich could create some
 #' trouble in the weightings of the neighbouring object.
@@ -64,7 +66,10 @@ select_dist_function <- function(dist_func = "inverse") {
 #'         dist_func = 'squared inverse', matrice_type='B',
 #'         grid_shape = c(5,5),
 #'         mindist = 10)
-line_ext_listw_gridded <- function(lines, maxdistance, dist_func = "inverse", matrice_type = "B", grid_shape = c(2, 2), show_progress = TRUE, mindist = 10, digits = 3) {
+line_ext_listw_gridded <- function(lines, maxdistance, dist_func = "inverse", matrice_type = "B", grid_shape = c(2, 2), verbose = "all", mindist = 10, digits = 3) {
+    if(verbose %in% c("silent","progressbar","text","all")==F){
+        stop("the verbose argument must be 'all', 'silent', 'progressbar' or 'text'")
+    }
     ## checking the matrix type
     if (matrice_type %in% c("B", "W", "C", "U", "minmax", "S") == F) {
         stop("Matrice type must be B, W, C, U, minmax, or S.
@@ -74,39 +79,48 @@ line_ext_listw_gridded <- function(lines, maxdistance, dist_func = "inverse", ma
     vdist_func <- select_dist_function(dist_func)
     ## setting the OID : tmpid
     lines$tmpid <- 1:nrow(lines)
-    print("generating the grid...")
+    if(verbose !="silent"){
+        print("generating the grid...")
+    }
     grid <- build_grid(grid_shape, spatial = lines)
+
     ## step3 : lancer les iterations
-    print("starting the calculation on the grid")
+    if(verbose !="silent"){
+        print("starting the calculation on the grid")
+    }
     remaininglines <- lines
     nquadra <- length(grid)
 
-    if (show_progress) {
-        plot(grid)
-        plot(lines, add = T)
+    if (verbose=="all") {
+        sp::plot(grid)
+        sp::plot(lines, add = T)
     }
 
     values <- lapply(1:length(grid), function(i) {
-        print(paste("-------------------Iterating on quadra : ", i, "/",
-            nquadra, "----------------", sep = ""))
+        if(verbose !="silent"){
+            print(paste("-------------------Iterating on quadra : ", i, "/",
+                        nquadra, "----------------", sep = ""))
+        }
+
         # extracting the analyzed pixels
         quadra <- grid[i]
-        if (show_progress) {
-            plot(quadra, col = "red", add = T)
+        if (verbose=="all") {
+            sp::plot(quadra, col = "red", add = T)
         }
 
         # selecting the lines in the quadra
         test_lines <- as.vector(gIntersects(remaininglines, quadra, byid = T))
         if (any(test_lines) == FALSE) {
-            print("---- passing, empty quadra----")
             return()
         } else {
-            print(paste("---quadra with values : -----", i, sep = ""))
-            print("... selecting lines and building graph")
+            if(verbose !="silent"){
+                print(paste("---quadra with values : -----", i, sep = ""))
+                print("... selecting lines and building graph")
+            }
             selected_lines <- subset(remaininglines, test_lines)
             remaininglines <<- subset(remaininglines, test_lines == F)
             ext <- raster::extent(selected_lines)
-            poly <- as(ext, "SpatialPolygons")
+            poly <- methods::as(ext, "SpatialPolygons")
             raster::crs(poly) <- raster::crs(selected_lines)
             # selecting the lines close to build the network
             buff <- gBuffer(poly, width = maxdistance)
@@ -127,7 +141,9 @@ line_ext_listw_gridded <- function(lines, maxdistance, dist_func = "inverse", ma
               graphdf[c("tmpid", "to")], by = c("tmpid"))
             allpts_end$vertex <- allpts_end$to
             # now taking the first set of vertices and the second set
-            print("... calculating distances between vertices")
+            if(verbose !="silent"){
+                print("... calculating distances between vertices")
+            }
             origin_vertices1 <- allpts_start$vertex
             origin_vertices2 <- allpts_end$vertex
             dest_vertices <- as.numeric(igraph::V(graph))
@@ -139,19 +155,21 @@ line_ext_listw_gridded <- function(lines, maxdistance, dist_func = "inverse", ma
             matdist <- ifelse(alldistances1 < alldistances2, alldistances1, alldistances2)
             colnames(matdist) <- dest_vertices
             rownames(matdist) <- selected_lines$tmpid
-            print("... building the sub-distance matrix")
-            if (show_progress) {
-                pb <- txtProgressBar(min = 0, max = nrow(selected_lines),
-                  style = 3)
-            } else {
-                pb <- txtProgressBar(initial = NA, min = 0, max = nrow(selected_lines),
-                  style = 3)
-                close(pb)
+            if(verbose !="silent"){
+                print("... building the sub-distance matrix")
             }
+
+            show_progress <- verbose %in% c("all","progressba")
+            if (show_progress){
+                pb <- txtProgressBar(min = 0, max = nrow(selected_lines),style = 3)
+            }
+
             # We now have a nice distance matrix
             nblist <- lapply(1:nrow(selected_lines), function(j) {
                 # lets get all the distances from the begining and the end of each line
-                setTxtProgressBar(pb, j)
+                if (show_progress){
+                    setTxtProgressBar(pb, j)
+                }
                 line <- selected_lines[j, ]
                 dfdistances <- data.frame(dest = colnames(matdist), distance = matdist[j,
                   ])
@@ -200,7 +218,9 @@ line_ext_listw_gridded <- function(lines, maxdistance, dist_func = "inverse", ma
         }
     })
     # now, combining everything
-    print("combining all the matrices ...")
+    if(verbose != "silent"){
+        print("combining all the matrices ...")
+    }
     okvalues <- values[lengths(values) != 0]
     nblist <- do.call("c", lapply(okvalues, function(value) {
         return(value[[1]])
@@ -218,7 +238,9 @@ line_ext_listw_gridded <- function(lines, maxdistance, dist_func = "inverse", ma
     ## setting the nb attributes
     attr(ordered_nblist, "class") <- "nb"
     attr(ordered_nblist, "region.id") <- as.character(lines$tmpid)
-    print("finally generating the listw object ...")
+    if(verbose != "silent"){
+        print("finally generating the listw object ...")
+    }
     ## setting the final listw attributes
     listw <- spdep::nb2listw(ordered_nblist, glist = ordered_weights, zero.policy = T,
         style = matrice_type)
@@ -244,11 +266,10 @@ line_ext_listw_gridded <- function(lines, maxdistance, dist_func = "inverse", ma
 #' 'W' for row weighted, see the documentation of spdep::nb2listw for details
 #' @param grid_shape A vector of length 2 indicating the shape of the grid to
 #' use for splitting the dataset. Default is c(2,2)
-#' @param show_progress A boolean indicating if a plot should be displayed to
-#' track the progressing of the calculation.
-#' @param mindist Indicates the minimum value to replace 0 with. Two lines that
-#' share a vertex have a 0 distance between them, wich could create some
-#' trouble in the weightings of the neighbouring object.
+#' @param verbose A string indicating how the advance of the process is
+#' displayed. Default is all. "text" show only the main steps, "progressbar"
+#' show main steps and progress bar for intermediar steps, "all" add a plot
+#' of the grid to follow visually the processing, "silent" show nothing
 #' @param digits the number of digits to keep in the spatial coordinates (
 #' simplification used to reduce risk of topological error)
 #' @return A listw object (spdep like)
@@ -262,8 +283,10 @@ line_ext_listw_gridded <- function(lines, maxdistance, dist_func = "inverse", ma
 #' listw <- line_center_listw_gridded(mtl_network,maxdistance=800,
 #'         dist_func = 'squared inverse', matrice_type='B',
 #'         grid_shape = c(5,5))
-line_center_listw_gridded <- function(lines, maxdistance, dist_func = "inverse",
-    matrice_type = "B", grid_shape = c(2, 2), show_progress = TRUE, digits = 3) {
+line_center_listw_gridded <- function(lines, maxdistance, dist_func = "inverse", matrice_type = "B", grid_shape = c(2, 2), verbose = "all", digits = 3) {
+    if(verbose %in% c("silent","progressbar","text","all")==F){
+        stop("the verbose argument must be 'all', 'silent', 'progressbar' or 'text'")
+    }
     ## checking the matrix type
     if (matrice_type %in% c("B", "W") == F) {
         stop("Matrice type must be B (binary) or W (row standardized)")
@@ -273,47 +296,59 @@ line_center_listw_gridded <- function(lines, maxdistance, dist_func = "inverse",
     ## setting the OID : tmpid
     lines$tmpid <- 1:nrow(lines)
     ## generating the centers of the lines
-    print("generating the centers of the lines...")
+    if(verbose != "silent") {
+        print("generating the centers of the lines...")
+    }
     centers <- lines_center(lines)
-    ## incorporer ces points aux lignes
-    print("adding these vertices to lines (only once do not worry)...")
+    ## adding the centers to lines
+    if(verbose != "silent") {
+        print("adding these vertices to lines (only once do not worry)...")
+    }
     lines <- add_center_lines(lines)
-    print("generating the grid...")
+    if(verbose != "silent") {
+        print("generating the grid...")
+    }
     grid <- build_grid(grid_shape, spatial = lines)
     ## step3 : lancer les iterations
-    print("starting the calculation on the grid")
+    if(verbose != "silent") {
+        print("starting the calculation on the grid")
+    }
     remaininglines <- lines
     remainingcenters <- centers
     nquadra <- length(grid)
 
-    if (show_progress) {
-        plot(grid)
-        plot(lines, add = T)
+    if (verbose =="all") {
+        sp::plot(grid)
+        sp::plot(lines, add = T)
     }
 
     values <- lapply(1:length(grid), function(i) {
-        print(paste("-------------------Iterating on quadra : ", i, "/",
-            nquadra, "----------------", sep = ""))
+        if (verbose != "silent"){
+            print(paste("-------------------Iterating on quadra : ", i, "/",
+                        nquadra, "----------------", sep = ""))
+        }
+
         # extracting the analyzed pixels
         quadra <- grid[i]
-        if (show_progress) {
-            plot(quadra, col = "red", add = T)
+        if (verbose == "all") {
+            sp::plot(quadra, col = "red", add = T)
         }
 
         # selecting the lines in the quadra
         test_lines <- as.vector(gIntersects(remaininglines, quadra, byid = T))
         if (any(test_lines) == FALSE) {
-            print("---- passing, empty quadra----")
             return()
         } else {
-            print(paste("---quadra with values : -----", i, sep = ""))
-            print("... selecting lines and building graph")
+            if (verbose != "silent"){
+                print(paste("---quadra with values : -----", i, sep = ""))
+                print("... selecting lines and building graph")
+            }
             selected_lines <- subset(remaininglines, test_lines)
             selected_centers <- subset(remainingcenters, test_lines)
             remaininglines <<- subset(remaininglines, test_lines == F)
             remainingcenters <<- subset(remainingcenters, test_lines == F)
             ext <- raster::extent(selected_lines)
-            poly <- as(ext, "SpatialPolygons")
+            poly <- methods::as(ext, "SpatialPolygons")
             raster::crs(poly) <- raster::crs(selected_lines)
             # selecting the lines close to build the network
             buff <- gBuffer(poly, width = maxdistance)
@@ -338,24 +373,25 @@ line_center_listw_gridded <- function(lines, maxdistance, dist_func = "inverse",
             colnames(matdist) <- u
             rownames(matdist) <- selected_lines$tmpid
 
-            print("... building the sub-distance matrix")
+            if (verbose != "silent"){
+                print("... building the sub-distance matrix")
+            }
+
+            show_progress <- verbose %in% c("all","progressbar")
 
             if (show_progress) {
                 pb <- txtProgressBar(min = 0, max = nrow(selected_lines),
                   style = 3)
-            } else {
-                pb <- txtProgressBar(initial = NA, min = 0, max = nrow(selected_lines),
-                  style = 3)
-                close(pb)
             }
 
             # we now have a nice distance matrix
             nblist <- lapply(1:nrow(selected_lines), function(j) {
                 # lets get all the distances from the begining and the end of each line
-                setTxtProgressBar(pb, j)
+                if (show_progress){
+                    setTxtProgressBar(pb, j)
+                }
                 line <- selected_lines[j, ]
-                dfdistances <- data.frame(dest = colnames(matdist), distance = matdist[j,
-                  ])
+                dfdistances <- data.frame(dest = colnames(matdist), distance = matdist[j,])
                 # now filtering the two long distances and NA
                 dfdistances <- subset(dfdistances, dfdistances$distance <
                   maxdistance & is.na(dfdistances$distance) == FALSE)
@@ -395,7 +431,9 @@ line_center_listw_gridded <- function(lines, maxdistance, dist_func = "inverse",
         }
     })
     # now, combining everything
-    print("combining all the matrices ...")
+    if(verbose != "silent"){
+        print("combining all the matrices ...")
+    }
     okvalues <- values[lengths(values) != 0]
     nblist <- do.call("c", lapply(okvalues, function(value) {
         return(value[[1]])
@@ -413,7 +451,9 @@ line_center_listw_gridded <- function(lines, maxdistance, dist_func = "inverse",
     ## setting the nb attributes
     attr(ordered_nblist, "class") <- "nb"
     attr(ordered_nblist, "region.id") <- as.character(lines$tmpid)
-    print("finally generating the listw object ...")
+    if(verbose != "silent"){
+        print("finally generating the listw object ...")
+    }
     ## setting the final listw attributes
     listw <- spdep::nb2listw(ordered_nblist, glist = ordered_weights, zero.policy = T,
         style = matrice_type)

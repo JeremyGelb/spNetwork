@@ -25,6 +25,8 @@ calculation}
 
 \item{lines}{The SpatialLinesDataFrame to use as a network}
 
+\item{lixels}{The SpatialLinesDataFrame representing the lixels}
+
 \item{points}{The events to use in the kernel density estimation}
 
 \item{kernel}{The name of the kernel function to use (must be one of
@@ -35,13 +37,10 @@ quartic, gaussian or epanechnikov). Default is Quartic}
 \item{snap_dist}{The maximum distance snapping between points and lines}
 
 \item{digits}{The number of digits to keep in the coordinates of the
-geometries}
+geometries
+track the progressing of the calculation.}
 
 \item{tol}{The tolerence for topological operations}
-
-\item{weights}{A vector of weights for the events. Default is NULL
-if NULL, all the events have a weight of 1.
-track the progressing of the calculation.}
 }
 \value{
 A SpatialLinesDataFrame of the lines and their kernel densities

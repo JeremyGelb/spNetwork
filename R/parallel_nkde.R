@@ -7,6 +7,7 @@
 #' @param grid The SpatialPolygons object reprsenting the grid for splitted
 #' calculation
 #' @param lines The SpatialLinesDataFrame to use as a network
+#' @param lixels The SpatialLinesDataFrame representing the lixels
 #' @param points The events to use in the kernel density estimation
 #' @param kernel_range The range of the kernel function
 #' @param kernel The name of the kernel function to use (must be one of
@@ -15,12 +16,10 @@
 #' @param tol The tolerence for topological operations
 #' @param digits The number of digits to keep in the coordinates of the
 #' geometries
-#' @param weights A vector of weights for the events. Default is NULL
-#' if NULL, all the events have a weight of 1.
 #' track the progressing of the calculation.
 #' @return A SpatialLinesDataFrame of the lines and their kernel densities
 #' @importFrom sp coordinates  SpatialPoints SpatialPointsDataFrame
-#' @importFrom utils txtProgressBar setTxtProgressBar
+#' @importFrom utils txtProgressBar setTxtProgressBar capture.output
 #' @importFrom rgeos gCentroid gLength gBuffer gIntersects
 #' @examples
 #' #This is an internal function, no example provided
@@ -35,7 +34,7 @@ exe_nkde <- function(i, grid, lines, lixels, points, kernel, kernel_range, snap_
         if (nrow(selected_lixels) > 0) {
             # extracting the needed lines
             ext <- raster::extent(selected_lixels)
-            poly <- as(ext, "SpatialPolygons")
+            poly <- methods::as(ext, "SpatialPolygons")
             raster::crs(poly) <- raster::crs(selected_lixels)
             buff <- gBuffer(poly, width = kernel_range)
             test_lines <- as.vector(gIntersects(lines, buff, byid = T))
@@ -43,10 +42,10 @@ exe_nkde <- function(i, grid, lines, lixels, points, kernel, kernel_range, snap_
             # extracting the needed points
             test_points <- as.vector(gIntersects(points, buff, byid = T))
             selected_points <- subset(points, test_points)
-            ## performing the real job step3 : extraire le centroid ce ces lixels
+            #step3 : extract centroids of lixels
             lixelscenters <- gCentroid(selected_lixels, byid = T)
             lixelscenters <- SpatialPointsDataFrame(lixelscenters, selected_lixels@data)
-            # step4 : combiner les evenements et les centres de lixels
+            # step4 : combining events and lixels centers
             lixelscenters$type <- "lixel"
             lixelscenters$OID <- 1:nrow(lixelscenters)
 
@@ -60,25 +59,25 @@ exe_nkde <- function(i, grid, lines, lixels, points, kernel, kernel_range, snap_
             allpts <- rbind(lixelscenters[c("type", "OID")],
                             selected_points[c("type","OID")])
 
-            # step 5 : snapper ces points sur les lignes
+            # step 5 : snapping all points on lines
             snapped_points <- maptools::snapPointsToLines(allpts, selected_lines,
                 maxDist = snap_dist)
             snapped_points$spOID <- sp_char_index(coordinates(snapped_points),
                 digits = digits)
 
-            # step6 : ajouter ces points comme vertices
-            newlines <- add_vertices_lines(selected_lines, snapped_points,
-                tol = tol, show_progress = F)
+            # step6 : adding these points as vertices
+            invisible(capture.output(newlines <- add_vertices_lines(selected_lines,
+                snapped_points, tol = tol)))
 
 
-            # step7 : couversion vers des lignes simple
+            # step7 : converting lines as simple lines
             lines2 <- simple_lines(newlines)
 
-            # step8 : generation et dessin du graph
+            # step8 : generating the graph
             ListNet <- build_graph(lines2, digits = digits)
             Graph <- ListNet$graph
 
-            # step9 : retrouver les points de depart
+            # step9 : find starting points
             start_pts <- subset(snapped_points, snapped_points$type == "lixel")
             origins <- find_vertices(ListNet$spvertices, start_pts, tol = tol,
                 digits = digits)
@@ -126,8 +125,9 @@ exe_nkde <- function(i, grid, lines, lixels, points, kernel, kernel_range, snap_
 #' if NULL, all the events have a weight of 1.
 #' @param grid_shape A vector of length 2 indicating the shape of the grid to
 #' use for splitting the dataset. Default is c(2,2)
-#' @param show_progress A boolean indicating if a plot should be displayed to
-#' track the progressing of the calculation.
+#' @param verbose A string indicating how the advance of the process is
+#' displayed. Default is progressbar "progressbar" shows main steps and
+#' progress bar for intermediar steps, "silent" show nothing
 #' @return Vector of kernel densities (one for each origin)
 #' @importFrom sp coordinates  SpatialPoints SpatialPointsDataFrame
 #' @importFrom utils txtProgressBar setTxtProgressBar
@@ -137,7 +137,7 @@ exe_nkde <- function(i, grid, lines, lixels, points, kernel, kernel_range, snap_
 #' data(mtl_network)
 #' data(bike_accidents)
 #' future::plan(future::multiprocess(workers=2))
-#' lixels_nkde <- nkde_grided.mc(mtl_network, bike_accident,
+#' lixels_nkde <- nkde_grided.mc(mtl_network, bike_accidents,
 #'       snap_dist = 150,
 #'       lx_length = 150,
 #'       mindist = 50,
@@ -145,22 +145,41 @@ exe_nkde <- function(i, grid, lines, lixels, points, kernel, kernel_range, snap_
 #'       kernel='quartic',
 #'       grid_shape=c(5,5)
 #' )
-nkde_grided.mc <- function(lines, points, snap_dist, lx_length, kernel_range, kernel = "quartic", tol = 0.1, digits = 3, mindist = NULL, weights = NULL, grid_shape = c(2, 2), show_progress = TRUE) {
+#' \dontshow{
+#'    ## R CMD check: make sure any open connections are closed afterward
+#'    if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
+#'}
+nkde_grided.mc <- function(lines, points, snap_dist, lx_length, kernel_range, kernel = "quartic", tol = 0.1, digits = 3, mindist = NULL, weights = NULL, grid_shape = c(2, 2), verbose = "progressbar") {
+    if(verbose %in% c("silent","progressbar")==F){
+        stop("the verbose argument must be 'silent' or 'progressbar'")
+    }
+
     # adjusting the weights if needed
     if (is.null(weights)) {
         W <- rep(1, nrow(points))
     } else {
         W <- points[[weights]]
     }
+    show_progress <- verbose=="progressbar"
+
     points$tmpweight <- W
-    print("generating the grid...")
+    if(verbose != "silent"){
+        print("generating the grid...")
+    }
+
     grid <- build_grid(grid_shape, spatial = lines)
     ## step2 : generer les lixels
-    print("generating the lixels...")
-    lixels <- lixelize_lines(lines, lx_length = lx_length, mindist = mindist)
+    if(verbose != "silent"){
+        print("generating the lixels...")
+    }
+
+    lixels <- lixelize_lines.mc(lines, lx_length = lx_length, mindist = mindist,
+        show_progress=show_progress)
     lixels$lxid <- 1:nrow(lixels)
     ## step3 : lancer les iterations
-    print("starting the calculation on the grid")
+    if(verbose != "silent"){
+        print("starting the calculation on the grid")
+    }
     iseq <- 1:length(grid)
     if (show_progress) {
         progressr::with_progress({
@@ -177,7 +196,9 @@ nkde_grided.mc <- function(lines, points, snap_dist, lx_length, kernel_range, ke
             kernel_range = kernel_range, kernel = kernel,
             snap_dist = snap_dist, digits = digits, tol = tol)
     }
-    print("Combining the results from processes ...")
+    if(verbose != "silent"){
+        print("Combining the results from processes ...")
+    }
     okvalues <- values[lengths(values) != 0]
     alllixels <- do.call("rbind", okvalues)
     alllixels <- alllixels[!duplicated(alllixels$lxid), ]

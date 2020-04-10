@@ -10,7 +10,7 @@ line_ext_listw_gridded(
   dist_func = "inverse",
   matrice_type = "B",
   grid_shape = c(2, 2),
-  show_progress = TRUE,
+  verbose = "all",
   mindist = 10,
   digits = 3
 )
@@ -22,18 +22,20 @@ line_ext_listw_gridded(
 considere them as neighbours.}
 
 \item{dist_func}{The function to use to convert the distance
-between observation in spatial weights. Can be "identity", "inverse",
-"squared inverse" or a function with one parameter x, returning one numeric
+between observation in spatial weights. Can be 'identity', 'inverse',
+'squared inverse' or a function with one parameter x, returning one numeric
 that will be vectorized internally.}
 
-\item{matrice_type}{The type of the weighting scheme. Can be "B" for Binary,
-"W" for row weighted, see the documentation of spdep::nb2listw for details.}
+\item{matrice_type}{The type of the weighting scheme. Can be 'B' for Binary,
+'W' for row weighted, see the documentation of spdep::nb2listw for details.}
 
 \item{grid_shape}{A vector of length 2 indicating the shape of the grid to
 use for splitting the dataset. Default is c(2,2)}
 
-\item{show_progress}{A boolean indicating if a plot should be displayed to
-track the progressing of the calculation.}
+\item{verbose}{A string indicating how the advance of the process is
+displayed. Default is all. "text" show only the main steps, "progressbar"
+show main steps and progress bar for intermediar steps, "all" add a plot
+of the grid to follow visually the processing, "silent" show nothing}
 
 \item{mindist}{Indicates the minimum value to replace 0 with. Two lines that
 share a vertex have a 0 distance between them, wich could create some
@@ -53,7 +55,7 @@ distance is keeped.
 \examples{
 data(mtl_network)
 listw <- line_ext_listw_gridded(mtl_network,maxdistance=800,
-        dist_func = "squared inverse", matrice_type="B",
+        dist_func = 'squared inverse', matrice_type='B',
         grid_shape = c(5,5),
         mindist = 10)
 }

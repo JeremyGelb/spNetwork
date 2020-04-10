@@ -5,12 +5,10 @@
 \title{Generate a SpatialPointsDataFrame with line center points. The points are
 located at middle of the line based on the length of the line}
 \usage{
-lines_center(lines, show_progress = T)
+lines_center(lines)
 }
 \arguments{
 \item{lines}{The SpatialLinesDataframe to use}
-
-\item{show_progress}{A boolean indicating if a progress bar must be displayed}
 }
 \value{
 An object of class SpatialPointsDataFrame (package sp)
@@ -20,6 +18,6 @@ Generate a SpatialPointsDataFrame with line center points. The points are
 located at middle of the line based on the length of the line
 }
 \examples{
-data("mtl_network")
+data('mtl_network')
 centers <- lines_center(mtl_network)
 }

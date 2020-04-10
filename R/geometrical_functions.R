@@ -69,6 +69,7 @@ lines_extremities <- function(lines) {
 #'
 #' @param line The SpatialLine to modify
 #' @param points The SpatialPoints to add to as vertex to the lines
+#' @param i The index of the line (for recombining after all lines)
 #' @return An object of class Lines (package sp)
 #' @importFrom rgeos gProject
 #' @importFrom sp coordinates SpatialPoints Line Lines
@@ -96,6 +97,8 @@ add_vertices <- function(line, points, i) {
 #' @param points The SpatialPoints to add to as vertex to the lines
 #' @param tol The max distance to between lines and points so that they are
 #'   added
+#' @param check A boolean indicating if the function must check if all points
+#' were added
 #' @return An object of class SpatialLinesDataFrame (package sp)
 #' @importFrom rgeos gIntersects gBuffer
 #' @importFrom sp coordinates SpatialPoints SpatialLinesDataFrame Line
@@ -103,15 +106,8 @@ add_vertices <- function(line, points, i) {
 #' @importFrom utils txtProgressBar setTxtProgressBar
 #' @examples
 #' #This is an internal function, no example provided
-add_vertices_lines <- function(lines, points, tol = 0.1, check = TRUE, show_progress = T) {
-
-    if (show_progress) {
-        pb <- txtProgressBar(min = 0, max = nrow(lines), style = 3)
-    } else {
-        pb <- txtProgressBar(initial = NA, min = 0, max = nrow(lines), style = 3)
-        close(pb)
-    }
-
+add_vertices_lines <- function(lines, points, tol = 0.1, check = TRUE) {
+    pb <- txtProgressBar(min = 0, max = nrow(lines), style = 3)
     remainingpoints <- points
     new_lines_list <- lapply(1:nrow(lines), function(i) {
         setTxtProgressBar(pb, i)
@@ -148,14 +144,15 @@ add_vertices_lines <- function(lines, points, tol = 0.1, check = TRUE, show_prog
 
 
 #' Cut a SpatialLines object into lixels with a specified minimal distance
-#' may fail if the lines geometries are self intersecting
+#' may fail if the lines geometries are self intersecting.
 #'
-#' @param line The SpatialLinesDataframe to modify
+#' @param lines The SpatialLinesDataframe to modify
 #' @param lx_length The length of a lixel
 #' @param mindist The minimum length of a lixel. After cut, if the length of
 #' the final lixel is shorter than the minimum distance, then it is added to
-#' the previous lixel. if NULL, then mindist = maxdist/10
-#' @param show_progress A boolean indicating if a progress bar must be displayed
+#' the previous lixel. if NULL, then mindist = maxdist/10. Note that the
+#' segments that are already shorter than the minimum distance are not
+#' modified.
 #' @return An object of class SpatialLinesDataFrame (package sp)
 #' @importFrom utils txtProgressBar setTxtProgressBar
 #' @importFrom  sp coordinates Line Lines SpatialLines SpatialLinesDataFrame SpatialPoints
@@ -164,22 +161,17 @@ add_vertices_lines <- function(lines, points, tol = 0.1, check = TRUE, show_prog
 #' @examples
 #' data('mtl_network')
 #' lixels <- lixelize_lines(mtl_network,150,50)
-lixelize_lines <- function(lines, lx_length, mindist = NULL, show_progress = T) {
+lixelize_lines <- function(lines, lx_length, mindist = NULL) {
     if (is.null(mindist)) {
         mindist <- lx_length/10
     }
-    if (show_progress) {
-        pb <- txtProgressBar(min = 0, max = nrow(lines), style = 3)
-    } else {
-        pb <- txtProgressBar(initial = NA, min = 0, max = nrow(lines), style = 3)
-        close(pb)
-    }
+    pb <- txtProgressBar(min = 0, max = nrow(lines), style = 3)
     cnt <- 1
     newlixels <- lapply(1:nrow(lines), function(i) {
         setTxtProgressBar(pb, i)
         line <- lines[i, ]
         tot_length <- gLength(line)
-        if (tot_length < lx_length) {
+        if (tot_length < lx_length+mindist) {
             coords <- coordinates(line)
             lixel <- list(Lines(list(Line(coords[[1]][[1]])), ID = cnt))
             cnt <<- cnt + 1
@@ -229,7 +221,7 @@ lixelize_lines <- function(lines, lx_length, mindist = NULL, show_progress = T) 
 #' may fail if the lines geometries are self intersecting. This version can
 #' use a plan defined with the package future
 #'
-#' @param line The SpatialLinesDataframe to modify
+#' @param lines The SpatialLinesDataframe to modify
 #' @param lx_length The length of a lixel
 #' @param mindist The minimum length of a lixel. After cut, if the length of
 #' the final lixel is shorter than the minimum distance, then it is added to
@@ -238,14 +230,19 @@ lixelize_lines <- function(lines, lx_length, mindist = NULL, show_progress = T) 
 #' @param chunk_size The size of a chunk used for multiprocessing. Default is 100.
 #' @return An object of class SpatialLinesDataFrame (package sp)
 #' @export
+#' @importFrom utils capture.output
 #' @examples
 #' data('mtl_network')
 #' future::plan(future::multiprocess(workers=2))
 #' lixels <- lixelize_lines.mc(mtl_network,150,50)
-lixelize_lines.mc <- function(lines, lx_length, mindist = NULL, show_progress = T,
-    chunk_size = 100) {
-    chunks <- split(lines, rep(1:ceiling(nrow(lines) / chunk_size), each = chunk_size,
-        length.out = nrow(lines)))
+#' \dontshow{
+#'    ## R CMD check: make sure any open connections are closed afterward
+#'    if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
+#'}
+lixelize_lines.mc <- function(lines, lx_length, mindist = NULL, show_progress = T, chunk_size = 100) {
+    chunks <- split(1:nrow(lines), rep(1:ceiling(nrow(lines) / chunk_size),
+                each = chunk_size, length.out = nrow(lines)))
+    chunks <- lapply(chunks,function(x){return(lines[x,])})
     # step2 : starting the function
     iseq <- 1:length(chunks)
     if (show_progress) {
@@ -254,16 +251,16 @@ lixelize_lines.mc <- function(lines, lx_length, mindist = NULL, show_progress = 
             values <- future.apply::future_lapply(iseq, function(i) {
                 p(sprintf("i=%g", i))
                 chunk_lines <- chunks[[i]]
-                new_lines <- lixelize_lines(chunk_lines, lx_length, mindist,
-                  show_progress = F)
+                invisible(capture.output(new_lines <- lixelize_lines(chunk_lines,
+                    lx_length, mindist)))
                 return(new_lines)
             })
         })
     } else {
         values <- future.apply::future_lapply(iseq, function(i) {
             chunk_lines <- chunks[[i]]
-            new_lines <- lixelize_lines(chunk_lines, lx_length, mindist,
-                show_progress = F)
+            invisible(capture.output(new_lines <- lixelize_lines(chunk_lines,
+                lx_length, mindist)))
             return(new_lines)
         })
     }
@@ -275,7 +272,7 @@ lixelize_lines.mc <- function(lines, lx_length, mindist = NULL, show_progress = 
 
 #' Split the polylines of a SpatialLinesDataFrame object in simple lines
 #'
-#' @param line The SpatialLinesDataframe to modify
+#' @param lines The SpatialLinesDataframe to modify
 #' @return An object of class SpatialLinesDataFrame (package sp)
 #' @importFrom utils txtProgressBar setTxtProgressBar
 #' @importFrom sp coordinates SpatialLinesDataFrame SpatialLines Lines Line
@@ -316,7 +313,6 @@ simple_lines <- function(lines) {
 #' located at middle of the line based on the length of the line
 #'
 #' @param lines The SpatialLinesDataframe to use
-#' @param show_progress A boolean indicating if a progress bar must be displayed
 #' @return An object of class SpatialPointsDataFrame (package sp)
 #' @importFrom sp coordinates SpatialPointsDataFrame SpatialPoints
 #' @importFrom rgeos gInterpolate
@@ -325,15 +321,8 @@ simple_lines <- function(lines) {
 #' @examples
 #' data('mtl_network')
 #' centers <- lines_center(mtl_network)
-lines_center <- function(lines, show_progress = T) {
-
-    if (show_progress) {
-        pb <- txtProgressBar(min = 0, max = nrow(lines), style = 3)
-    } else {
-        pb <- txtProgressBar(initial = NA, min = 0, max = nrow(lines), style = 3)
-        close(pb)
-    }
-
+lines_center <- function(lines) {
+    pb <- txtProgressBar(min = 0, max = nrow(lines), style = 3)
     listpt <- sapply(1:nrow(lines), function(i) {
         setTxtProgressBar(pb, i)
         line <- lines[i, ]
@@ -350,22 +339,14 @@ lines_center <- function(lines, show_progress = T) {
 #' center
 #'
 #' @param lines The SpatialLinesDataframe to use
-#' @param show_progress A boolean indicating if a progress bar must be displayed
 #' @return An object of class SpatialLinesDataframe (package sp)
 #' @importFrom sp coordinates SpatialPointsDataFrame SpatialPoints
 #' @importFrom rgeos gInterpolate
 #' @importFrom utils txtProgressBar setTxtProgressBar
 #' @examples
 #' #This is an internal function, no example provided
-add_center_lines <- function(lines, show_progress = T) {
-
-    if (show_progress) {
-        pb <- txtProgressBar(min = 0, max = nrow(lines), style = 3)
-    } else {
-        pb <- txtProgressBar(initial = NA, min = 0, max = nrow(lines), style = 3)
-        close(pb)
-    }
-
+add_center_lines <- function(lines) {
+    pb <- txtProgressBar(min = 0, max = nrow(lines), style = 3)
     listline <- sapply(1:nrow(lines), function(i) {
         setTxtProgressBar(pb, i)
         line <- lines[i, ]
@@ -387,12 +368,18 @@ add_center_lines <- function(lines, show_progress = T) {
 #' @param show_progress A boolean indicating if a progress bar must be displayed
 #' @param chunk_size The size of a chunk used for multiprocessing. Default is 100.
 #' @return An object of class SpatialLinesDataframe (package sp)
+#' @importFrom utils capture.output
 #' @examples
 #' #This is an internal function, no example provided
+#' \dontshow{
+#'    ## R CMD check: make sure any open connections are closed afterward
+#'    if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
+#'}
 add_center_lines.mc <- function(lines, show_progress = T, chunk_size = 100) {
     # step1 : splitting the data into chunks
-    chunks <- split(lines, rep(1:ceiling(nrow(lines) / chunk_size), each = chunk_size,
+    chunks <- split(1:nrow(lines), rep(1:ceiling(nrow(lines) / chunk_size), each = chunk_size,
         length.out = nrow(lines)))
+    chunks <- lapply(chunks, function(x){return(lines[x,])})
     # step2 : starting the function
     iseq <- 1:length(chunks)
     if (show_progress) {
@@ -401,14 +388,14 @@ add_center_lines.mc <- function(lines, show_progress = T, chunk_size = 100) {
             values <- future.apply::future_lapply(iseq, function(i) {
                 p(sprintf("i=%g", i))
                 chunk_lines <- chunks[[i]]
-                new_lines <- add_center_lines(chunk_lines, show_progress = F)
+                invisible(capture.output(new_lines <- add_center_lines(chunk_lines)))
                 return(new_lines)
             })
         })
     } else {
         values <- future.apply::future_lapply(iseq, function(i) {
             chunk_lines <- chunks[[i]]
-            new_lines <- add_center_lines(chunk_lines, show_progress = F)
+            invisible(capture.output(new_lines <- add_center_lines(chunk_lines)))
             return(new_lines)
         })
     }
@@ -438,6 +425,6 @@ build_grid <- function(grid_shape, spatial) {
     grid.pts <- sp::SpatialPointsDataFrame(coords = xy, data = xy)
     raster::crs(grid.pts) <- raster::crs(spatial)
     sp::gridded(grid.pts) <- TRUE
-    grid <- as(grid.pts, "SpatialPolygons")
+    grid <- methods::as(grid.pts, "SpatialPolygons")
     return(grid)
 }

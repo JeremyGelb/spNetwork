@@ -11,6 +11,8 @@ add_vertices(line, points, i)
 \item{line}{The SpatialLine to modify}
 
 \item{points}{The SpatialPoints to add to as vertex to the lines}
+
+\item{i}{The index of the line (for recombining after all lines)}
 }
 \value{
 An object of class Lines (package sp)

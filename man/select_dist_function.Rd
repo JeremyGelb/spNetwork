@@ -8,8 +8,8 @@ if a function is provided, this function will be vectorized.}
 select_dist_function(dist_func = "inverse")
 }
 \arguments{
-\item{dist_func}{COuld be a name in c("inverse", "identity",
-"squared inverse") or a function with only one parameter x}
+\item{dist_func}{COuld be a name in c('inverse', 'identity',
+'squared inverse') or a function with only one parameter x}
 }
 \value{
 a vectorized function used to convert distance into spatial weights

@@ -5,15 +5,18 @@
 \title{Add vertices (SpatialPoints) to many lines (SpatialLines), may fail
 if the lines geometries are self intersecting}
 \usage{
-add_vertices_lines(lines, points, tol = 0.1, check = TRUE, show_progress = T)
+add_vertices_lines(lines, points, tol = 0.1, check = TRUE)
 }
 \arguments{
 \item{lines}{The SpatialLinesDataframe to modify}
 
 \item{points}{The SpatialPoints to add to as vertex to the lines}
 
-\item{tol}{The max distance to between lines and points so that they
-are added}
+\item{tol}{The max distance to between lines and points so that they are
+added}
+
+\item{check}{A boolean indicating if the function must check if all points
+were added}
 }
 \value{
 An object of class SpatialLinesDataFrame (package sp)

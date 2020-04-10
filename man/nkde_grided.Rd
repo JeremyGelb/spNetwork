@@ -16,7 +16,7 @@ nkde_grided(
   mindist = NULL,
   weights = NULL,
   grid_shape = c(2, 2),
-  show_progress = TRUE
+  verbose = "all"
 )
 }
 \arguments{
@@ -48,8 +48,10 @@ point has a weight of 1.}
 \item{grid_shape}{A vector of length 2 indicating the shape of the grid to
 use for splitting the dataset. Default is c(2,2)}
 
-\item{show_progress}{A boolean indicating if a plot should be displayed to
-track the progressing of the algorithm.}
+\item{verbose}{A string indicating how the advance of the process is
+displayed. Default is all. "text" show only the main steps, "progressbar"
+show main steps and progress bar for intermediar steps, "all" add a plot
+of the grid to follow visually the processing, "silent" show nothing}
 }
 \value{
 Vector of kernel densities (one for each origin)
@@ -64,12 +66,12 @@ squares will lead to longer calculation.
 \examples{
 data(mtl_network)
 data(bike_accidents)
-lixels_nkde <- nkde_grided(mtl_network, bike_accident,
+lixels_nkde <- nkde_grided(mtl_network, bike_accidents,
       snap_dist = 150,
       lx_length = 150,
       mindist = 50,
       kernel_range = 800,
-      kernel="quartic",
+      kernel='quartic',
       grid_shape=c(5,5)
 )
 }

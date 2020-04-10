@@ -112,6 +112,6 @@ plot_graph <- function(graph) {
     N$x <- as.numeric(N$x)
     N$y <- as.numeric(N$y)
 
-    plot(graph, vertex.size = 1, layout = as.matrix(N[c("x", "y")]), vertex.label.cex = 0.1)
+    graphics::plot(graph, vertex.size = 1, layout = as.matrix(N[c("x", "y")]), vertex.label.cex = 0.1)
 
 }

@@ -78,7 +78,6 @@ To avoid this, the first solution provided in *spNetwork* is a grided applicatio
 #devtools::load_all("..")
 library(spNetwork)
 library(sp)
-library(rgdal)
 library(maptools)
 library(rgeos)
 data(mtl_network)
@@ -115,6 +114,6 @@ lixels <- nkde_grided.mc(mtl_network,bike_accidents,
             lx_length=200,mindist=50,
             kernel_range = 800, kernel='quartic',
             weights=NULL, grid_shape = c(5,5),
-            show_progress = T)
+            verbose = "progressbar")
 
 ```

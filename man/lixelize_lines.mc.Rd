@@ -15,6 +15,8 @@ lixelize_lines.mc(
 )
 }
 \arguments{
+\item{lines}{The SpatialLinesDataframe to modify}
+
 \item{lx_length}{The length of a lixel}
 
 \item{mindist}{The minimum length of a lixel. After cut, if the length of
@@ -24,8 +26,6 @@ the previous lixel. if NULL, then mindist = maxdist/10}
 \item{show_progress}{A boolean indicating if a progress bar must be displayed}
 
 \item{chunk_size}{The size of a chunk used for multiprocessing. Default is 100.}
-
-\item{line}{The SpatialLinesDataframe to modify}
 }
 \value{
 An object of class SpatialLinesDataFrame (package sp)
@@ -36,7 +36,11 @@ may fail if the lines geometries are self intersecting. This version can
 use a plan defined with the package future
 }
 \examples{
-data("mtl_network")
+data('mtl_network')
 future::plan(future::multiprocess(workers=2))
 lixels <- lixelize_lines.mc(mtl_network,150,50)
+\dontshow{
+   ## R CMD check: make sure any open connections are closed afterward
+   if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
+}
 }

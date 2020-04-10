@@ -3,29 +3,29 @@
 \name{lixelize_lines}
 \alias{lixelize_lines}
 \title{Cut a SpatialLines object into lixels with a specified minimal distance
-may fail if the lines geometries are self intersecting}
+may fail if the lines geometries are self intersecting.}
 \usage{
-lixelize_lines(lines, lx_length, mindist = NULL, show_progress = T)
+lixelize_lines(lines, lx_length, mindist = NULL)
 }
 \arguments{
+\item{lines}{The SpatialLinesDataframe to modify}
+
 \item{lx_length}{The length of a lixel}
 
 \item{mindist}{The minimum length of a lixel. After cut, if the length of
 the final lixel is shorter than the minimum distance, then it is added to
-the previous lixel. if NULL, then mindist = maxdist/10}
-
-\item{show_progress}{A boolean indicating if a progress bar must be displayed}
-
-\item{line}{The SpatialLinesDataframe to modify}
+the previous lixel. if NULL, then mindist = maxdist/10. Note that the
+segments that are already shorter than the minimum distance are not
+modified.}
 }
 \value{
 An object of class SpatialLinesDataFrame (package sp)
 }
 \description{
 Cut a SpatialLines object into lixels with a specified minimal distance
-may fail if the lines geometries are self intersecting
+may fail if the lines geometries are self intersecting.
 }
 \examples{
-data("mtl_network")
+data('mtl_network')
 lixels <- lixelize_lines(mtl_network,150,50)
 }
