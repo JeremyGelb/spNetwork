@@ -2,7 +2,13 @@
 title: "Introduction to spNetwork"
 author: "Jeremy Gelb"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output:
+  rmarkdown::html_vignette:
+    fig_width: 5
+    fig_height: 5
+    toc: true
+    toc_depth: 2
+    df_print: "tibble"
 vignette: >
   %\VignetteIndexEntry{Vignette Title}
   %\VignetteEngine{knitr::rmarkdown}
@@ -19,16 +25,16 @@ knitr::opts_chunk$set(
 
 
 
-This vignette is a short introduction to the spNetwork packages. It will present the main features of the packages by using dataset provided with the package.
+This vignette is a short introduction to the **spNetwork** packages. It will present the main features of the package by using dataset provided with the package.
 
 
 ## Network Kernel Density Estimate
 
 The first feature of the package is the Network Kernel Density Estimate (NKDE).
 
-A classical KDE proposes to estimate the density of a phenomenom in a two dimensional space. That space is separated in pixels, and the density is estimated for each pixel.
+A classical KDE proposes to estimate the density of a set of events in a two dimensional space. That space is separated in pixels, and the density is estimated for each pixel.
 
-This approach is not adapted to analyze density of events occuring on a network, like accidents in streets, or breaks on a network of water pipes etc. Indeed, calculating densities for locations outside the network is meaningless and the euclidean distance underestimate the real distance between two object on the network.
+This approach is not adapted to analyze density of events occuring on a network, like accidents in streets, or breaks on a network of water pipes etc. Indeed, calculating densities for locations outside the network is meaningless and the euclidean distance underestimates the real distance between two object on the network.
 
 A NKDE extends the classical KDE by :
 
@@ -48,7 +54,7 @@ Each point is an event and the lines constitute the network. One could realize a
 
 But this is only partly satisfying if we are interested on the density of the envents on the network.
 
-To perform a NKDE, the lines of the network must be splitted into lixels : chunks of line of the same length. They are similar to pixels, but on a one dimensional space.
+To perform a NKDE, the lines of the network must be splitted into lixels : chunks of line of the same length. They are similar to pixels, but in a one dimensional space.
 
 <center>
 ![Image Title](images/lixels_example-01.png){width=300px}
@@ -56,7 +62,7 @@ To perform a NKDE, the lines of the network must be splitted into lixels : chunk
 
 The densities will be evaluated for the center of each lixel. The second step is to snapp the points to the network. At that point we have everything to perform the NKDE, we juste need to define ther kernel function and the kernel range.
 
-The kernel range will be used to calculate wich event are close enough to the center of each lixel centers to be used in their density estimation.
+The kernel range will be used to calculate wich events are close enough to the center of each lixel centers to be used in their density estimation.
 
 <center>
 ![Image Title](images/centroid_lixel-01.png){width=300px}
@@ -68,9 +74,11 @@ The final result would look like this picture :
 ![Image Title](images/nkde_simple-01.png){width=300px}
 </center>
 
-The *spNetwork* package make this type analyse straightforward to perform in R. The main problem of the implementation of the NKDE is to reduce computation time. Indeed, on a large dataset, building the network and evualating the distances between each event and each lixel center would be too long and could lead to memory issues.
+The **spNetwork** package makes this type of analyse straightforward in R. The main problem of the implementation of the NKDE is to reduce computation time. Indeed, on a large dataset, building the network and evualating the distances between each event and each lixel center would be too long and could lead to memory issues.
 
-To avoid this, the first solution provided in *spNetwork* is a grided application of the NKDE. The user can split the study area with a grid, the calculation is the performed on the observations in each cell of the grid. A buffer is applied on each cell to avoid frontier effect.
+To avoid this, the first solution provided in **spNetwork** is a grided application of the NKDE. The user can split the study area with a grid, the calculation is the performed in each cell of the grid. A buffer is applied on each cell to avoid frontier effect.
+
+A verbose parameter allows to control how much information the user wants about the progressing of the process. We set it here to "silent" to keep the document readable, but typically one would prefere "text" or "progressbar".
 
 ```{r}
 
@@ -88,19 +96,68 @@ plot(mtl_network)
 plot(bike_accidents,add=T,col='red')
 
 
-# #then applying the NKDE
-# lixels <- nkde_grided(mtl_network,bike_accidents,
-#             snap_dist = 150,
-#             lx_length=200,mindist=50,
-#             kernel_range = 800, kernel='quartic',
-#             weights=NULL, grid_shape = c(5,5),
-#             show_progress = F)
-# 
-# #the generated lixels have the desired length
-# hist(gLength(lixels,byid=T),breaks=50)
+#then applying the NKDE
+lixels <- nkde_grided(mtl_network,bike_accidents,
+            snap_dist = 150,
+            lx_length=200,mindist=50,
+            kernel_range = 300, kernel='quartic',
+            weights=NULL, grid_shape = c(5,5),
+            verbose = "silent")
 ```
 
-As you can imagine it remains a costly process, but a ambarassingly parallel one. Indeed, nothing make this process strictly sequential. The calculus of the NKDE of each cell could be done by different cores. *spNetwork* provided a function nkde_grided.mc, able to split the work between processes. More specifically, the function use functions from the packages *future* and *future.apply*. The selection of the plan is let to the user to permit the best compatibility on each platform. One could even paralellize this calculation on several computer.
+We could then map the densities estimated for each lixel
+```{r}
+library(ggplot2)
+library(dplyr)
+library(RColorBrewer)
+library(classInt)
+
+## a little function to help the mapping
+get_colors <-function(x,colors,breaks){
+  mycolors <- sapply(x,function(xi){
+    for(i in seq(1:length(colors))){
+      if (xi<breaks$brks[[i+1]]){
+        return(colors[[i]])
+      }
+    }
+    return(colors[[length(colors)]])
+  })
+  return(mycolors)
+}
+
+#setting an easier scale for mapping
+lixels$mapdensity <- round(lixels$density*1000,4)
+
+#using a discretization method
+breaks <- classIntervals(lixels$mapdensity, n = 7, style = "fisher", intervalClosure = "right")
+PaletteCouleur <- brewer.pal(n = 7, name = "Spectral")
+PaletteCouleur <- rev(PaletteCouleur)
+lixels$class <- get_colors(lixels$mapdensity,PaletteCouleur, breaks)
+
+#and finally map with ggplot
+labels <- names(print(breaks))
+MapData <- fortify(lixels,id="lxid")
+MapData$id <- as.numeric(MapData$id)
+MapData <- left_join(MapData, lixels@data, by=c("id"="lxid"))
+ggplot(MapData) + 
+  geom_path(aes(x=long,y=lat,group=group,color=class))+
+  scale_color_manual("density",
+    breaks = PaletteCouleur, values = PaletteCouleur, 
+    label = labels)+
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank()) +
+  coord_fixed()+
+  ggtitle("bike accident density by kilometers in 2016",
+          subtitle = "within a radius of 300 meters")
+  
+
+```
+
+As you can imagine it remains a costly process, but an embarrassingly parallel one. Indeed, nothing makes this process strictly sequential. The calculus of the NKDE of each cell could be done by several cores. **spNetwork** provides a function nkde_grided.mc, able to split the work between processes. More specifically, it uses functions from the packages **future** and **future.apply**. The selection of the plan is let to the user to permit the best compatibility on each platform. One could even paralellize this calculation on several computer. See the documentation of the future package if needed.
 
 Lets try to split the work between 4 cores.
 ```{r}
@@ -109,13 +166,165 @@ Lets try to split the work between 4 cores.
 future::plan(future::multiprocess(workers=4))
 
 #then applying the NKDE
-lixels <- nkde_grided.mc(mtl_network,bike_accidents,
+lixels_mc <- nkde_grided.mc(mtl_network,bike_accidents,
             snap_dist = 150,
             lx_length=200,mindist=50,
-            line_weight = "length",
-            kernel_range = 800, kernel='quartic',
+            kernel_range = 300, kernel='quartic',
             weights=NULL, grid_shape = c(5,5),
-            verbose = "progressbar")
+            verbose = "silent")
+
+# lets set back the classical sequential plan
+if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
+
+#we can compare the previous results and the new one
+diff <- sum(abs(lixels_mc$density - lixels$density))
+print(paste("overall difference between the regular and paralellized method : ",round(diff,8),sep=""))
+
+```
+
+
+## Spatial matrices
+
+A vast number of spatial analysis methods are based on a spatial matrix Wij of size  n x n with i an observation and j the neighbours of that observation. Wij represents the degree of spatial relationship between i and j.
+
+Classicaly one can define : 
+
+* neighbouring matrices (Wij = 1 if j is a neighbour of i)
+* distance matrices (Wij = the distance between i and j, modified by a function like 1/distance or 1/distance**2)
+* interraction matrices (Wij = the degree of interraction between i and j, the measure of the interraction depends on the subject of the analysis)
+
+In R, the classical package to deal with such object is the package **spdep** which defines objects like neighbours lists and spatial weights lists, and offers the possibility to convert such objects in regular matrices.
+
+When one work with data constraint on a network, using euclidean distance to estimate proximity between observation tends to overstimate the real proximity of observations.
+
+**spNetwork** offers the possibility to create listw objects for SpatialLinesDataFrame based on reticular distance. Lets give an exemple here : calculating the Moran I for the number of bike accidents recorded on the montreal road network in 2016.
+
+We will use here the function *line_ext_listw_gridded*. The distances are calculated form the start and end points of the lines to the start and end points of the other lines. It is possible to use the function *line_center_listw_gridded* to calculate distance from line center to start and end points of other lines.
+
+lets consider that above 300 meters two segments are not neighbours anymore, and convert the distances between the observations into spatial weights with the inverse of the squared distance
+
+```{r}
+library(spdep)
+data(mtl_network)
+
+netlistw <- line_ext_listw_gridded(mtl_network,
+                                   maxdistance = 300,
+                                   dist_func = "squared inverse",
+                                   line_weight = 'length',
+                                   matrice_type = 'W',
+                                   grid_shape = c(5,5),
+                                   verbose='silent')
+
+Test <- moran.test(mtl_network$nbAccident, netlistw, zero.policy = T)
+print(round(Test$estimate,4))
+
+```
+
+One could go further and define its own function to convert distances into spatial weights
+
+```{r}
+my_conv_func <- function(x){
+  if (x>=300){
+    return(0)
+  }else{
+    return(1/x**3)
+  }
+}
+
+netlistw2 <- line_ext_listw_gridded(mtl_network,
+                                   maxdistance = 300,
+                                   dist_func = my_conv_func,
+                                   line_weight = 'length',
+                                   matrice_type = 'W',
+                                   grid_shape = c(5,5),
+                                   verbose='silent')
+
+Test2 <- moran.test(mtl_network$nbAccident, netlistw2, zero.policy = T)
+print(round(Test2$estimate,4))
+```
+
+We can also use the mutliprocess version of the function. Lets use it to calculate a local version of the Moran Index.
+
+```{r}
+
+#setting the multiprocess plan
+future::plan(future::multiprocess(workers=4))
+
+netlistw3 <- line_ext_listw_gridded.mc(mtl_network,
+                                   maxdistance = 300,
+                                   dist_func = my_conv_func,
+                                   line_weight = 'length',
+                                   matrice_type = 'W',
+                                   grid_shape = c(5,5),
+                                   verbose='silent')
 
 if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
+
+Lisa <- localmoran(mtl_network$nbAccident,netlistw3, zero.policy = T)
 ```
+
+We could now map that local Moran I
+
+
+```{r}
+spLisa <- mtl_network
+spLisa$pval <- Lisa[,5]
+spLisa$Imoran <- round(Lisa[,1],3)
+
+## a little function to help the mapping
+get_colors <-function(x,colors,breaks){
+  mycolors <- sapply(x,function(xi){
+    for(i in seq(1:length(colors))){
+      if (xi<breaks$brks[[i+1]]){
+        return(colors[[i]])
+      }
+    }
+    return(colors[[length(colors)]])
+  })
+  return(mycolors)
+}
+
+#using a discretization method
+breaks <- classIntervals(spLisa$Imoran, n = 7, style = "fisher", intervalClosure = "right")
+PaletteCouleur <- brewer.pal(n = 7, name = "Spectral")
+PaletteCouleur <- rev(PaletteCouleur)
+spLisa$class <- get_colors(spLisa$Imoran,PaletteCouleur, breaks)
+
+#lets keep in color only the observations with a p-value <= 0.05
+spLisa$class <- ifelse(spLisa$pval<=0.05, spLisa$class, "grey")
+labels <- names(print(breaks))
+labels[[length(labels)+1]] <- "not.sign"
+PaletteCouleur[[length(PaletteCouleur)+1]] <- "grey"
+
+#and finally map with ggplot
+MapData <- fortify(spLisa)
+MapData <- merge(MapData, spLisa@data, by.x="id", by.y=0)
+
+ggplot(MapData) + 
+  geom_path(aes(x=long,y=lat,group=group,color=class))+
+  scale_color_manual("local moran I",
+    breaks = PaletteCouleur, values = PaletteCouleur, 
+    label = labels)+
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank()) +
+  coord_fixed()+
+  ggtitle("Spatial autocorrelation of bike accidents in 2016")
+
+```
+
+## Other features
+
+Some words about complementary features : 
+
+1. For all the above presented methods, one can define the cost of traveling on a line (the base value is the geographical length)
+2. For all the above presented methods, one can define directions on the lines
+
+
+## Upcoming features
+
+1. Allow to define a weight on the lines for both directions
+2. something else ?

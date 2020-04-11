@@ -31,7 +31,10 @@ Depends:
     R (>= 3.6)
 Suggests:
     knitr (>= 1.28),
-    rmarkdown (>= 2.1)
+    rmarkdown (>= 2.1),
+    RColorBrewer (>= 1.1-2),
+    classInt (>= 0.4-3),
+    ggplot2 (>= 3.3.0)
 RoxygenNote: 7.1.0
 VignetteBuilder: knitr
 URL: http://github.com/JeremyGelb/spNetwork
