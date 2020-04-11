@@ -64,6 +64,35 @@ lines_extremities <- function(lines) {
     return(data)
 }
 
+#' A function to deal with the directions of lines
+#'
+#' @param lines A SpatialLinesDataFrame
+#' @param field Indicate a field giving informations about authorized
+#' traveling direction on lines. if NULL, then all lines can be used in both
+#' directions. Must be the name of a column otherwise. The values of the
+#' column must be "FT" (From - To), "TF" (To - From) or "Both".
+#' @return A SpatialLinesDataFrame
+#' @importFrom sp coordinates Line Lines SpatialLines SpatialLinesDataFrame
+#' @examples
+#' #This is an internal function, no example provided
+lines_direction <- function(lines,field){
+    listlines <- lapply(1:nrow(lines),function(i){
+        line <- lines[i,]
+        if(line[[field]]=="TF"){
+            coords <- coordinates(line)[[1]][[1]]
+            new_line <- Lines(list(Line(coords[nrow(coords):1,])), ID = i)
+        }else{
+            coords <- coordinates(line)[[1]][[1]]
+            new_line <- Lines(list(Line(coords)), ID = i)
+        }
+        return(new_line)
+    })
+    spLines <- SpatialLines(listlines)
+    df <- SpatialLinesDataFrame(spLines,lines@data,match.ID = F)
+    raster::crs(df) <- raster::crs(lines)
+    return(df)
+}
+
 #' Add vertices (SpatialPoints) to a single line (SpatialLines), may fail
 #' if the lines geometries are self intersecting
 #'

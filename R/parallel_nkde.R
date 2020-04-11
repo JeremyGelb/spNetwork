@@ -16,14 +16,17 @@
 #' @param tol The tolerence for topological operations
 #' @param digits The number of digits to keep in the coordinates of the
 #' geometries
-#' track the progressing of the calculation.
+#' @param direction indicate a field giving informations about authorized
+#' traveling direction on lines. if NULL, then all lines can be used in both
+#' directions. Must be the name of a column otherwise. The values of the
+#' column must be "FT" (From - To), "TF" (To - From) or "Both".
 #' @return A SpatialLinesDataFrame of the lines and their kernel densities
 #' @importFrom sp coordinates  SpatialPoints SpatialPointsDataFrame
 #' @importFrom utils txtProgressBar setTxtProgressBar capture.output
 #' @importFrom rgeos gCentroid gLength gBuffer gIntersects
 #' @examples
 #' #This is an internal function, no example provided
-exe_nkde <- function(i, grid, lines, lixels, points, kernel, kernel_range, snap_dist, digits, tol) {
+exe_nkde <- function(i, grid, lines, lixels, points, kernel, kernel_range, snap_dist, digits, tol, direction) {
     # extracting the analyzed pixels
     quadra <- grid[i]
     test_lixels <- as.vector(gIntersects(lixels, quadra, byid = T))
@@ -79,7 +82,13 @@ exe_nkde <- function(i, grid, lines, lixels, points, kernel, kernel_range, snap_
             lines2$lx_weight <- (lines2$lx_length / lines2$line_length) * lines2$line_weight
 
             # step8 : generating the graph
-            ListNet <- build_graph(lines2, digits = digits,line_weight='lx_weight')
+            if (is.null(direction)){
+                ListNet <- build_graph(lines2, digits = digits, line_weight='lx_weight')
+            }else{
+                dir <- ifelse(lines2[[direction]]=="Both",0,1)
+                ListNet <- build_graph_directed(lines2, digits = digits,
+                                                line_weight='lx_weight',direction = dir)
+            }
             Graph <- ListNet$graph
 
             # step9 : find starting points
@@ -121,6 +130,10 @@ exe_nkde <- function(i, grid, lines, lixels, points, kernel, kernel_range, snap_
 #' @param line_weight The ponderation to use for lines. Default is "length"
 #' (the geographical length), but can be the name of a column. The value is
 #' considered proportional with the geographical length of the lines.
+#' @param direction indicate a field giving informations about authorized
+#' traveling direction on lines. if NULL, then all lines can be used in both
+#' directions. Must be the name of a column otherwise. The values of the
+#' column must be "FT" (From - To), "TF" (To - From) or "Both".
 #' @param kernel_range The range of the kernel function
 #' @param kernel The name of the kernel function to use (must be one of
 #' quartic, gaussian or epanechnikov). Default is Quartic
@@ -158,7 +171,7 @@ exe_nkde <- function(i, grid, lines, lixels, points, kernel, kernel_range, snap_
 #'    ## R CMD check: make sure any open connections are closed afterward
 #'    if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
 #'}
-nkde_grided.mc <- function(lines, points, snap_dist, lx_length, line_weight="length", kernel_range, kernel = "quartic", tol = 0.1, digits = 3, mindist = NULL, weights = NULL, grid_shape = c(2, 2), verbose = "progressbar") {
+nkde_grided.mc <- function(lines, points, snap_dist, lx_length, line_weight="length", direction=NULL, kernel_range, kernel = "quartic", tol = 0.1, digits = 3, mindist = NULL, weights = NULL, grid_shape = c(2, 2), verbose = "progressbar") {
     if(verbose %in% c("silent","progressbar")==F){
         stop("the verbose argument must be 'silent' or 'progressbar'")
     }
@@ -180,6 +193,12 @@ nkde_grided.mc <- function(lines, points, snap_dist, lx_length, line_weight="len
     } else {
         W <- points[[weights]]
     }
+
+    # adjusting the directions of the lines
+    if(is.null(direction)==F){
+        lines <- lines_direction(lines,field = direction)
+    }
+
     show_progress <- verbose=="progressbar"
 
     points$tmpweight <- W
@@ -207,14 +226,15 @@ nkde_grided.mc <- function(lines, points, snap_dist, lx_length, line_weight="len
             values <- future.apply::future_lapply(iseq, function(i) {
                 p(sprintf("i=%g", i))
                 return(exe_nkde(i, grid, lines, lixels, points, kernel,
-                  kernel_range, snap_dist, digits, tol))
+                  kernel_range, snap_dist, digits, tol, direction))
             })
         })
     } else {
         values <- future.apply::future_lapply(iseq, exe_nkde, grid = grid,
             lines = lines, lixels = lixels, points = points,
             kernel_range = kernel_range, kernel = kernel,
-            snap_dist = snap_dist, digits = digits, tol = tol)
+            snap_dist = snap_dist, digits = digits, tol = tol,
+            direction = direction)
     }
     if(verbose != "silent"){
         print("Combining the results from processes ...")

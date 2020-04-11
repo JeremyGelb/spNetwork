@@ -12,6 +12,7 @@ nkde(
   snap_dist,
   lx_length,
   kernel_range,
+  direction = NULL,
   line_weight = "length",
   kernel = "quartic",
   weights = NULL,
@@ -31,6 +32,11 @@ nkde(
 \item{lx_length}{The normal length of a lixel}
 
 \item{kernel_range}{The range of the kernel function}
+
+\item{direction}{indicate a field giving informations about authorized
+traveling direction on lines. if NULL, then all lines can be used in both
+directions. Must be the name of a column otherwise. The values of the
+column must be "FT" (From - To), "TF" (To - From) or "Both".}
 
 \item{line_weight}{The ponderation to use for lines. Default is "length"
 (the geographical length), but can be the name of a column. The value is

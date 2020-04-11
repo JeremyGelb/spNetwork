@@ -9,6 +9,7 @@ line_center_listw_gridded.mc(
   lines,
   maxdistance,
   line_weight = "length",
+  direction = NULL,
   dist_func = "inverse",
   matrice_type = "B",
   grid_shape = c(2, 2),
@@ -25,6 +26,11 @@ considere them as neighbours.}
 \item{line_weight}{The ponderation to use for lines. Default is "length"
 (the geographical length), but can be the name of a column. The value is
 considered proportional with the geographical length of the lines.}
+
+\item{direction}{indicate a field giving informations about authorized
+traveling direction on lines. if NULL, then all lines can be used in both
+directions. Must be the name of a column otherwise. The values of the
+column must be "FT" (From - To), "TF" (To - From) or "Both".}
 
 \item{dist_func}{Indicates the function to use to convert the distance
 between observation in spatial weights. Can be 'identity', 'inverse',

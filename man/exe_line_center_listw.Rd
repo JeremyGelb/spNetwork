@@ -12,7 +12,8 @@ exe_line_center_listw(
   maxdistance,
   digits,
   matrice_type,
-  vdist_func
+  vdist_func,
+  direction
 )
 }
 \arguments{
@@ -38,6 +39,11 @@ simplification used to reduce risk of topological error)}
 between observation in spatial weights. Can be 'identity', 'inverse',
 'squared inverse' or a function with one parameter x that will be
 vectorized internally}
+
+\item{direction}{indicate a field giving informations about authorized
+traveling direction on lines. if NULL, then all lines can be used in both
+directions. Must be the name of a column otherwise. The values of the
+column must be "FT" (From - To), "TF" (To - From) or "Both".}
 }
 \value{
 A list, containing a neighbours list and a weights list

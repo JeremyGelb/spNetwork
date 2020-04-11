@@ -14,7 +14,8 @@ exe_nkde(
   kernel_range,
   snap_dist,
   digits,
-  tol
+  tol,
+  direction
 )
 }
 \arguments{
@@ -37,10 +38,14 @@ quartic, gaussian or epanechnikov). Default is Quartic}
 \item{snap_dist}{The maximum distance snapping between points and lines}
 
 \item{digits}{The number of digits to keep in the coordinates of the
-geometries
-track the progressing of the calculation.}
+geometries}
 
 \item{tol}{The tolerence for topological operations}
+
+\item{direction}{indicate a field giving informations about authorized
+traveling direction on lines. if NULL, then all lines can be used in both
+directions. Must be the name of a column otherwise. The values of the
+column must be "FT" (From - To), "TF" (To - From) or "Both".}
 }
 \value{
 A SpatialLinesDataFrame of the lines and their kernel densities

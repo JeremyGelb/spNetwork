@@ -40,6 +40,10 @@ select_dist_function <- function(dist_func = "inverse") {
 #' @param line_weight The ponderation to use for lines. Default is "length"
 #' (the geographical length), but can be the name of a column. The value is
 #' considered proportional with the geographical length of the lines.
+#' @param direction indicate a field giving informations about authorized
+#' traveling direction on lines. if NULL, then all lines can be used in both
+#' directions. Must be the name of a column otherwise. The values of the
+#' column must be "FT" (From - To), "TF" (To - From) or "Both".
 #' @param dist_func The function to use to convert the distance
 #' between observation in spatial weights. Can be 'identity', 'inverse',
 #' 'squared inverse' or a function with one parameter x, returning one numeric
@@ -61,14 +65,15 @@ select_dist_function <- function(dist_func = "inverse") {
 #' @importFrom sp coordinates SpatialPoints SpatialPointsDataFrame
 #' @importFrom utils txtProgressBar setTxtProgressBar
 #' @importFrom rgeos gCentroid gLength gBuffer gIntersects
-#' @importFrom dplyr left_join group_by summarize summarize_all
+#' @importFrom dplyr left_join group_by summarize summarize_all first
 #' @export
 #' @examples
 #' data(mtl_network)
 #' listw <- line_ext_listw_gridded(mtl_network,maxdistance=800,
 #'         line_weight = "length", dist_func = 'squared inverse',
 #'         matrice_type='B', grid_shape = c(5,5), mindist = 10)
-line_ext_listw_gridded <- function(lines, maxdistance, line_weight = "length", dist_func = "inverse", matrice_type = "B", grid_shape = c(2, 2), verbose = "all", mindist = 10, digits = 3) {
+line_ext_listw_gridded <- function(lines, maxdistance, line_weight = "length", direction = NULL, dist_func = "inverse", matrice_type = "B", grid_shape = c(2, 2), verbose = "all", mindist = 10, digits = 3) {
+    # checking the verbose parameter
     if(verbose %in% c("silent","progressbar","text","all")==F){
         stop("the verbose argument must be 'all', 'silent', 'progressbar' or 'text'")
     }
@@ -82,6 +87,11 @@ line_ext_listw_gridded <- function(lines, maxdistance, line_weight = "length", d
     }
     if(min(lines$line_weight)<=0){
         stop("the weights of the lines must be superior to 0")
+    }
+
+    # adjusting the directions of the lines
+    if(is.null(direction)==F){
+        lines <- lines_direction(lines,direction)
     }
 
     ## checking the matrix type
@@ -141,8 +151,15 @@ line_ext_listw_gridded <- function(lines, maxdistance, line_weight = "length", d
             test_lines2 <- as.vector(gIntersects(lines, buff, byid = T))
             graph_lines <- subset(lines, test_lines2)
             # generating the network
-            result_graph <- build_graph(graph_lines, digits = digits,
-                attrs = T, line_weight = 'line_weight')
+            if (is.null(direction)){
+                result_graph <- build_graph(graph_lines, digits = digits,
+                        attrs = T, line_weight = 'line_weight')
+            }else{
+                dir <- ifelse(graph_lines[[direction]]=="Both",0,1)
+                result_graph <- build_graph_directed(graph_lines, digits = digits,
+                        attrs = T, line_weight='line_weight',direction = dir)
+            }
+
             graph <- result_graph$graph
             graphdf <- igraph::as_long_data_frame(graph)
             # extracting the starting and ending points
@@ -159,8 +176,17 @@ line_ext_listw_gridded <- function(lines, maxdistance, line_weight = "length", d
             if(verbose !="silent"){
                 print("... calculating distances between vertices")
             }
-            origin_vertices1 <- allpts_start$vertex
-            origin_vertices2 <- allpts_end$vertex
+
+            if(is.null(direction)){
+                origin_vertices1 <- allpts_start$vertex
+                origin_vertices2 <- allpts_end$vertex
+            }else {
+                pts <- allpts_start %>% group_by(tmpid) %>% summarise_all(first)
+                origin_vertices1 <- pts$vertex
+                pts <- allpts_end %>% group_by(tmpid) %>% summarise_all(first)
+                origin_vertices2 <- pts$vertex
+            }
+
             dest_vertices <- as.numeric(igraph::V(graph))
             # calculating the distances
             alldistances1 <- igraph::distances(graph, v = origin_vertices1,
@@ -275,6 +301,10 @@ line_ext_listw_gridded <- function(lines, maxdistance, line_weight = "length", d
 #' @param line_weight The ponderation to use for lines. Default is "length"
 #' (the geographical length), but can be the name of a column. The value is
 #' considered proportional with the geographical length of the lines.
+#' @param direction indicate a field giving informations about authorized
+#' traveling direction on lines. if NULL, then all lines can be used in both
+#' directions. Must be the name of a column otherwise. The values of the
+#' column must be "FT" (From - To), "TF" (To - From) or "Both".
 #' @param dist_func Indicates the function to use to convert the distance
 #' between observation in spatial weights. Can be 'identity', 'inverse',
 #' 'squared inverse' or a function with one parameter x that will be
@@ -300,7 +330,7 @@ line_ext_listw_gridded <- function(lines, maxdistance, line_weight = "length", d
 #' listw <- line_center_listw_gridded(mtl_network,maxdistance=500,
 #'         line_weight = "length",dist_func = 'squared inverse',
 #'         matrice_type='B', grid_shape = c(5,5))
-line_center_listw_gridded <- function(lines, maxdistance, line_weight = "length", dist_func = "inverse", matrice_type = "B", grid_shape = c(2, 2), verbose = "all", digits = 3) {
+line_center_listw_gridded <- function(lines, maxdistance, line_weight = "length", direction=NULL, dist_func = "inverse", matrice_type = "B", grid_shape = c(2, 2), verbose = "all", digits = 3) {
     if(verbose %in% c("silent","progressbar","text","all")==F){
         stop("the verbose argument must be 'all', 'silent', 'progressbar' or 'text'")
     }
@@ -314,6 +344,11 @@ line_center_listw_gridded <- function(lines, maxdistance, line_weight = "length"
     }
     if(min(lines$line_weight)<=0){
         stop("the weights of the lines must be superior to 0")
+    }
+
+    # adjusting the directions of the lines
+    if(is.null(direction)==F){
+        lines <- lines_direction(lines,direction)
     }
 
     ## checking the matrix type
@@ -390,8 +425,15 @@ line_center_listw_gridded <- function(lines, maxdistance, line_weight = "length"
             graph_lines2$lx_weight <- (graph_lines2$lx_length / graph_lines2$line_length) * graph_lines2$line_weight
 
             # generating the network
-            result_graph <- build_graph(graph_lines2, digits = digits,
-                attrs = T, line_weight = "lx_weight")
+            if (is.null(direction)){
+                result_graph <- build_graph(graph_lines2, digits = digits,
+                        attrs = T, line_weight = "lx_weight")
+            }else{
+                dir <- ifelse(graph_lines2[[direction]]=="Both",0,1)
+                result_graph <- build_graph_directed(graph_lines2, digits = digits,
+                        attrs = T, line_weight='line_weight',direction = dir)
+            }
+
             graph <- result_graph$graph
             graphdf <- igraph::as_long_data_frame(graph)
             # finding the interesting vertices

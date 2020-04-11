@@ -17,12 +17,16 @@
 #' trouble in the weightings of the neighbouring object.
 #' @param digits the number of digits to keep in the spatial coordinates (
 #' simplification used to reduce risk of topological error)
+#' @param direction indicate a field giving informations about authorized
+#' traveling direction on lines. if NULL, then all lines can be used in both
+#' directions. Must be the name of a column otherwise. The values of the
+#' column must be "FT" (From - To), "TF" (To - From) or "Both".
 #' @return A list, containing a neighbours list and a weights list
 #' @importFrom rgeos gIntersects gBuffer
 #' @importFrom dplyr group_by %>% summarise summarise_all
 #' @examples
 #' #This is an internal function, no example provided
-exe_line_ext_listw <- function(i, lines, grid, maxdistance, digits, matrice_type, vdist_func, mindist) {
+exe_line_ext_listw <- function(i, lines, grid, maxdistance, digits, matrice_type, vdist_func, mindist, direction) {
     # extracting the analyzed pixels
     quadra <- grid[i]
     # selecting the lines in the quadra
@@ -38,9 +42,16 @@ exe_line_ext_listw <- function(i, lines, grid, maxdistance, digits, matrice_type
         buff <- gBuffer(poly, width = maxdistance)
         test_lines2 <- as.vector(gIntersects(lines, buff, byid = T))
         graph_lines <- subset(lines, test_lines2)
+
         # generating the network
-        result_graph <- build_graph(graph_lines, digits = digits,
-            attrs = T, line_weight = "line_weight")
+        if (is.null(direction)){
+            result_graph <- build_graph(graph_lines, digits = digits,
+                attrs = T, line_weight = 'line_weight')
+        }else{
+            dir <- ifelse(graph_lines[[direction]]=="Both",0,1)
+            result_graph <- build_graph_directed(graph_lines, digits = digits,
+                attrs = T, line_weight='line_weight',direction = dir)
+        }
         graph <- result_graph$graph
         graphdf <- igraph::as_long_data_frame(graph)
         # extracting the starting and ending points
@@ -54,8 +65,15 @@ exe_line_ext_listw <- function(i, lines, grid, maxdistance, digits, matrice_type
           graphdf[c("tmpid", "to")], by = c("tmpid"))
         allpts_end$vertex <- allpts_end$to
         # now taking the first set of vertices and the second set
-        origin_vertices1 <- allpts_start$vertex
-        origin_vertices2 <- allpts_end$vertex
+        if(is.null(direction)){
+            origin_vertices1 <- allpts_start$vertex
+            origin_vertices2 <- allpts_end$vertex
+        }else {
+            pts <- allpts_start %>% group_by(tmpid) %>% summarise_all(first)
+            origin_vertices1 <- pts$vertex
+            pts <- allpts_end %>% group_by(tmpid) %>% summarise_all(first)
+            origin_vertices2 <- pts$vertex
+        }
         dest_vertices <- as.numeric(igraph::V(graph))
         # calculating the distances
         alldistances1 <- igraph::distances(graph, v = origin_vertices1,
@@ -130,12 +148,16 @@ exe_line_ext_listw <- function(i, lines, grid, maxdistance, digits, matrice_type
 #' 'W' for row weighted, see the documentation of spdep::nb2listw for details
 #' @param digits the number of digits to keep in the spatial coordinates (
 #' simplification used to reduce risk of topological error)
+#' @param direction indicate a field giving informations about authorized
+#' traveling direction on lines. if NULL, then all lines can be used in both
+#' directions. Must be the name of a column otherwise. The values of the
+#' column must be "FT" (From - To), "TF" (To - From) or "Both".
 #' @return A list, containing a neighbours list and a weights list
 #' @importFrom rgeos gIntersects gBuffer
 #' @importFrom dplyr group_by %>% summarise summarise_all
 #' @examples
 #' #This is an internal function, no example provided
-exe_line_center_listw <- function(i, lines, centers, grid, maxdistance, digits, matrice_type, vdist_func) {
+exe_line_center_listw <- function(i, lines, centers, grid, maxdistance, digits, matrice_type, vdist_func, direction) {
     # extracting the analyzed pixels
     quadra <- grid[i]
     # selecting the lines in the quadra
@@ -159,8 +181,14 @@ exe_line_center_listw <- function(i, lines, centers, grid, maxdistance, digits, 
         graph_lines2$lx_length <- gLength(graph_lines2,byid=T)
         graph_lines2$lx_weight <- (graph_lines2$lx_length / graph_lines2$line_length) * graph_lines2$line_weight
         # generating the network
-        result_graph <- build_graph(graph_lines2, digits = digits,
-            attrs = T, line_weight = "lx_weight")
+        if (is.null(direction)){
+            result_graph <- build_graph(graph_lines2, digits = digits,
+                attrs = T, line_weight = "lx_weight")
+        }else{
+            dir <- ifelse(graph_lines2[[direction]]=="Both",0,1)
+            result_graph <- build_graph_directed(graph_lines2, digits = digits,
+                attrs = T, line_weight='line_weight',direction = dir)
+        }
         graph <- result_graph$graph
         graphdf <- igraph::as_long_data_frame(graph)
         # finding the interesting vertices
@@ -238,6 +266,10 @@ exe_line_center_listw <- function(i, lines, centers, grid, maxdistance, digits, 
 #' @param line_weight The ponderation to use for lines. Default is "length"
 #' (the geographical length), but can be the name of a column. The value is
 #' considered proportional with the geographical length of the lines.
+#' @param direction indicate a field giving informations about authorized
+#' traveling direction on lines. if NULL, then all lines can be used in both
+#' directions. Must be the name of a column otherwise. The values of the
+#' column must be "FT" (From - To), "TF" (To - From) or "Both".
 #' @param dist_func Indicates the function to use to convert the distance
 #' between observation in spatial weights. Can be 'identity', 'inverse',
 #' 'squared inverse' or a function with one parameter x that will be
@@ -271,7 +303,7 @@ exe_line_center_listw <- function(i, lines, centers, grid, maxdistance, digits, 
 #'    ## R CMD check: make sure any open connections are closed afterward
 #'    if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
 #'}
-line_ext_listw_gridded.mc <- function(lines, maxdistance, line_weight="length", dist_func = "inverse", matrice_type = "B", grid_shape = c(2, 2), verbose = "progressbar", mindist = 10, digits = 3) {
+line_ext_listw_gridded.mc <- function(lines, maxdistance, line_weight="length", direction=NULL, dist_func = "inverse", matrice_type = "B", grid_shape = c(2, 2), verbose = "progressbar", mindist = 10, digits = 3) {
     if(verbose %in% c("silent","progressbar")==F){
         stop("the verbose argument must be 'silent' or 'progressbar'")
     }
@@ -287,6 +319,10 @@ line_ext_listw_gridded.mc <- function(lines, maxdistance, line_weight="length", 
         stop("the weights of the lines must be superior to 0")
     }
 
+    # adjusting the directions of the lines
+    if(is.null(direction)==F){
+        lines <- lines_direction(lines,direction)
+    }
 
     ## checking the matrix type
     if (matrice_type %in% c("B", "W") == F) {
@@ -313,14 +349,14 @@ line_ext_listw_gridded.mc <- function(lines, maxdistance, line_weight="length", 
                 p(sprintf("i=%g", i))
                 return(exe_line_ext_listw(i = i, lines = lines, grid = grid,
                   maxdistance = maxdistance, digits = digits, matrice_type = matrice_type,
-                  mindist = mindist, vdist_func = vdist_func))
+                  mindist = mindist, vdist_func = vdist_func, direction = direction))
             })
         })
     } else {
         values <- future.apply::future_lapply(iseq, exe_line_ext_listw,
             lines = lines, grid = grid, maxdistance = maxdistance,
             digits = digits, matrice_type = matrice_type,
-            mindist = mindist, vdist_func = vdist_func)
+            mindist = mindist, vdist_func = vdist_func, direction = direction)
     }
     # now, combining everything
     if(verbose != "silent"){
@@ -368,6 +404,10 @@ line_ext_listw_gridded.mc <- function(lines, maxdistance, line_weight="length", 
 #' @param line_weight The ponderation to use for lines. Default is "length"
 #' (the geographical length), but can be the name of a column. The value is
 #' considered proportional with the geographical length of the lines.
+#' @param direction indicate a field giving informations about authorized
+#' traveling direction on lines. if NULL, then all lines can be used in both
+#' directions. Must be the name of a column otherwise. The values of the
+#' column must be "FT" (From - To), "TF" (To - From) or "Both".
 #' @param dist_func Indicates the function to use to convert the distance
 #' between observation in spatial weights. Can be 'identity', 'inverse',
 #' 'squared inverse' or a function with one parameter x that will be
@@ -397,7 +437,7 @@ line_ext_listw_gridded.mc <- function(lines, maxdistance, line_weight="length", 
 #'    ## R CMD check: make sure any open connections are closed afterward
 #'    if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
 #'}
-line_center_listw_gridded.mc <- function(lines, maxdistance, line_weight="length", dist_func = "inverse", matrice_type = "B", grid_shape = c(2, 2), digits = 3, verbose = "progressbar") {
+line_center_listw_gridded.mc <- function(lines, maxdistance, line_weight="length", direction=NULL, dist_func = "inverse", matrice_type = "B", grid_shape = c(2, 2), digits = 3, verbose = "progressbar") {
     if(verbose %in% c("silent","progressbar")==F){
         stop("the verbose argument must be 'silent' or 'progressbar'")
     }
@@ -410,6 +450,11 @@ line_center_listw_gridded.mc <- function(lines, maxdistance, line_weight="length
     }
     if(min(lines$line_weight)<=0){
         stop("the weights of the lines must be superior to 0")
+    }
+
+    # adjusting the directions of the lines
+    if(is.null(direction)==F){
+        lines <- lines_direction(lines,direction)
     }
 
     show_progress <- verbose=="progressbar"
@@ -455,7 +500,7 @@ line_center_listw_gridded.mc <- function(lines, maxdistance, line_weight="length
                 return(exe_line_center_listw(i = i, lines = lines,
                     centers = centers, grid = grid, maxdistance = maxdistance,
                     digits = digits, matrice_type = matrice_type,
-                    vdist_func = vdist_func))
+                    vdist_func = vdist_func, direction = direction))
             })
         })
     } else {
@@ -463,7 +508,7 @@ line_center_listw_gridded.mc <- function(lines, maxdistance, line_weight="length
             lines = lines, centers = centers, grid = grid,
             maxdistance = maxdistance, digits = digits,
             matrice_type = matrice_type, mindist = mindist,
-            vdist_func = vdist_func)
+            vdist_func = vdist_func, direction = direction)
     }
     # now, combining everything
     if(verbose != "silent"){

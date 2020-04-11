@@ -12,7 +12,8 @@ exe_line_ext_listw(
   digits,
   matrice_type,
   vdist_func,
-  mindist
+  mindist,
+  direction
 )
 }
 \arguments{
@@ -37,6 +38,11 @@ simplification used to reduce risk of topological error)}
 \item{mindist}{Indicates the minimum value to replace 0 with. Two lines that
 share a vertex have a 0 distance between them, wich could create some
 trouble in the weightings of the neighbouring object.}
+
+\item{direction}{indicate a field giving informations about authorized
+traveling direction on lines. if NULL, then all lines can be used in both
+directions. Must be the name of a column otherwise. The values of the
+column must be "FT" (From - To), "TF" (To - From) or "Both".}
 }
 \value{
 A list, containing a neighbours list and a weights list

@@ -138,6 +138,10 @@ calc_NKDE <- function(graph, origins, destinations, range, kernel = "quartic", w
 #' @param line_weight The ponderation to use for lines. Default is "length"
 #' (the geographical length), but can be the name of a column. The value is
 #' considered proportional with the geographical length of the lines.
+#' @param direction indicate a field giving informations about authorized
+#' traveling direction on lines. if NULL, then all lines can be used in both
+#' directions. Must be the name of a column otherwise. The values of the
+#' column must be "FT" (From - To), "TF" (To - From) or "Both".
 #' @param kernel_range The range of the kernel function
 #' @param kernel The name of the kernel function to use (must be one of
 #' quartic, gaussian or epanechnikov). Default is Quartic.
@@ -164,7 +168,9 @@ calc_NKDE <- function(graph, origins, destinations, range, kernel = "quartic", w
 #' data(bike_accidents)
 #' lixels <- nkde(mtl_network,bike_accidents, snap_dist = 150,
 #'       lx_length = 150, line_weight="length", kernel_range = 800, mindist=50)
-nkde <- function(lines, points, snap_dist, lx_length, kernel_range, line_weight="length", kernel = "quartic", weights = NULL, tol = 0.1, digits = 3, mindist = NULL, verbose = "text") {
+nkde <- function(lines, points, snap_dist, lx_length, kernel_range, direction=NULL, line_weight="length", kernel = "quartic", weights = NULL, tol = 0.1, digits = 3, mindist = NULL, verbose = "text") {
+
+    #check for the verbose setting
     if(verbose %in% c("silent","progressbar","text")==F){
         stop("the verbose argument must be 'silent', 'progressbar' or 'text'")
     }
@@ -190,6 +196,11 @@ nkde <- function(lines, points, snap_dist, lx_length, kernel_range, line_weight=
         W <- points[[weights]]
     }
     points$tmpweight <- W
+
+    # adjusting the directions of the lines
+    if(is.null(direction)==F){
+        lines <- lines_direction(lines,direction)
+    }
 
     if (verbose != "silent"){
         print("generating the lixels...")
@@ -251,8 +262,14 @@ nkde <- function(lines, points, snap_dist, lx_length, kernel_range, line_weight=
     if (verbose != "silent"){
         print("building the graph...")
     }
+    if (is.null(direction)){
+        ListNet <- build_graph(lines2, digits = digits, line_weight='lx_weight')
+    }else{
+        dir <- ifelse(lines2[[direction]]=="Both",0,1)
+        ListNet <- build_graph_directed(lines2, digits = digits,
+            line_weight='lx_weight',direction = dir)
+    }
 
-    ListNet <- build_graph(lines2, digits = digits, line_weight='lx_weight')
     Graph <- ListNet$graph
 
     if (verbose != "silent"){

@@ -10,6 +10,7 @@ nkde_grided.mc(
   snap_dist,
   lx_length,
   line_weight = "length",
+  direction = NULL,
   kernel_range,
   kernel = "quartic",
   tol = 0.1,
@@ -32,6 +33,11 @@ nkde_grided.mc(
 \item{line_weight}{The ponderation to use for lines. Default is "length"
 (the geographical length), but can be the name of a column. The value is
 considered proportional with the geographical length of the lines.}
+
+\item{direction}{indicate a field giving informations about authorized
+traveling direction on lines. if NULL, then all lines can be used in both
+directions. Must be the name of a column otherwise. The values of the
+column must be "FT" (From - To), "TF" (To - From) or "Both".}
 
 \item{kernel_range}{The range of the kernel function}
 
