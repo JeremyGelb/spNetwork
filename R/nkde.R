@@ -14,9 +14,9 @@
 quartic_kernel <- function(d, w, r) {
     w <- w[d < r]
     d <- d[d < r]
-    u <- (d / r)
-    K <- (3 / pi) * w * (1 - u^2)^2
-    tot <- (1 / r^2) * sum(K)
+    u <- (d**2 / r**2)
+    K <- (3 / pi) * w * (1 - u)
+    tot <-  sum((1 / r) * K)
     return(sum(w) * tot)
 }
 
@@ -32,9 +32,8 @@ quartic_kernel <- function(d, w, r) {
 gaussian_kernel <- function(d, w, r) {
     w <- w[d < r]
     d <- d[d < r]
-    u <- (d / r)
-    K <- (1 / (sqrt(2 * pi))) * exp(-(1 / 2) * u^2)
-    tot <- (1 / r^2) * sum(K)
+    K <- (1 / (sqrt(2 * pi))) * exp(-((d**2)/(2*(r**2)))) * w
+    tot <-  sum((1 / r) * K)
     return(sum(w) * tot)
 }
 
@@ -50,9 +49,9 @@ gaussian_kernel <- function(d, w, r) {
 epanechnikov_kernel <- function(d, w, r) {
     w <- w[d < r]
     d <- d[d < r]
-    u <- (d / r)
-    K <- (3 / 4) * (1 - u^2)
-    tot <- (1 / r^2) * sum(K)
+    u <- (d**2 / r**2)
+    K <- (3 / 4) * (1 - u) * w
+    tot <-  sum((1 / r) * K)
     return(sum(w) * tot)
 }
 

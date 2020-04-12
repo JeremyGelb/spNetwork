@@ -74,6 +74,28 @@ The final result would look like this picture :
 ![Image Title](images/nkde_simple-01.png){width=300px}
 </center>
 
+It is important to note that the density is not evluated for planar units (m<sup>2</sup>) but for linear units (m).
+
+Indeed, the density $\lambda$ for a lixel *l* is estimated as follow 
+
+$\lambda(l) = \sum_{i=1}^n \dfrac{1}{r}k(\dfrac{d_{il}}{r})$
+
+With a range *r* and *n* events for which the distance between each event *i* and *l* (*d<sub>il</sub>*) smaller than *r*. K is the kernel function.
+
+This differs from the original estimation for planar data : 
+
+$\lambda(l) = \sum_{i=1}^n \dfrac{1}{r^2}k(\dfrac{d_{il}}{r})$
+
+The three most used kernel function actually implemented are : 
+
+* the gaussian kernel : $k(\dfrac{d_{il}}{r})=\dfrac{1}{\sqrt{2\pi}} * \exp(-\dfrac{d_{il}^2}{2r^2})$
+
+* the quartic kernel : $k(\dfrac{d_{il}}{r})=\dfrac{3}{\pi} * (1-\dfrac{d_{il}^2}{r^2})$
+
+* the epanechnikov kernel : $k(\dfrac{d_{il}}{r})=\dfrac{3}{4}*(1-\dfrac{d_{il}^2}{r^2})$
+
+for more details on NKDE, please read  Xie et Yan (2008;2013).
+
 The **spNetwork** package makes this type of analyse straightforward in R. The main problem of the implementation of the NKDE is to reduce computation time. Indeed, on a large dataset, building the network and evualating the distances between each event and each lixel center would be too long and could lead to memory issues.
 
 To avoid this, the first solution provided in **spNetwork** is a grided application of the NKDE. The user can split the study area with a grid, the calculation is the performed in each cell of the grid. A buffer is applied on each cell to avoid frontier effect.
@@ -83,7 +105,6 @@ A verbose parameter allows to control how much information the user wants about 
 ```{r}
 
 #first load data and packages
-#devtools::load_all("..")
 library(spNetwork)
 library(sp)
 library(maptools)
@@ -189,9 +210,9 @@ A vast number of spatial analysis methods are based on a spatial matrix Wij of s
 
 Classicaly one can define : 
 
-* neighbouring matrices (Wij = 1 if j is a neighbour of i)
-* distance matrices (Wij = the distance between i and j, modified by a function like 1/distance or 1/distance**2)
-* interraction matrices (Wij = the degree of interraction between i and j, the measure of the interraction depends on the subject of the analysis)
+* neighbouring matrices (W<sub>ij</sub> = 1 if j is a neighbour of i)
+* distance matrices (W<sub>ij</sub> = the distance between i and j, modified by a function like 1/distance or 1/distance**2)
+* interraction matrices (W<sub>ij</sub> = the degree of interraction between i and j, the measure of the interraction depends on the subject of the analysis)
 
 In R, the classical package to deal with such object is the package **spdep** which defines objects like neighbours lists and spatial weights lists, and offers the possibility to convert such objects in regular matrices.
 
@@ -316,6 +337,146 @@ ggplot(MapData) +
 
 ```
 
+## combining NKDE and Local Moran I
+
+As proposed by Xie et Yan (2013), one could perform an analysis in two steps : 
+
+1. First, split the network in lixels and calculate the NKDE for these lixels
+2. Second, calculate the Local Moran I on each lixel for the density estimated values to identify significant hot and cold spots
+
+With the **spNetwork** package, this type of analysis is really simple to perform.
+
+```{r}
+#setting the multiprocess plan
+future::plan(future::multiprocess(workers=4))
+
+print("calculating the lixels density ...")
+#then applying the NKDE
+lixels <- nkde_grided.mc(mtl_network,bike_accidents,
+            snap_dist = 150,
+            lx_length=150,mindist=50,
+            kernel_range = 300, kernel='quartic',
+            weights=NULL, grid_shape = c(5,5),
+            verbose = "silent")
+
+
+#now, preparing the neighbouring matrix
+# because lixels have same lengths, we will use the centered version,
+# and considere a maximum distance of kernel_range + lx_length
+
+print("building the spatial matrix ...")
+netlistw4 <- line_center_listw_gridded.mc(lixels,
+                                   maxdistance = 450,
+                                   dist_func = "squared inverse",
+                                   line_weight = 'length',
+                                   matrice_type = 'W',
+                                   grid_shape = c(5,5),
+                                   verbose='silent')
+
+#we can now calculate the local Moran I
+Lisa <- localmoran(lixels$density,netlistw4, zero.policy = T)
+
+# lets set back the classical sequential plan
+if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
+```
+
+Again, it is easy to map the results in R, but remember that the results could also be exported as a shapefile or a geopackage with the function *writeOGR* from the package **rgdal**
+
+```{r}
+spLisa <- lixels
+spLisa$pval <- Lisa[,5]
+spLisa$Imoran <- round(Lisa[,1],3)
+
+#lets identify the 4 quadrats of the Moran I
+X <- lixels$density
+WX <- lag.listw(netlistw4,lixels$density, zero.policy = T)
+
+spLisa$moran_class <- case_when(
+  X>mean(X) & WX>mean(WX) & spLisa$pval<0.05 ~ "HH",
+  X<mean(X) & WX<mean(WX) & spLisa$pval<0.05 ~ "LL",
+  X>mean(X) & WX<mean(WX) & spLisa$pval<0.05 ~ "HL",
+  X<mean(X) & WX>mean(WX) & spLisa$pval<0.05 ~ "LH",
+  TRUE ~ "not.sign")
+
+
+#rebuilding the rownames
+spLisa2 <- sp::spChFIDs(spLisa, as.character(1:nrow(spLisa)))
+
+#and finally map with ggplot
+MapData <- fortify(spLisa2)
+MapData <- merge(MapData, spLisa2@data, by.x="id", by.y=0)
+
+PaletteCouleur<- c("red", "blue", "lightpink", "skyblue2", "gray")
+
+ggplot(MapData) + 
+  geom_path(aes(x=long,y=lat,group=group,color=moran_class))+
+  scale_color_manual("local moran I class",
+    breaks = c("HH","LL","HL","LH","not.sign"), values = PaletteCouleur, 
+    label = c("HH","LL","HL","LH","not.sign"))+
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank()) +
+  coord_fixed()+
+  ggtitle("Hot spots of bike accidents kernel density in 2016")
+
+```
+
+```{r eval=FALSE, include=FALSE}
+# spLisa <- lixels
+# spLisa$pval <- Lisa[,5]
+# spLisa$Imoran <- round(Lisa[,1],3)
+# 
+# ## a little function to help the mapping
+# get_colors <-function(x,colors,breaks){
+#   mycolors <- sapply(x,function(xi){
+#     for(i in seq(1:length(colors))){
+#       if (xi<breaks$brks[[i+1]]){
+#         return(colors[[i]])
+#       }
+#     }
+#     return(colors[[length(colors)]])
+#   })
+#   return(mycolors)
+# }
+# 
+# #using a discretization method
+# breaks <- classIntervals(spLisa$Imoran, n = 7, style = "fisher", intervalClosure = "right")
+# PaletteCouleur <- brewer.pal(n = 7, name = "Spectral")
+# PaletteCouleur <- rev(PaletteCouleur)
+# spLisa$class <- get_colors(spLisa$Imoran,PaletteCouleur, breaks)
+# 
+# #lets keep in color only the observations with a p-value <= 0.05
+# spLisa$class <- ifelse(spLisa$pval<=0.05, spLisa$class, "grey")
+# labels <- names(print(breaks))
+# labels[[length(labels)+1]] <- "not.sign"
+# PaletteCouleur[[length(PaletteCouleur)+1]] <- "grey"
+# 
+# #rebuilding the rownames
+# spLisa2 <- sp::spChFIDs(spLisa, as.character(1:nrow(spLisa)))
+# 
+# #and finally map with ggplot
+# MapData <- fortify(spLisa2)
+# MapData <- merge(MapData, spLisa2@data, by.x="id", by.y=0)
+# 
+# ggplot(MapData) + 
+#   geom_path(aes(x=long,y=lat,group=group,color=class))+
+#   scale_color_manual("local moran I",
+#     breaks = PaletteCouleur, values = PaletteCouleur, 
+#     label = labels)+
+#   theme(axis.title.x=element_blank(),
+#         axis.text.x=element_blank(),
+#         axis.ticks.x=element_blank(),
+#         axis.title.y=element_blank(),
+#         axis.text.y=element_blank(),
+#         axis.ticks.y=element_blank()) +
+#   coord_fixed()+
+#   ggtitle("Spatial autocorrelation of bike accidents kernel density in 2016")
+
+```
+
 ## Other features
 
 Some words about complementary features : 
@@ -328,3 +489,9 @@ Some words about complementary features :
 
 1. Allow to define a weight on the lines for both directions
 2. something else ?
+
+# References
+
+Xie, Z., & Yan, J. (2008). Kernel density estimation of traffic accidents in a network space. Computers, environment and urban systems, 32(5), 396-406.
+
+Xie, Z., & Yan, J. (2013). Detecting traffic accident clusters with network kernel density estimation and local spatial statistics: an integrated approach. Journal of transport geography, 31, 64-71.

@@ -470,16 +470,18 @@ line_center_listw_gridded.mc <- function(lines, maxdistance, line_weight="length
     if(verbose != "silent"){
         print("generating the centers of the lines...")
     }
-    centers <- lines_center(lines)
+    if(show_progress){
+        centers <- lines_center(lines)
+    }else {
+        invisible(capture.output(centers <- lines_center(lines) ))
+    }
+
     ## add vertices to lines
     if(verbose != "silent"){
         print("adding these vertices to lines (only once do not worry)...")
     }
-    if (show_progress){
-        lines <- add_center_lines.mc(lines, show_progress)
-    }else {
-        invisible(capture.output(lines <- add_center_lines.mc(lines, show_progress)))
-    }
+
+    lines <- add_center_lines.mc(lines, show_progress)
 
     if(verbose != "silent"){
         print("generating the grid...")
@@ -507,7 +509,7 @@ line_center_listw_gridded.mc <- function(lines, maxdistance, line_weight="length
         values <- future.apply::future_lapply(iseq, exe_line_center_listw,
             lines = lines, centers = centers, grid = grid,
             maxdistance = maxdistance, digits = digits,
-            matrice_type = matrice_type, mindist = mindist,
+            matrice_type = matrice_type,
             vdist_func = vdist_func, direction = direction)
     }
     # now, combining everything
