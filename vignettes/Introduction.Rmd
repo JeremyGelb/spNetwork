@@ -25,7 +25,7 @@ knitr::opts_chunk$set(
 
 
 
-This vignette is a short introduction to the **spNetwork** packages. It will present the main features of the package by using dataset provided with the package.
+This vignette is a short introduction to the **spNetwork** package. It will present the main features of the package by using datasets provided with the package.
 
 
 ## Network Kernel Density Estimate
@@ -34,25 +34,25 @@ The first feature of the package is the Network Kernel Density Estimate (NKDE).
 
 A classical KDE proposes to estimate the density of a set of events in a two dimensional space. That space is separated in pixels, and the density is estimated for each pixel.
 
-This approach is not adapted to analyze density of events occuring on a network, like accidents in streets, or breaks on a network of water pipes etc. Indeed, calculating densities for locations outside the network is meaningless and the euclidean distance underestimates the real distance between two object on the network.
+This approach is not adapted to analyze density of events occuring on a network, like accidents and crimes in streets, or breaks on a network of water pipes. Indeed, calculating densities for locations outside the network is meaningless and the euclidean distance underestimates the real distance between two object on the network.
 
 A NKDE extends the classical KDE by :
 
-* using lixels intead of pixels. A lixel is a linear version of a pixel on a network. The lines of the network are splitted according to a chosen resolution.
+* using lixels intead of pixels. A lixel is a linear equivalent of a pixel on a network. The lines of the network are splitted into lixels according to a chosen resolution.
 * calculating reticular distances between objects instead of euclidean distances.
 
-An image is worth 1000 words, so let's consider this situation : 
+An image is worth 1000 words, so let us consider this situation : 
 <center>
 ![Image Title](images/situation-01.png){width=300px}
 </center>
 
-Each point is an event and the lines constitute the network. One could realize a simple KDE on that dataset and would obtain something like :
+Each red point is an event and the lines constitute the network. One could realize a simple KDE on that dataset and would obtain something like :
 
 <center>
 ![Image Title](images/simple_kde-01.png){width=300px}
 </center>
 
-But this is only partly satisfying if we are interested on the density of the envents on the network.
+But this is only partly satisfying if we are interested in the density of the envents on the network.
 
 To perform a NKDE, the lines of the network must be splitted into lixels : chunks of line of the same length. They are similar to pixels, but in a one dimensional space.
 
@@ -60,9 +60,9 @@ To perform a NKDE, the lines of the network must be splitted into lixels : chunk
 ![Image Title](images/lixels_example-01.png){width=300px}
 </center>
 
-The densities will be evaluated for the center of each lixel. The second step is to snapp the points to the network. At that point we have everything to perform the NKDE, we juste need to define ther kernel function and the kernel range.
+The densities will be evaluated for the center of each lixel. The second step is to snapp the points to the network. At that point we have everything to perform the NKDE, we just need to define ther kernel function and the kernel range.
 
-The kernel range will be used to calculate wich events are close enough to the center of each lixel centers to be used in their density estimation.
+The kernel range will be used to calculate which events are close enough to the center of each lixel center to be used in their density estimation.
 
 <center>
 ![Image Title](images/centroid_lixel-01.png){width=300px}
@@ -80,13 +80,13 @@ Indeed, the density $\lambda$ for a lixel *l* is estimated as follow
 
 $\lambda(l) = \sum_{i=1}^n \dfrac{1}{r}k(\dfrac{d_{il}}{r})$
 
-With a range *r* and *n* events for which the distance between each event *i* and *l* (*d<sub>il</sub>*) smaller than *r*. K is the kernel function.
+With a range *r* and *n* events for which the distance between each event *i* and *l* (*d<sub>il</sub>*) is smaller than *r*. K is the kernel function.
 
 This differs from the original estimation for planar data : 
 
 $\lambda(l) = \sum_{i=1}^n \dfrac{1}{r^2}k(\dfrac{d_{il}}{r})$
 
-The three most used kernel function actually implemented are : 
+The three most used kernel functions actually implemented are : 
 
 * the gaussian kernel : $k(\dfrac{d_{il}}{r})=\dfrac{1}{\sqrt{2\pi}} * \exp(-\dfrac{d_{il}^2}{2r^2})$
 
@@ -96,13 +96,13 @@ The three most used kernel function actually implemented are :
 
 for more details on NKDE, please read  Xie et Yan (2008;2013).
 
-The **spNetwork** package makes this type of analyse straightforward in R. The main problem of the implementation of the NKDE is to reduce computation time. Indeed, on a large dataset, building the network and evualating the distances between each event and each lixel center would be too long and could lead to memory issues.
+The **spNetwork** package makes this type of analyse straightforward in R. The main problem of the implementation of the NKDE is to reduce computation time. Indeed, on a large dataset, building the network and evaluating the distances between each event and each lixel center would be too long and could lead to memory issues.
 
-To avoid this, the first solution provided in **spNetwork** is a grided application of the NKDE. The user can split the study area with a grid, the calculation is the performed in each cell of the grid. A buffer is applied on each cell to avoid frontier effect.
+To avoid this, the first solution provided in **spNetwork** is a grided application of the NKDE. The user can split the study area with a grid, the calculation is then performed in each cell of the grid. A buffer is applied on each cell to avoid frontier effect.
 
 A verbose parameter allows to control how much information the user wants about the progressing of the process. We set it here to "silent" to keep the document readable, but typically one would prefere "text" or "progressbar".
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 
 #first load data and packages
 library(spNetwork)
@@ -127,7 +127,7 @@ lixels <- nkde_grided(mtl_network,bike_accidents,
 ```
 
 We could then map the densities estimated for each lixel
-```{r}
+```{r message=FALSE, warning=FALSE}
 library(ggplot2)
 library(dplyr)
 library(RColorBrewer)
@@ -178,9 +178,9 @@ ggplot(MapData) +
 
 ```
 
-As you can imagine it remains a costly process, but an embarrassingly parallel one. Indeed, nothing makes this process strictly sequential. The calculus of the NKDE of each cell could be done by several cores. **spNetwork** provides a function nkde_grided.mc, able to split the work between processes. More specifically, it uses functions from the packages **future** and **future.apply**. The selection of the plan is let to the user to permit the best compatibility on each platform. One could even paralellize this calculation on several computer. See the documentation of the future package if needed.
+As you can imagine it remains a costly process, but an embarrassingly parallel one. Indeed, nothing makes this process strictly sequential. The calculus of the NKDE for each cell could be done by several cores. **spNetwork** provides a function nkde_grided.mc, able to split the work between processes. More specifically, it uses functions from the packages **future** and **future.apply**. The selection of the plan is let to the user to permit the best compatibility on each os and computer. One could even paralellize this calculation on several computers. See the documentation of the **future** package if needed.
 
-Lets try to split the work between 4 cores.
+Let us split the work between 4 cores.
 ```{r}
 
 #setting the multiprocess plan
@@ -194,10 +194,10 @@ lixels_mc <- nkde_grided.mc(mtl_network,bike_accidents,
             weights=NULL, grid_shape = c(5,5),
             verbose = "silent")
 
-# lets set back the classical sequential plan
+# let's set back the classical sequential plan
 if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
 
-#we can compare the previous results and the new one
+#we can compare the previous result and the new one
 diff <- sum(abs(lixels_mc$density - lixels$density))
 print(paste("overall difference between the regular and paralellized method : ",round(diff,8),sep=""))
 
@@ -206,23 +206,23 @@ print(paste("overall difference between the regular and paralellized method : ",
 
 ## Spatial matrices
 
-A vast number of spatial analysis methods are based on a spatial matrix Wij of size  n x n with i an observation and j the neighbours of that observation. Wij represents the degree of spatial relationship between i and j.
+A vast number of spatial analysis methods are based on a spatial matrix W<sub>ij</sub> of size  *n* x *n* with *i* an observation and *j* the neighbours of that observation. W<sub>ij</sub> represents the degree of spatial relationship between i and j.
 
 Classicaly one can define : 
 
-* neighbouring matrices (W<sub>ij</sub> = 1 if j is a neighbour of i)
+* neighbouring matrices (W<sub>ij</sub> = 1 if *j* is a neighbour of *i*)
 * distance matrices (W<sub>ij</sub> = the distance between i and j, modified by a function like 1/distance or 1/distance**2)
-* interraction matrices (W<sub>ij</sub> = the degree of interraction between i and j, the measure of the interraction depends on the subject of the analysis)
+* interraction matrices (W<sub>ij</sub> = the degree of interraction between *i* and *j*, the measure of the interraction depends on the subject of the analysis)
 
-In R, the classical package to deal with such object is the package **spdep** which defines objects like neighbours lists and spatial weights lists, and offers the possibility to convert such objects in regular matrices.
+In R, the classical package to deal with such object is the package **spdep** which defines objects like neighbour lists and spatial weight lists, and offers the possibility to convert such objects into regular matrices.
 
-When one work with data constraint on a network, using euclidean distance to estimate proximity between observation tends to overstimate the real proximity of observations.
+When one works with data constrained on a network, using euclidean distance to estimate proximity between observation tends to overstimate the real proximity of observations.
 
 **spNetwork** offers the possibility to create listw objects for SpatialLinesDataFrame based on reticular distance. Lets give an exemple here : calculating the Moran I for the number of bike accidents recorded on the montreal road network in 2016.
 
 We will use here the function *line_ext_listw_gridded*. The distances are calculated form the start and end points of the lines to the start and end points of the other lines. It is possible to use the function *line_center_listw_gridded* to calculate distance from line center to start and end points of other lines.
 
-lets consider that above 300 meters two segments are not neighbours anymore, and convert the distances between the observations into spatial weights with the inverse of the squared distance
+let us consider that above 300 meters two segments are not neighbours anymore, and convert the distances between the observations into spatial weights with the inverse of the squared distance
 
 ```{r}
 library(spdep)
@@ -264,7 +264,7 @@ Test2 <- moran.test(mtl_network$nbAccident, netlistw2, zero.policy = T)
 print(round(Test2$estimate,4))
 ```
 
-We can also use the mutliprocess version of the function. Lets use it to calculate a local version of the Moran Index.
+We can also use the mutliprocess version of the function. Let us use it to calculate a local version of the Moran Index.
 
 ```{r}
 
