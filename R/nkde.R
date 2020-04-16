@@ -94,6 +94,7 @@ select_kernel <- function(name) {
 #' @return Vector of kernel densities (one for each origin)
 #' @importFrom sp coordinates SpatialPoints SpatialPointsDataFrame
 #' @importFrom utils txtProgressBar setTxtProgressBar
+#' @importFrom data.table data.table
 #' @examples
 #' #This is an internal function, no example provided
 calc_NKDE <- function(graph, origins, destinations, range, kernel = "quartic", weights = NULL) {
@@ -104,9 +105,11 @@ calc_NKDE <- function(graph, origins, destinations, range, kernel = "quartic", w
         weights <- rep(1, length(destinations))
     }
     df <- data.frame(dest = destinations, weights = weights)
-    counts <- df %>% dplyr::group_by(dest) %>% dplyr::summarise_all(sum)
+    dt <- data.table(df)
+    counts <- dt[,list(sweights=sum(weights)),by=dest]
+    #counts <- df %>% dplyr::group_by(dest) %>% dplyr::summarise_all(sum)
     destinations <- counts$dest
-    weights <- counts$weights
+    weights <- counts$sweights
     i <- 0
     Values <- sapply(origins, function(o) {
         i < i + 1
@@ -336,6 +339,7 @@ nkde <- function(lines, points, snap_dist, lx_length, kernel_range, direction=NU
 #' @importFrom sp coordinates SpatialPoints SpatialPointsDataFrame
 #' @importFrom utils txtProgressBar setTxtProgressBar capture.output
 #' @importFrom rgeos gCentroid gLength gBuffer gIntersects
+#' @importFrom data.table data.table
 #' @export
 #' @examples
 #' data(mtl_network)

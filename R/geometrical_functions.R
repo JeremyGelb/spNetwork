@@ -10,18 +10,20 @@
 #' @param coords A n * 2 matrix representing the coordinates
 #' @param digits The number of digits to keep from the coordinates
 #' @return A vector character vector of length n
+#' @importFrom data.table data.table tstrsplit :=
 #' @examples
 #' #This is an internal function, no example provided
 sp_char_index <- function(coords, digits) {
     tempdf <- data.frame(Xs = as.character(coords[, 1]),
                          Ys = as.character(coords[, 2]))
-    tempdf <- tidyr::separate(tempdf, col = "Xs",
-                              into = c("xint", "xdec"), sep = "\\.")
-    tempdf <- tidyr::separate(tempdf, col = "Ys",
-                              into = c("yint", "ydec"), sep = "\\.")
-    X <- paste(tempdf$xint, substr(tempdf$xdec, start = 1, stop = digits),
+    tempdt <- data.table(tempdf)
+
+    tempdt[,  c("xint", "xdec") := tstrsplit(Xs, ".", fixed=TRUE)]
+    tempdt[,  c("yint", "ydec") := tstrsplit(Ys, ".", fixed=TRUE)]
+
+    X <- paste(tempdt$xint, substr(tempdt$xdec, start = 1, stop = digits),
         sep = ".")
-    Y <- paste(tempdf$yint, substr(tempdf$ydec, start = 1, stop = digits),
+    Y <- paste(tempdt$yint, substr(tempdt$ydec, start = 1, stop = digits),
         sep = ".")
     return(paste(X, Y, sep = "_"))
 }

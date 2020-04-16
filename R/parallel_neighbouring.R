@@ -24,6 +24,7 @@
 #' @return A list, containing a neighbours list and a weights list
 #' @importFrom rgeos gIntersects gBuffer
 #' @importFrom dplyr group_by %>% summarise summarise_all
+#' @importFrom data.table data.table
 #' @examples
 #' #This is an internal function, no example provided
 exe_line_ext_listw <- function(i, lines, grid, maxdistance, digits, matrice_type, vdist_func, mindist, direction) {
@@ -69,10 +70,14 @@ exe_line_ext_listw <- function(i, lines, grid, maxdistance, digits, matrice_type
             origin_vertices1 <- allpts_start$vertex
             origin_vertices2 <- allpts_end$vertex
         }else {
-            pts <- allpts_start %>% group_by(tmpid) %>% summarise_all(first)
-            origin_vertices1 <- pts$vertex
-            pts <- allpts_end %>% group_by(tmpid) %>% summarise_all(first)
-            origin_vertices2 <- pts$vertex
+            #pts <- allpts_start %>% group_by(tmpid) %>% summarise_all(first)
+            #origin_vertices1 <- pts$vertex
+            #pts <- allpts_end %>% group_by(tmpid) %>% summarise_all(first)
+            #origin_vertices2 <- pts$vertex
+            dt_start <- data.table(allpts_start)
+            dt_end <- data.table(allpts_end)
+            origin_vertices1 <- dt_start[, data.table::first(vertex), by=tmpid]$V1
+            origin_vertices2 <- dt_end[, data.table::first(vertex), by=tmpid]$V1
         }
         dest_vertices <- as.numeric(igraph::V(graph))
         # calculating the distances

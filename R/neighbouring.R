@@ -164,9 +164,11 @@ line_ext_listw_gridded <- function(lines, maxdistance, line_weight = "length", d
             graphdf <- igraph::as_long_data_frame(graph)
             # extracting the starting and ending points
             allpts <- lines_extremities(selected_lines)
+
             allpts_start <- dplyr::left_join(
               subset(allpts@data, allpts@data$pttype == "start"),
               graphdf[c("tmpid", "from")], by = c("tmpid"))
+
             allpts_start$vertex <- allpts_start$from
             allpts_end <- dplyr::left_join(
               subset(allpts@data, allpts@data$pttype == "end"),
@@ -181,10 +183,10 @@ line_ext_listw_gridded <- function(lines, maxdistance, line_weight = "length", d
                 origin_vertices1 <- allpts_start$vertex
                 origin_vertices2 <- allpts_end$vertex
             }else {
-                pts <- allpts_start %>% group_by(tmpid) %>% summarise_all(first)
-                origin_vertices1 <- pts$vertex
-                pts <- allpts_end %>% group_by(tmpid) %>% summarise_all(first)
-                origin_vertices2 <- pts$vertex
+                dt_start <- data.table(allpts_start)
+                dt_end <- data.table(allpts_end)
+                origin_vertices1 <- dt_start[, data.table::first(vertex), by=tmpid]$V1
+                origin_vertices2 <- dt_end[, data.table::first(vertex), by=tmpid]$V1
             }
 
             dest_vertices <- as.numeric(igraph::V(graph))
@@ -220,11 +222,10 @@ line_ext_listw_gridded <- function(lines, maxdistance, line_weight = "length", d
                 # finding the corresponding roads
                 dfdistances_p1 <- left_join(dfdistances, graphdf, by = c(dest = "from"))
                 dfdistances_p2 <- left_join(dfdistances, graphdf, by = c(dest = "to"))
-                combined <- rbind(dfdistances_p1[c("tmpid", "distance")],
-                  dfdistances_p2[c("tmpid", "distance")])
+                combined <- rbind(dfdistances_p1[c("tmpid", "distance")], dfdistances_p2[c("tmpid", "distance")])
                 combined <- combined %>% group_by(tmpid) %>% summarise_all(min)
-                combined <- subset(combined, combined$tmpid != line$tmpid &
-                  is.na(combined$tmpid) == F)
+                combined <- subset(combined, combined$tmpid != line$tmpid & is.na(combined$tmpid) == F)
+
                 if (nrow(combined) > 0) {
                   if (matrice_type == "B") {
                     combined$weights <- vdist_func(combined$distance)
