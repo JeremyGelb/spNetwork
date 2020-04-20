@@ -129,181 +129,8 @@ calc_NKDE <- function(graph, origins, destinations, range, kernel = "quartic", w
 #### Perform nkde analysis ####
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-#' Lixelize a set of SpatiaLinesDataFrame, snap events (SpatialPointsDataFrame)
-#' to the lixels, generate a graph and then calculate the kernel density
-#' estimate for each lixels centroids
-#'
-#' @param lines The SpatialLinesDataFrame to use as a network
-#' @param points The events to use in the kernel density estimation
-#' @param snap_dist The maximum distance snapping between points and lines
-#' @param lx_length The normal length of a lixel
-#' @param line_weight The ponderation to use for lines. Default is "length"
-#' (the geographical length), but can be the name of a column. The value is
-#' considered proportional with the geographical length of the lines.
-#' @param direction indicate a field giving informations about authorized
-#' traveling direction on lines. if NULL, then all lines can be used in both
-#' directions. Must be the name of a column otherwise. The values of the
-#' column must be "FT" (From - To), "TF" (To - From) or "Both".
-#' @param kernel_range The range of the kernel function
-#' @param kernel The name of the kernel function to use (must be one of
-#' quartic, gaussian or epanechnikov). Default is Quartic.
-#' @param tol The tolerence for topological operations
-#' @param digits The number of digits to keep in the coordinates of the
-#' geometries. This simplification is used to reduce chances of topological
-#' errors
-#' @param mindist The minimum length of a lixel. Defaut is NULL. If NULL,
-#' mindist is set as lx_length/10
-#' @param weights The name of a column of the SpatialPointsDataFrame
-#' containing the weight of each point. Default is NULL. If NULL then each
-#' point has a weight of 1.
-#' @param verbose A string indicating how the advance of the process is
-#' displayed. Default is text. "text" show only the main steps, "progressbar"
-#' show main steps and progress bar for intermediar steps, "silent" show
-#' nothing
-#' @return Vector of kernel densities (one for each origin)
-#' @importFrom sp coordinates SpatialPoints SpatialPointsDataFrame
-#' @importFrom utils txtProgressBar setTxtProgressBar
-#' @importFrom rgeos gCentroid gLength
-#' @export
-#' @examples
-#' data(mtl_network)
-#' data(bike_accidents)
-#' lixels <- nkde(mtl_network,bike_accidents, snap_dist = 150,
-#'       lx_length = 150, line_weight="length", kernel_range = 800, mindist=50)
-nkde <- function(lines, points, snap_dist, lx_length, kernel_range, direction=NULL, line_weight="length", kernel = "quartic", weights = NULL, tol = 0.1, digits = 3, mindist = NULL, verbose = "text") {
 
-    #check for the verbose setting
-    if(verbose %in% c("silent","progressbar","text")==F){
-        stop("the verbose argument must be 'silent', 'progressbar' or 'text'")
-    }
-    lines$tmpid <- 1:nrow(lines)
-    show_progress <- verbose == "progressbar"
-
-    #adjusting the weights of the lines
-    lines$line_length <- gLength(lines,byid=T)
-    if(line_weight=="length"){
-        lines$line_weight <- gLength(lines,byid=T)
-    }else {
-        lines$line_weight <- lines[[line_weight]]
-    }
-
-    if(min(lines$line_weight)<=0){
-        stop("the weights of the lines must be superior to 0")
-    }
-
-    # adjusting the weights of the points
-    if (is.null(weights)) {
-        W <- rep(1, nrow(points))
-    } else {
-        W <- points[[weights]]
-    }
-    points$tmpweight <- W
-
-    # adjusting the directions of the lines
-    if(is.null(direction)==F){
-        lines <- lines_direction(lines,direction)
-    }
-
-    if (verbose != "silent"){
-        print("generating the lixels...")
-    }
-
-    if (show_progress){
-        lixels <- lixelize_lines(lines, lx_length = lx_length, mindist = mindist)
-    }else {
-        invisible(capture.output(lixels <- lixelize_lines(lines, lx_length = lx_length, mindist = mindist)))
-    }
-
-    if (verbose != "silent"){
-        print("extracting the centroids of the lixels...")
-    }
-
-    lixelscenters <- gCentroid(lixels, byid = T)
-    lixelscenters <- SpatialPointsDataFrame(lixelscenters, lixels@data)
-
-    if (verbose != "silent"){
-        print("combining lixels and events ...")
-    }
-
-    lixelscenters$type <- "lixel"
-    lixelscenters$OID <- 1:nrow(lixelscenters)
-    points$type <- "event"
-    points$OID <- 1:nrow(points)
-    allpts <- rbind(lixelscenters[c("type", "OID")], points[c("type", "OID")])
-
-    if (verbose != "silent"){
-        print("snapping points on lines...")
-    }
-
-    snapped_points <- maptools::snapPointsToLines(allpts, lines, maxDist = snap_dist)
-    snapped_points$spOID <- sp_char_index(coordinates(snapped_points), digits = digits)
-    snapped_points <- cbind(snapped_points,allpts)
-
-    if (verbose != "silent"){
-        print("edditing vertices of lines...")
-    }
-
-    if (show_progress){
-        newlines <- add_vertices_lines(lines, snapped_points, tol = tol)
-    }else {
-        invisible(capture.output(newlines <- add_vertices_lines(lines,
-            snapped_points, tol = tol)))
-    }
-
-
-    if (verbose != "silent"){
-        print("converting polylines to simple lines...")
-    }
-
-    lines2 <- simple_lines(newlines)
-
-    #now adjusting the weights of the lixels
-    lines2$lx_length <- gLength(lines2,byid=T)
-    lines2$lx_weight <- (lines2$lx_length / lines2$line_length) * lines2$line_weight
-
-    if (verbose != "silent"){
-        print("building the graph...")
-    }
-    if (is.null(direction)){
-        ListNet <- build_graph(lines2, digits = digits, line_weight='lx_weight')
-    }else{
-        dir <- ifelse(lines2[[direction]]=="Both",0,1)
-        ListNet <- build_graph_directed(lines2, digits = digits,
-            line_weight='lx_weight',direction = dir)
-    }
-
-    Graph <- ListNet$graph
-
-    if (verbose != "silent"){
-        print("getting the starting points...")
-    }
-
-    start_pts <- subset(snapped_points, snapped_points$type == "lixel")
-    origins <- find_vertices(ListNet$spvertices, start_pts, tol = tol, digits = digits)
-
-    if (verbose != "silent"){
-        print("getting the destination points...")
-    }
-
-    end_pts <- subset(snapped_points, snapped_points$type == "event")
-    destinations <- find_vertices(ListNet$spvertices, end_pts, tol = tol,
-        digits = digits)
-
-    if (verbose != "silent"){
-        print("calulating the density values...")
-    }
-
-    Values <- calc_NKDE(Graph, origins, destinations, kernel = kernel,
-        range = kernel_range, weights = points$tmpweight)
-    start_pts$density <- Values
-
-    lixels$density <- Values
-
-    return(list(lixel_lines = lixels, lixels_points = start_pts))
-}
-
-
-#' Gridded version of nkde function.
+#' nkde function.
 #'
 #' The dataset is spatialy splitted in squares convering the extent of the
 #' SpatiaLine. This greatly improve performance and memory usage. To avoid
@@ -330,7 +157,7 @@ nkde <- function(lines, points, snap_dist, lx_length, kernel_range, direction=NU
 #' containing the weight of each point. Default is NULL. If NULL then each
 #' point has a weight of 1.
 #' @param grid_shape A vector of length 2 indicating the shape of the grid to
-#' use for splitting the dataset. Default is c(2,2)
+#' use for splitting the dataset. Default is c(1,1)
 #' @param verbose A string indicating how the advance of the process is
 #' displayed. Default is all. "text" show only the main steps, "progressbar"
 #' show main steps and progress bar for intermediar steps, "all" add a plot
@@ -344,7 +171,7 @@ nkde <- function(lines, points, snap_dist, lx_length, kernel_range, direction=NU
 #' @examples
 #' data(mtl_network)
 #' data(bike_accidents)
-#' lixels_nkde <- nkde_grided(mtl_network, bike_accidents,
+#' lixels_nkde <- nkde(mtl_network, bike_accidents,
 #'       snap_dist = 150,
 #'       lx_length = 150,
 #'       mindist = 50,
@@ -352,7 +179,7 @@ nkde <- function(lines, points, snap_dist, lx_length, kernel_range, direction=NU
 #'       kernel='quartic',
 #'       grid_shape=c(5,5)
 #' )
-nkde_grided <- function(lines, points, snap_dist, lx_length, line_weight="length", kernel_range, kernel = "quartic", tol = 0.1, digits = 3, mindist = NULL, weights = NULL, grid_shape = c(2, 2), verbose = "all") {
+nkde<- function(lines, points, snap_dist, lx_length, line_weight="length", kernel_range, kernel = "quartic", tol = 0.1, digits = 3, mindist = NULL, weights = NULL, grid_shape = c(1,1), verbose = "all") {
     if(verbose %in% c("silent","progressbar","text","all")==F){
         stop("the verbose argument must be 'all', 'silent', 'progressbar' or 'text'")
     }

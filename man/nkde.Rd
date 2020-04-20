@@ -2,24 +2,22 @@
 % Please edit documentation in R/nkde.R
 \name{nkde}
 \alias{nkde}
-\title{Lixelize a set of SpatiaLinesDataFrame, snap events (SpatialPointsDataFrame)
-to the lixels, generate a graph and then calculate the kernel density
-estimate for each lixels centroids}
+\title{nkde function.}
 \usage{
 nkde(
   lines,
   points,
   snap_dist,
   lx_length,
-  kernel_range,
-  direction = NULL,
   line_weight = "length",
+  kernel_range,
   kernel = "quartic",
-  weights = NULL,
   tol = 0.1,
   digits = 3,
   mindist = NULL,
-  verbose = "text"
+  weights = NULL,
+  grid_shape = c(1, 1),
+  verbose = "all"
 )
 }
 \arguments{
@@ -29,51 +27,56 @@ nkde(
 
 \item{snap_dist}{The maximum distance snapping between points and lines}
 
-\item{lx_length}{The normal length of a lixel}
-
-\item{kernel_range}{The range of the kernel function}
-
-\item{direction}{indicate a field giving informations about authorized
-traveling direction on lines. if NULL, then all lines can be used in both
-directions. Must be the name of a column otherwise. The values of the
-column must be "FT" (From - To), "TF" (To - From) or "Both".}
+\item{lx_length}{The expected length of a lixel}
 
 \item{line_weight}{The ponderation to use for lines. Default is "length"
 (the geographical length), but can be the name of a column. The value is
 considered proportional with the geographical length of the lines.}
 
+\item{kernel_range}{The range of the kernel function}
+
 \item{kernel}{The name of the kernel function to use (must be one of
-quartic, gaussian or epanechnikov). Default is Quartic.}
+quartic, gaussian or epanechnikov). Default is Quartic}
+
+\item{tol}{The tolerence for topological operations}
+
+\item{digits}{The number of digits to keep in the coordinates of the
+geometries}
+
+\item{mindist}{The minimum length of a lixel. Defaut is NULL. If NULL,
+mindist is set as lx_length/10}
 
 \item{weights}{The name of a column of the SpatialPointsDataFrame
 containing the weight of each point. Default is NULL. If NULL then each
 point has a weight of 1.}
 
-\item{tol}{The tolerence for topological operations}
-
-\item{digits}{The number of digits to keep in the coordinates of the
-geometries. This simplification is used to reduce chances of topological
-errors}
-
-\item{mindist}{The minimum length of a lixel. Defaut is NULL. If NULL,
-mindist is set as lx_length/10}
+\item{grid_shape}{A vector of length 2 indicating the shape of the grid to
+use for splitting the dataset. Default is c(1,1)}
 
 \item{verbose}{A string indicating how the advance of the process is
-displayed. Default is text. "text" show only the main steps, "progressbar"
-show main steps and progress bar for intermediar steps, "silent" show
-nothing}
+displayed. Default is all. "text" show only the main steps, "progressbar"
+show main steps and progress bar for intermediar steps, "all" add a plot
+of the grid to follow visually the processing, "silent" show nothing}
 }
 \value{
 Vector of kernel densities (one for each origin)
 }
 \description{
-Lixelize a set of SpatiaLinesDataFrame, snap events (SpatialPointsDataFrame)
-to the lixels, generate a graph and then calculate the kernel density
-estimate for each lixels centroids
+The dataset is spatialy splitted in squares convering the extent of the
+SpatiaLine. This greatly improve performance and memory usage. To avoid
+frontier effect, a buffer is used (size of the kernel range parameter)
+around the square when building local graphs. As a consequence, too small
+squares will lead to longer calculation.
 }
 \examples{
 data(mtl_network)
 data(bike_accidents)
-lixels <- nkde(mtl_network,bike_accidents, snap_dist = 150,
-      lx_length = 150, line_weight="length", kernel_range = 800, mindist=50)
+lixels_nkde <- nkde(mtl_network, bike_accidents,
+      snap_dist = 150,
+      lx_length = 150,
+      mindist = 50,
+      kernel_range = 800,
+      kernel='quartic',
+      grid_shape=c(5,5)
+)
 }

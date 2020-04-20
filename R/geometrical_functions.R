@@ -131,7 +131,7 @@ add_vertices <- function(line, points, i) {
 #' @param check A boolean indicating if the function must check if all points
 #' were added
 #' @return An object of class SpatialLinesDataFrame (package sp)
-#' @importFrom rgeos gIntersects gBuffer
+#' @importFrom rgeos gIntersects gBuffer gDistance
 #' @importFrom sp coordinates SpatialPoints SpatialLinesDataFrame Line
 #'   SpatialLines
 #' @importFrom utils txtProgressBar setTxtProgressBar
@@ -139,15 +139,21 @@ add_vertices <- function(line, points, i) {
 #' #This is an internal function, no example provided
 add_vertices_lines <- function(lines, points, tol = 0.1, check = TRUE) {
     pb <- txtProgressBar(min = 0, max = nrow(lines), style = 3)
-    remainingpoints <- points
+    alldistances <- gDistance(lines,points,byid=T)<=tol
+    ptscheck <- rep(FALSE,nrow(points))
     new_lines_list <- lapply(1:nrow(lines), function(i) {
         setTxtProgressBar(pb, i)
         line <- lines[i, ]
-        testpts <- as.vector(gIntersects(remainingpoints, gBuffer(line, width = tol),
-            byid = T, prepared = T))
+        #testpts <- as.vector(gIntersects(remainingpoints, gBuffer(line, width = tol),
+            #byid = T, prepared = T))
+        testpts <- alldistances[,i]
         if (any(testpts)) {
-            okpts <- subset(remainingpoints, testpts)
-            remainingpoints <<- subset(remainingpoints, testpts == FALSE)
+            okpts <- subset(points,testpts)
+            if(check){
+                ptscheck <<- ifelse(testpts,TRUE,ptscheck)
+            }
+            #okpts <- subset(remainingpoints, testpts)
+            #remainingpoints <<- subset(remainingpoints, testpts == FALSE)
             newline <- add_vertices(line, okpts, i)
             return(newline)
         } else {
@@ -159,10 +165,15 @@ add_vertices_lines <- function(lines, points, tol = 0.1, check = TRUE) {
     })
     if (check) {
         # performing a check to ensure that all points were added to the lines
-        if (nrow(remainingpoints) > 0) {
-            print(paste("remaining points : ", nrow(remainingpoints)), sep = "")
+        # if (nrow(remainingpoints) > 0) {
+        #     print(paste("remaining points : ", nrow(remainingpoints)), sep = "")
+        #     stop("some points were not added as vertices bro... try to increase
+        #          the tolerance or to snap these points")
+        # }
+        if(sum(ptscheck)<nrow(points)){
+            print(paste("remaining points : ", sum(ptscheck) ,"/" ,nrow(points)), sep = "")
             stop("some points were not added as vertices bro... try to increase
-                 the tolerance or to snap these points")
+                  the tolerance or to snap these points")
         }
     }
 
@@ -435,6 +446,49 @@ add_center_lines.mc <- function(lines, show_progress = T, chunk_size = 100) {
     return(final_lines)
 }
 
+
+
+lines_points_along <- function(lines,dist){
+    lenghts <- gLength(lines, byid = T)
+    list_pts <- lapply(1:nrow(lines),function(i){
+        line <- lines[i,]
+        line_lenght <- lenghts[i]
+        distances <- seq(0,line_lenght,dist)
+        pts <- gInterpolate(line,distances)
+        return(pts)
+    })
+    oids <- lapply(1:length(list_pts),function(i){rep(i,length(list_pts[[i]]))})
+    oids <- do.call("c",oids)
+    all_pts <- do.call(rbind,list_pts)
+    data <- lines@data[oids,]
+    all_pts <- sp::SpatialPointsDataFrame(all_pts,data)
+    return(all_pts)
+}
+
+
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#### functions on polygons ####
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+#' Generate a SpatialPointsDataFrame by placing points along the border of
+#' polygons of a SpatialPolygonsDataFrame
+#'
+#' @param polygons A SpatialPolygonsDataFrame
+#' @param dist The distance between the points
+#' @importFrom rgeos gBoundary
+#' @return a SpatialPolygonsDataFrame representing the grid
+#' @examples
+#' #This is an internal function, no example provided
+surrounding_points <- function(polygons,dist){
+    #extracting the boundaries and their lengths
+    boundaries <- gBoundary(polygons, byid=T)
+    df <- sp::SpatialLinesDataFrame(boundaries,polygons@data)
+    all_pts <- lines_points_along(df,dist)
+    return(df)
+}
+
+
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #### gridding function ####
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -448,14 +502,22 @@ add_center_lines.mc <- function(lines, show_progress = T, chunk_size = 100) {
 #' @examples
 #' #This is an internal function, no example provided
 build_grid <- function(grid_shape, spatial) {
-    ## step1 : creating the grid
-    box <- sp::bbox(spatial)
-    x <- seq(from = box[1, 1], to = box[1, 2], length.out = grid_shape[[1]])
-    y <- seq(from = box[2, 1], to = box[2, 2], length.out = grid_shape[[2]])
-    xy <- expand.grid(x = x, y = y)
-    grid.pts <- sp::SpatialPointsDataFrame(coords = xy, data = xy)
-    raster::crs(grid.pts) <- raster::crs(spatial)
-    sp::gridded(grid.pts) <- TRUE
-    grid <- methods::as(grid.pts, "SpatialPolygons")
-    return(grid)
+    if(prod(grid_shape)==1){
+        ext <- raster::extent(spatial)
+        poly <- methods::as(ext, "SpatialPolygons")
+        raster::crs(poly) <- raster::crs(spatial)
+        return(poly)
+    }else{
+        ## step1 : creating the grid
+        box <- sp::bbox(spatial)
+        x <- seq(from = box[1, 1], to = box[1, 2], length.out = grid_shape[[1]])
+        y <- seq(from = box[2, 1], to = box[2, 2], length.out = grid_shape[[2]])
+        xy <- expand.grid(x = x, y = y)
+        grid.pts <- sp::SpatialPointsDataFrame(coords = xy, data = xy)
+        raster::crs(grid.pts) <- raster::crs(spatial)
+        sp::gridded(grid.pts) <- TRUE
+        grid <- methods::as(grid.pts, "SpatialPolygons")
+        return(grid)
+    }
+
 }

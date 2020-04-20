@@ -112,7 +112,7 @@ exe_nkde <- function(i, grid, lines, lixels, points, kernel, kernel_range, snap_
 #### launching functions ####
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-#' Gridded version of nkde with multicore support.
+#' nkde with multicore support.
 #'
 #' The dataset is spatialy splitted in squares convering
 #' the extent of the SpatiaLine. This greatly improve performance and memory
@@ -158,7 +158,7 @@ exe_nkde <- function(i, grid, lines, lixels, points, kernel, kernel_range, snap_
 #' data(mtl_network)
 #' data(bike_accidents)
 #' future::plan(future::multiprocess(workers=2))
-#' lixels_nkde <- nkde_grided.mc(mtl_network, bike_accidents,
+#' lixels_nkde <- nkde.mc(mtl_network, bike_accidents,
 #'       snap_dist = 150,
 #'       lx_length = 150,
 #'       line_weight = "length",
@@ -171,7 +171,7 @@ exe_nkde <- function(i, grid, lines, lixels, points, kernel, kernel_range, snap_
 #'    ## R CMD check: make sure any open connections are closed afterward
 #'    if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
 #'}
-nkde_grided.mc <- function(lines, points, snap_dist, lx_length, line_weight="length", direction=NULL, kernel_range, kernel = "quartic", tol = 0.1, digits = 3, mindist = NULL, weights = NULL, grid_shape = c(2, 2), verbose = "progressbar") {
+nkde.mc <- function(lines, points, snap_dist, lx_length, line_weight="length", direction=NULL, kernel_range, kernel = "quartic", tol = 0.1, digits = 3, mindist = NULL, weights = NULL, grid_shape = c(2, 2), verbose = "progressbar") {
     if(verbose %in% c("silent","progressbar")==F){
         stop("the verbose argument must be 'silent' or 'progressbar'")
     }

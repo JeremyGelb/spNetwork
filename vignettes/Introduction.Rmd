@@ -118,7 +118,7 @@ plot(bike_accidents,add=T,col='red')
 
 
 #then applying the NKDE
-lixels <- nkde_grided(mtl_network,bike_accidents,
+lixels <- nkde(mtl_network,bike_accidents,
             snap_dist = 150,
             lx_length=200,mindist=50,
             kernel_range = 300, kernel='quartic',
@@ -187,7 +187,7 @@ Let us split the work between 4 cores.
 future::plan(future::multiprocess(workers=4))
 
 #then applying the NKDE
-lixels_mc <- nkde_grided.mc(mtl_network,bike_accidents,
+lixels_mc <- nkde.mc(mtl_network,bike_accidents,
             snap_dist = 150,
             lx_length=200,mindist=50,
             kernel_range = 300, kernel='quartic',
@@ -220,7 +220,7 @@ When one works with data constrained on a network, using euclidean distance to e
 
 **spNetwork** offers the possibility to create listw objects for SpatialLinesDataFrame based on reticular distance. Lets give an exemple here : calculating the Moran I for the number of bike accidents recorded on the montreal road network in 2016.
 
-We will use here the function *line_ext_listw_gridded*. The distances are calculated form the start and end points of the lines to the start and end points of the other lines. It is possible to use the function *line_center_listw_gridded* to calculate distance from line center to start and end points of other lines.
+We will use here the function *network_listw*. The distances can be calculated from the centroids of the lines, from the ends of the lines or from evenly spaced points on the lines. We will use here the ends method.
 
 let us consider that above 300 meters two segments are not neighbours anymore, and convert the distances between the observations into spatial weights with the inverse of the squared distance
 
@@ -228,13 +228,15 @@ let us consider that above 300 meters two segments are not neighbours anymore, a
 library(spdep)
 data(mtl_network)
 
-netlistw <- line_ext_listw_gridded(mtl_network,
-                                   maxdistance = 300,
-                                   dist_func = "squared inverse",
-                                   line_weight = 'length',
-                                   matrice_type = 'W',
-                                   grid_shape = c(5,5),
-                                   verbose='silent')
+netlistw <- network_listw(mtl_network,mtl_network,
+                           method = "ends",
+                           mindist = 10,
+                           maxdistance = 300,
+                           dist_func = "squared inverse",
+                           line_weight = 'length',
+                           matrice_type = 'W',
+                           grid_shape = c(5,5),
+                           verbose='silent')
 
 Test <- moran.test(mtl_network$nbAccident, netlistw, zero.policy = T)
 print(round(Test$estimate,4))
@@ -252,13 +254,15 @@ my_conv_func <- function(x){
   }
 }
 
-netlistw2 <- line_ext_listw_gridded(mtl_network,
-                                   maxdistance = 300,
-                                   dist_func = my_conv_func,
-                                   line_weight = 'length',
-                                   matrice_type = 'W',
-                                   grid_shape = c(5,5),
-                                   verbose='silent')
+netlistw2 <- network_listw(mtl_network, mtl_network,
+                             method = "ends",
+                             mindist = 10,
+                             maxdistance = 300,
+                             dist_func = my_conv_func,
+                             line_weight = 'length',
+                             matrice_type = 'W',
+                             grid_shape = c(5,5),
+                             verbose='silent')
 
 Test2 <- moran.test(mtl_network$nbAccident, netlistw2, zero.policy = T)
 print(round(Test2$estimate,4))
@@ -271,13 +275,15 @@ We can also use the mutliprocess version of the function. Let us use it to calcu
 #setting the multiprocess plan
 future::plan(future::multiprocess(workers=4))
 
-netlistw3 <- line_ext_listw_gridded.mc(mtl_network,
-                                   maxdistance = 300,
-                                   dist_func = my_conv_func,
-                                   line_weight = 'length',
-                                   matrice_type = 'W',
-                                   grid_shape = c(5,5),
-                                   verbose='silent')
+netlistw3 <- network_listw.mc(mtl_network, mtl_network,
+                             method = "ends",
+                             mindist = 10,
+                             maxdistance = 300,
+                             dist_func = my_conv_func,
+                             line_weight = 'length',
+                             matrice_type = 'W',
+                             grid_shape = c(5,5),
+                             verbose='silent')
 
 if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
 
@@ -352,7 +358,7 @@ future::plan(future::multiprocess(workers=4))
 
 print("calculating the lixels density ...")
 #then applying the NKDE
-lixels <- nkde_grided.mc(mtl_network,bike_accidents,
+lixels <- nkde.mc(mtl_network,bike_accidents,
             snap_dist = 150,
             lx_length=150,mindist=50,
             kernel_range = 300, kernel='quartic',
@@ -365,13 +371,14 @@ lixels <- nkde_grided.mc(mtl_network,bike_accidents,
 # and considere a maximum distance of kernel_range + lx_length
 
 print("building the spatial matrix ...")
-netlistw4 <- line_center_listw_gridded.mc(lixels,
-                                   maxdistance = 450,
-                                   dist_func = "squared inverse",
-                                   line_weight = 'length',
-                                   matrice_type = 'W',
-                                   grid_shape = c(5,5),
-                                   verbose='silent')
+netlistw4 <- network_listw.mc(lixels, mtl_network,
+                                 method="centroid",
+                                 maxdistance = 450,
+                                 dist_func = "squared inverse",
+                                 line_weight = 'length',
+                                 matrice_type = 'W',
+                                 grid_shape = c(5,5),
+                                 verbose='silent')
 
 #we can now calculate the local Moran I
 Lisa <- localmoran(lixels$density,netlistw4, zero.policy = T)
