@@ -1,4 +1,3 @@
-# tidyr rgeos sp igraph raster dplyr %>%
 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #### helper functions ####
@@ -109,16 +108,41 @@ lines_direction <- function(lines,field){
 add_vertices <- function(line, points, i) {
     # extract coordinates
     line_coords <- coordinates(line)[[1]][[1]]
-    all_coords <- rbind(line_coords, coordinates(points))
-    rownames(all_coords) <- 1:nrow(all_coords)
+    original_distances <- sapply(1:nrow(line_coords),function(i){
+        if (i==0){
+            return(0)
+        }else{
+            return(sqrt(sum((line_coords[i,]-line_coords[i-1,])**2)))
+        }
+    })
+    line_coords <- cbind(line_coords, original_distances)
+    pt_coords <- coordinates(points)
     # calculate lengths
-    new_pts <- SpatialPoints(all_coords)
-    lengths <- gProject(line, new_pts)
+    lengths <- gProject(line, points)
+    pt_coords <- cbind(pt_coords, lengths)
+    all_coords <- rbind(line_coords,pt_coords)
     # reorder the coordinate matrix
-    ord_coords <- all_coords[order(lengths), ]
+    ord_coords <- all_coords[order(all_coords[,3]), ]
     new_line <- Lines(list(Line(ord_coords[, 1:2])), ID = i)
     return(new_line)
 }
+
+
+
+
+# add_vertices <- function(line, points, i) {
+#     # extract coordinates
+#     line_coords <- coordinates(line)[[1]][[1]]
+#     all_coords <- rbind(line_coords, coordinates(points))
+#     rownames(all_coords) <- 1:nrow(all_coords)
+#     # calculate lengths
+#     new_pts <- SpatialPoints(all_coords)
+#     lengths <- gProject(line, new_pts)
+#     # reorder the coordinate matrix
+#     ord_coords <- all_coords[order(lengths), ]
+#     new_line <- Lines(list(Line(ord_coords[, 1:2])), ID = i)
+#     return(new_line)
+# }
 
 
 #' Add vertices (SpatialPoints) to many lines (SpatialLines), may fail
@@ -176,7 +200,6 @@ add_vertices_lines <- function(lines, points, tol = 0.1, check = TRUE) {
                   the tolerance or to snap these points")
         }
     }
-
 
     final_lines <- SpatialLinesDataFrame(SpatialLines(new_lines_list), lines@data,
         match.ID = F)

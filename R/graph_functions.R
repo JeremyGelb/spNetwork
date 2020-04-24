@@ -120,6 +120,7 @@ build_graph_directed <- function(lines, digits, line_weight, direction, attrs = 
 #' @importFrom sp coordinates SpatialPoints SpatialPointsDataFrame
 #' @importFrom utils txtProgressBar setTxtProgressBar
 #' @importFrom rgeos gIntersects gBuffer
+#' @importFrom dplyr %>%
 #' @examples
 #' #This is an internal function, no example provided
 find_vertices <- function(spvertices, points, digits, tol = 0.1) {

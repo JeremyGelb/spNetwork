@@ -181,11 +181,15 @@ prepare_elements_netlistw <- function(i,grid,snapped_points,lines,maxdistance){
         poly <- methods::as(ext, "SpatialPolygons")
         raster::crs(poly) <- raster::crs(start_pts)
         buff <- gBuffer(poly, width = maxdistance)
-        test2 <- as.vector(gIntersects(buff,snapped_points,byid=T))
-        end_pts <- snapped_points[test2 & test1==F,]
-        end_pts$pttype <- "end"
-        #combining all the points
-        all_pts <- rbind(start_pts,end_pts)
+        if(nrow(start_pts)==nrow(snapped_points)){
+            all_pts <- start_pts
+        }else{
+            test2 <- as.vector(gIntersects(buff,snapped_points,byid=T))
+            end_pts <- snapped_points[test2 & test1==F,]
+            end_pts$pttype <- "end"
+            #combining all the points
+            all_pts <- rbind(start_pts,end_pts)
+        }
         #selecting the lines
         test3 <- as.vector(gIntersects(buff,lines,byid=T))
         selected_lines <- lines[test3,]
