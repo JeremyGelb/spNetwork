@@ -94,13 +94,14 @@ lines_direction <- function(lines,field){
     return(df)
 }
 
+
 #' Add vertices (SpatialPoints) to a single line (SpatialLines), may fail
 #' if the lines geometries are self intersecting
 #'
 #' @param line The SpatialLine to modify
 #' @param points The SpatialPoints to add to as vertex to the lines
 #' @param i The index of the line (for recombining after all lines)
-#' @return An object of class Lines (package sp)
+#' @return A matrix of coordinates to build the new line
 #' @importFrom rgeos gProject
 #' @importFrom sp coordinates SpatialPoints Line Lines
 #' @examples
@@ -123,26 +124,9 @@ add_vertices <- function(line, points, i) {
     all_coords <- rbind(line_coords,pt_coords)
     # reorder the coordinate matrix
     ord_coords <- all_coords[order(all_coords[,3]), ]
-    new_line <- Lines(list(Line(ord_coords[, 1:2])), ID = i)
-    return(new_line)
+    return(ord_coords[,1:2])
 }
 
-
-
-
-# add_vertices <- function(line, points, i) {
-#     # extract coordinates
-#     line_coords <- coordinates(line)[[1]][[1]]
-#     all_coords <- rbind(line_coords, coordinates(points))
-#     rownames(all_coords) <- 1:nrow(all_coords)
-#     # calculate lengths
-#     new_pts <- SpatialPoints(all_coords)
-#     lengths <- gProject(line, new_pts)
-#     # reorder the coordinate matrix
-#     ord_coords <- all_coords[order(lengths), ]
-#     new_line <- Lines(list(Line(ord_coords[, 1:2])), ID = i)
-#     return(new_line)
-# }
 
 
 #' Add vertices (SpatialPoints) to many lines (SpatialLines), may fail
@@ -168,32 +152,22 @@ add_vertices_lines <- function(lines, points, tol = 0.1, check = TRUE) {
     new_lines_list <- lapply(1:nrow(lines), function(i) {
         setTxtProgressBar(pb, i)
         line <- lines[i, ]
-        #testpts <- as.vector(gIntersects(remainingpoints, gBuffer(line, width = tol),
-            #byid = T, prepared = T))
         testpts <- alldistances[,i]
         if (any(testpts)) {
             okpts <- subset(points,testpts)
             if(check){
                 ptscheck <<- ifelse(testpts,TRUE,ptscheck)
             }
-            #okpts <- subset(remainingpoints, testpts)
-            #remainingpoints <<- subset(remainingpoints, testpts == FALSE)
             newline <- add_vertices(line, okpts, i)
             return(newline)
         } else {
-            nline <- Line(coordinates(line)[[1]][[1]])
-            sline <- Lines(list(nline), ID = i)
+            sline <- coordinates(line)[[1]][[1]]
             return(sline)
         }
 
     })
     if (check) {
         # performing a check to ensure that all points were added to the lines
-        # if (nrow(remainingpoints) > 0) {
-        #     print(paste("remaining points : ", nrow(remainingpoints)), sep = "")
-        #     stop("some points were not added as vertices bro... try to increase
-        #          the tolerance or to snap these points")
-        # }
         if(sum(ptscheck)<nrow(points)){
             print(paste("remaining points : ", sum(ptscheck) ,"/" ,nrow(points)), sep = "")
             stop("some points were not added as vertices bro... try to increase
@@ -201,11 +175,12 @@ add_vertices_lines <- function(lines, points, tol = 0.1, check = TRUE) {
         }
     }
 
-    final_lines <- SpatialLinesDataFrame(SpatialLines(new_lines_list), lines@data,
-        match.ID = F)
+    final_lines <- do.call(raster::spLines,new_lines_list)
+    final_lines <- SpatialLinesDataFrame(final_lines, lines@data,match.ID = F)
     raster::crs(final_lines) <- raster::crs(lines)
     return(final_lines)
 }
+
 
 
 #' Cut a SpatialLines object into lixels with a specified minimal distance
@@ -355,21 +330,18 @@ simple_lines <- function(lines) {
     oids <- do.call("c", oids)
 
     ## using the coordinates to create newlines
-    cnt <- 1
     new_lines <- lapply(1:length(allcoords), function(i) {
         coords <- allcoords[[i]][[1]]
         segment_lines <- lapply(1:(nrow(coords) - 1), function(i) {
             mat <- coords[i:(i + 1), ]
-            newline <- Lines(list(Line(mat)), ID = cnt)
-            cnt <<- cnt + 1
-            return(newline)
+            return(mat)
         })
         return(segment_lines)
     })
     data <- lines@data[oids, ]
 
-    final_lines <- SpatialLinesDataFrame(SpatialLines(unlist(new_lines)),
-        data, match.ID = F)
+    final_lines <- do.call(raster::spLines,unlist(new_lines,recursive = F))
+    final_lines <- SpatialLinesDataFrame(final_lines,data, match.ID = F)
     raster::crs(final_lines) <- raster::crs(lines)
     return(final_lines)
 }
