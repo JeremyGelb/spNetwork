@@ -15,7 +15,7 @@ add_vertices(line, points, i)
 \item{i}{The index of the line (for recombining after all lines)}
 }
 \value{
-An object of class Lines (package sp)
+A matrix of coordinates to build the new line
 }
 \description{
 Add vertices (SpatialPoints) to a single line (SpatialLines), may fail
