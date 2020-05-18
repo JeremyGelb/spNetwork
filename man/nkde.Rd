@@ -9,6 +9,7 @@ nkde(
   points,
   snap_dist,
   lx_length,
+  lixels = NULL,
   line_weight = "length",
   kernel_range,
   kernel = "quartic",
@@ -28,6 +29,10 @@ nkde(
 \item{snap_dist}{The maximum distance snapping between points and lines}
 
 \item{lx_length}{The expected length of a lixel}
+
+\item{lixels}{A SpatialLinesDataFrame created before with the same network.
+If NULL, then the lixels will be created using the argument lx_lenght and
+mindist}
 
 \item{line_weight}{The ponderation to use for lines. Default is "length"
 (the geographical length), but can be the name of a column. The value is

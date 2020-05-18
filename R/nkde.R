@@ -142,6 +142,9 @@ calc_NKDE <- function(graph, origins, destinations, range, kernel = "quartic", w
 #' @param points The events to use in the kernel density estimation
 #' @param snap_dist The maximum distance snapping between points and lines
 #' @param lx_length The expected length of a lixel
+#' @param lixels A SpatialLinesDataFrame created before with the same network.
+#' If NULL, then the lixels will be created using the argument lx_lenght and
+#' mindist
 #' @param line_weight The ponderation to use for lines. Default is "length"
 #' (the geographical length), but can be the name of a column. The value is
 #' considered proportional with the geographical length of the lines.
@@ -179,7 +182,7 @@ calc_NKDE <- function(graph, origins, destinations, range, kernel = "quartic", w
 #'       kernel='quartic',
 #'       grid_shape=c(5,5)
 #' )
-nkde<- function(lines, points, snap_dist, lx_length, line_weight="length", kernel_range, kernel = "quartic", tol = 0.1, digits = 3, mindist = NULL, weights = NULL, grid_shape = c(1,1), verbose = "all") {
+nkde<- function(lines, points, snap_dist, lx_length, lixels=NULL, line_weight="length", kernel_range, kernel = "quartic", tol = 0.1, digits = 3, mindist = NULL, weights = NULL, grid_shape = c(1,1), verbose = "all") {
     if(verbose %in% c("silent","progressbar","text","all")==F){
         stop("the verbose argument must be 'all', 'silent', 'progressbar' or 'text'")
     }
@@ -213,12 +216,16 @@ nkde<- function(lines, points, snap_dist, lx_length, line_weight="length", kerne
     if (verbose != "silent"){
         print("generating the lixels...")
     }
-    if (show_progress){
-        lixels <- lixelize_lines(lines, lx_length = lx_length, mindist = mindist)
-    }else {
-        invisible(capture.output(lixels <- lixelize_lines(lines,
-            lx_length = lx_length, mindist = mindist)))
+
+    if (is.null(lixels)){
+        if (show_progress){
+            lixels <- lixelize_lines(lines, lx_length = lx_length, mindist = mindist)
+        }else {
+            invisible(capture.output(lixels <- lixelize_lines(lines,
+                lx_length = lx_length, mindist = mindist)))
+        }
     }
+
     lixels$lxid <- 1:nrow(lixels)
 
     if (verbose != "silent"){

@@ -206,16 +206,13 @@ lixelize_lines <- function(lines, lx_length, mindist = NULL) {
         mindist <- lx_length/10
     }
     pb <- txtProgressBar(min = 0, max = nrow(lines), style = 3)
-    cnt <- 1
     newlixels <- lapply(1:nrow(lines), function(i) {
         setTxtProgressBar(pb, i)
         line <- lines[i, ]
         tot_length <- gLength(line)
         if (tot_length < lx_length+mindist) {
             coords <- coordinates(line)
-            lixel <- list(Lines(list(Line(coords[[1]][[1]])), ID = cnt))
-            cnt <<- cnt + 1
-            return(lixel)
+            return(list(coords[[1]][[1]]))
         } else {
             # producing the points to snapp on
             distances <- seq(lx_length, tot_length, lx_length)
@@ -226,12 +223,12 @@ lixelize_lines <- function(lines, lx_length, mindist = NULL) {
                 return(coordinates(gInterpolate(line, d)))
             }))
             points <- data.frame(x = points[, 1], y = points[, 2], distance = distances,
-                type = "cut")
+                                 type = "cut")
             # extracting the original coordinates
             coords <- SpatialPoints(coordinates(line))
             xy <- coordinates(coords)
             points2 <- data.frame(x = xy[, 1], y = xy[, 2], distance = gProject(line,
-                coords), type = "base")
+                                                                                coords), type = "base")
             # merging both and sorting
             allpts <- rbind(points, points2)
             allpts <- allpts[order(allpts$distance), ]
@@ -239,9 +236,7 @@ lixelize_lines <- function(lines, lx_length, mindist = NULL) {
             indices <- c(0, which(allpts$type == "cut"), nrow(allpts))
             lixels <- lapply(1:(length(indices) - 1), function(j) {
                 pts <- allpts[indices[[j]]:indices[[j + 1]], ]
-                lixel <- Lines(list(Line(pts[, 1:2])), ID = cnt)
-                cnt <<- cnt + 1
-                return(lixel)
+                return(as.matrix(pts[, 1:2]))
             })
             return(lixels)
         }
@@ -250,7 +245,7 @@ lixelize_lines <- function(lines, lx_length, mindist = NULL) {
         return(rep(i, length(newlixels[[i]])))
     })
     oids <- do.call("c", oids)
-    new_lines <- SpatialLines(unlist(newlixels))
+    new_lines <- do.call(raster::spLines,unlist(newlixels,recursive = F))
     new_splines <- SpatialLinesDataFrame(new_lines, lines@data[oids, ], match.ID = F)
     raster::crs(new_splines) <- raster::crs(lines)
     return(new_splines)

@@ -127,6 +127,9 @@ exe_nkde <- function(i, grid, lines, lixels, points, kernel, kernel_range, snap_
 #' @param points The events to use in the kernel density estimation
 #' @param snap_dist The maximum distance snapping between points and lines
 #' @param lx_length The expected length of a lixel
+#' @param lixels A SpatialLinesDataFrame created before with the same network.
+#' If NULL, then the lixels will be created using the argument lx_lenght and
+#' mindist
 #' @param line_weight The ponderation to use for lines. Default is "length"
 #' (the geographical length), but can be the name of a column. The value is
 #' considered proportional with the geographical length of the lines.
@@ -171,7 +174,7 @@ exe_nkde <- function(i, grid, lines, lixels, points, kernel, kernel_range, snap_
 #'    ## R CMD check: make sure any open connections are closed afterward
 #'    if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
 #'}
-nkde.mc <- function(lines, points, snap_dist, lx_length, line_weight="length", direction=NULL, kernel_range, kernel = "quartic", tol = 0.1, digits = 3, mindist = NULL, weights = NULL, grid_shape = c(2, 2), verbose = "progressbar") {
+nkde.mc <- function(lines, points, snap_dist, lx_length, lixels=NULL, line_weight="length", direction=NULL, kernel_range, kernel = "quartic", tol = 0.1, digits = 3, mindist = NULL, weights = NULL, grid_shape = c(2, 2), verbose = "progressbar") {
     if(verbose %in% c("silent","progressbar")==F){
         stop("the verbose argument must be 'silent' or 'progressbar'")
     }
@@ -212,8 +215,11 @@ nkde.mc <- function(lines, points, snap_dist, lx_length, line_weight="length", d
         print("generating the lixels...")
     }
 
-    lixels <- lixelize_lines.mc(lines, lx_length = lx_length, mindist = mindist,
-        show_progress=show_progress)
+    if (is.null(lixels)){
+        lixels <- lixelize_lines.mc(lines, lx_length = lx_length, mindist = mindist,
+                show_progress=show_progress)
+    }
+
     lixels$lxid <- 1:nrow(lixels)
     ## step3 : lancer les iterations
     if(verbose != "silent"){
