@@ -155,7 +155,7 @@ network_listw_worker<-function(points,lines,maxdistance,dist_func, direction=NUL
 
 #' Function to prepare selected points and selected lines during the process
 #'
-#' @param i The index of the quadra to use in the grid
+#' @param is The indices of the quadras to use in the grid
 #' @param grid A SpatialPolygonsDataFrame representing the quadras to split
 #' calculus
 #' @param snapped_points The start and end points snapped to the lines
@@ -165,37 +165,43 @@ network_listw_worker<-function(points,lines,maxdistance,dist_func, direction=NUL
 #' @return A list of two elements : selected points and selected lines
 #' @examples
 #' #no example provided, this is an internal function
-prepare_elements_netlistw <- function(i,grid,snapped_points,lines,maxdistance){
+prepare_elements_netlistw <- function(is,grid,snapped_points,lines,maxdistance){
+    #preparing the spatial indices
+    lines_tree <- build_quadtree(lines)
+    snapped_points_tree <- build_quadtree(snapped_points)
+
+    snapped_points$oids <- 1:nrow(snapped_points)
     #extracting the quadra
-    quadra <- grid[i,]
-    #selecting the starting points
-    test1 <- as.vector(gIntersects(quadra,snapped_points,byid=T))
-    if(any(test1)==F){
-        return(NULL)
-    }else{
-        start_pts <- snapped_points[test1,]
-        start_pts <- snapped_points[snapped_points$fid %in% start_pts$fid,]
-        start_pts$pttype <- "start"
-        #selecting the endpoints
-        ext <- raster::extent(start_pts)
-        poly <- methods::as(ext, "SpatialPolygons")
-        raster::crs(poly) <- raster::crs(start_pts)
-        buff <- gBuffer(poly, width = maxdistance)
-        if(nrow(start_pts)==nrow(snapped_points)){
-            all_pts <- start_pts
+    results <- lapply(is,function(i){
+        quadra <- grid[i,]
+        #selecting the starting points
+        start_pts <- spatial_request(quadra,snapped_points_tree, snapped_points)
+        if(nrow(start_pts)==0){
+            return(NULL)
         }else{
-            test2 <- as.vector(gIntersects(buff,snapped_points,byid=T))
-            end_pts <- snapped_points[test2 & test1==F,]
-            end_pts$pttype <- "end"
-            #combining all the points
-            all_pts <- rbind(start_pts,end_pts)
+            start_pts <- snapped_points[snapped_points$fid %in% start_pts$fid,]
+            start_pts$pttype <- "start"
+            #selecting the endpoints
+            ext <- raster::extent(start_pts)
+            poly <- methods::as(ext, "SpatialPolygons")
+            raster::crs(poly) <- raster::crs(start_pts)
+            buff <- gBuffer(poly, width = maxdistance)
+            if(nrow(start_pts)==nrow(snapped_points)){
+                all_pts <- start_pts
+            }else{
+                end_pts <- spatial_request(buff, snapped_points_tree, snapped_points)
+                end_pts <- subset(end_pts,(end_pts$oids %in% start_pts$oids)== F)
+                end_pts$pttype <- "end"
+                #combining all the points
+                all_pts <- rbind(start_pts,end_pts)
+            }
+            #selecting the lines
+            selected_lines <- spatial_request(buff, lines_tree, lines)
+            #calculating the elements
+            return(list(all_pts,selected_lines))
         }
-        #selecting the lines
-        test3 <- as.vector(gIntersects(buff,lines,byid=T))
-        selected_lines <- lines[test3,]
-        #calculating the elements
-        return(list(all_pts,selected_lines))
-    }
+    })
+    return(results)
 }
 
 
@@ -334,6 +340,9 @@ network_listw <- function(origins,lines,maxdistance, method="centroid", point_di
         print("starting the network part")
     }
 
+    ids <- 1:length(grid)
+    list_elements <- prepare_elements_netlistw(ids,grid,snapped_points,lines,maxdistance)
+
     ##iterating on the grid
     listvalues <- lapply(1:length(grid),function(i){
         #extracting the quadra
@@ -344,8 +353,8 @@ network_listw <- function(origins,lines,maxdistance, method="centroid", point_di
         if(verbose!="silent"){
             print(paste("working on quadra : ",i,"/",length(grid),sep=""))
         }
+        elements <- list_elements[[i]]
 
-        elements <- prepare_elements_netlistw(i,grid,snapped_points,lines,maxdistance)
         if(length(elements)==0){
             return()
         }else {
@@ -524,10 +533,23 @@ network_listw.mc <- function(origins,lines,maxdistance, method="centroid", point
         print("starting the network part")
     }
 
+    #
+    all_is <- 1:length(grid)
+    iseq <- list()
+    cnt <- 0
+    for(i in 1:grid_shape[[1]]){
+        start <- cnt*grid_shape[[2]]+1
+        iseq[[length(iseq)+1]] <- list(cnt+1,all_is[start:(start+grid_shape[[2]]-1)])
+        cnt<-cnt+1
+    }
+    listelements <- future.apply::future_lapply(iseq,function(ii){
+        elements <- prepare_elements_netlistw(ii[[2]],grid,snapped_points,lines,maxdistance)
+        return(elements)
+    })
+    listelements <- unlist(listelements,recursive = FALSE)
     ##iterating on the grid
-    listvalues <- future.apply::future_lapply(1:length(grid),function(i){
+    listvalues <- future.apply::future_lapply(listelements,function(elements){
         ##step1 : preparing elements
-        elements <- prepare_elements_netlistw(i,grid,snapped_points,lines,maxdistance)
         if(is.null(elements)){
             return()
         }else {

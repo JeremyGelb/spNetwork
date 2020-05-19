@@ -229,9 +229,15 @@ nkde<- function(lines, points, snap_dist, lx_length, lixels=NULL, line_weight="l
     lixels$lxid <- 1:nrow(lixels)
 
     if (verbose != "silent"){
+        print("calculating the spatial indices to reduce calculation time")
+    }
+    lixels_tree <- build_quadtree(lixels)
+    lines_tree <- build_quadtree(lines)
+    points_tree <- build_quadtree(points)
+
+    if (verbose != "silent"){
         print("starting the calculation on the grid")
     }
-    remaininglixels <- lixels
 
     if (verbose =="all") {
         sp::plot(grid)
@@ -248,116 +254,113 @@ nkde<- function(lines, points, snap_dist, lx_length, lixels=NULL, line_weight="l
         if (verbose =="all") {
             sp::plot(quadra, col = "red", add = T)
         }
-        test_lixels <- as.vector(gIntersects(remaininglixels, quadra, byid = T))
-        if (any(test_lixels) == FALSE) {
+        #test_lixels <- as.vector(gIntersects(remaininglixels, quadra, byid = T))
+        selected_lixels <- spatial_request(quadra,lixels_tree, lixels)
+        if (nrow(selected_lixels)==0) {
             if (verbose != "silent"){
                 print("---- passing, empty quadra----")
             }
             return()
         } else {
-            selected_lixels <- subset(remaininglixels, test_lixels)
-            if (nrow(selected_lixels) > 0) {
-                remaininglixels <<- subset(remaininglixels, test_lixels == F)
-                # extracting the needed lines
-                ext <- raster::extent(selected_lixels)
-                poly <- methods::as(ext, "SpatialPolygons")
-                raster::crs(poly) <- raster::crs(selected_lixels)
-                # selecting the lines close to build the network
-                buff <- gBuffer(poly, width = kernel_range)
-                test_lines <- as.vector(gIntersects(lines, buff, byid = T))
-                selected_lines <- subset(lines, test_lines)
-                # extracting the needed points
-                test_points <- as.vector(gIntersects(points, buff, byid = T))
-                selected_points <- subset(points, test_points)
-                ## performing the real job
-                if (verbose != "silent"){
-                    print("extracting the centroids of the lixels...")
-                }
-                # step3 : extraire le centroid ce ces lixels
-                lixelscenters <- gCentroid(selected_lixels, byid = T)
-                lixelscenters <- SpatialPointsDataFrame(lixelscenters, selected_lixels@data)
-                if (verbose != "silent"){
-                    print("combining lixels and events ...")
-                }
-                # step4 : combiner les evenements et les centres de lixels
-                lixelscenters$type <- "lixel"
-                lixelscenters$OID <- 1:nrow(lixelscenters)
-
-                if (any(test_points) == FALSE) {
-                  selected_lixels$density <- 0
-                  return(selected_lixels)
-                }
-
-                selected_points$type <- "event"
-                selected_points$OID <- 1:nrow(selected_points)
-                allpts <- rbind(lixelscenters[c("type", "OID")], selected_points[c("type",
-                  "OID")])
-
-                # step 5 : snapper ces points sur les lignes
-                if (verbose != "silent"){
-                    print("snapping points on lines...")
-                }
-                snapped_points <- maptools::snapPointsToLines(allpts, selected_lines,
-                  maxDist = snap_dist)
-                snapped_points$spOID <- sp_char_index(coordinates(snapped_points),
-                  digits = digits)
-                snapped_points <- cbind(snapped_points,allpts)
-
-                # step6 : ajouter ces points comme vertices
-                if (verbose != "silent"){
-                    print("edditing vertices of lines...")
-                }
-                if (show_progress){
-                    newlines <- add_vertices_lines(selected_lines, snapped_points, tol = tol)
-                }else {
-                    invisible(capture.output(newlines <- add_vertices_lines(selected_lines,
-                        snapped_points, tol = tol)))
-                }
-
-                # step7 : couversion vers des lignes simple
-                if (verbose != "silent"){
-                    print("converting polylines to simple lines...")
-                }
-                lines2 <- simple_lines(newlines)
-
-                #now adjusting the weights of the lixels
-                lines2$lx_length <- gLength(lines2,byid=T)
-                lines2$lx_weight <- (lines2$lx_length / lines2$line_length) * lines2$line_weight
-
-
-                # step8 : generation et dessin du graph
-                if (verbose != "silent"){
-                    print("building the graph...")
-                }
-                ListNet <- build_graph(lines2, digits = digits,line_weight='lx_weight')
-                Graph <- ListNet$graph
-
-                # step9 : retrouver les points de depart
-                if (verbose != "silent"){
-                    print("getting the starting points...")
-                }
-                start_pts <- subset(snapped_points, snapped_points$type ==
-                  "lixel")
-                origins <- find_vertices(ListNet$spvertices, start_pts, tol = tol,
-                  digits = digits)
-
-                if (verbose != "silent"){
-                    print("getting the destination points...")
-                }
-                end_pts <- subset(snapped_points, snapped_points$type ==
-                  "event")
-                destinations <- find_vertices(ListNet$spvertices, end_pts,
-                  tol = tol, digits = digits)
-
-                if (verbose != "silent"){
-                    print("calulating the density values...")
-                }
-                Values <- calc_NKDE(Graph, origins, destinations, range = kernel_range,
-                  kernel = kernel, weights = selected_points$tmpweight)
-                selected_lixels$density <- Values
-
-                return(selected_lixels)
+            # extracting the needed lines
+            ext <- raster::extent(selected_lixels)
+            poly <- methods::as(ext, "SpatialPolygons")
+            raster::crs(poly) <- raster::crs(selected_lixels)
+            # selecting the lines close to build the network
+            buff <- gBuffer(poly, width = kernel_range)
+            #test_lines <- as.vector(gIntersects(lines, buff, byid = T))
+            selected_lines <- spatial_request(buff,lines_tree, lines)
+            # extracting the needed points
+            #test_points <- as.vector(gIntersects(points, buff, byid = T))
+            selected_points <- spatial_request(buff, points_tree, points)
+            ## performing the real job
+            if (verbose != "silent"){
+                print("extracting the centroids of the lixels...")
             }
+            # step3 : extraire le centroid ce ces lixels
+            lixelscenters <- gCentroid(selected_lixels, byid = T)
+            lixelscenters <- SpatialPointsDataFrame(lixelscenters, selected_lixels@data)
+            if (verbose != "silent"){
+                print("combining lixels and events ...")
+            }
+            # step4 : combiner les evenements et les centres de lixels
+            lixelscenters$type <- "lixel"
+            lixelscenters$OID <- 1:nrow(lixelscenters)
+
+            if (nrow(selected_points)==0) {
+              selected_lixels$density <- 0
+              return(selected_lixels)
+            }
+
+            selected_points$type <- "event"
+            selected_points$OID <- 1:nrow(selected_points)
+            allpts <- rbind(lixelscenters[c("type", "OID")], selected_points[c("type",
+              "OID")])
+
+            # step 5 : snapper ces points sur les lignes
+            if (verbose != "silent"){
+                print("snapping points on lines...")
+            }
+            snapped_points <- maptools::snapPointsToLines(allpts, selected_lines,
+              maxDist = snap_dist)
+            snapped_points$spOID <- sp_char_index(coordinates(snapped_points),
+              digits = digits)
+            snapped_points <- cbind(snapped_points,allpts)
+
+            # step6 : ajouter ces points comme vertices
+            if (verbose != "silent"){
+                print("edditing vertices of lines...")
+            }
+            if (show_progress){
+                newlines <- add_vertices_lines(selected_lines, snapped_points, tol = tol)
+            }else {
+                invisible(capture.output(newlines <- add_vertices_lines(selected_lines,
+                    snapped_points, tol = tol)))
+            }
+
+            # step7 : couversion vers des lignes simple
+            if (verbose != "silent"){
+                print("converting polylines to simple lines...")
+            }
+            lines2 <- simple_lines(newlines)
+
+            #now adjusting the weights of the lixels
+            lines2$lx_length <- gLength(lines2,byid=T)
+            lines2$lx_weight <- (lines2$lx_length / lines2$line_length) * lines2$line_weight
+
+
+            # step8 : generation et dessin du graph
+            if (verbose != "silent"){
+                print("building the graph...")
+            }
+            ListNet <- build_graph(lines2, digits = digits,line_weight='lx_weight')
+            Graph <- ListNet$graph
+
+            # step9 : retrouver les points de depart
+            if (verbose != "silent"){
+                print("getting the starting points...")
+            }
+            start_pts <- subset(snapped_points, snapped_points$type ==
+              "lixel")
+            origins <- find_vertices(ListNet$spvertices, start_pts, tol = tol,
+              digits = digits)
+
+            if (verbose != "silent"){
+                print("getting the destination points...")
+            }
+            end_pts <- subset(snapped_points, snapped_points$type ==
+              "event")
+            destinations <- find_vertices(ListNet$spvertices, end_pts,
+              tol = tol, digits = digits)
+
+            if (verbose != "silent"){
+                print("calulating the density values...")
+            }
+            Values <- calc_NKDE(Graph, origins, destinations, range = kernel_range,
+              kernel = kernel, weights = selected_points$tmpweight)
+            selected_lixels$density <- Values
+
+            return(selected_lixels)
         }
     })
 

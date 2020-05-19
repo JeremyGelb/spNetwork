@@ -4,10 +4,10 @@
 \alias{prepare_elements_netlistw}
 \title{Function to prepare selected points and selected lines during the process}
 \usage{
-prepare_elements_netlistw(i, grid, snapped_points, lines, maxdistance)
+prepare_elements_netlistw(is, grid, snapped_points, lines, maxdistance)
 }
 \arguments{
-\item{i}{The index of the quadra to use in the grid}
+\item{is}{The indices of the quadras to use in the grid}
 
 \item{grid}{A SpatialPolygonsDataFrame representing the quadras to split
 calculus}

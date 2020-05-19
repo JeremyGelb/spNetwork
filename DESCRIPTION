@@ -27,7 +27,8 @@ Imports:
     future.apply (>= 1.4.0),
     methods (>= 1.7.1),
     progressr (>= 0.4.0),
-    data.table (>= 1.12.8)
+    data.table (>= 1.12.8),
+    SearchTrees (>= 0.5.2)
 Depends:
     R (>= 3.6)
 Suggests:

@@ -5,7 +5,7 @@
 \title{Worker function for the nkde_grided.mc function.}
 \usage{
 exe_nkde(
-  i,
+  is,
   grid,
   lines,
   lixels,
@@ -15,11 +15,14 @@ exe_nkde(
   snap_dist,
   digits,
   tol,
-  direction
+  direction,
+  lixels_tree,
+  lines_tree,
+  points_tree
 )
 }
 \arguments{
-\item{i}{The row index of the spatiale grid to use}
+\item{is}{The row indices of the quadra to use in the grid}
 
 \item{grid}{The SpatialPolygons object reprsenting the grid for splitted
 calculation}
@@ -46,6 +49,12 @@ geometries}
 traveling direction on lines. if NULL, then all lines can be used in both
 directions. Must be the name of a column otherwise. The values of the
 column must be "FT" (From - To), "TF" (To - From) or "Both".}
+
+\item{lixels_tree}{a quad tree index for the lixels}
+
+\item{lines_tree}{a quad tree index for the lines}
+
+\item{points_tree}{a quad tree index for the points}
 }
 \value{
 A SpatialLinesDataFrame of the lines and their kernel densities

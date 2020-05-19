@@ -3,7 +3,7 @@
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 #' Worker function for the nkde_grided.mc function.
-#' @param i The row index of the spatiale grid to use
+#' @param is The row indices of the quadra to use in the grid
 #' @param grid The SpatialPolygons object reprsenting the grid for splitted
 #' calculation
 #' @param lines The SpatialLinesDataFrame to use as a network
@@ -20,31 +20,37 @@
 #' traveling direction on lines. if NULL, then all lines can be used in both
 #' directions. Must be the name of a column otherwise. The values of the
 #' column must be "FT" (From - To), "TF" (To - From) or "Both".
+#' @param lixels_tree a quad tree index for the lixels
+#' @param lines_tree a quad tree index for the lines
+#' @param points_tree a quad tree index for the points
 #' @return A SpatialLinesDataFrame of the lines and their kernel densities
 #' @importFrom sp coordinates  SpatialPoints SpatialPointsDataFrame
 #' @importFrom utils txtProgressBar setTxtProgressBar capture.output
 #' @importFrom rgeos gCentroid gLength gBuffer gIntersects
 #' @examples
 #' #This is an internal function, no example provided
-exe_nkde <- function(i, grid, lines, lixels, points, kernel, kernel_range, snap_dist, digits, tol, direction) {
+exe_nkde <- function(is, grid, lines, lixels, points, kernel, kernel_range, snap_dist, digits, tol, direction, lixels_tree, lines_tree, points_tree){
+
+    #building the spatial indices
+    lixels_tree <- build_quadtree(lixels)
+    lines_tree <- build_quadtree(lines)
+    points_tree <- build_quadtree(points)
+
     # extracting the analyzed pixels
-    quadra <- grid[i]
-    test_lixels <- as.vector(gIntersects(lixels, quadra, byid = T))
-    if (any(test_lixels) == FALSE) {
-        return()
-    } else {
-        selected_lixels <- subset(lixels, test_lixels)
-        if (nrow(selected_lixels) > 0) {
+    results <- lapply(is,function(i){
+        quadra <- grid[i]
+        selected_lixels <- spatial_request(quadra,lixels_tree, lixels)
+        if (nrow(selected_lixels) == 0) {
+            return()
+        } else {
             # extracting the needed lines
             ext <- raster::extent(selected_lixels)
             poly <- methods::as(ext, "SpatialPolygons")
             raster::crs(poly) <- raster::crs(selected_lixels)
             buff <- gBuffer(poly, width = kernel_range)
-            test_lines <- as.vector(gIntersects(lines, buff, byid = T))
-            selected_lines <- subset(lines, test_lines)
+            selected_lines <- spatial_request(buff, lines_tree, lines)
             # extracting the needed points
-            test_points <- as.vector(gIntersects(points, buff, byid = T))
-            selected_points <- subset(points, test_points)
+            selected_points <- spatial_request(buff, points_tree, points)
             #step3 : extract centroids of lixels
             lixelscenters <- gCentroid(selected_lixels, byid = T)
             lixelscenters <- SpatialPointsDataFrame(lixelscenters, selected_lixels@data)
@@ -52,7 +58,7 @@ exe_nkde <- function(i, grid, lines, lixels, points, kernel, kernel_range, snap_
             lixelscenters$type <- "lixel"
             lixelscenters$OID <- 1:nrow(lixelscenters)
 
-            if (any(test_points) == FALSE) {
+            if (nrow(selected_points) == 0) {
                 selected_lixels$density <- 0
                 return(selected_lixels)
             }
@@ -64,14 +70,14 @@ exe_nkde <- function(i, grid, lines, lixels, points, kernel, kernel_range, snap_
 
             # step 5 : snapping all points on lines
             snapped_points <- maptools::snapPointsToLines(allpts, selected_lines,
-                maxDist = snap_dist)
+                                                          maxDist = snap_dist)
             snapped_points$spOID <- sp_char_index(coordinates(snapped_points),
-                digits = digits)
+                                                  digits = digits)
             snapped_points <- cbind(snapped_points,allpts)
 
             # step6 : adding these points as vertices
             invisible(capture.output(newlines <- add_vertices_lines(selected_lines,
-                snapped_points, tol = tol)))
+                                                                    snapped_points, tol = tol)))
 
 
             # step7 : converting lines as simple lines
@@ -94,18 +100,19 @@ exe_nkde <- function(i, grid, lines, lixels, points, kernel, kernel_range, snap_
             # step9 : find starting points
             start_pts <- subset(snapped_points, snapped_points$type == "lixel")
             origins <- find_vertices(ListNet$spvertices, start_pts, tol = tol,
-                digits = digits)
+                                     digits = digits)
 
             end_pts <- subset(snapped_points, snapped_points$type == "event")
             destinations <- find_vertices(ListNet$spvertices, end_pts, tol = tol,
-                digits = digits)
+                                          digits = digits)
 
             Values <- calc_NKDE(Graph, origins, destinations, kernel = kernel,
-                range = kernel_range, weights = selected_points$tmpweight)
+                                range = kernel_range, weights = selected_points$tmpweight)
             selected_lixels$density <- Values
             return(selected_lixels)
         }
-    }
+    })
+    return(results)
 }
 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -174,7 +181,7 @@ exe_nkde <- function(i, grid, lines, lixels, points, kernel, kernel_range, snap_
 #'    ## R CMD check: make sure any open connections are closed afterward
 #'    if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
 #'}
-nkde.mc <- function(lines, points, snap_dist, lx_length, lixels=NULL, line_weight="length", direction=NULL, kernel_range, kernel = "quartic", tol = 0.1, digits = 3, mindist = NULL, weights = NULL, grid_shape = c(2, 2), verbose = "progressbar") {
+nkde.mc <- function(lines, points, snap_dist, lx_length, lixels=NULL, line_weight="length", direction=NULL, kernel_range, kernel = "quartic", tol = 0.1, digits = 3, mindist = NULL, weights = NULL, grid_shape = c(2, 2), verbose = "progressbar"){
     if(verbose %in% c("silent","progressbar")==F){
         stop("the verbose argument must be 'silent' or 'progressbar'")
     }
@@ -220,22 +227,35 @@ nkde.mc <- function(lines, points, snap_dist, lx_length, lixels=NULL, line_weigh
                 show_progress=show_progress)
     }
 
+
     lixels$lxid <- 1:nrow(lixels)
     ## step3 : lancer les iterations
     if(verbose != "silent"){
         print("starting the calculation on the grid")
     }
-    iseq <- 1:length(grid)
+    all_is <- 1:length(grid)
+    iseq <- list()
+    cnt <- 0
+    for(i in 1:grid_shape[[1]]){
+        start <- cnt*grid_shape[[2]]+1
+        iseq[[length(iseq)+1]] <- list(cnt+1,all_is[start:(start+grid_shape[[2]]-1)])
+        cnt<-cnt+1
+    }
+
     if (show_progress) {
         progressr::with_progress({
             p <- progressr::progressor(along = iseq)
-            values <- future.apply::future_lapply(iseq, function(i) {
-                p(sprintf("i=%g", i))
-                return(exe_nkde(i, grid, lines, lixels, points, kernel,
-                  kernel_range, snap_dist, digits, tol, direction))
+            values <- future.apply::future_lapply(iseq, function(ii) {
+                p(sprintf("i=%g", ii[[1]]))
+                return(exe_nkde(is = ii[[2]], grid = grid, lines = lines,
+                                lixels = lixels, points = points,
+                                kernel = kernel, kernel_range = kernel_range,
+                                snap_dist = snap_dist, digits = digits, tol = tol,
+                                direction = direction))
             })
         })
     } else {
+        iseq <- lapply(iseq,function(x){return (x[[2]])})
         values <- future.apply::future_lapply(iseq, exe_nkde, grid = grid,
             lines = lines, lixels = lixels, points = points,
             kernel_range = kernel_range, kernel = kernel,
@@ -245,6 +265,7 @@ nkde.mc <- function(lines, points, snap_dist, lx_length, lixels=NULL, line_weigh
     if(verbose != "silent"){
         print("Combining the results from processes ...")
     }
+    values <- unlist(values,recursive = F)
     okvalues <- values[lengths(values) != 0]
     alllixels <- do.call("rbind", okvalues)
     alllixels <- alllixels[!duplicated(alllixels$lxid), ]
