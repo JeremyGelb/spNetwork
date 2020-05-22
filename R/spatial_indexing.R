@@ -55,4 +55,29 @@ spatial_request <- function(geometry,tree,data){
 }
 
 
-
+#' build a quad tree index and solve the nearest neighbour problenm for points
+#' to lines
+#'
+#' @param points a SpatialPointsDataFrame
+#' @param lines a SpatialLinesDataFrame
+#' @return for each point, the index of the nearest line (row-wise)
+#' @examples
+#' #This is an internal function, no example provided
+clostest_features <- function(points, lines){
+  ## step1 : creer l'index spatial pour les li
+  coords <- sp::coordinates(lines)
+  bbox_coords <- lapply(1:length(coords),function(i){
+    listcoord <- coords[[i]]
+    line_coords <- do.call(rbind,listcoord)
+    line_coords <- cbind(line_coords,rep(i,nrow(line_coords)))
+    return(line_coords)
+  })
+  original_coords <- do.call(rbind,bbox_coords)
+  tree <- SearchTrees::createTree(original_coords[,1:2],dataType = "point")
+  ## realiser la requete a partir des points
+  pts <- sp::coordinates(points)
+  k1 <- SearchTrees::knnLookup(tree,newdat=pts,k = 1)
+  extract <- original_coords[k1,]
+  idx <- extract[,3]
+  return(idx)
+}

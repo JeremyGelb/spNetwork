@@ -2,27 +2,21 @@
 % Please edit documentation in R/geometrical_functions.R
 \name{add_vertices_lines}
 \alias{add_vertices_lines}
-\title{Add vertices (SpatialPoints) to many lines (SpatialLines), may fail
+\title{Add vertices (SpatialPoints) to their nearest lines (SpatialLines), may fail
 if the lines geometries are self intersecting}
 \usage{
-add_vertices_lines(lines, points, tol = 0.1, check = TRUE)
+add_vertices_lines(lines, points)
 }
 \arguments{
 \item{lines}{The SpatialLinesDataframe to modify}
 
 \item{points}{The SpatialPoints to add to as vertex to the lines}
-
-\item{tol}{The max distance to between lines and points so that they are
-added}
-
-\item{check}{A boolean indicating if the function must check if all points
-were added}
 }
 \value{
 An object of class SpatialLinesDataFrame (package sp)
 }
 \description{
-Add vertices (SpatialPoints) to many lines (SpatialLines), may fail
+Add vertices (SpatialPoints) to their nearest lines (SpatialLines), may fail
 if the lines geometries are self intersecting
 }
 \examples{

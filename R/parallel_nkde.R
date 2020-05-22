@@ -76,8 +76,7 @@ exe_nkde <- function(is, grid, lines, lixels, points, kernel, kernel_range, snap
             snapped_points <- cbind(snapped_points,allpts)
 
             # step6 : adding these points as vertices
-            invisible(capture.output(newlines <- add_vertices_lines(selected_lines,
-                                                                    snapped_points, tol = tol)))
+            invisible(capture.output(newlines <- add_vertices_lines(selected_lines, snapped_points)))
 
 
             # step7 : converting lines as simple lines

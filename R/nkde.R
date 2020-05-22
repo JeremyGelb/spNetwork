@@ -312,10 +312,9 @@ nkde<- function(lines, points, snap_dist, lx_length, lixels=NULL, line_weight="l
                 print("edditing vertices of lines...")
             }
             if (show_progress){
-                newlines <- add_vertices_lines(selected_lines, snapped_points, tol = tol)
+                newlines <- add_vertices_lines(selected_lines, snapped_points)
             }else {
-                invisible(capture.output(newlines <- add_vertices_lines(selected_lines,
-                    snapped_points, tol = tol)))
+                invisible(capture.output(newlines <- add_vertices_lines(selected_lines,snapped_points)))
             }
 
             # step7 : couversion vers des lignes simple

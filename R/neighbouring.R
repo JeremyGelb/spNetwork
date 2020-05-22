@@ -69,9 +69,9 @@ network_listw_worker<-function(points,lines,maxdistance,dist_func, direction=NUL
         print("adding the points as vertices to nearest lines")
     }
     if(verbose=="progressbar"){
-        new_lines <- add_vertices_lines(lines, points, tol = 0.1, check = TRUE)
+        new_lines <- add_vertices_lines(lines, points)
     }else{
-        invisible(capture.output(new_lines<-add_vertices_lines(lines, points, tol = 0.1, check = TRUE)))
+        invisible(capture.output(new_lines<-add_vertices_lines(lines, points)))
     }
 
     #splitting the lines on vertices and adjusting weights

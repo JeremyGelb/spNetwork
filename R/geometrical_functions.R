@@ -129,35 +129,27 @@ add_vertices <- function(line, points, i) {
 
 
 
-#' Add vertices (SpatialPoints) to many lines (SpatialLines), may fail
+#' Add vertices (SpatialPoints) to their nearest lines (SpatialLines), may fail
 #' if the lines geometries are self intersecting
 #'
 #' @param lines The SpatialLinesDataframe to modify
 #' @param points The SpatialPoints to add to as vertex to the lines
-#' @param tol The max distance to between lines and points so that they are
-#'   added
-#' @param check A boolean indicating if the function must check if all points
-#' were added
 #' @return An object of class SpatialLinesDataFrame (package sp)
-#' @importFrom rgeos gIntersects gBuffer gDistance
 #' @importFrom sp coordinates SpatialPoints SpatialLinesDataFrame Line
 #'   SpatialLines
 #' @importFrom utils txtProgressBar setTxtProgressBar
 #' @examples
 #' #This is an internal function, no example provided
-add_vertices_lines <- function(lines, points, tol = 0.1, check = TRUE) {
+add_vertices_lines <- function(lines, points) {
+    #identifying the nearest lines of each point
+    nearest_lines_idx <- clostest_features(points,lines)
     pb <- txtProgressBar(min = 0, max = nrow(lines), style = 3)
-    alldistances <- gDistance(lines,points,byid=T)<=tol
-    ptscheck <- rep(FALSE,nrow(points))
     new_lines_list <- lapply(1:nrow(lines), function(i) {
         setTxtProgressBar(pb, i)
         line <- lines[i, ]
-        testpts <- alldistances[,i]
+        testpts <- nearest_lines_idx == i
         if (any(testpts)) {
             okpts <- subset(points,testpts)
-            if(check){
-                ptscheck <<- ifelse(testpts,TRUE,ptscheck)
-            }
             newline <- add_vertices(line, okpts, i)
             return(newline)
         } else {
@@ -166,21 +158,11 @@ add_vertices_lines <- function(lines, points, tol = 0.1, check = TRUE) {
         }
 
     })
-    if (check) {
-        # performing a check to ensure that all points were added to the lines
-        if(sum(ptscheck)<nrow(points)){
-            print(paste("remaining points : ", sum(ptscheck) ,"/" ,nrow(points)), sep = "")
-            stop("some points were not added as vertices bro... try to increase
-                  the tolerance or to snap these points")
-        }
-    }
-
     final_lines <- do.call(raster::spLines,new_lines_list)
     final_lines <- SpatialLinesDataFrame(final_lines, lines@data,match.ID = F)
     raster::crs(final_lines) <- raster::crs(lines)
     return(final_lines)
 }
-
 
 
 #' Cut a SpatialLines object into lixels with a specified minimal distance
