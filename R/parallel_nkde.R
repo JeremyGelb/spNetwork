@@ -268,5 +268,6 @@ nkde.mc <- function(lines, points, snap_dist, lx_length, lixels=NULL, line_weigh
     okvalues <- values[lengths(values) != 0]
     alllixels <- do.call("rbind", okvalues)
     alllixels <- alllixels[!duplicated(alllixels$lxid), ]
+    alllixels <- alllixels[order(alllixels$lxid),]
     return(alllixels)
 }
