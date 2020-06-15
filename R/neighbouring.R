@@ -47,10 +47,8 @@ select_dist_function <- function(dist_func = "inverse") {
 #' column must be "FT" (From - To), "TF" (To - From) or "Both".
 #' @param matrice_type The type of the weighting scheme. Can be 'B' for Binary,
 #' 'W' for row weighted, see the documentation of spdep::nb2listw for details
-#' @param verbose A string indicating how the advance of the process is
-#' displayed. Default is all. "text" show only the main steps, "progressbar"
-#' show main steps and progress bar for intermediar steps, "all" add a plot
-#' of the grid to follow visually the processing, "silent" show nothing
+#' @param verbose A boolean indicating if the function should print its
+#' progress
 #' @param digits the number of digits to keep in the spatial coordinates (
 #' simplification used to reduce risk of topological error)
 #' @param tol A float indicating the spatial tolerance when points are
@@ -62,27 +60,30 @@ select_dist_function <- function(dist_func = "inverse") {
 #' @importFrom data.table data.table .SD transpose
 #' @examples
 #' #no example provided, this is an internal function
-network_listw_worker<-function(points,lines,maxdistance,dist_func, direction=NULL, mindist=10, matrice_type = "B", verbose = "silent", digits = 3, tol=0.1){
+network_listw_worker<-function(points,lines,maxdistance,dist_func, direction=NULL, mindist=10, matrice_type = "B", verbose = FALSE, digits = 3, tol=0.1){
     #the points must already be snapped to the lines
     #adding the points to the lines
-    if(verbose!="silent"){
+    lines$worker_id <- 1:nrow(lines)
+    points$nearest_line_id <- as.numeric(as.character(points$nearest_line_id))
+    joined <- dplyr::left_join(x=points@data,y=lines@data,
+                               by = c("nearest_line_id" = "tmpid"))
+
+    if(verbose){
         print("adding the points as vertices to nearest lines")
-    }
-    if(verbose=="progressbar"){
-        new_lines <- add_vertices_lines(lines, points)
+        new_lines <- add_vertices_lines(lines, points, joined$worker_id, 1)
     }else{
-        invisible(capture.output(new_lines<-add_vertices_lines(lines, points)))
+        invisible(capture.output(new_lines <- add_vertices_lines(lines, points, joined$worker_id, tol)))
     }
 
     #splitting the lines on vertices and adjusting weights
-    if(verbose!="silent"){
+    if(verbose){
         print("splitting the lines for the network")
     }
     graph_lines <- simple_lines(new_lines)
     graph_lines$lx_length <- gLength(graph_lines,byid=T)
     graph_lines$lx_weight <- (graph_lines$lx_length / graph_lines$line_length) * graph_lines$line_weight
     #building the network man !
-    if(verbose!="silent"){
+    if(verbose){
         print("generating the network")
     }
     # generating the network
@@ -95,8 +96,9 @@ network_listw_worker<-function(points,lines,maxdistance,dist_func, direction=NUL
                                     attrs = T, line_weight='line_weight',direction = dir)
     }
     #finding all points in the graph
-    points$vertex <- find_vertices(result_graph$spvertices,points,digits = digits, tol = tol)
-    if(verbose!="silent"){
+    #points$vertex <- find_vertices(result_graph$spvertices,points,digits = digits, tol = tol)
+    points$vertex <- closest_points(points,result_graph$spvertices)
+    if(verbose){
         print("calculating the distances on the network")
     }
     starts <- subset(points,points$pttype=="start")
@@ -104,22 +106,30 @@ network_listw_worker<-function(points,lines,maxdistance,dist_func, direction=NUL
     #calculating the distances between them
     base_distances <- igraph::distances(result_graph$graph,v = starts$vertex, to = u, mode = "out")
     all_ditancesdt <- data.table(base_distances)
-    #all_ditancesdt$origin <- starts[[oid]]
     all_ditancesdt$origin <- starts$fid
-    ##1er groupby sur les rows
+
+    ##1er groupby sur les rows :
+    #chaque row peut correspondre a plusieur origine (si on a des points multiples)
     step1 <- all_ditancesdt[, lapply(.SD, min, na.rm=TRUE), by=origin ]
     originid <- step1$origin
     ##transposons et merge
     step2 <- transpose(step1[,2:ncol(step1)])
     step2$vertex <- u
     pts <- data.table(points@data[c("fid","vertex")])
-    step2[pts,on="vertex",fid:=fid]
-    step3 <- step2[, lapply(.SD, min, na.rm=TRUE), by=fid ]
+
+    ## merging
+    step2.5 <- data.table::merge.data.table(step2,pts,by="vertex",all=TRUE)
+    colorder <- c(2:(ncol(step2.5)-1),1,ncol(step2.5))
+    step2.5 <- data.table::setcolorder(step2.5,colorder)
+
+    step3 <- step2.5[, lapply(.SD, min, na.rm=TRUE), by=fid ]
     destid <- step3$fid
     #derniere retransposition
     step4 <- transpose(step3)
     dist_matrix <- as.matrix(step4[2:(nrow(step4)-1)])
     dist_matrix <- ifelse(is.na(dist_matrix),Inf,dist_matrix)
+    rownames(dist_matrix) <- originid
+    colnames(dist_matrix) <- destid
     #now calculating the neighbouring
     nblist <- lapply(1:nrow(dist_matrix),function(i){
         row <- dist_matrix[i,]
@@ -240,10 +250,8 @@ prepare_elements_netlistw <- function(is,grid,snapped_points,lines,maxdistance){
 #' @param grid_shape A vector of length 2 indicating the shape of the grid to
 #' use for splitting the dataset. Default is c(1,1), so all the calculation is
 #' done in one go. It might be necessary to split it if the dataset is large.
-#' @param verbose A string indicating how the advance of the process is
-#' displayed. Default is all. "text" show only the main steps, "progressbar"
-#' show main steps and progress bar for intermediar steps, "all" add a plot
-#' of the grid to follow visually the processing, "silent" show nothing
+#' @param verbose A boolean indicating if the function should print its
+#' progress
 #' @param digits the number of digits to keep in the spatial coordinates (
 #' simplification used to reduce risk of topological error)
 #' @param tol A float indicating the spatial tolerance when points are
@@ -260,10 +268,8 @@ prepare_elements_netlistw <- function(is,grid,snapped_points,lines,maxdistance){
 #' listw <- network_listw(mtl_network,mtl_network,maxdistance=500,
 #'         method = "centroid", line_weight = "length",
 #'         dist_func = 'squared inverse', matrice_type='B', grid_shape = c(2,2))
-network_listw <- function(origins,lines,maxdistance, method="centroid", point_dist=NULL, snap_dist=Inf, line_weight = "length", mindist=10, direction=NULL, dist_func = "inverse", matrice_type = "B", grid_shape=c(1,1), verbose = "all", digits = 3, tol=0.1){
-    if(verbose %in% c("silent","progressbar","text","all")==F){
-        stop("the verbose argument must be 'silent', 'text' or 'progressbar'")
-    }
+network_listw <- function(origins,lines,maxdistance, method="centroid", point_dist=NULL, snap_dist=Inf, line_weight = "length", mindist=10, direction=NULL, dist_func = "inverse", matrice_type = "B", grid_shape=c(1,1), verbose = FALSE, digits = 3, tol=0.1){
+
     ##adjusting the weights of the lines
     lines$line_length <- gLength(lines,byid=T)
     if(line_weight=="length"){
@@ -290,7 +296,7 @@ network_listw <- function(origins,lines,maxdistance, method="centroid", point_di
     lines$tmpid <- 1:nrow(lines)
 
     ##generating the starting points
-    if(verbose != "silent"){
+    if(verbose){
         print("generating the starting points")
     }
     origins$fid <- 1:nrow(origins)
@@ -305,7 +311,8 @@ network_listw <- function(origins,lines,maxdistance, method="centroid", point_di
         centers <- origins
     }else if(class(origins)=="SpatialLinesDataFrame"){
         if(method=="centroid"){
-            if(verbose %in% c("progressbar","all")){
+            if(verbose){
+                print("getting the centers of the lines ...")
                 centers <- lines_center(origins)
             }else{
                 invisible(capture.output(centers <- lines_center(origins)))
@@ -321,22 +328,18 @@ network_listw <- function(origins,lines,maxdistance, method="centroid", point_di
         stop("origins must be a SpatialPointsDataFrame, a SpatialPolygonsDataFrame or a SpatialLinesDataFrame")
     }
 
-    if(verbose != "silent"){
+    if(verbose){
         print("snapping the points to the lines (only once)")
     }
-    snapped_points <- maptools::snapPointsToLines(centers,lines,maxDist = snap_dist)
+    snapped_points <- maptools::snapPointsToLines(centers,lines,maxDist = snap_dist, idField="tmpid")
     snapped_points <- cbind(snapped_points, centers)
 
     ##building grid
     grid <- build_grid(grid_shape,origins)
 
 
-    if (verbose == "all"){
-        sp::plot(lines)
-        sp::plot(grid,add=T)
-    }
 
-    if(verbose != "silent"){
+    if(verbose){
         print("starting the network part")
     }
 
@@ -347,10 +350,8 @@ network_listw <- function(origins,lines,maxdistance, method="centroid", point_di
     listvalues <- lapply(1:length(grid),function(i){
         #extracting the quadra
         quadra <- grid[i,]
-        if(verbose=="all"){
-            sp::plot(quadra,add=T,col="red")
-        }
-        if(verbose!="silent"){
+
+        if(verbose){
             print(paste("working on quadra : ",i,"/",length(grid),sep=""))
         }
         elements <- list_elements[[i]]
@@ -370,7 +371,7 @@ network_listw <- function(origins,lines,maxdistance, method="centroid", point_di
 
     })
 
-    if(verbose != "silent"){
+    if(verbose){
         print("building the final listw object")
     }
 
@@ -391,7 +392,7 @@ network_listw <- function(origins,lines,maxdistance, method="centroid", point_di
     ## setting the nb attributes
     attr(ordered_nblist, "class") <- "nb"
     attr(ordered_nblist, "region.id") <- as.character(origins$fid)
-    if(verbose != "silent"){
+    if(verbose){
         print("finally generating the listw object ...")
     }
     ## setting the final listw attributes
@@ -436,9 +437,8 @@ network_listw <- function(origins,lines,maxdistance, method="centroid", point_di
 #' @param grid_shape A vector of length 2 indicating the shape of the grid to
 #' use for splitting the dataset. Default is c(1,1), so all the calculation is
 #' done in one go. It might be necessary to split it if the dataset is large.
-#' @param verbose A string indicating how the advance of the process is
-#' displayed. Default is all. "text" show only the main steps, "progressbar"
-#' show main steps and progress bar for intermediar steps,"silent" show nothing
+#' @param verbose A boolean indicating if the function should print its
+#' progress
 #' @param digits the number of digits to keep in the spatial coordinates (
 #' simplification used to reduce risk of topological error)
 #' @param tol A float indicating the spatial tolerance when points are
@@ -459,10 +459,7 @@ network_listw <- function(origins,lines,maxdistance, method="centroid", point_di
 #'    ## R CMD check: make sure any open connections are closed afterward
 #'    if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
 #'}
-network_listw.mc <- function(origins,lines,maxdistance, method="centroid", point_dist=NULL, snap_dist=Inf, line_weight = "length", mindist=10, direction=NULL, dist_func = "inverse", matrice_type = "B", grid_shape=c(1,1), verbose = "text", digits = 3, tol=0.1){
-    if(verbose %in% c("silent","progressbar","text")==F){
-        stop("the verbose argument must be 'silent', 'text' or 'progressbar'")
-    }
+network_listw.mc <- function(origins,lines,maxdistance, method="centroid", point_dist=NULL, snap_dist=Inf, line_weight = "length", mindist=10, direction=NULL, dist_func = "inverse", matrice_type = "B", grid_shape=c(1,1), verbose = FALSE, digits = 3, tol=0.1){
     ##adjusting the weights of the lines
     lines$line_length <- gLength(lines,byid=T)
     if(line_weight=="length"){
@@ -489,7 +486,7 @@ network_listw.mc <- function(origins,lines,maxdistance, method="centroid", point
     lines$tmpid <- 1:nrow(lines)
 
     ##generating the starting points
-    if(verbose != "silent"){
+    if(verbose){
         print("generating the starting points")
     }
     origins$fid <- 1:nrow(origins)
@@ -504,7 +501,8 @@ network_listw.mc <- function(origins,lines,maxdistance, method="centroid", point
         centers <- origins
     }else if(class(origins)=="SpatialLinesDataFrame"){
         if(method=="centroid"){
-            if(verbose %in% c("progressbar","all")){
+            if(verbose){
+                print("generating the centers of the lines...")
                 centers <- lines_center(origins)
             }else{
                 invisible(capture.output(centers <- lines_center(origins)))
@@ -520,16 +518,16 @@ network_listw.mc <- function(origins,lines,maxdistance, method="centroid", point
         stop("origins must be a SpatialPointsDataFrame, a SpatialPolygonsDataFrame or a SpatialLinesDataFrame")
     }
 
-    if(verbose != "silent"){
+    if(verbose){
         print("snapping the points to the lines (only once)")
     }
-    snapped_points <- maptools::snapPointsToLines(centers,lines,maxDist = snap_dist)
+    snapped_points <- maptools::snapPointsToLines(centers,lines,maxDist = snap_dist, idField="tmpid")
     snapped_points <- cbind(snapped_points, centers)
 
     ##building grid
     grid <- build_grid(grid_shape,origins)
 
-    if(verbose != "silent"){
+    if(verbose){
         print("starting the network part")
     }
 
@@ -565,7 +563,7 @@ network_listw.mc <- function(origins,lines,maxdistance, method="centroid", point
 
     })
 
-    if(verbose != "silent"){
+    if(verbose){
         print("building the final listw object")
     }
 
@@ -586,7 +584,7 @@ network_listw.mc <- function(origins,lines,maxdistance, method="centroid", point
     ## setting the nb attributes
     attr(ordered_nblist, "class") <- "nb"
     attr(ordered_nblist, "region.id") <- as.character(origins$fid)
-    if(verbose != "silent"){
+    if(verbose){
         print("finally generating the listw object ...")
     }
     ## setting the final listw attributes

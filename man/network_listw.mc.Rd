@@ -18,7 +18,7 @@ network_listw.mc(
   dist_func = "inverse",
   matrice_type = "B",
   grid_shape = c(1, 1),
-  verbose = "text",
+  verbose = FALSE,
   digits = 3,
   tol = 0.1
 )
@@ -68,9 +68,8 @@ vectorized internally}
 use for splitting the dataset. Default is c(1,1), so all the calculation is
 done in one go. It might be necessary to split it if the dataset is large.}
 
-\item{verbose}{A string indicating how the advance of the process is
-displayed. Default is all. "text" show only the main steps, "progressbar"
-show main steps and progress bar for intermediar steps,"silent" show nothing}
+\item{verbose}{A boolean indicating if the function should print its
+progress}
 
 \item{digits}{the number of digits to keep in the spatial coordinates (
 simplification used to reduce risk of topological error)}

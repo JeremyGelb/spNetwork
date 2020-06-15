@@ -12,7 +12,7 @@ network_listw_worker(
   direction = NULL,
   mindist = 10,
   matrice_type = "B",
-  verbose = "silent",
+  verbose = FALSE,
   digits = 3,
   tol = 0.1
 )
@@ -40,10 +40,8 @@ It is important for it to be different from 0 when a W style is used.}
 \item{matrice_type}{The type of the weighting scheme. Can be 'B' for Binary,
 'W' for row weighted, see the documentation of spdep::nb2listw for details}
 
-\item{verbose}{A string indicating how the advance of the process is
-displayed. Default is all. "text" show only the main steps, "progressbar"
-show main steps and progress bar for intermediar steps, "all" add a plot
-of the grid to follow visually the processing, "silent" show nothing}
+\item{verbose}{A boolean indicating if the function should print its
+progress}
 
 \item{digits}{the number of digits to keep in the spatial coordinates (
 simplification used to reduce risk of topological error)}

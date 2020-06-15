@@ -5,7 +5,7 @@
 \title{Add vertices (SpatialPoints) to a single line (SpatialLines), may fail
 if the lines geometries are self intersecting}
 \usage{
-add_vertices(line, points, i)
+add_vertices(line, points, i, mindist)
 }
 \arguments{
 \item{line}{The SpatialLine to modify}
@@ -13,6 +13,9 @@ add_vertices(line, points, i)
 \item{points}{The SpatialPoints to add to as vertex to the lines}
 
 \item{i}{The index of the line (for recombining after all lines)}
+
+\item{mindist}{The minimum distance between one point and the extremity of
+the line to add the point as a vertex.}
 }
 \value{
 A matrix of coordinates to build the new line

@@ -22,8 +22,10 @@ sp_char_index <- function(coords, digits) {
 
     X <- paste(tempdt$xint, substr(tempdt$xdec, start = 1, stop = digits),
         sep = ".")
+    X <- gsub("NA","0",X,fixed=T)
     Y <- paste(tempdt$yint, substr(tempdt$ydec, start = 1, stop = digits),
         sep = ".")
+    Y <- gsub("NA","0",Y,fixed=T)
     return(paste(X, Y, sep = "_"))
 }
 
@@ -101,12 +103,14 @@ lines_direction <- function(lines,field){
 #' @param line The SpatialLine to modify
 #' @param points The SpatialPoints to add to as vertex to the lines
 #' @param i The index of the line (for recombining after all lines)
+#' @param mindist The minimum distance between one point and the extremity of
+#' the line to add the point as a vertex.
 #' @return A matrix of coordinates to build the new line
 #' @importFrom rgeos gProject
 #' @importFrom sp coordinates SpatialPoints Line Lines
 #' @examples
 #' #This is an internal function, no example provided
-add_vertices <- function(line, points, i) {
+add_vertices <- function(line, points, i, mindist) {
     # extract coordinates
     line_coords <- coordinates(line)[[1]][[1]]
     original_distances <- sapply(1:nrow(line_coords),function(i){
@@ -116,11 +120,13 @@ add_vertices <- function(line, points, i) {
             return(sqrt(sum((line_coords[i,]-line_coords[i-1,])**2)))
         }
     })
-    line_coords <- cbind(line_coords, original_distances)
-    pt_coords <- coordinates(points)
+    line_coords <- cbind(line_coords, cumsum(original_distances))
+    tot_lengths <- max(line_coords[,3])
     # calculate lengths
+    pt_coords <- coordinates(points)
     lengths <- gProject(line, points)
     pt_coords <- cbind(pt_coords, lengths)
+    pt_coords <- pt_coords[(lengths>mindist & lengths<(tot_lengths-mindist)),]
     all_coords <- rbind(line_coords,pt_coords)
     # reorder the coordinate matrix
     ord_coords <- all_coords[order(all_coords[,3]), ]
@@ -134,15 +140,16 @@ add_vertices <- function(line, points, i) {
 #'
 #' @param lines The SpatialLinesDataframe to modify
 #' @param points The SpatialPoints to add to as vertex to the lines
+#' @param nearest_lines_idx For each point, the index of the nearest line
+#' @param mindist The minimum distance between one point and the extremity of
+#' the line to add the point as a vertex.
 #' @return An object of class SpatialLinesDataFrame (package sp)
 #' @importFrom sp coordinates SpatialPoints SpatialLinesDataFrame Line
 #'   SpatialLines
 #' @importFrom utils txtProgressBar setTxtProgressBar
 #' @examples
 #' #This is an internal function, no example provided
-add_vertices_lines <- function(lines, points) {
-    #identifying the nearest lines of each point
-    nearest_lines_idx <- clostest_features(points,lines)
+add_vertices_lines <- function(lines, points, nearest_lines_idx, mindist) {
     pb <- txtProgressBar(min = 0, max = nrow(lines), style = 3)
     new_lines_list <- lapply(1:nrow(lines), function(i) {
         setTxtProgressBar(pb, i)
@@ -150,7 +157,7 @@ add_vertices_lines <- function(lines, points) {
         testpts <- nearest_lines_idx == i
         if (any(testpts)) {
             okpts <- subset(points,testpts)
-            newline <- add_vertices(line, okpts, i)
+            newline <- add_vertices(line, okpts, i, mindist)
             return(newline)
         } else {
             sline <- coordinates(line)[[1]][[1]]
@@ -163,7 +170,6 @@ add_vertices_lines <- function(lines, points) {
     raster::crs(final_lines) <- raster::crs(lines)
     return(final_lines)
 }
-
 
 #' Cut a SpatialLines object into lixels with a specified minimal distance
 #' may fail if the lines geometries are self intersecting.

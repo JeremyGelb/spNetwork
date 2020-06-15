@@ -1,7 +1,7 @@
 Package: spNetwork
 Type: Package
 Title: Spatial Analysis on network
-Version: 0.1.0.9000
+Version: 0.1.1.9000
 Authors@R: c(
     person("Jeremy", "Gelb", email = "jeremy.gelb@ucs.inrs.ca",role = c("aut", "cre")),
     person("Philippe", "Apparicio", email="philippe.apparicio@ucs.inrs.ca", role=c("ctb")))
@@ -27,17 +27,23 @@ Imports:
     methods (>= 1.7.1),
     progressr (>= 0.4.0),
     data.table (>= 1.12.8),
-    SearchTrees (>= 0.5.2)
+    SearchTrees (>= 0.5.2),
+    Rcpp (>= 1.0.4.6),
+    RcppProgress (>= 0.4.2),
+    spNetworkCpp (>= 0.1.1)
 Depends:
     R (>= 3.6)
 Suggests:
     knitr (>= 1.28),
+    kableExtra (>= 1.1.0),
     rmarkdown (>= 2.1),
     RColorBrewer (>= 1.1-2),
     classInt (>= 0.4-3),
-    ggplot2 (>= 3.3.0)
+    ggplot2 (>= 3.3.0),
+    reshape2 (>= 1.4.3)
 RoxygenNote: 7.1.0
 VignetteBuilder: knitr
 URL: http://github.com/JeremyGelb/spNetwork
 BugReports: http://github.com/JeremyGelb/spNetwork/issues
+Remotes: JeremyGelb/spNetworkCpp
 

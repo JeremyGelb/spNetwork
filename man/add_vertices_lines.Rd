@@ -5,12 +5,17 @@
 \title{Add vertices (SpatialPoints) to their nearest lines (SpatialLines), may fail
 if the lines geometries are self intersecting}
 \usage{
-add_vertices_lines(lines, points)
+add_vertices_lines(lines, points, nearest_lines_idx, mindist)
 }
 \arguments{
 \item{lines}{The SpatialLinesDataframe to modify}
 
 \item{points}{The SpatialPoints to add to as vertex to the lines}
+
+\item{nearest_lines_idx}{For each point, the index of the nearest line}
+
+\item{mindist}{The minimum distance between one point and the extremity of
+the line to add the point as a vertex.}
 }
 \value{
 An object of class SpatialLinesDataFrame (package sp)

@@ -15,11 +15,11 @@
 #'         of the graph
 #'         \item digits : the number of digits keeped for the coordinates
 #' }
-#' @importFrom sp coordinates SpatialPoints SpatialPointsDataFrame
+#' @importFrom sp coordinates SpatialPoints
 #' @examples
 #' #This is an internal function, no example provided
 build_graph <- function(lines, digits, line_weight, attrs = FALSE) {
-    # extracting lines coordinates lines_coords <-
+    # extracting lines coordinates lines_coords
     extremites <- lines_extremities(lines)
     start_coords <- extremites@data[extremites$pttype == "start", c("X","Y")]
     end_coords <- extremites@data[extremites$pttype == "end", c("X", "Y")]
@@ -31,11 +31,15 @@ build_graph <- function(lines, digits, line_weight, attrs = FALSE) {
 
     # building the line list
     linelist <- data.frame(start = start, end = end, weight = weights,
-        graph_id = 1:nrow(lines))
+        graph_id = 1:nrow(lines), wkt= rgeos::writeWKT(lines,byid=TRUE))
     if (attrs) {
         linelist <- cbind(linelist, lines@data)
     }
+    ## generating the graph
     graph <- igraph::graph_from_data_frame(linelist, directed = FALSE, vertices = NULL)
+
+
+    ## building a spatial object for the vertices
     vertices <- igraph::V(graph)
     dfvertices <- data.frame(name = names(vertices), id = as.vector(vertices))
     dfvertices$name <- as.character(dfvertices$name)
@@ -46,8 +50,26 @@ build_graph <- function(lines, digits, line_weight, attrs = FALSE) {
     points <- SpatialPoints(dfvertices[c("x", "y")])
     points <- SpatialPointsDataFrame(points, dfvertices)
     raster::crs(points) <- raster::crs(lines)
+
+    ##building a spatial object for the lines
+    edge_attrs <- igraph::get.edge.attribute(graph)
+    edge_df <- data.frame(
+      "edge_id" = as.numeric(igraph::E(graph)),
+      "weight" = edge_attrs$weight
+    )
+    edge_df$wkt <- edge_attrs$wkt
+
+    geoms <- do.call(rbind,lapply(1:nrow(edge_df),function(i){
+      wkt <- edge_df[i,"wkt"]
+      geom <- rgeos::readWKT(wkt,id=i)
+      return(geom)
+    }))
+
+    spedges <- SpatialLinesDataFrame(geoms, edge_df,match.ID = F)
+    raster::crs(spedges) <- raster::crs(lines)
+
     return(list(graph = graph, linelist = linelist, lines = lines,
-                spvertices = points, digits = digits))
+                spvertices = points, digits = digits, spedges = spedges))
 }
 
 #' generate an igraph object from a SpatialLinesDataFrame
@@ -225,6 +247,6 @@ plot_graph <- function(graph) {
     N$x <- as.numeric(N$x)
     N$y <- as.numeric(N$y)
 
-    graphics::plot(graph, vertex.size = 1, layout = as.matrix(N[c("x", "y")]), vertex.label.cex = 0.1)
+    graphics::plot(graph, vertex.size = 0.01, layout = as.matrix(N[c("x", "y")]), vertex.label.cex = 0.1)
 
 }
