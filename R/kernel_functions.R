@@ -292,159 +292,164 @@ ess_kernel <- function(graph, y, bw, kernel_func, samples, nodes, edges, sample_
 
 #' Function to perform the discontinuous nkde
 #'
-#' @param graph a graph object from igraph representing the network
-#' @param events a SpatialPointsDataFrame representing the events. It must be
-#' snapped on the network, and be nodes of the network. A column vertex_id
+#' @param edge_list a list of the edges, accessible with the names of the
+#' two nodes composing the edge
+#' @param neighbour_list a list indicating for each node its neighbours
 #' must indicate for each event its corresponding node
-#' @param samples a SpatialPointsDataFrame representing the sampling points.
-#' The samples must be snapped on the network. A column edge_id must indicate
-#' for each sample on which edge it is snapped.
-#' @param bw a float indicating the kernel bandwidth (in meters)
+#' @param v_events a numeric vector of the event nodes
+#' @param weights a numeric vector of the weights of the events
+#' @param samples a SpatialPointsDataFrame of the sampling points
+#' @param bw the kernel bandwidth
 #' @param kernel_func a function obtained with the function select_kernel
 #' @param nodes a SpatialPointsDataFrame representing the nodes of the network
+#' @param linelist the linelist of the network (igraph)
+#' @param verbose a boolean indicating if messages must be displayed
 #' @return a dataframe with two columns. sum_k is the sum for each sample point
 #'  of the kernel values. n is the number of events influencing each sample
 #' point
-#' @param edges a SpatialLinesDataFrame representing the edges of the network
 #' @examples
 #' #This is an internal function, no example provided
-discontinuous_nkde <-  function(graph, events, samples, bw, kernel_func, nodes, edges){
+discontinuous_nkde2 <-  function(edge_list,neighbour_list, v_events, weights,
+                                 samples, bw, kernel_func, nodes, linelist, verbose){
+
   ##step 1 : mettre toutes les valeurs a 0
   base_k <- rep(0,nrow(samples))
   base_count <- rep(0,nrow(samples))
 
-  if(nrow(events)==0){
+
+  if(length(v_events)==0){
     return(data.frame("sum_k"=base_k,
                       "n"=base_count))
   }
+  lines_weight <- linelist$weight
 
-  sample_tree <- build_quadtree(samples)
-  edges_tree <- build_quadtree(edges)
-
+  pb <- txtProgressBar(min = 0, max = length(v_events), style = 3)
   ##step2 : iterer sur chaque event
-  pb <- txtProgressBar(min = 0, max = nrow(events), style = 3)
-  for(i in 1:nrow(events)){
-    setTxtProgressBar(pb, i)
+  for(i in 1:length(v_events)){
     #preparer les differentes valeurs de departs pour l'event y
-    e <- events[i,]
-    y <- e$vertex_id
-    w <- e$weight
-    samples_k <- esd_kernel(graph,y,bw, kernel_func, samples, nodes, edges, sample_tree, edges_tree)
+    setTxtProgressBar(pb, i)
+    y <- v_events[[i]]
+    w <- weights[[i]]
+
+    samples_k <- esd_kernel2(y, edge_list,neighbour_list,
+                            samples, bw, kernel_func, nodes, lines_weight, linelist, verbose)
+
     samples_count <- ifelse(samples_k>0,1,0)
     base_k <- samples_k * w + base_k
     base_count <- base_count + (samples_count * w)
   }
   return(data.frame("sum_k"=base_k,
-              "n"=base_count))
+                    "n"=base_count))
 }
-
 
 
 #' Worker function for the discontinuous nkde
 #'
-#' @param graph a graph object from igraph representing the network
-#' @param y the index of the actual event
-#' @param bw a float indicating the kernel bandwidth (in meters)
+#' @param y the vertex index of the actual event
+#' @param edge_list a list of the edges, accessible with the names of the
+#' two nodes composing the edge
+#' @param neighbour_list a list indicating for each node its neighbours
+#' must indicate for each event its corresponding node
+#' @param samples a SpatialPointsDataFrame of the sampling points
+#' @param bw the kernel bandwidth
 #' @param kernel_func a function obtained with the function select_kernel
-#' @param samples a SpatialPointsDataFrame representing the sampling points.
-#' The samples must be snapped on the network. A column edge_id must indicate
-#' for each sample on which edge it is snapped.
 #' @param nodes a SpatialPointsDataFrame representing the nodes of the network
-#' @param edges a SpatialLinesDataFrame representing the edges of the network
-#' @param sample_tree a quadtree object, the spatial index of the samples
-#' @param edges_tree a quadtree object, the spatial index of the edges
+#' @param lines_weight a numeric vector with the weight of the lines
+#' @param linelist the linelist of the network (igraph)
+#' @param verbose a boolean indicating if messages must be displayed
 #' @importFrom igraph get.edge.attribute
 #' @importFrom rgeos gBuffer
 #' @importFrom igraph ends distances shortest_paths adjacent_vertices
 #' @importFrom dplyr left_join
 #' @examples
 #' #This is an internal function, no example provided
-esd_kernel <- function(graph, y, bw, kernel_func, samples, nodes, edges, sample_tree, edges_tree){
+esd_kernel2 <- function(y,edge_list,neighbour_list,
+                        samples, bw, kernel_func, nodes, lines_weight, linelist, verbose){
+
+  #definit les premiere valeurs a 0
   samples_k <- rep(0,nrow(samples))
-  event_node <- nodes[y,]
-  buff <- gBuffer(event_node,width = bw)
-
-  ##step1 : find all the samples in the radius
-  ok_samples <- spatial_request(buff,sample_tree,samples)
-  if(nrow(ok_samples)==0){
-    return(samples_k)
-  }
-
-  ##step2 : find all the edges
-  ok_edges <- spatial_request(buff,edges_tree,edges)$edge_id
-  ##Step3 : for each edge, find the two vertices
-  vertices <- igraph::ends(graph,ok_edges,names=F)
-
-  ##calculate the two paths for each vertex
-  un_vertices <- unique(c(vertices[,1],vertices[,2]))
-  paths <- shortest_paths(graph,from=y,to=un_vertices)
-  dist1 <- as.numeric(distances(graph,y,to=un_vertices))
-
-
-  ##calculating alpha !
-  alphas <- sapply(paths$vpath,function(a_path){
-    path_vert <- as.numeric(a_path)
-    vert_neighbours <- adjacent_vertices(graph,path_vert,mode = "out")
-    n_neighbours <- as.numeric(sapply(vert_neighbours,length))-1
-    return(prod(n_neighbours))
-  })
-
-  alphas <- ifelse(alphas == 0, 1 ,alphas)
-
-
-  dist_table <- data.frame("vertex"=un_vertices,
-                           "distance" = dist1,
-                           "alpha" = alphas)
-  ##aggregate all the data
-  df_edges <- data.frame("edge_id" = ok_edges,
-                         "node1" = vertices[,1],
-                         "node2" = vertices[,2]
+  #definir la premiere serie de parametres
+  all_parameters <- list(
+    list("v"=y,
+         "d"=0,
+         "alpha" = 1,
+         "prev_node"=-999)
   )
 
-  merge1 <- left_join(df_edges,dist_table,by=c("node1"="vertex"))
-  df_edges$d1 <- merge1$distance
-  df_edges$alpha1 <- merge1$alpha
+  #lancement des iterations
+  while(length(all_parameters)>0){
 
-  merge2 <-  left_join(df_edges,dist_table,by=c("node2"="vertex"))
-  df_edges$d2 <- merge2$distance
-  df_edges$alpha2 <- merge2$alpha
+    #on cree une petite liste vide
+    new_parameters <- list()
 
+    #on itere sur les cas en cours
+    for(params in all_parameters){
 
-  ## now, we will calculate for each sample, the minimum distance for the two distances
-  df1 <- df_edges[c("edge_id","node1","d1","alpha1")]
-  df2 <- df_edges[c("edge_id","node2","d2","alpha2")]
+      #step1 : unpacking the values
+      v <- params[["v"]]
+      alpha <- params[["alpha"]]
+      prev_node <- params[["prev_node"]]
+      d <- params[["d"]]
 
-  ## getting the first part of the distances
-  df_samples1 <-  left_join(ok_samples@data,df1,by="edge_id")
-  df_samples2 <-  left_join(ok_samples@data,df2,by="edge_id")
+      #step2 : on trouve les voisins de v (et on enleve le precedent node)
+      v_neighbours <- neighbour_list[[v]]
+      test <- v_neighbours != prev_node
+      v_neighbours <- v_neighbours[test]
 
-  ## getting the second part of the distance
-  start_nodes1 <- nodes@data[df_samples1$node1,]
-  start_nodes2 <- nodes@data[df_samples2$node2,]
-
-  dist1_b <- sqrt((df_samples1$X_coords - start_nodes1$X_coords)**2 +
-                    (df_samples1$Y_coords - start_nodes1$Y_coords)**2)
-
-  dist2_b <- sqrt((df_samples2$X_coords - start_nodes2$X_coords)**2 +
-                    (df_samples2$Y_coords - start_nodes2$Y_coords)**2)
-
-  ## getting the full distances
-  full_dist1 <- dist1_b + df_samples1$d1
-  full_dist2 <- dist2_b + df_samples2$d2
-
-  ok_distances <- ifelse(full_dist1 < full_dist2, full_dist1, full_dist2)
-  ok_alphas <- ifelse(full_dist1 < full_dist2, df_samples1$alpha1, df_samples2$alpha2)
+      #avec ces voisins, on peut setter le new_alpha
+      if(prev_node!=-999){
+        new_alpha <- (1/(length(v_neighbours))) * alpha
+      }else{
+        new_alpha <- 1
+      }
 
 
-  ##and then, the final distance
+      if(length(v_neighbours)>0){
 
-  k <- kernel_func(ok_distances,bw)
-  k <- k * (1/ok_alphas)
-  samples_k[df_samples1$oid] <- k
+        #step3 : on trouve les edges entre v et ses voisins
+        edges_id <- paste(v,v_neighbours,sep="_")
+        edges <- sapply(edges_id,function(x){return(edge_list[[x]])})
+        node <- nodes[v,]
+
+        #step4 : on va iterer sur chacune de ces lignes
+        for(i in 1:length(edges)){
+          li <- edges[[i]]
+          vi <- v_neighbours[[i]]
+          #il faut trouver les echantillons concernes
+          test <- samples$edge_id == li
+          sub_samples <- samples[test,]
+          #il faut calculer les distances entre le point de depart et cet echantillon
+          d1 <- sqrt((node$X_coords - sub_samples$X_coords)**2 + (node$Y_coords - sub_samples$Y_coords)**2)
+          d2 <- d1 + d
+          #on calcule maintenant la valeur kernel
+          k1 <- kernel_func(d2,bw) * new_alpha
+          #et on l'ajoute a la valeur precedente
+          old_k <- samples_k[test]
+          samples_k[test] <- old_k + k1
+
+          #il ne reste plus que a voir si on peut continuer sur le prochain noeud
+          d3 <- d+lines_weight[li]
+          if(d3<bw){
+            new_params <- list("v" = vi,
+                               "prev_node"=v,
+                               "d" = d3,
+                               "alpha" = new_alpha
+                               )
+            new_parameters[[length(new_parameters)+1]] <- new_params
+          }
+
+        }
+
+      }
+
+    }
+
+    #on reset les nouveaux parameters
+    all_parameters <- new_parameters
+  }
+
   return(samples_k)
 }
-
-
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

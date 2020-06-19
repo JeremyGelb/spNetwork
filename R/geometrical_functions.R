@@ -425,7 +425,16 @@ add_center_lines.mc <- function(lines, show_progress = T, chunk_size = 100) {
 }
 
 
-
+#' Generate points along the lines of a SpatialLinesDataFrame
+#'
+#' @param lines The SpatialLinesDataframe to use
+#' @param dist the distance between the points along the lines
+#' @return An object of class SpatialLinesDataframe (package sp)
+#' @importFrom utils capture.output
+#' @export
+#' @examples
+#' data(mtl_network)
+#' new_pts <- lines_points_along(mtl_network,50)
 lines_points_along <- function(lines,dist){
     lenghts <- gLength(lines, byid = T)
     list_pts <- lapply(1:nrow(lines),function(i){

@@ -173,7 +173,7 @@ nkde_worker <- function(lines, events, samples, kernel_func, bw, method, div, di
 
   ##step1 : creating the graph
   if(verbose){
-    "        build graph ..."
+    print("    build graph ...")
   }
   graph_result <- build_graph(lines,digits = digits,line_weight = "length")
   graph <- graph_result$graph
@@ -204,7 +204,7 @@ nkde_worker <- function(lines, events, samples, kernel_func, bw, method, div, di
   ##step6 : starting the calculations !
 
   if(verbose){
-    "        calculating NKDE values ..."
+    print("        calculating NKDE values ...")
   }
 
   if(method == "simple"){
@@ -214,16 +214,7 @@ nkde_worker <- function(lines, events, samples, kernel_func, bw, method, div, di
       invisible(capture.output(values <- simple_nkde(graph, events, samples, bw, kernel_func, nodes, edges)))
     }
 
-  }
-  if(method == "discontinuous"){
-    if(verbose){
-      values <- discontinuous_nkde(graph, events, samples, bw, kernel_func, nodes, edges)
-    }else{
-      invisible(capture.output(values <- discontinuous_nkde(graph, events, samples, bw, kernel_func, nodes, edges)))
-    }
-
-  }
-  if(method=="continuous"){
+  }else{
     ## we have to call the package with the Rcpp functions
     ## this is necessary because this function can be used in a multicore context
     #library(spNetworkCpp)
@@ -245,11 +236,28 @@ nkde_worker <- function(lines, events, samples, kernel_func, bw, method, div, di
     })
     edge_list <- unlist(lists,recursive = F)
 
-    ##and finally calculating the values
-    values <- spNetworkCpp::continuous_nkde_cpp(edge_list,neighbour_list, events$vertex_id, events$weight,
+    if(method=="continuous"){
+      ##and finally calculating the values
+      values <- spNetworkCpp::continuous_nkde_cpp(edge_list,neighbour_list, events$vertex_id, events$weight,
                                                   samples@data, bw, kernel_func, nodes@data, graph_result$linelist, max_depth, verbose)
+    }
+
+    if(method == "discontinuous"){
+      if(verbose){
+        values <- discontinuous_nkde2(edge_list,neighbour_list, events$vertex_id, events$weight,
+                                      samples@data, bw, kernel_func, nodes@data, graph_result$linelist, verbose)
+      }else{
+        invisible(capture.output(values <- discontinuous_nkde2(edge_list,neighbour_list, events$vertex_id, events$weight,
+                                                               samples@data, bw, kernel_func, nodes@data, graph_result$linelist, verbose)))
+      }
+
+      # values <- spNetworkCpp::discontinuous_nkde_cpp(edge_list,neighbour_list, events$vertex_id, events$weight,
+      #                               samples@data, bw, kernel_func, nodes@data, graph_result$linelist, verbose)
+
+    }
 
   }
+
 
   ##step7 : adjusting the kernel values !
 
@@ -379,6 +387,10 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, method, div="bw", m
 
   ##step0
   kernel_func <- select_kernel(kernel_name)
+
+  if(method %in% c("simple","continuous","discontinuous") == FALSE){
+    stop('The method must be one of c("simple","continuous","discontinuous"')
+  }
 
   ##step1 : preparing the data
   if(verbose){

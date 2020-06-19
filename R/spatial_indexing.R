@@ -72,7 +72,12 @@ closest_points <- function(points, features){
   pts <- sp::coordinates(points)
   k1 <- SearchTrees::knnLookup(tree,newdat=pts,k = 1)
   extract <- original_coords[k1,]
-  idx <- extract[,3]
+  if(nrow(points)==1){
+    idx <- extract[3]
+  }else{
+    idx <- extract[,3]
+  }
+
   return(idx)
 }
 

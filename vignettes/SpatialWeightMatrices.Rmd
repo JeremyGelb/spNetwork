@@ -24,13 +24,13 @@ knitr::opts_chunk$set(
 
 This vignette is a short introduction to the spatial weight matrices feature of the **spNetwork** package. It will present the main features of the package by using datasets provided with the package.
 
-#Quick introduction to spatial weight matrices
+# Quick introduction to spatial weight matrices
 
 A vast number of spatial analysis methods are based on a spatial matrix W<sub>ij</sub> of size  *n* x *n* with *i* an observation and *j* the neighbours of that observation. W<sub>ij</sub> represents the degree of spatial relationship between i and j.
 
 Classicaly one can define : 
 
-* neighbouring matrices (W<sub>ij</sub> = 1 if *j* is a neighbour of *i*)
+* neighbouring matrices (W<sub>ij</sub> = 1 if *j* is a neighbour of *i*, 0 otherwise)
 * distance matrices (W<sub>ij</sub> = the distance between i and j, modified by a function like 1/distance or 1/distance**2)
 * interraction matrices (W<sub>ij</sub> = the degree of interraction between *i* and *j*, the measure of the interraction depends on the subject of the analysis)
 
@@ -38,11 +38,11 @@ In R, the classical package to deal with such object is the package **spdep** wh
 
 When one works with data constrained on a network, using euclidean distance to estimate proximity between observation tends to overstimate the real proximity of observations.
 
-**spNetwork** offers the possibility to create listw objects for SpatialLinesDataFrame based on reticular distance. Lets give an exemple here : calculating the Moran I for the number of bike accidents recorded on the montreal road network in 2016.
+**spNetwork** offers the possibility to create listw objects based on network distance. Let us give an exemple here: calculating the Moran I for the number of bike accidents recorded on the montreal road network in 2016.
 
-First, we want to split the network into lixels
+First, we want to split the network into lixels:
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 library(spNetwork)
 library(maptools)
 library(dplyr)
@@ -51,14 +51,14 @@ library(spdep)
 data("mtl_network")
 data("bike_accidents")
 
-lixels <- lixelize_lines(mtl_network,200,mindist = 50)
-
+# set this function to silent in the vignette
+invisible(capture.output(lixels <- lixelize_lines(mtl_network,200,mindist = 50)))
 ```
 
 then we want to calculate for each lixel the number of event on that lixel
 
-```{r}
-##defining and oid for the lines
+```{r message=FALSE, warning=FALSE}
+# defining and oid for the lines
 lixels$oid <- 1:nrow(lixels)
 
 snapped_acc <- snapPointsToLines(bike_accidents,lixels, idField ="oid")
@@ -72,12 +72,11 @@ lixels$nbAccident <- ifelse(is.na(lixels$nbAccident),0,lixels$nbAccident)
 
 ```
 
-We will use here the function *network_listw*. The distances can be calculated from the centroids of the lines, from the ends of the lines or from evenly spaced points on the lines. We will use here the ends method.
+We will use here the function *network_listw*. The distances can be calculated from the centroids of the lixels, from the ends of the lixels or from evenly spaced points on the lixels. We use here the *ends* method.
 
-let us consider that above 300 meters two segments are not neighbours anymore, and convert the distances between the observations into spatial weights with the inverse of the squared distance
+Let us consider that above 300 meters two segments are not neighbours anymore, and convert the distances between the observations into spatial weights with the inverse of the squared distance
 
-```{r}
-
+```{r message=FALSE, warning=FALSE}
 netlistw <- network_listw(lixels,mtl_network,
                            method = "ends",
                            mindist = 10,
@@ -85,7 +84,7 @@ netlistw <- network_listw(lixels,mtl_network,
                            dist_func = "squared inverse",
                            line_weight = 'length',
                            matrice_type = 'W',
-                           grid_shape = c(3,3),
+                           grid_shape = c(1,1),
                            verbose=FALSE)
 
 Test <- moran.test(lixels$nbAccident, netlistw, zero.policy = T)
@@ -93,9 +92,11 @@ print(round(Test$estimate,4))
 
 ```
 
+The autocorrelation is week, this is due to the large distance used and the fact that the analyzed variable is not a counting variable (number of accidents). Indeed, the Moran I is supposed to be used on continuous variables.
+
 One could go further and define its own function to convert distances into spatial weights
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 my_conv_func <- function(x){
   if (x>=300){
     return(0)
@@ -112,18 +113,18 @@ netlistw2 <- network_listw(lixels,mtl_network,
                              dist_func = my_conv_func,
                              line_weight = 'length',
                              matrice_type = 'W',
-                             grid_shape = c(3,3),
+                             grid_shape = c(1,1),
                              verbose=FALSE)
 
 Test2 <- moran.test(lixels$nbAccident, netlistw2, zero.policy = T)
 print(round(Test2$estimate,4))
 ```
 
-We can also use the mutliprocess version of the function. Let us use it to calculate a local version of the Moran Index.
+To speed up calculation, one could use a multiprocessing plan defined with the package **future**. To do so, the study area is divided in rectangle (according to the parameter *grid_shape*), and each rectangle is treated separatly. A buffer is applied around the quadras to avoid edge effects.
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 
-#setting the multiprocess plan
+# setting the multiprocess plan
 future::plan(future::multiprocess(workers=4))
 
 netlistw3 <- network_listw.mc(lixels,lixels,
@@ -133,68 +134,14 @@ netlistw3 <- network_listw.mc(lixels,lixels,
                              dist_func = my_conv_func,
                              line_weight = 'length',
                              matrice_type = 'W',
-                             grid_shape = c(5,5),
+                             grid_shape = c(3,3),
                              verbose=FALSE)
 
 if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
-
-Lisa <- localmoran(lixels$nbAccident,netlistw3, zero.policy = T)
 ```
 
-We could now map that local Moran I
+# Other features
 
-
-```{r}
-# library(classInt)
-# library(RColorBrewer)
-# library(ggplot2)
-# 
-# spLisa <- lixels
-# spLisa$pval <- Lisa[,5]
-# spLisa$Imoran <- round(Lisa[,1],3)
-# 
-# # ## a little function to help the mapping
-# # get_colors <-function(x,colors,breaks){
-# #   mycolors <- sapply(x,function(xi){
-# #     for(i in seq(1:length(colors))){
-# #       if (xi<breaks$brks[[i+1]]){
-# #         return(colors[[i]])
-# #       }
-# #     }
-# #     return(colors[[length(colors)]])
-# #   })
-# #   return(mycolors)
-# # }
-# 
-# #using a discretization method
-# breaks <- classIntervals(spLisa$Imoran, n = 7, style = "fisher", intervalClosure = "right")
-# PaletteCouleur <- brewer.pal(n = 7, name = "Spectral")
-# PaletteCouleur <- rev(PaletteCouleur)
-# spLisa$class  <- as.character(cut(spLisa$Imoran,breaks$brks,PaletteCouleur,include.lowest =TRUE))
-# #spLisa$class <- get_colors(spLisa$Imoran,PaletteCouleur, breaks)
-# 
-# #lets keep in color only the observations with a p-value <= 0.05
-# spLisa$class <- ifelse(spLisa$pval<=0.05, spLisa$class, "grey")
-# labels <- names(print(breaks))
-# labels[[length(labels)+1]] <- "not.sign"
-# PaletteCouleur[[length(PaletteCouleur)+1]] <- "grey"
-# 
-# #and finally map with ggplot
-# MapData <- fortify(spLisa)
-# MapData <- merge(MapData, spLisa@data, by.x="id", by.y=0)
-# 
-# ggplot(MapData) + 
-#   geom_path(aes(x=long,y=lat,group=group,color=class))+
-#   scale_color_manual("local moran I",
-#     breaks = PaletteCouleur, values = PaletteCouleur, 
-#     label = labels)+
-#   theme(axis.title.x=element_blank(),
-#         axis.text.x=element_blank(),
-#         axis.ticks.x=element_blank(),
-#         axis.title.y=element_blank(),
-#         axis.text.y=element_blank(),
-#         axis.ticks.y=element_blank()) +
-#   coord_fixed()+
-#   ggtitle("Spatial autocorrelation of bike accidents in 2016")
-
-```
+* The spatial matrices could be calculated for every type of geometries not only lines. Points can directly be used. For polygons, it is possible to use the centers of the geometries as starting points. One can also chose a distance and equally spaced starting points will be defined on the border of the polygons according to that distance.
+* The cost of traveling on a edge could be set to something else than "length".
+* It is possible to specify directions on the network.
