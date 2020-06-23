@@ -56,21 +56,21 @@ prepare_data <- function(samples,lines,events, w ,digits,tol){
   lines$length <- gLength(lines,byid=TRUE)
   lines <- subset(lines, lines$length>0)
 
-  ##step4 : snapp events on lines
-  lines$oid <- 1:nrow(lines)
-  snapped_events <- snapPointsToLines(events,lines,idField = "oid")
-  events <- cbind(snapped_events,events)
-
-  ##step5 : split lines at events
-  new_lines <- add_vertices_lines(lines,events,events$nearest_line_id,tol)
-  new_lines <- simple_lines(new_lines)
-  new_lines$length <- gLength(new_lines,byid = T)
-  new_lines <- subset(new_lines,new_lines$length>0)
-  new_lines$oid <- 1:nrow(new_lines)
-  new_lines <- new_lines[c("length","oid")]
+  # ##step4 : snapp events on lines
+  # lines$oid <- 1:nrow(lines)
+  # snapped_events <- snapPointsToLines(events,lines,idField = "oid")
+  # events <- cbind(snapped_events,events)
+  #
+  # ##step5 : split lines at events
+  # new_lines <- add_vertices_lines(lines,events,events$nearest_line_id,tol)
+  # new_lines <- simple_lines(new_lines)
+  # new_lines$length <- gLength(new_lines,byid = T)
+  # new_lines <- subset(new_lines,new_lines$length>0)
+  # new_lines$oid <- 1:nrow(new_lines)
+  # new_lines <- new_lines[c("length","oid")]
 
   return(list("samples" = samples,
-              "lines" = new_lines,
+              "lines" = lines,
               "events" = events))
 
 }
@@ -84,11 +84,14 @@ prepare_data <- function(samples,lines,events, w ,digits,tol){
 #' @param events A spatialPointsDataFrame of the events points
 #' @param lines A SpatialLinesDataFrame representing the network
 #' @param bw the kernel bandwidth (used to avoid egde effect)
+#' @param digits the number of digits to keep
+#' @param tol a float indicating the spatial tolerance when snapping events on
+#' lines
 #' @return a list with the splitted dataset
 #' @importFrom rgeos gBuffer
 #' @examples
 #' #This is an internal function, no example provided
-split_by_grid <- function(grid,samples,events,lines,bw){
+split_by_grid <- function(grid,samples,events,lines,bw,tol, digits){
 
   ##step1 : creating the spatial trees
   tree_samples <- build_quadtree(samples)
@@ -107,12 +110,35 @@ split_by_grid <- function(grid,samples,events,lines,bw){
     }
     #selecting the events in a buffer
     buff <- gBuffer(square,width=bw)
+    buff2 <- gBuffer(square,width=(bw+0.5*bw))
     sel_events <- spatial_request(buff,tree_events,events)
     #selecting the lines in a buffer
-    sel_lines <- spatial_request(buff,tree_lines,lines)
+    sel_lines <- spatial_request(buff2,tree_lines,lines)
+    sel_lines$oid <- 1:nrow(sel_lines)
+
+    #snapping the events on the lines
+    if(nrow(sel_events)==0){
+      new_lines <- sel_lines
+    }else{
+      if(nrow(sel_events) * nrow(sel_lines) >= 2^30-1){
+        stop("The matrix size will be exceeded, please consider using a finer grid to split the study area")
+      }
+      snapped_events <- snapPointsToLines(sel_events,sel_lines,idField = "oid")
+      sel_events <- cbind(snapped_events,sel_events)
+      new_lines <- add_vertices_lines(sel_lines,sel_events,sel_events$nearest_line_id,tol)
+    }
+
+    ##step5 : split lines at events
+    new_lines <- simple_lines(new_lines)
+    new_lines$length <- gLength(new_lines,byid = T)
+    new_lines <- subset(new_lines,new_lines$length>0)
+    new_lines$oid <- 1:nrow(new_lines)
+    new_lines <- new_lines[c("length","oid")]
+
+
     return(list("samples" = sel_samples,
                 "events" = sel_events,
-                "lines" = sel_lines))
+                "lines" = new_lines))
   })
   #enlevons les quadra vides
   selections <- selections[lengths(selections) != 0]
@@ -181,6 +207,9 @@ nkde_worker <- function(lines, events, samples, kernel_func, bw, method, div, di
   edges <- graph_result$spedges
 
   ##step2 : for each sample, find its belonging line
+  if(nrow(samples) * nrow(edges) >= 2^30-1){
+    stop("The matrix size will be exceeded, please consider using a finer grid to split the study area")
+  }
   snapped_samples <- maptools::snapPointsToLines(samples,edges,idField = "edge_id")
   samples$edge_id <- snapped_samples$nearest_line_id
 
@@ -408,7 +437,7 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, method, div="bw", m
   grid <- build_grid(grid_shape,lines)
 
   ##step3 : splitting the dataset with each rectangle
-  selections <- split_by_grid(grid,samples,events,lines,bw)
+  selections <- split_by_grid(grid,samples,events,lines,bw, tol, digits)
 
   ##step4 : calculating the values
   n_quadra <- length(selections)
@@ -523,7 +552,7 @@ nkde.mc <- function(lines, events, w, samples, kernel_name, bw, method, div="bw"
   grid <- build_grid(grid_shape,lines)
 
   ##step3 : splitting the dataset with each rectangle
-  selections <- split_by_grid(grid,samples,events,lines,bw)
+  selections <- split_by_grid(grid,samples,events,lines,bw, digits,tol)
 
   ##step4 : calculating the values
 

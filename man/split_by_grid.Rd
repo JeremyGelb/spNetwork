@@ -4,7 +4,7 @@
 \alias{split_by_grid}
 \title{Function to split the dataset according to a grid}
 \usage{
-split_by_grid(grid, samples, events, lines, bw)
+split_by_grid(grid, samples, events, lines, bw, tol, digits)
 }
 \arguments{
 \item{grid}{a spatial grid to split the data within}
@@ -16,6 +16,11 @@ split_by_grid(grid, samples, events, lines, bw)
 \item{lines}{A SpatialLinesDataFrame representing the network}
 
 \item{bw}{the kernel bandwidth (used to avoid egde effect)}
+
+\item{tol}{a float indicating the spatial tolerance when snapping events on
+lines}
+
+\item{digits}{the number of digits to keep}
 }
 \value{
 a list with the splitted dataset
