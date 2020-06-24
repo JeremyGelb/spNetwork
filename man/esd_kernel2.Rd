@@ -14,6 +14,7 @@ esd_kernel2(
   nodes,
   lines_weight,
   linelist,
+  max_depth,
   verbose
 )
 }
@@ -37,6 +38,8 @@ must indicate for each event its corresponding node}
 \item{lines_weight}{a numeric vector with the weight of the lines}
 
 \item{linelist}{the linelist of the network (igraph)}
+
+\item{max_depth}{a integer indicating the maximum depth of the kernel}
 
 \item{verbose}{a boolean indicating if messages must be displayed}
 }

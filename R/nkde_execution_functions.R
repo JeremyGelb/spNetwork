@@ -177,11 +177,14 @@ split_by_grid <- function(grid,samples,events,lines,bw,tol, digits){
 #' @param tol When adding the events and the sampling points to the network,
 #' the minimum distance between these points and the lines extremities. When
 #' points are closer, they are added at the extermity of the lines.
-#' @param max_depth when using the continuous method, a recursive function
-#' is applied. When links in network are very short, this might lead to very
-#' deep recursion and crash. To avoid it, it is possible to set here a maximym
-#' recusion depth. Okabe recommand a value of 3.
-#' approximation.
+#' @param max_depth when using the continuous and discontinuous methods, the
+#' calculation time and memory use can go wild  if the network has a lot of
+#' small edges (area with a lot of intersections and a lot of events). To
+#' avoid it, it is possible to set here a maximum depth. Considering that the
+#' kernel is divided at intersections, a value of 8 should yield good
+#' estimates. A larger value can be used without problem for the discontinuous
+#' method. For the continuous method, a larger value will strongly impact
+#' calculation speed.
 #' @param verbose A boolean, indicating if the function should print messages
 #' about process.
 #' @importFrom igraph adjacent_vertices get.edge.ids
@@ -274,10 +277,10 @@ nkde_worker <- function(lines, events, samples, kernel_func, bw, method, div, di
     if(method == "discontinuous"){
       if(verbose){
         values <- discontinuous_nkde2(edge_list,neighbour_list, events$vertex_id, events$weight,
-                                      samples@data, bw, kernel_func, nodes@data, graph_result$linelist, verbose)
+                                      samples@data, bw, kernel_func, nodes@data, graph_result$linelist, max_depth, verbose)
       }else{
         invisible(capture.output(values <- discontinuous_nkde2(edge_list,neighbour_list, events$vertex_id, events$weight,
-                                                               samples@data, bw, kernel_func, nodes@data, graph_result$linelist, verbose)))
+                                                               samples@data, bw, kernel_func, nodes@data, graph_result$linelist, max_depth, verbose)))
       }
 
       # values <- spNetworkCpp::discontinuous_nkde_cpp(edge_list,neighbour_list, events$vertex_id, events$weight,
@@ -380,12 +383,14 @@ nkde_worker <- function(lines, events, samples, kernel_func, bw, method, div, di
 #' @param div The divisor to use for the kernel. Must be "n" (the number of
 #' events within the radius around each sampling point), "bw" (the bandwith)
 #' "none" (the simple sum).
-#' @param max_depth when using the continuous method, a recursive function
-#' is applied. When links in network are very short, this might lead to very
-#' deep recursion and crash. To avoid it, it is possible to set here a maximym
-#' recusion depth. Okabe recommand a value of 3, but it highly depends on the
-#' length of the lines of the network. 15 should be a good approximation in
-#' most cases, but might be time consuming.
+#' @param max_depth when using the continuous and discontinuous methods, the
+#' calculation time and memory use can go wild  if the network has a lot of
+#' small edges (area with a lot of intersections and a lot of events). To
+#' avoid it, it is possible to set here a maximum depth. Considering that the
+#' kernel is divided at intersections, a value of 10 should yield good
+#' estimates in most cases. A larger value can be used without problem for the
+#' discontinuous method. For the continuous method, a larger value will
+#' strongly impact calculation speed.
 #' @param digits The number of digits to keep in the spatial coordinates. It
 #' ensures that topology is good when building the network. Default is 3
 #' @param tol When adding the events and the sampling points to the network,
@@ -437,7 +442,14 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, method, div="bw", m
   grid <- build_grid(grid_shape,lines)
 
   ##step3 : splitting the dataset with each rectangle
-  selections <- split_by_grid(grid,samples,events,lines,bw, tol, digits)
+  if(verbose){
+    print("splitting the data according to the grid")
+    selections <- split_by_grid(grid,samples,events,lines,bw, tol, digits)
+  }else{
+    invisible(capture.output(selections <- split_by_grid(grid,samples,events,lines,bw, tol, digits)))
+  }
+
+
 
   ##step4 : calculating the values
   n_quadra <- length(selections)
@@ -496,12 +508,14 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, method, div="bw", m
 #' @param div The divisor to use for the kernel. Must be "n" (the number of
 #' events within the radius around each sampling point), "bw" (the bandwith)
 #' "none" (the simple sum).
-#' @param max_depth when using the continuous method, a recursive function
-#' is applied. When links in network are very short, this might lead to very
-#' deep recursion and crash. To avoid it, it is possible to set here a maximym
-#' recusion depth. Okabe recommand a value of 3, but it highly depends on the
-#' length of the lines of the network. 15 should be a good approximation in
-#' most cases, but might be time consuming.
+#' @param max_depth when using the continuous and discontinuous methods, the
+#' calculation time and memory use can go wild  if the network has a lot of
+#' small edges (area with a lot of intersections and a lot of events). To
+#' avoid it, it is possible to set here a maximum depth. Considering that the
+#' kernel is divided at intersections, a value of 10 should yield good
+#' estimates in most cases. A larger value can be used without problem for the
+#' discontinuous method. For the continuous method, a larger value will
+#' strongly impact calculation speed.
 #' @param digits The number of digits to keep in the spatial coordinates. It
 #' ensures that topology is good when building the network. Default is 3
 #' @param tol When adding the events and the sampling points to the network,

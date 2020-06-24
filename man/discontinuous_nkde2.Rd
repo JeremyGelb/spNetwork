@@ -14,6 +14,7 @@ discontinuous_nkde2(
   kernel_func,
   nodes,
   linelist,
+  max_depth,
   verbose
 )
 }
@@ -37,6 +38,8 @@ must indicate for each event its corresponding node}
 \item{nodes}{a SpatialPointsDataFrame representing the nodes of the network}
 
 \item{linelist}{the linelist of the network (igraph)}
+
+\item{max_depth}{a integer indicating the maximum depth of the kernel}
 
 \item{verbose}{a boolean indicating if messages must be displayed}
 }

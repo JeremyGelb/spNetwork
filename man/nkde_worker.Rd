@@ -47,11 +47,14 @@ ensures that topology is good when building the network. Default is 3}
 the minimum distance between these points and the lines extremities. When
 points are closer, they are added at the extermity of the lines.}
 
-\item{max_depth}{when using the continuous method, a recursive function
-is applied. When links in network are very short, this might lead to very
-deep recursion and crash. To avoid it, it is possible to set here a maximym
-recusion depth. Okabe recommand a value of 3.
-approximation.}
+\item{max_depth}{when using the continuous and discontinuous methods, the
+calculation time and memory use can go wild  if the network has a lot of
+small edges (area with a lot of intersections and a lot of events). To
+avoid it, it is possible to set here a maximum depth. Considering that the
+kernel is divided at intersections, a value of 8 should yield good
+estimates. A larger value can be used without problem for the discontinuous
+method. For the continuous method, a larger value will strongly impact
+calculation speed.}
 
 \item{verbose}{A boolean, indicating if the function should print messages
 about process.}

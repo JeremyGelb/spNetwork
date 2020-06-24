@@ -303,6 +303,7 @@ ess_kernel <- function(graph, y, bw, kernel_func, samples, nodes, edges, sample_
 #' @param kernel_func a function obtained with the function select_kernel
 #' @param nodes a SpatialPointsDataFrame representing the nodes of the network
 #' @param linelist the linelist of the network (igraph)
+#' @param max_depth a integer indicating the maximum depth of the kernel
 #' @param verbose a boolean indicating if messages must be displayed
 #' @return a dataframe with two columns. sum_k is the sum for each sample point
 #'  of the kernel values. n is the number of events influencing each sample
@@ -310,7 +311,7 @@ ess_kernel <- function(graph, y, bw, kernel_func, samples, nodes, edges, sample_
 #' @examples
 #' #This is an internal function, no example provided
 discontinuous_nkde2 <-  function(edge_list,neighbour_list, v_events, weights,
-                                 samples, bw, kernel_func, nodes, linelist, verbose){
+                                 samples, bw, kernel_func, nodes, linelist, max_depth, verbose){
 
   ##step 1 : mettre toutes les valeurs a 0
   base_k <- rep(0,nrow(samples))
@@ -332,7 +333,7 @@ discontinuous_nkde2 <-  function(edge_list,neighbour_list, v_events, weights,
     w <- weights[[i]]
 
     samples_k <- esd_kernel2(y, edge_list,neighbour_list,
-                            samples, bw, kernel_func, nodes, lines_weight, linelist, verbose)
+                            samples, bw, kernel_func, nodes, lines_weight, linelist, max_depth, verbose)
 
     samples_count <- ifelse(samples_k>0,1,0)
     base_k <- samples_k * w + base_k
@@ -356,6 +357,7 @@ discontinuous_nkde2 <-  function(edge_list,neighbour_list, v_events, weights,
 #' @param nodes a SpatialPointsDataFrame representing the nodes of the network
 #' @param lines_weight a numeric vector with the weight of the lines
 #' @param linelist the linelist of the network (igraph)
+#' @param max_depth a integer indicating the maximum depth of the kernel
 #' @param verbose a boolean indicating if messages must be displayed
 #' @importFrom igraph get.edge.attribute
 #' @importFrom rgeos gBuffer
@@ -364,7 +366,7 @@ discontinuous_nkde2 <-  function(edge_list,neighbour_list, v_events, weights,
 #' @examples
 #' #This is an internal function, no example provided
 esd_kernel2 <- function(y,edge_list,neighbour_list,
-                        samples, bw, kernel_func, nodes, lines_weight, linelist, verbose){
+                        samples, bw, kernel_func, nodes, lines_weight, linelist, max_depth, verbose){
 
   #definit les premiere valeurs a 0
   samples_k <- rep(0,nrow(samples))
@@ -373,6 +375,7 @@ esd_kernel2 <- function(y,edge_list,neighbour_list,
     list("v"=y,
          "d"=0,
          "alpha" = 1,
+         "depth" = 0,
          "prev_node"=-999)
   )
 
@@ -384,12 +387,12 @@ esd_kernel2 <- function(y,edge_list,neighbour_list,
 
     #on itere sur les cas en cours
     for(params in all_parameters){
-
       #step1 : unpacking the values
       v <- params[["v"]]
       alpha <- params[["alpha"]]
       prev_node <- params[["prev_node"]]
       d <- params[["d"]]
+      depth <- params[["depth"]]
 
       #step2 : on trouve les voisins de v (et on enleve le precedent node)
       v_neighbours <- neighbour_list[[v]]
@@ -429,10 +432,18 @@ esd_kernel2 <- function(y,edge_list,neighbour_list,
 
           #il ne reste plus que a voir si on peut continuer sur le prochain noeud
           d3 <- d+lines_weight[li]
-          if(d3<bw){
+          if(d3<bw & depth<max_depth){
+
+            if(new_alpha == alpha){
+              new_depth <- depth
+            }else{
+              new_depth <- depth+1
+            }
+
             new_params <- list("v" = vi,
                                "prev_node"=v,
                                "d" = d3,
+                               "depth" = new_depth,
                                "alpha" = new_alpha
                                )
             new_parameters[[length(new_parameters)+1]] <- new_params
