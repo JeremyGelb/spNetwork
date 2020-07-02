@@ -56,19 +56,6 @@ prepare_data <- function(samples,lines,events, w ,digits,tol){
   lines$length <- gLength(lines,byid=TRUE)
   lines <- subset(lines, lines$length>0)
 
-  # ##step4 : snapp events on lines
-  # lines$oid <- 1:nrow(lines)
-  # snapped_events <- snapPointsToLines(events,lines,idField = "oid")
-  # events <- cbind(snapped_events,events)
-  #
-  # ##step5 : split lines at events
-  # new_lines <- add_vertices_lines(lines,events,events$nearest_line_id,tol)
-  # new_lines <- simple_lines(new_lines)
-  # new_lines$length <- gLength(new_lines,byid = T)
-  # new_lines <- subset(new_lines,new_lines$length>0)
-  # new_lines$oid <- 1:nrow(new_lines)
-  # new_lines <- new_lines[c("length","oid")]
-
   return(list("samples" = samples,
               "lines" = lines,
               "events" = events))
@@ -165,7 +152,7 @@ split_by_grid <- function(grid,samples,events,lines,bw,tol, digits){
 #' network. The points will be snapped on the network.
 #' @param samples A SpatialPointsDataFrame representing the locations for
 #' which the densities will be estimated.
-#' @param kernel_func A kernel function, got from select_kernel
+#' @param kernel_name The name of the kernel to use
 #' @param bw The kernel bandwidth (in meters)
 #' @param method The method to use when calculating the NKDE, must be one of
 #' simple / discontinuous / continuous (see details for more information)
@@ -191,7 +178,7 @@ split_by_grid <- function(grid,samples,events,lines,bw,tol, digits){
 #' @return A numerci vector with the nkde values
 #' @examples
 #' #This is an internal function, no example provided
-nkde_worker <- function(lines, events, samples, kernel_func, bw, method, div, digits, tol, max_depth, verbose = FALSE){
+nkde_worker <- function(lines, events, samples, kernel_name, bw, method, div, digits, tol, max_depth, verbose = FALSE){
 
   ##si on a pas d'evenement, on renvoit que des 0
   if(nrow(events)==0){
@@ -240,6 +227,8 @@ nkde_worker <- function(lines, events, samples, kernel_func, bw, method, div, di
   }
 
   if(method == "simple"){
+
+    kernel_func <- select_kernel(kernel_name)
     if(verbose){
       values <- simple_nkde(graph, events, samples, bw, kernel_func, nodes, edges)
     }else{
@@ -254,37 +243,25 @@ nkde_worker <- function(lines, events, samples, kernel_func, bw, method, div, di
     # the neighbours list
     neighbour_list <- adjacent_vertices(graph,nodes$id,mode="out")
     neighbour_list <- lapply(neighbour_list,function(x){return (as.numeric(x))})
-    # the edge list
-    lists <- lapply(1:length(neighbour_list),function(i){
-      n1 <- i
-      neighbours <- neighbour_list[[n1]]
-      eids <- cbind(rep(n1,length(neighbours)),neighbours)
-      eids <- c(t(eids))
-      edges_id <- as.numeric(get.edge.ids(graph,eids))
-      node_names1 <- paste(n1,neighbours,sep="_")
-      l1 <- as.list(edges_id)
-      names(l1) <- node_names1
-      return(l1)
-    })
-    edge_list <- unlist(lists,recursive = F)
+
+
 
     if(method=="continuous"){
       ##and finally calculating the values
-      values <- spNetworkCpp::continuous_nkde_cpp(edge_list,neighbour_list, events$vertex_id, events$weight,
-                                                  samples@data, bw, kernel_func, nodes@data, graph_result$linelist, max_depth, verbose)
+      values <- spNetworkCpp::continuous_nkde_cpp_arma(neighbour_list, events$vertex_id, events$weight,
+                                                  samples@data, bw, kernel_name, nodes@data, graph_result$linelist, max_depth, verbose)
     }
 
     if(method == "discontinuous"){
       if(verbose){
-        values <- discontinuous_nkde2(edge_list,neighbour_list, events$vertex_id, events$weight,
-                                      samples@data, bw, kernel_func, nodes@data, graph_result$linelist, max_depth, verbose)
+        values <- spNetworkCpp::discontinuous_nkde_cpparma(neighbour_list, events$vertex_id, events$weight,
+                                                       samples@data, bw, kernel_name, nodes@data, graph_result$linelist, max_depth, verbose)
       }else{
-        invisible(capture.output(values <- discontinuous_nkde2(edge_list,neighbour_list, events$vertex_id, events$weight,
-                                                               samples@data, bw, kernel_func, nodes@data, graph_result$linelist, max_depth, verbose)))
+        # invisible(capture.output(values <- discontinuous_nkde2(edge_list,neighbour_list, events$vertex_id, events$weight,
+        #                                                       samples@data, bw, kernel_func, nodes@data, graph_result$linelist, max_depth, verbose)))
+        invisible(capture.output(values <- spNetworkCpp::discontinuous_nkde_cpparma(neighbour_list, events$vertex_id, events$weight,
+                                                       samples@data, bw, kernel_name, nodes@data, graph_result$linelist, max_depth, verbose)))
       }
-
-      # values <- spNetworkCpp::discontinuous_nkde_cpp(edge_list,neighbour_list, events$vertex_id, events$weight,
-      #                               samples@data, bw, kernel_func, nodes@data, graph_result$linelist, verbose)
 
     }
 
@@ -420,7 +397,10 @@ nkde_worker <- function(lines, events, samples, kernel_func, bw, method, div, di
 nkde <- function(lines, events, w, samples, kernel_name, bw, method, div="bw", max_depth = 15, digits=5, tol=0.1, grid_shape=c(1,1), verbose=TRUE){
 
   ##step0
-  kernel_func <- select_kernel(kernel_name)
+  #kernel_func <- select_kernel(kernel_name)
+  if((kernel_name %in% c("triangle", "gaussian", "tricube", "cosine" ,"triweight", "quartic", 'epanechnikov'))==FALSE){
+    stop('the name of the kernel function must be one of c("triangle", "gaussian", "tricube", "cosine" ,"triweight", "quartic", "epanechnikov")')
+  }
 
   if(method %in% c("simple","continuous","discontinuous") == FALSE){
     stop('The method must be one of c("simple","continuous","discontinuous"')
@@ -462,7 +442,7 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, method, div="bw", m
     }
 
     values <- nkde_worker(sel$lines, sel$events,
-                          sel$samples, kernel_func,
+                          sel$samples, kernel_name,
                           bw, method, div, digits,
                           tol, max_depth, verbose)
 
@@ -546,10 +526,14 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, method, div="bw", m
 #' \dontshow{
 #'    ## R CMD check: make sure any open connections are closed afterward
 #'    if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
+#'    }
 nkde.mc <- function(lines, events, w, samples, kernel_name, bw, method, div="bw", max_depth = 15, digits=5, tol=0.1, grid_shape=c(1,1), verbose=TRUE){
 
   ##step0
-  kernel_func <- select_kernel(kernel_name)
+  #kernel_func <- select_kernel(kernel_name)
+  if((kernel_name %in% c("triangle", "gaussian", "tricube", "cosine" ,"triweight", "quartic", 'epanechnikov'))==FALSE){
+    stop('the name of the kernel function must be one of c("triangle", "gaussian", "tricube", "cosine" ,"triweight", "quartic", "epanechnikov")')
+  }
 
   ##step1 : preparing the data
   if(verbose){
@@ -577,7 +561,7 @@ nkde.mc <- function(lines, events, w, samples, kernel_name, bw, method, div="bw"
       dfs <- future.apply::future_lapply(selections, function(sel) {
 
         invisible(capture.output(values <- nkde_worker(sel$lines, sel$events,
-                              sel$samples, kernel_func,
+                              sel$samples, kernel_name,
                               bw, method, div, digits,
                               tol, max_depth, verbose)))
 
@@ -591,7 +575,7 @@ nkde.mc <- function(lines, events, w, samples, kernel_name, bw, method, div="bw"
     dfs <- future.apply::future_lapply(selections, function(sel) {
 
       invisible(capture.output(values <- nkde_worker(sel$lines, sel$events,
-                            sel$samples, kernel_func,
+                            sel$samples, kernel_name,
                             bw, method, div, digits,
                             tol, max_depth, verbose)))
 

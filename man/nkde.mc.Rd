@@ -80,3 +80,23 @@ increase speed a lot by dividing the burden on multiple cores.
 \details{
 for details, please see the function nkde
 }
+\examples{
+data(mtl_network)
+data(bike_accidents)
+future::plan(future::multiprocess(workers=4))
+lixels <- lixelize_lines(mtl_network,200,mindist = 50)
+samples <- lines_center(lixels)
+densities <- nkde.mc(mtl_network,
+                  events = bike_accidents,
+                  w = rep(1,nrow(bike_accidents)),
+                  samples = samples,
+                  kernel_name = "quartic",
+                  bw = 300, div= "bw",
+                  method = "discontinuous", digits = 1, tol = 1,
+                  grid_shape = c(3,3),
+                  verbose=FALSE)
+\dontshow{
+   ## R CMD check: make sure any open connections are closed afterward
+   if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
+   }
+}

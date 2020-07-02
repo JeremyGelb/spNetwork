@@ -67,6 +67,13 @@ build_graph <- function(lines, digits, line_weight, attrs = FALSE) {
 
     spedges <- SpatialLinesDataFrame(geoms, edge_df,match.ID = F)
     raster::crs(spedges) <- raster::crs(lines)
+    vertex_df <- igraph::ends(graph,spedges$edge_id,names=F)
+    spedges$start_oid <- vertex_df[,1]
+    spedges$end_oid <- vertex_df[,2]
+
+    vertex_df <- igraph::ends(graph,linelist$graph_id,names=F)
+    linelist$start_oid <- vertex_df[,1]
+    linelist$end_oid <- vertex_df[,2]
 
     return(list(graph = graph, linelist = linelist, lines = lines,
                 spvertices = points, digits = digits, spedges = spedges))

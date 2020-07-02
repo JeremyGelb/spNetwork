@@ -29,6 +29,7 @@
 "small_mtl_network"
 
 
+
 #' An extract of the bike accidents on Montreal road network
 #'
 #' A SpatialPointsDataFrame representing bike accidents that occured on the

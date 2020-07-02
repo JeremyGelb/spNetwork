@@ -10,7 +10,7 @@ output:
     toc_depth: 2
     df_print: "tibble"
 vignette: >
-  %\VignetteIndexEntry{SpatialWeightMatrices}
+  %\VignetteIndexEntry{Spatial Weight Matrices}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -43,6 +43,7 @@ When one works with data constrained on a network, using euclidean distance to e
 First, we want to split the network into lixels:
 
 ```{r message=FALSE, warning=FALSE}
+options("rgdal_show_exportToProj4_warnings"="none")
 library(spNetwork)
 library(maptools)
 library(dplyr)
@@ -51,8 +52,9 @@ library(spdep)
 data("mtl_network")
 data("bike_accidents")
 
+
 # set this function to silent in the vignette
-invisible(capture.output(lixels <- lixelize_lines(mtl_network,200,mindist = 50)))
+lixels <- lixelize_lines(mtl_network,200,mindist = 50)
 ```
 
 then we want to calculate for each lixel the number of event on that lixel
@@ -61,6 +63,7 @@ then we want to calculate for each lixel the number of event on that lixel
 # defining and oid for the lines
 lixels$oid <- 1:nrow(lixels)
 
+
 snapped_acc <- snapPointsToLines(bike_accidents,lixels, idField ="oid")
 counts <- table(snapped_acc$nearest_line_id)
 counts_df <- data.frame("oid" = as.numeric(as.character(names(counts))),
@@ -68,8 +71,6 @@ counts_df <- data.frame("oid" = as.numeric(as.character(names(counts))),
 
 lixels$nbAccident <- left_join(lixels@data,counts_df, by="oid")$count
 lixels$nbAccident <- ifelse(is.na(lixels$nbAccident),0,lixels$nbAccident)
-
-
 ```
 
 We will use here the function *network_listw*. The distances can be calculated from the centroids of the lixels, from the ends of the lixels or from evenly spaced points on the lixels. We use here the *ends* method.
@@ -89,7 +90,6 @@ netlistw <- network_listw(lixels,mtl_network,
 
 Test <- moran.test(lixels$nbAccident, netlistw, zero.policy = T)
 print(round(Test$estimate,4))
-
 ```
 
 The autocorrelation is week, this is due to the large distance used and the fact that the analyzed variable is not a counting variable (number of accidents). Indeed, the Moran I is supposed to be used on continuous variables.
@@ -125,19 +125,19 @@ To speed up calculation, one could use a multiprocessing plan defined with the p
 ```{r message=FALSE, warning=FALSE}
 
 # setting the multiprocess plan
-future::plan(future::multiprocess(workers=4))
-
-netlistw3 <- network_listw.mc(lixels,lixels,
-                             method = "ends",
-                             mindist = 10,
-                             maxdistance = 300,
-                             dist_func = my_conv_func,
-                             line_weight = 'length',
-                             matrice_type = 'W',
-                             grid_shape = c(3,3),
-                             verbose=FALSE)
-
-if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
+# future::plan(future::multiprocess(workers=4))
+# 
+# netlistw3 <- network_listw.mc(lixels,lixels,
+#                              method = "ends",
+#                              mindist = 10,
+#                              maxdistance = 300,
+#                              dist_func = my_conv_func,
+#                              line_weight = 'length',
+#                              matrice_type = 'W',
+#                              grid_shape = c(3,3),
+#                              verbose=FALSE)
+# 
+# if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
 ```
 
 # Other features

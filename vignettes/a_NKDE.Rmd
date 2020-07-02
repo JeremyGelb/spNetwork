@@ -10,7 +10,7 @@ output:
     toc_depth: 2
     df_print: "tibble"
 vignette: >
-  %\VignetteIndexEntry{NKDE}
+  %\VignetteIndexEntry{Network Kernel Density Estimate}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 bibliography: spnetwork_bilbio.bibtex
@@ -25,7 +25,6 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 ```
-
 
 
 This vignette is a short introduction to the **NKDE** feature of the **spNetwork** package by using datasets provided with the package.
@@ -167,9 +166,9 @@ kable(df)
 
 # The three versions of NKDE
 
-The **spNetwork** package provides three methods to perform NKDE. We present them brievely here. For more details, please read the original papers and books cited. One could also look at the vignette *Details about NKDE* to find a complementary description of each method.
+The **spNetwork** package provides three methods to perform NKDE. We present them brievely here. For more details, please read the original papers and books cited. 
 
-## The simple method
+## Simple method
 
 The first method was proposed by @xie2008kernel. Considering the planer KDE, they defined the NKDE with the following formula :
 
@@ -180,9 +179,30 @@ Of course, it uses the network distance instead of the euclidean distance. This 
 
 *"Instead of calculating the density over an area unit, the equation estimates the density over a linear unit"*
 
-## The discontinuous NKDE
+<center>
+![Image Title](images/simple_nkde_ex.png){width=150px}
+</center>
 
-@okabe2012spatial have critized the previous method, arguing that the produced density estimator  is biased, conducting to overestimation of density. More specifically, the simple method does not conserve mass and the proposed kernel is not a probability density along the network. To overcome this limit, they presented two heuristic techniques: the discontinuous and the continuous NKDE.
+
+As one can see, this NKDE is only determined by the distance between the sampling points and the event. This is a problem because at intersections, the event's mass is multiplied by the number of edges adjacent to that intersection. In more mathematical words, this is not a real kernel because it does not integrate to 1 on its domain.
+
+This method remains useful for two reasons: 
+
+* For quick data visualization. With big datasets, it might be useful to use this simple method to do a primary investigation.
+* In a purely geographical view, this method is intuitive. In the case of crime analysis for example, one could argue that the *strength* of the event should not be affected by intersections on the network. In that case, the kernel function is seen as a distance decaying function.
+
+**What to retain about the simple method**
+
+|   Pros              |           Cons             |
+|:-------------------:|:--------------------------:|
+|quick to calculate   | biased (not a true kernel) |
+|intuitive            | overestimate the densities |
+|continuous           |                            |
+
+
+## Discontinuous NKDE
+
+@okabe2012spatial have critized the previous method, arguing that the produced density estimator  is biased, conducting to overestimation of density. To overcome this limit, they presented two heuristic techniques: the discontinuous and the continuous NKDE.
 
 The discontinuous NKDE is easily presented by a figure : 
 
@@ -192,10 +212,26 @@ The discontinuous NKDE is easily presented by a figure :
 
 The density of the kernel function is equally divided at intersections. Note that *spNetwork* implements the modified version proposed by @sugihara2010simple, allowing for use in networks with cycles. In the case of a cycle, the multiple values of the kernel that overlap are added.
 
+<center>
+![Image Title](images/discontinuous_nkde_ex.png){width=150px}
+</center>
 
-#### the continuous NKDE
+As one can see, the values of the NKDE are split at intersections to avoid the multiplication of the mass observed in the simple version. However, this creates a discontinuous NKDE, which is counter-intuitive. This leads to sharp differences between density values in the network, and could be problematic in networks with a lot of intersections.
 
-If the previous method is an ubaised estimator and quite easy to calculate, its discontinuous nature might be counter-intuitive. The continuous NKDE solves this problem.
+**What to retain about the discontinuous method**
+
+|   Pros              |           Cons             |
+|:-------------------:|:--------------------------:|
+|quick to calculate   | counter-intuitive         |
+|unbiased             | discontinuous              |
+|                     |   contrasted results       |
+
+
+
+## Continuous NKDE
+
+If the previous method is an ubaised estimator and quite easy to calculate, its discontinuous nature might be counter-intuitive in comparison with the simple method. The continuous NKDE tries to take the best of the two worlds: it adjusts the values of the NKDE at intersections to ensure that it integrates to 1 on its domain, and applies a backward correction to force the density values to be continuous. This process is accomplished by a recursive function, described in the book *Spatial Analysis Along Networks* [@okabe2012spatial]. This function is more time consuming, so it might be necessary to stop it when the recursion is too deep. Considering that the kernel density is divided at each intersection, stopping the function at deep level 16 should yield results very close to the true values.
+
 
 <center>
 ![Image Title](images/continuous.png){width=300px}
@@ -203,7 +239,19 @@ If the previous method is an ubaised estimator and quite easy to calculate, its 
 
 There are three different equations to calculate the kernel density depending on the situation (here, q1, q2, q3). One can note that intersections will affect kernel values on the edges before the intersection. This behaviour is desribed in [@okabe2012spatial; @okabe2009kernel] as a recursive function, and implemented in the same way in **spNetwork**.
 
-The continuous version of the NKDE produces smoother results than the discontinuous version.
+<center>
+![Image Title](images/continuous_nkde_ex.png){width=150px}
+</center>
+
+As one can see, the values of the NKDE are continuous, and the density values close to the events have been adjusted. This leads to smoother results than the discontinuous method.
+
+**what to retain about the discontinuous method**
+
+|   Pros              |           Cons             |
+|:-------------------:|:--------------------------:|
+| unbiased            | long calculation time      |
+| continuous          | smoother values            |
+
 
 # NKDE in spNetwork
 
@@ -240,8 +288,9 @@ densities <- nkde(mtl_network,
                   kernel_name = "quartic",
                   bw = 300, div= "bw", 
                   method = "discontinuous", digits = 1, tol = 1,
-                  grid_shape = c(1,1),
-                  verbose=FALSE)
+                  grid_shape = c(1,1), max_depth = 16,
+                  verbose=TRUE)
+
 
 
 samples$density <- densities
@@ -294,8 +343,9 @@ ggplot() +
 
 ```
 
-As you can imagine it remains a costly process, especially for the continuous kernel that is calculated with a recursive function. The package **spNetwork** uses two approaches to reduce calculation time : 
+As you can imagine it remains a costly process, especially for the continuous kernel that is calculated with a recursive function. The package **spNetwork** uses three approaches to reduce calculation time : 
 * Rcpp : the main functions are coded with c++
+* Armadillo : the linear algebra is performed with Armadillo
 * multiprocessing : it is possible to split the calculation on multiple cores
 
 The calculus of the NKDE for each cell could be done by several cores. To do so, **spNetwork** provides a function *nkde.mc*. More specifically, it uses functions from the packages **future** and **future.apply**. The selection of the plan is let to the user to permit the best compatibility on each os and computer. One could even paralellize this calculation on several computers. See the documentation of the **future** package if needed.
@@ -303,7 +353,7 @@ The calculus of the NKDE for each cell could be done by several cores. To do so,
 Note that the combined use of **Rcpp** and **future** is difficult. **Rcpp** functions can not be sent to child processes. To overcome this, a separate package **spNetworkCpp** exists on its own and contains only the **Rcpp** functions. **spNetworkCpp** is then loaded by each child processes.
 
 Let us split the work between 4 cores.
-```{r}
+```{r message=FALSE, warning=FALSE}
 
 #setting the multiprocess plan
 future::plan(future::multiprocess(workers=4))
@@ -316,7 +366,7 @@ densities_mc <- nkde.mc(mtl_network,
                   kernel_name = "quartic",
                   bw = 300, div= "bw", 
                   method = "discontinuous", digits = 1, tol = 1,
-                  grid_shape = c(3,3), # here we split the study area into 9 rectangles
+                  grid_shape = c(3,3), max_depth = 16, # splitting the study area in 9 rectangles
                   verbose=FALSE)
 
 # let's set back the classical sequential plan

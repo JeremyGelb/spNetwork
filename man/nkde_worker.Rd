@@ -8,7 +8,7 @@ nkde_worker(
   lines,
   events,
   samples,
-  kernel_func,
+  kernel_name,
   bw,
   method,
   div,
@@ -29,7 +29,7 @@ network. The points will be snapped on the network.}
 \item{samples}{A SpatialPointsDataFrame representing the locations for
 which the densities will be estimated.}
 
-\item{kernel_func}{A kernel function, got from select_kernel}
+\item{kernel_name}{The name of the kernel to use}
 
 \item{bw}{The kernel bandwidth (in meters)}
 
