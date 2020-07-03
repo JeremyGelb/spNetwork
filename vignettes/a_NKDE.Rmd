@@ -39,7 +39,7 @@ This approach is not adapted to analyze density of events occurring on a network
 To perform a Network Kernel Density Estimate (NKDE), it is possible to:
 
 * using lixels instead of pixels. A lixel is a linear equivalent of a pixel on a network. The lines of the network are split into lixels according to a chosen resolution. The centres of the lixels are sampling points for which the density will be estimated.
-* calculating reticular distances between objects instead of euclidean distances.
+* calculating network distances between objects instead of euclidean distances.
 * adjusting the kernel function to deal with the anisotropic space
 
 An image is worth 1000 words, so let us consider this situation : 
@@ -79,7 +79,7 @@ For an easier representation, let us consider here the triangle kernel function.
 
 We can see that the "influence" of each point is limited within the bandwidth and decreases when we are farther from the event.
 
-With this method, one can evaluate the density of the studied phenomenom at each point of the network. In the next figure, 3 sampling points (s1, s2 and s3) are added in blue.
+With this method, one can evaluate the density of the studied phenomenon at each point of the network. In the next figure, 3 sampling points (s1, s2 and s3) are added in blue.
 
 <center>
 ![Image Title](images/step3.png){width=300px}
@@ -144,7 +144,6 @@ ggplot(df2) +
 
 ```
 
-
 As one can see, most of the kernels look alike. It is worth mentioning that the gaussian kernel does not integrate to 1. This means that some weight of each event is lost with the gaussian kernel.
 
 ```{r message=FALSE, warning=FALSE}
@@ -166,7 +165,7 @@ kable(df)
 
 # The three versions of NKDE
 
-The **spNetwork** package provides three methods to perform NKDE. We present them brievely here. For more details, please read the original papers and books cited. 
+The **spNetwork** package provides three methods to perform NKDE. We present them briefly here. For more details, please read the original papers and books cited. 
 
 ## Simple method
 
@@ -175,16 +174,17 @@ The first method was proposed by @xie2008kernel. Considering the planer KDE, the
 $d_{si} = (1/bandwidth) * \sum_{j=1}^{n} K(dist_{si;ej})$
 
 
-Of course, it uses the network distance instead of the euclidean distance. This method is appealing because it is intuitive, but is not statistically satisfying. Note that the divisor of the kernel is not the classical 1/n, but 1/bandwidth. This adjustment allows a simpler interpretation of the density:
+Of course, it uses the network distance instead of the euclidean distance. This method is appealing because it is intuitive, but not statistically satisfying. Note that the divisor of the kernel is not the classical 1/n, but 1/bandwidth. This adjustment allows a simpler interpretation of the density:
 
 *"Instead of calculating the density over an area unit, the equation estimates the density over a linear unit"*
+
+On the next figure, we show in three dimensions what that kernel looks like. The red point is a simple event, the black lines are the network, and the blue lines are the evaluated densities.
 
 <center>
 ![Image Title](images/simple_nkde_ex.png){width=150px}
 </center>
 
-
-As one can see, this NKDE is only determined by the distance between the sampling points and the event. This is a problem because at intersections, the event's mass is multiplied by the number of edges adjacent to that intersection. In more mathematical words, this is not a real kernel because it does not integrate to 1 on its domain.
+As one can see, this NKDE is only determined by the distance between the sampling points and the event. This is a problem because at intersections, the event's mass is multiplied by the number of edges adjacent to that intersection. As a consequence this is not a real kernel because it does not integrate to 1 on its domain.
 
 This method remains useful for two reasons: 
 
@@ -202,7 +202,7 @@ This method remains useful for two reasons:
 
 ## Discontinuous NKDE
 
-@okabe2012spatial have critized the previous method, arguing that the produced density estimator  is biased, conducting to overestimation of density. To overcome this limit, they presented two heuristic techniques: the discontinuous and the continuous NKDE.
+@okabe2012spatial have criticized the previous method, arguing that the produced density estimator  is biased, conducting to overestimation of density. To overcome this limit, they presented two heuristic techniques: the discontinuous and the continuous NKDE.
 
 The discontinuous NKDE is easily presented by a figure : 
 
@@ -211,6 +211,8 @@ The discontinuous NKDE is easily presented by a figure :
 </center>
 
 The density of the kernel function is equally divided at intersections. Note that *spNetwork* implements the modified version proposed by @sugihara2010simple, allowing for use in networks with cycles. In the case of a cycle, the multiple values of the kernel that overlap are added.
+
+With the case presented before, we obtain the following result.
 
 <center>
 ![Image Title](images/discontinuous_nkde_ex.png){width=150px}
@@ -239,6 +241,8 @@ If the previous method is an ubaised estimator and quite easy to calculate, its 
 
 There are three different equations to calculate the kernel density depending on the situation (here, q1, q2, q3). One can note that intersections will affect kernel values on the edges before the intersection. This behaviour is desribed in [@okabe2012spatial; @okabe2009kernel] as a recursive function, and implemented in the same way in **spNetwork**.
 
+Again, with the case presented before, we obtain the following result.
+
 <center>
 ![Image Title](images/continuous_nkde_ex.png){width=150px}
 </center>
@@ -257,7 +261,7 @@ As one can see, the values of the NKDE are continuous, and the density values cl
 
 The **spNetwork** package makes this type of analysis straightforward in R. The main problem of the implementation of the NKDE is to reduce computation time. Indeed, for a large dataset, building the network and evaluating the distances between each event and each sampling point would be too long and could lead to memory issues.
 
-To avoid this, the first solution provided in **spNetwork** is a gridded application of the NKDE. The user can split the study area with a grid, the calculation is then performed in each cell of the grid. A buffer is applied on each cell to avoid frontier effect. This behaviour is controled by the parameter *grid_shape*, indicating the shape of the grid. To split the study area in four rectangles, one can use *grid_shape = c(2,2)*. For a reasonable dataset, it is also possible not to split the study area with *grid_shape = c(1,1)*
+To avoid this, the first solution provided in **spNetwork** is a gridded application of the NKDE. The user can split the study area with a grid, the calculation is then performed in each cell of the grid. A buffer is applied on each cell to avoid frontier effect. This behaviour is controlled by the parameter *grid_shape*, indicating the shape of the grid. To split the study area in four rectangles, one can use *grid_shape = c(2,2)*. For a reasonable dataset, it is also possible not to split the study area with *grid_shape = c(1,1)*
 
 
 ```{r message=FALSE, warning=FALSE}
@@ -296,7 +300,7 @@ densities <- nkde(mtl_network,
 samples$density <- densities
 ```
 
-We can then map the density values estimated for each lixel:
+We can then map the density values estimated for each lixel centre:
 
 ```{r message=FALSE, warning=FALSE}
 library(ggplot2)
@@ -343,20 +347,20 @@ ggplot() +
 
 ```
 
-As you can imagine it remains a costly process, especially for the continuous kernel that is calculated with a recursive function. The package **spNetwork** uses three approaches to reduce calculation time : 
-* Rcpp : the main functions are coded with c++
-* Armadillo : the linear algebra is performed with Armadillo
-* multiprocessing : it is possible to split the calculation on multiple cores
+As you can imagine it remains a costly process, especially for the continuous kernel that is calculated with a recursive function. The package **spNetwork** uses three approaches to reduce calculation time: 
+* Rcpp: the main functions are coded with c++
+* Armadillo: the linear algebra is performed with Armadillo
+* multiprocessing: it is possible to split the calculation on multiple cores
 
-The calculus of the NKDE for each cell could be done by several cores. To do so, **spNetwork** provides a function *nkde.mc*. More specifically, it uses functions from the packages **future** and **future.apply**. The selection of the plan is let to the user to permit the best compatibility on each os and computer. One could even paralellize this calculation on several computers. See the documentation of the **future** package if needed.
+The calculus of the NKDE for each cell could be done by several cores. To do so, **spNetwork** provides a function *nkde.mc*. More specifically, it uses functions from the packages **future** and **future.apply**. The selection of the plan is let to the user to permit the best compatibility on each os and computer. See the documentation of the **future** package if needed.
 
 Note that the combined use of **Rcpp** and **future** is difficult. **Rcpp** functions can not be sent to child processes. To overcome this, a separate package **spNetworkCpp** exists on its own and contains only the **Rcpp** functions. **spNetworkCpp** is then loaded by each child processes.
 
-Let us split the work between 4 cores.
+Let us split the work between 2 cores.
 ```{r message=FALSE, warning=FALSE}
 
 #setting the multiprocess plan
-future::plan(future::multiprocess(workers=4))
+future::plan(future::multiprocess(workers=2))
 
 #then applying the NKDE
 densities_mc <- nkde.mc(mtl_network, 
@@ -366,7 +370,8 @@ densities_mc <- nkde.mc(mtl_network,
                   kernel_name = "quartic",
                   bw = 300, div= "bw", 
                   method = "discontinuous", digits = 1, tol = 1,
-                  grid_shape = c(3,3), max_depth = 16, # splitting the study area in 9 rectangles
+                  grid_shape = c(2,2),
+                  max_depth = 16, # splitting the study area in 4 rectangles
                   verbose=FALSE)
 
 # let's set back the classical sequential plan
