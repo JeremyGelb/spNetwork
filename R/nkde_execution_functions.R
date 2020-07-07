@@ -14,6 +14,7 @@
 #' #This is an internal function, no example provided
 check_geometries <- function(lines,samples,events){
 
+  # checking if geometries are all valid, simple and planar
   obj_names <- c("lines","samples","events")
   objs <- list(lines,samples,events)
   for(i in 1:length(obj_names)){
@@ -29,6 +30,7 @@ check_geometries <- function(lines,samples,events){
       stop(paste("the ",obj_name," must be projected (planar coordinates)",sep=""))
     }
   }
+  # checking if the geometries type are good
   if(class(events)!="SpatialPointsDataFrame"){
     stop("the events must be given as a SpatialPointsDataFrame")
   }
@@ -37,6 +39,14 @@ check_geometries <- function(lines,samples,events){
   }
   if(class(lines)!="SpatialLinesDataFrame"){
     stop("the lines must be given as a SpatialPointsDataFrame")
+  }
+
+  # checking if the CRS are good
+  comp <- c(raster::compareCRS(raster::crs(samples),raster::crs(events)),
+            raster::compareCRS(raster::crs(lines),raster::crs(events)),
+            raster::compareCRS(raster::crs(lines),raster::crs(samples)))
+  if(any(comp==FALSE)){
+    stop("the lines, events and samples must have the same Coordinates Reference System (crs)")
   }
   return(TRUE)
 }

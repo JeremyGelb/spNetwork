@@ -14,6 +14,8 @@ nkde_worker(
   div,
   digits,
   tol,
+  agg,
+  sparse,
   max_depth,
   verbose = FALSE
 )
@@ -46,6 +48,14 @@ ensures that topology is good when building the network. Default is 3}
 \item{tol}{When adding the events and the sampling points to the network,
 the minimum distance between these points and the lines extremities. When
 points are closer, they are added at the extermity of the lines.}
+
+\item{agg}{a double indicating if the events must be aggregated within a distance.
+if NULL, then the events are aggregated by rounding the coordinates.}
+
+\item{sparse}{a boolean indicating if sparse or regular matrice should be
+used by the Rcpp functions. Regular matrices are faster, but require more
+memory and could lead to error, in particular with multiprocessing. Sparse
+matrices are slower, but require much less memory.}
 
 \item{max_depth}{when using the continuous and discontinuous methods, the
 calculation time and memory use can go wild  if the network has a lot of

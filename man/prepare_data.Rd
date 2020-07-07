@@ -4,7 +4,7 @@
 \alias{prepare_data}
 \title{A simple function to prepare data before the NKDE calculation}
 \usage{
-prepare_data(samples, lines, events, w, digits, tol)
+prepare_data(samples, lines, events, w, digits, tol, agg)
 }
 \arguments{
 \item{samples}{A spatialPointsDataFrame of the samples points}
@@ -19,6 +19,9 @@ prepare_data(samples, lines, events, w, digits, tol)
 
 \item{tol}{a float indicating the spatial tolerance when snapping events on
 lines}
+
+\item{agg}{a double indicating if the points must be aggregated within a distance.
+if NULL, then the points are aggregated by rouding the coordinates.}
 }
 \value{
 the data prepared for the rest of the operations

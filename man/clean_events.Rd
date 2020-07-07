@@ -4,12 +4,15 @@
 \alias{clean_events}
 \title{Function to avoid having events at the same location}
 \usage{
-clean_events(events, digits = 5)
+clean_events(events, digits = 5, agg = NULL)
 }
 \arguments{
 \item{events}{the SpatialPointsDataFrame to contract (must have a weight column)}
 
 \item{digits}{the number of digits to keep}
+
+\item{agg}{a double indicating if the points must be aggregated within a distance.
+if NULL, then the points are aggregated by rouding the coordinates.}
 }
 \value{
 a new SpatialPointsDataFrame

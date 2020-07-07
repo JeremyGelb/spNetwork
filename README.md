@@ -4,7 +4,7 @@ A R package to perform spatial analysis on networks.
 
 ## Getting Started
 
-A good start point for this package is the Introduction vignette. It presents the main features
+A good start point for this package is the vignettes. They present the main features of the package
 
 
 ### Installing
@@ -21,6 +21,8 @@ The packages use mainly the following packages in its internal structure :
 *future.apply
 *dplyr
 *tidyR
+*Rcpp
+*RcppArmadillo
 
 ```{r}
 devtools::install_github("JeremyGelb/spNetwork")
