@@ -48,24 +48,80 @@ utils::globalVariables(c("spid", "weight", "."))
 #'
 #' @param events the SpatialPointsDataFrame to contract (must have a weight column)
 #' @param digits the number of digits to keep
+#' @param agg a double indicating if the points must be aggregated within a distance.
+#' if NULL, then the points are aggregated by rouding the coordinates.
 #' @return a new SpatialPointsDataFrame
 #' @importFrom data.table tstrsplit setDF
 #' @examples
 #' #This is an internal function, no example provided
-clean_events <- function(events,digits=5){
-  events$spid <- sp_char_index(raster::coordinates(events),digits)
-  new_events <- data.table(events@data[c("weight","spid")])
-  agg_events <- new_events[, .(sum(weight)), by = .(spid)]
-  agg_events[,  c("X", "Y") := tstrsplit(spid, "_", fixed=TRUE)]
-  agg_events$X <- as.numeric(agg_events$X)
-  agg_events$Y <- as.numeric(agg_events$Y)
-  agg_events$weight <- agg_events$V1
-  new_events <- setDF(agg_events)
-  new_events <- new_events[c("weight","spid","X","Y")]
-  sp::coordinates(new_events) <- cbind(new_events$X,new_events$Y)
-  raster::crs(new_events) <- raster::crs(events)
-  return(new_events)
+clean_events <- function(events,digits=5,agg=NULL){
+  if(is.null(agg)){
+    events$spid <- sp_char_index(raster::coordinates(events),digits)
+    new_events <- data.table(events@data[c("weight","spid")])
+    agg_events <- new_events[, .(sum(weight)), by = .(spid)]
+    agg_events[,  c("X", "Y") := tstrsplit(spid, "_", fixed=TRUE)]
+    agg_events$X <- as.numeric(agg_events$X)
+    agg_events$Y <- as.numeric(agg_events$Y)
+    agg_events$weight <- agg_events$V1
+    new_events <- setDF(agg_events)
+    new_events <- new_events[c("weight","spid","X","Y")]
+    sp::coordinates(new_events) <- cbind(new_events$X,new_events$Y)
+    raster::crs(new_events) <- raster::crs(events)
+    return(new_events)
+  }else{
+    new_events <- aggregate_points(events,agg)
+    new_events$spid <- sp_char_index(raster::coordinates(new_events),digits)
+    return(new_events)
+  }
+
 }
+
+#' Function to aggregate points within a radius
+#'
+#' @param points the SpatialPointsDataFrame to contract (must have a weight column)
+#' @param maxdist the distance to use
+#' @return a new SpatialPointsDataFrame
+#' @importFrom rgeos gBuffer
+#' @examples
+#' #This is an internal function, no example provided
+aggregate_points <- function(points, maxdist){
+  Continue <- TRUE
+  while(Continue){
+    #generer l'arbre
+    tree <- build_quadtree(points)
+    #mettre a 0 les appartenances
+    points$aggregated <- 0
+    points$oid <- 1:nrow(points)
+    #demarrer les iterations
+    new_features <- lapply(1:nrow(points), function(i){
+      row <- points[i,]
+      buff <- gBuffer(row,width=maxdist)
+      candidates <- spatial_request(buff,tree,points)
+      ok_cand <- subset(candidates,candidates$aggregated==0)
+      if(nrow(ok_cand)>0){
+        coords <- sp::coordinates(ok_cand)
+        points[ok_cand$oid,"aggregated"] <<- 1
+        new_row <- c(sum(ok_cand$weight),mean(coords[,1]), mean(coords[,2]))
+        return(new_row)
+      }else{
+        return(NULL)
+      }
+    })
+    #let us remove all the empty quadra
+    new_features <- new_features[lengths(new_features) != 0]
+    new_points <- data.frame(do.call(rbind,new_features))
+    names(new_points) <- c("weight","x","y")
+    sp::coordinates(new_points) <- cbind(new_points$x,new_points$y)
+    raster::crs(new_points) <- raster::crs(points)
+    if(nrow(new_points) == nrow(points)){
+      return(new_points)
+    }else{
+      points <- new_points
+    }
+  }
+  return(points)
+}
+
 
 
 #' A simple function to prepare data before the NKDE calculation
@@ -77,17 +133,19 @@ clean_events <- function(events,digits=5){
 #' @param digits the number of digits to keep
 #' @param tol a float indicating the spatial tolerance when snapping events on
 #' lines
+#' @param agg a double indicating if the points must be aggregated within a distance.
+#' if NULL, then the points are aggregated by rouding the coordinates.
 #' @return the data prepared for the rest of the operations
 #' @importFrom data.table tstrsplit setDF
 #' @importFrom rgeos gLength
 #' @importFrom maptools snapPointsToLines
 #' @examples
 #' #This is an internal function, no example provided
-prepare_data <- function(samples,lines,events, w ,digits,tol){
+prepare_data <- function(samples,lines,events, w ,digits,tol, agg){
 
   ## step1 cleaning the events
   events$weight <- w
-  events <- clean_events(events,digits)
+  events <- clean_events(events,digits,agg)
 
   ## step2 defining the global IDS
   events$goid <- 1:nrow(events)
@@ -298,6 +356,12 @@ split_by_grid.mc <- function(grid,samples,events,lines,bw,tol,digits){
 #' @param tol When adding the events and the sampling points to the network,
 #' the minimum distance between these points and the lines extremities. When
 #' points are closer, they are added at the extermity of the lines.
+#' @param agg a double indicating if the events must be aggregated within a distance.
+#' if NULL, then the events are aggregated by rounding the coordinates.
+#' @param sparse a boolean indicating if sparse or regular matrice should be
+#' used by the Rcpp functions. Regular matrices are faster, but require more
+#' memory and could lead to error, in particular with multiprocessing. Sparse
+#' matrices are slower, but require much less memory.
 #' @param max_depth when using the continuous and discontinuous methods, the
 #' calculation time and memory use can go wild  if the network has a lot of
 #' small edges (area with a lot of intersections and a lot of events). To
@@ -312,7 +376,7 @@ split_by_grid.mc <- function(grid,samples,events,lines,bw,tol,digits){
 #' @return A numerci vector with the nkde values
 #' @examples
 #' #This is an internal function, no example provided
-nkde_worker <- function(lines, events, samples, kernel_name, bw, method, div, digits, tol, max_depth, verbose = FALSE){
+nkde_worker <- function(lines, events, samples, kernel_name, bw, method, div, digits, tol, agg, sparse, max_depth, verbose = FALSE){
 
   # if we do not have event in that space, just return 0 values
   if(nrow(events)==0){
@@ -377,16 +441,28 @@ nkde_worker <- function(lines, events, samples, kernel_name, bw, method, div, di
 
     if(method=="continuous"){
       ##and finally calculating the values
-      values <- spNetworkCpp::continuous_nkde_cpp_arma(neighbour_list, events$vertex_id, events$weight,
-                                        samples@data, bw, kernel_name, nodes@data, graph_result$linelist, max_depth, verbose)
+      if (sparse){
+        values <- spNetworkCpp::continuous_nkde_cpp_arma_sparse(neighbour_list, events$vertex_id, events$weight,
+                                                         samples@data, bw, kernel_name, nodes@data, graph_result$linelist, max_depth, verbose)
+      }else{
+        values <- spNetworkCpp::continuous_nkde_cpp_arma(neighbour_list, events$vertex_id, events$weight,
+                                                                samples@data, bw, kernel_name, nodes@data, graph_result$linelist, max_depth, verbose)
+      }
+
     }
 
     if(method == "discontinuous"){
         #let this commented here to debug and test sessions
         # invisible(capture.output(values <- discontinuous_nkde2(edge_list,neighbour_list, events$vertex_id, events$weight,
         #                                                       samples@data, bw, kernel_func, nodes@data, graph_result$linelist, max_depth, verbose)))
-      values <- spNetworkCpp::discontinuous_nkde_cpparma(neighbour_list, events$vertex_id, events$weight,
-                                        samples@data, bw, kernel_name, nodes@data, graph_result$linelist, max_depth, verbose)
+      if(sparse){
+        values <- spNetworkCpp::discontinuous_nkde_cpp_arma_sparse(neighbour_list, events$vertex_id, events$weight,
+                                                            samples@data, bw, kernel_name, nodes@data, graph_result$linelist, max_depth, verbose)
+      }else{
+        values <- spNetworkCpp::discontinuous_nkde_cpp_arma(neighbour_list, events$vertex_id, events$weight,
+                                                           samples@data, bw, kernel_name, nodes@data, graph_result$linelist, max_depth, verbose)
+      }
+
 
     }
 
@@ -493,6 +569,12 @@ nkde_worker <- function(lines, events, samples, kernel_name, bw, method, div, di
 #' @param tol When adding the events and the sampling points to the network,
 #' the minimum distance between these points and the lines extremities. When
 #' points are closer, they are added at the extermity of the lines.
+#' @param agg a double indicating if the events must be aggregated within a distance.
+#' if NULL, then the events are aggregated by rounding the coordinates.
+#' @param sparse a boolean indicating if sparse or regular matrice should be
+#' used by the Rcpp functions. Regular matrices are faster, but require more
+#' memory and could lead to error, in particular with multiprocessing. Sparse
+#' matrices are slower, but require much less memory.
 #' @param grid_shape A vector of two values indicating how the study area
 #' must be splitted when performing the calculus (see details). Defaut is c(1,1)
 #' @param verbose A boolean, indicating if the function should print messages
@@ -514,7 +596,7 @@ nkde_worker <- function(lines, events, samples, kernel_name, bw, method, div, di
 #'                   method = "discontinuous", digits = 1, tol = 1,
 #'                   grid_shape = c(1,1),
 #'                   verbose=FALSE)
-nkde <- function(lines, events, w, samples, kernel_name, bw, method, div="bw", max_depth = 15, digits=5, tol=0.1, grid_shape=c(1,1), verbose=TRUE){
+nkde <- function(lines, events, w, samples, kernel_name, bw, method, div="bw", max_depth = 15, digits=5, tol=0.1, agg=NULL, sparse=TRUE, grid_shape=c(1,1), verbose=TRUE){
 
   ## step0 basic checks
   if(verbose){
@@ -538,7 +620,7 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, method, div="bw", m
   if(verbose){
     print("prior data preparation ...")
   }
-  data <- prepare_data(samples, lines, events,w,digits,tol)
+  data <- prepare_data(samples, lines, events,w,digits,tol,agg)
   lines <- data$lines
   samples <- data$samples
   events <- data$events
@@ -564,7 +646,7 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, method, div="bw", m
     values <- nkde_worker(sel$lines, sel$events,
                           sel$samples, kernel_name,
                           bw, method, div, digits,
-                          tol, max_depth, verbose)
+                          tol,agg,sparse, max_depth, verbose)
 
     df <- data.frame("goid"=sel$samples$goid,
                      "k" = values)
@@ -621,6 +703,12 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, method, div="bw", m
 #' @param tol When adding the events and the sampling points to the network,
 #' the minimum distance between these points and the lines extremities. When
 #' points are closer, they are added at the extermity of the lines.
+#' @param agg a double indicating if the events must be aggregated within a distance.
+#' if NULL, then the events are aggregated by rounding the coordinates.
+#' @param sparse a boolean indicating if sparse or regular matrice should be
+#' used by the Rcpp functions. Regular matrices are faster, but require more
+#' memory and could lead to error, in particular with multiprocessing. Sparse
+#' matrices are slower, but require much less memory.
 #' @param grid_shape A vector of two values indicating how the study area
 #' must be splitted when performing the calculus (see details). Defaut is c(1,1)
 #' @param verbose A boolean, indicating if the function should print messages
@@ -647,7 +735,7 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, method, div="bw", m
 #'    ## R CMD check: make sure any open connections are closed afterward
 #'    if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
 #'    }
-nkde.mc <- function(lines, events, w, samples, kernel_name, bw, method, div="bw", max_depth = 15, digits=5, tol=0.1, grid_shape=c(1,1), verbose=TRUE){
+nkde.mc <- function(lines, events, w, samples, kernel_name, bw, method, div="bw", max_depth = 15, digits=5, tol=0.1,agg=NULL, sparse=TRUE, grid_shape=c(1,1), verbose=TRUE){
 
   ## step0 basic checks
   if(verbose){
@@ -672,7 +760,7 @@ nkde.mc <- function(lines, events, w, samples, kernel_name, bw, method, div="bw"
   if(verbose){
     print("prior data preparation ...")
   }
-  data <- prepare_data(samples, lines, events,w,digits,tol)
+  data <- prepare_data(samples, lines, events,w,digits,tol,agg)
   lines <- data$lines
   samples <- data$samples
   events <- data$events
@@ -694,7 +782,7 @@ nkde.mc <- function(lines, events, w, samples, kernel_name, bw, method, div="bw"
         invisible(capture.output(values <- nkde_worker(sel$lines, sel$events,
                               sel$samples, kernel_name,
                               bw, method, div, digits,
-                              tol, max_depth, verbose)))
+                              tol,agg,sparse, max_depth, verbose)))
 
         df <- data.frame("goid"=sel$samples$goid,
                          "k" = values)
@@ -708,7 +796,7 @@ nkde.mc <- function(lines, events, w, samples, kernel_name, bw, method, div="bw"
       values <- nkde_worker(sel$lines, sel$events,
                             sel$samples, kernel_name,
                             bw, method, div, digits,
-                            tol, max_depth, verbose)
+                            tol,agg,sparse, max_depth, verbose)
 
       df <- data.frame("goid"=sel$samples$goid,
                        "k" = values)

@@ -291,6 +291,8 @@ densities <- nkde(mtl_network,
                   bw = 300, div= "bw", 
                   method = "discontinuous", digits = 1, tol = 1,
                   grid_shape = c(1,1), max_depth = 16,
+                  agg = 5, #we aggregate events within a 5m radius
+                  sparse = FALSE, #we use regular matrices for speed
                   verbose=FALSE)
 
 
@@ -372,6 +374,8 @@ densities_mc <- nkde.mc(mtl_network,
                   method = "discontinuous", digits = 1, tol = 1,
                   grid_shape = c(2,2),
                   max_depth = 16, # splitting the study area in 4 rectangles
+                  agg = 5, #we aggregate events within a 5m radius
+                  sparse = FALSE, #we use regular matrices for speed
                   verbose=FALSE)
 
 # let's set back the classical sequential plan

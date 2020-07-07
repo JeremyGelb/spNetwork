@@ -32,7 +32,7 @@ Imports:
     Rcpp (>= 1.0.4.6),
     RcppProgress (>= 0.4.2),
     RcppArmadillo (>= 0.9.8.50.1.0),
-    spNetworkCpp (>= 0.1.3)
+    spNetworkCpp (>= 0.1.4)
 Depends:
     R (>= 3.6)
 Suggests:
