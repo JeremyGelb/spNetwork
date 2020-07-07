@@ -36,14 +36,17 @@ We provide here some short examples of the main features
 library(spNetwork)
 data(mtl_network)
 data(bike_accidents)
-lixels_nkde <- nkde_grided(mtl_network, bike_accidents,
-      snap_dist = 150,
-      lx_length = 150,
-      mindist = 50,
-      kernel_range = 800,
-      kernel='quartic',
-      grid_shape=c(5,5)
-)
+lixels <- lixelize_lines(mtl_network,200,mindist = 50)
+samples <- lines_center(lixels)
+densities <- nkde(mtl_network,
+                 events = bike_accidents,
+                 w = rep(1,nrow(bike_accidents)),
+                 samples = samples,
+                 kernel_name = "quartic",
+                 bw = 300, div= "bw",
+                 method = "discontinuous", digits = 1, tol = 1,
+                 grid_shape = c(1,1),
+                 verbose=FALSE)
 ```
 * Building a spatial matrix based on network distance and use it to calculate the Moran I with spdep.
 
