@@ -2,6 +2,48 @@
 #### helper functions ####
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+#' Function to check if the geometries given by the user are valide
+#'
+#' @param lines a SpatialLinesDataFrame
+#' @param samples a SpatialPointsDataFrame of the samples
+#' @param events a SpatialPointsDataFrame of the events
+#' @return TRUE if all the checks are passed
+#' @importFrom rgeos gIsSimple gIsValid
+#' @importFrom sp is.projected
+#' @examples
+#' #This is an internal function, no example provided
+check_geometries <- function(lines,samples,events){
+
+  obj_names <- c("lines","samples","events")
+  objs <- list(lines,samples,events)
+  for(i in 1:length(obj_names)){
+    obj <- objs[[i]]
+    obj_name <- obj_names[[i]]
+    if(any(gIsSimple(obj,byid = TRUE)==FALSE)){
+      stop(paste("the ",obj_name," must be simple geometries",sep=""))
+    }
+    if(any(gIsValid(obj,byid = TRUE)==FALSE)){
+      stop(paste("the ",obj_name," must be valid geometries",sep=""))
+    }
+    if(is.projected(obj)==FALSE){
+      stop(paste("the ",obj_name," must be projected (planar coordinates)",sep=""))
+    }
+  }
+  if(class(events)!="SpatialPointsDataFrame"){
+    stop("the events must be given as a SpatialPointsDataFrame")
+  }
+  if(class(samples)!="SpatialPointsDataFrame"){
+    stop("the samples must be given as a SpatialPointsDataFrame")
+  }
+  if(class(lines)!="SpatialLinesDataFrame"){
+    stop("the lines must be given as a SpatialPointsDataFrame")
+  }
+  return(TRUE)
+}
+
+#defining some global variables (weird felx but ok)
+utils::globalVariables(c("spid", "weight", "."))
+
 #' Function to avoid having events at the same location
 #'
 #' @param events the SpatialPointsDataFrame to contract (must have a weight column)
@@ -43,16 +85,16 @@ clean_events <- function(events,digits=5){
 #' #This is an internal function, no example provided
 prepare_data <- function(samples,lines,events, w ,digits,tol){
 
-  ##step1 : cleaning the events
+  ## step1 cleaning the events
   events$weight <- w
   events <- clean_events(events,digits)
 
-  ##step2 : defining the global IDS
+  ## step2 defining the global IDS
   events$goid <- 1:nrow(events)
   samples$goid <- 1:nrow(samples)
   samples <- samples[c("goid")]
 
-  ##step3 : remove lines with no length
+  ## step3 remove lines with no length
   lines$length <- gLength(lines,byid=TRUE)
   lines <- subset(lines, lines$length>0)
 
@@ -80,30 +122,30 @@ prepare_data <- function(samples,lines,events, w ,digits,tol){
 #' #This is an internal function, no example provided
 split_by_grid <- function(grid,samples,events,lines,bw,tol, digits){
 
-  ##step1 : creating the spatial trees
+  ## step1 : creating the spatial trees
   tree_samples <- build_quadtree(samples)
   tree_events <- build_quadtree(events)
   tree_lines <- build_quadtree(lines)
 
-  ##step2 : split the datasets
+  ## step2 : split the datasets
 
   selections <- lapply(1:length(grid),function(i){
     square <- grid[i,]
-    #selecting the samples in the grid
+    # selecting the samples in the grid
     sel_samples <- spatial_request(square,tree_samples,samples)
-    ##si on a aucun point d'echantillonnage dans la zone, c'est quelle est vide
+    # if there is no sampling points in the rectangle, then return NULL
     if(nrow(sel_samples)==0){
       return(NULL)
     }
-    #selecting the events in a buffer
+    # selecting the events in a buffer
     buff <- gBuffer(square,width=bw)
     buff2 <- gBuffer(square,width=(bw+0.5*bw))
     sel_events <- spatial_request(buff,tree_events,events)
-    #selecting the lines in a buffer
+    # selecting the lines in a buffer
     sel_lines <- spatial_request(buff2,tree_lines,lines)
     sel_lines$oid <- 1:nrow(sel_lines)
 
-    #snapping the events on the lines
+    # snapping the events on the lines
     if(nrow(sel_events)==0){
       new_lines <- sel_lines
     }else{
@@ -115,7 +157,7 @@ split_by_grid <- function(grid,samples,events,lines,bw,tol, digits){
       new_lines <- add_vertices_lines(sel_lines,sel_events,sel_events$nearest_line_id,tol)
     }
 
-    ##step5 : split lines at events
+    # split lines at events
     new_lines <- simple_lines(new_lines)
     new_lines$length <- gLength(new_lines,byid = T)
     new_lines <- subset(new_lines,new_lines$length>0)
@@ -127,7 +169,7 @@ split_by_grid <- function(grid,samples,events,lines,bw,tol, digits){
                 "events" = sel_events,
                 "lines" = new_lines))
   })
-  #enlevons les quadra vides
+  #let us remove all the empty quadra
   selections <- selections[lengths(selections) != 0]
 
   for(i in 1:length(selections)){
@@ -156,20 +198,21 @@ split_by_grid <- function(grid,samples,events,lines,bw,tol, digits){
 #' #This is an internal function, no example provided
 split_by_grid.mc <- function(grid,samples,events,lines,bw,tol,digits){
 
-  ##step1 : creating the spatial trees
+  ## step1 creating the spatial trees
   tree_samples <- build_quadtree(samples)
   tree_events <- build_quadtree(events)
   tree_lines <- build_quadtree(lines)
 
-  ##step2 : split the datasets
-  #NB : a faire en deux temps car on ne peut pas passer les pointeurs c++
-  ## donc partie 1 sequentielle : on fait les requetes spatiales
-  ## partie 2 : parallele, on snapp et on split
+  ## step2 split the datasets
+  #NB : because we can't send c++ pointer to child process, we must start with
+  #splitting the spatial objects in a sequential way and only after
+  #snapping and splitting in a multicore fashion
+
   sub_samples <- lapply(1:length(grid),function(i){
     square <- grid[i,]
     #selecting the samples in the grid
     sel_samples <- spatial_request(square,tree_samples,samples)
-    ##si on a aucun point d'echantillonnage dans la zone, c'est quelle est vide
+    ##return NULL if there is no sampling point in the rectangle
     if(nrow(sel_samples)==0){
       return(NULL)
     }
@@ -198,14 +241,14 @@ split_by_grid.mc <- function(grid,samples,events,lines,bw,tol,digits){
       new_lines <- sel_lines
     }else{
       if(nrow(sel_events) * nrow(sel_lines) >= 2^30-1){
-        stop("The matrix size will be exceeded, please consider using a finer grid to split the study area")
+        stop("The maximum matrix size will be exceeded, please consider using a finer grid to split the study area")
       }
       snapped_events <- snapPointsToLines(sel_events,sel_lines,idField = "oid")
       sel_events <- cbind(snapped_events,sel_events)
-      new_lines <- add_vertices_lines(sel_lines,sel_events,sel_events$nearest_line_id,tol)
+      invisible(capture.output(new_lines <- add_vertices_lines(sel_lines,sel_events,sel_events$nearest_line_id,tol)))
     }
 
-    ##step5 : split lines at events
+    #split lines at events
     new_lines <- simple_lines(new_lines)
     new_lines$length <- gLength(new_lines,byid = T)
     new_lines <- subset(new_lines,new_lines$length>0)
@@ -217,7 +260,7 @@ split_by_grid.mc <- function(grid,samples,events,lines,bw,tol,digits){
                 "events" = sel_events,
                 "lines" = new_lines))
   })
-  #enlevons les quadra vides
+  #let us remove the empty regions
   selections <- selections[lengths(selections) != 0]
 
   for(i in 1:length(selections)){
@@ -271,14 +314,13 @@ split_by_grid.mc <- function(grid,samples,events,lines,bw,tol,digits){
 #' #This is an internal function, no example provided
 nkde_worker <- function(lines, events, samples, kernel_name, bw, method, div, digits, tol, max_depth, verbose = FALSE){
 
-  ##si on a pas d'evenement, on renvoit que des 0
+  # if we do not have event in that space, just return 0 values
   if(nrow(events)==0){
     values <- rep(0,nrow(samples))
     return(values)
   }
 
-
-  ##step1 : creating the graph
+  ## step1 creating the graph
   if(verbose){
     print("    build graph ...")
   }
@@ -287,18 +329,17 @@ nkde_worker <- function(lines, events, samples, kernel_name, bw, method, div, di
   nodes <- graph_result$spvertices
   edges <- graph_result$spedges
 
-  ##step2 : for each sample, find its belonging line
+  ## step2 for each sample, find its belonging line
   if(nrow(samples) * nrow(edges) >= 2^30-1){
-    stop("The matrix size will be exceeded, please consider using a finer grid to split the study area")
+    stop("The maximum matrix size will be exceeded, please consider using a finer grid to split the study area")
   }
   snapped_samples <- maptools::snapPointsToLines(samples,edges,idField = "edge_id")
   samples$edge_id <- snapped_samples$nearest_line_id
 
-
-  ##step3 : finding for each event, its node
+  ## step3 finding for each event, its corresponding node
   events$vertex_id <- closest_points(events, nodes)
 
-  ##step4 : adding the spatial coordinates to samples and nodes
+  ## step4 adding the spatial coordinates to samples and nodes
   XY_nodes <- sp::coordinates(nodes)
   nodes$X_coords <- XY_nodes[,1]
   nodes$Y_coords <- XY_nodes[,2]
@@ -307,18 +348,18 @@ nkde_worker <- function(lines, events, samples, kernel_name, bw, method, div, di
   samples$X_coords <- XY_samples[,1]
   samples$Y_coords <- XY_samples[,2]
 
-  ##step5 : adding a local oid for samples and events
+  ## step5 adding a local oid for samples and events
   events$oid <- 1:nrow(events)
   samples$oid <- 1:nrow(samples)
 
-  ##step6 : starting the calculations !
+  ## step6 starting the calculations !
 
   if(verbose){
     print("        calculating NKDE values ...")
   }
 
   if(method == "simple"){
-
+    # the cas of the simple method, no c++ here
     kernel_func <- select_kernel(kernel_name)
     if(verbose){
       values <- simple_nkde(graph, events, samples, bw, kernel_func, nodes, edges)
@@ -327,41 +368,31 @@ nkde_worker <- function(lines, events, samples, kernel_name, bw, method, div, di
     }
 
   }else{
-    ## we have to call the package with the Rcpp functions
-    ## this is necessary because this function can be used in a multicore context
-    #library(spNetworkCpp)
-    ### preparing the complementary object for the rcpp function
-    # the neighbours list
+    # we have to call the package with the Rcpp functions
+    # this is necessary because this function can be used in a multicore context
+
+    ## step6.5 preparing the complementary object for the rcpp function
     neighbour_list <- adjacent_vertices(graph,nodes$id,mode="out")
     neighbour_list <- lapply(neighbour_list,function(x){return (as.numeric(x))})
-
-
 
     if(method=="continuous"){
       ##and finally calculating the values
       values <- spNetworkCpp::continuous_nkde_cpp_arma(neighbour_list, events$vertex_id, events$weight,
-                                                  samples@data, bw, kernel_name, nodes@data, graph_result$linelist, max_depth, verbose)
+                                        samples@data, bw, kernel_name, nodes@data, graph_result$linelist, max_depth, verbose)
     }
 
     if(method == "discontinuous"){
-      if(verbose){
-        values <- spNetworkCpp::discontinuous_nkde_cpparma(neighbour_list, events$vertex_id, events$weight,
-                                                       samples@data, bw, kernel_name, nodes@data, graph_result$linelist, max_depth, verbose)
-      }else{
+        #let this commented here to debug and test sessions
         # invisible(capture.output(values <- discontinuous_nkde2(edge_list,neighbour_list, events$vertex_id, events$weight,
         #                                                       samples@data, bw, kernel_func, nodes@data, graph_result$linelist, max_depth, verbose)))
-        invisible(capture.output(values <- spNetworkCpp::discontinuous_nkde_cpparma(neighbour_list, events$vertex_id, events$weight,
-                                                       samples@data, bw, kernel_name, nodes@data, graph_result$linelist, max_depth, verbose)))
-      }
+      values <- spNetworkCpp::discontinuous_nkde_cpparma(neighbour_list, events$vertex_id, events$weight,
+                                        samples@data, bw, kernel_name, nodes@data, graph_result$linelist, max_depth, verbose)
 
     }
 
   }
 
-
-  ##step7 : adjusting the kernel values !
-
-
+  ## step7 adjusting the kernel values !
   if(div == "n"){
     return(values$sum_k / values$n)
   }else if (div == "bw"){
@@ -369,8 +400,6 @@ nkde_worker <- function(lines, events, samples, kernel_name, bw, method, div, di
   }else if (div == "none"){
     return(values$sum_k)
   }
-
-
 }
 
 
@@ -487,8 +516,10 @@ nkde_worker <- function(lines, events, samples, kernel_name, bw, method, div, di
 #'                   verbose=FALSE)
 nkde <- function(lines, events, w, samples, kernel_name, bw, method, div="bw", max_depth = 15, digits=5, tol=0.1, grid_shape=c(1,1), verbose=TRUE){
 
-  ##step0
-  #kernel_func <- select_kernel(kernel_name)
+  ## step0 basic checks
+  if(verbose){
+    print("checking inputs ...")
+  }
   if((kernel_name %in% c("triangle", "gaussian", "tricube", "cosine" ,"triweight", "quartic", 'epanechnikov'))==FALSE){
     stop('the name of the kernel function must be one of c("triangle", "gaussian", "tricube", "cosine" ,"triweight", "quartic", "epanechnikov")')
   }
@@ -497,35 +528,33 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, method, div="bw", m
     stop('The method must be one of c("simple","continuous","discontinuous"')
   }
 
-  ##step1 : preparing the data
-  if(verbose){
-    print("prior data preparation ...")
-    data <- prepare_data(samples, lines, events,w,digits,tol)
-  }else{
-    invisible(capture.output(data <- prepare_data(samples, lines, events,w,digits,tol)))
+  if(bw<=0){
+    stop("the bandwidth for the kernel must be superior to 0")
   }
 
+  check_geometries(lines,samples,events)
+
+  ## step1 : preparing the data
+  if(verbose){
+    print("prior data preparation ...")
+  }
+  data <- prepare_data(samples, lines, events,w,digits,tol)
   lines <- data$lines
   samples <- data$samples
   events <- data$events
 
-  ##step2 : creating the grid
+  ## step2  creating the grid
   grid <- build_grid(grid_shape,lines)
 
-  ##step3 : splitting the dataset with each rectangle
+  ## step3 splitting the dataset with each rectangle
+  selections <- split_by_grid(grid,samples,events,lines,bw, tol, digits)
+
+  ## step 4 calculating the values
   if(verbose){
-    print("splitting the data according to the grid")
-    selections <- split_by_grid(grid,samples,events,lines,bw, tol, digits)
-  }else{
-    invisible(capture.output(selections <- split_by_grid(grid,samples,events,lines,bw, tol, digits)))
+    print("start calculating the kernel values ...")
   }
-
-
-
-  ##step4 : calculating the values
   n_quadra <- length(selections)
   dfs <- lapply(1:n_quadra,function(i){
-
     sel <- selections[[i]]
 
     if(verbose){
@@ -546,7 +575,7 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, method, div="bw", m
     print("combining the results ...")
   }
 
-  ##step5 : combining the results
+  ## step5  combining the results
   tot_df <- do.call(rbind,dfs)
   tot_df <- tot_df[order(tot_df$goid),]
   return(tot_df$k)
@@ -620,30 +649,41 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, method, div="bw", m
 #'    }
 nkde.mc <- function(lines, events, w, samples, kernel_name, bw, method, div="bw", max_depth = 15, digits=5, tol=0.1, grid_shape=c(1,1), verbose=TRUE){
 
-  ##step0
-  #kernel_func <- select_kernel(kernel_name)
+  ## step0 basic checks
+  if(verbose){
+    print("checking inputs ...")
+  }
+
   if((kernel_name %in% c("triangle", "gaussian", "tricube", "cosine" ,"triweight", "quartic", 'epanechnikov'))==FALSE){
     stop('the name of the kernel function must be one of c("triangle", "gaussian", "tricube", "cosine" ,"triweight", "quartic", "epanechnikov")')
   }
 
-  ##step1 : preparing the data
+  if(method %in% c("simple","continuous","discontinuous") == FALSE){
+    stop('The method must be one of c("simple","continuous","discontinuous"')
+  }
+
+  if(bw<=0){
+    stop("the bandwidth for the kernel must be superior to 0")
+  }
+
+  check_geometries(lines,samples,events)
+
+  ## step1 preparing the data
   if(verbose){
     print("prior data preparation ...")
-    data <- prepare_data(samples, lines, events,w,digits,tol)
-  }else{
-    invisible(capture.output(data <- prepare_data(samples, lines, events,w,digits,tol)))
   }
+  data <- prepare_data(samples, lines, events,w,digits,tol)
   lines <- data$lines
   samples <- data$samples
   events <- data$events
 
-  ##step2 : creating the grid
+  ## step2 creating the grid
   grid <- build_grid(grid_shape,lines)
 
-  ##step3 : splitting the dataset with each rectangle
+  ## step3 splitting the dataset with each rectangle
   selections <- split_by_grid.mc(grid,samples,events,lines,bw, digits,tol)
 
-  ##step4 : calculating the values
+  ## step4 calculating the values
 
   if(verbose){
     print("starting the kernel calculations ...")
@@ -665,10 +705,10 @@ nkde.mc <- function(lines, events, w, samples, kernel_name, bw, method, div="bw"
   }else{
     dfs <- future.apply::future_lapply(selections, function(sel) {
 
-      invisible(capture.output(values <- nkde_worker(sel$lines, sel$events,
+      values <- nkde_worker(sel$lines, sel$events,
                             sel$samples, kernel_name,
                             bw, method, div, digits,
-                            tol, max_depth, verbose)))
+                            tol, max_depth, verbose)
 
       df <- data.frame("goid"=sel$samples$goid,
                        "k" = values)
@@ -680,11 +720,10 @@ nkde.mc <- function(lines, events, w, samples, kernel_name, bw, method, div="bw"
   if(verbose){
     print("combining the results ...")
   }
-  ##step5 : combining the results
+  ## step5 combining the results
   tot_df <- do.call(rbind,dfs)
   tot_df <- tot_df[order(tot_df$goid),]
   return(tot_df$k)
-
 }
 
 

@@ -5,15 +5,15 @@
 \title{build a quad tree index and solve the nearest neighbour problem for two
 SpatialPointsDataFrame}
 \usage{
-closest_points(points, features)
+closest_points(origins, targets)
 }
 \arguments{
-\item{points}{a SpatialPointsDataFrame}
+\item{origins}{a SpatialPointsDataFrame}
 
-\item{features}{a SpatialPointsDataFrame}
+\item{targets}{a SpatialPointsDataFrame}
 }
 \value{
-for each point, the index of the nearest line (row-wise)
+for each origin point, the index of the nearest target point
 }
 \description{
 build a quad tree index and solve the nearest neighbour problem for two

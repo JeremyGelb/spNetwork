@@ -3,6 +3,9 @@
 #### helper functions ####
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+#defining some global variables (weird felx but ok)
+utils::globalVariables(c("Xs", "Ys"))
+
 #' Generate a character vector based on a coodinates matrix and
 #' the maximum number of digits to keep
 #'
@@ -150,9 +153,9 @@ add_vertices <- function(line, points, i, mindist) {
 #' @examples
 #' #This is an internal function, no example provided
 add_vertices_lines <- function(lines, points, nearest_lines_idx, mindist) {
-    pb <- txtProgressBar(min = 0, max = nrow(lines), style = 3)
+    #pb <- txtProgressBar(min = 0, max = nrow(lines), style = 3)
     new_lines_list <- lapply(1:nrow(lines), function(i) {
-        setTxtProgressBar(pb, i)
+        #setTxtProgressBar(pb, i)
         line <- lines[i, ]
         testpts <- nearest_lines_idx == i
         if (any(testpts)) {

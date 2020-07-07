@@ -91,33 +91,32 @@ $$d_{s3} = (1/2) * (K(dist_{s3;e2}) + K(dist_{s3;e3}))$$
 
 And in a more general fashion: 
 $d_{si} = (1/n) * \sum_{j=1}^{n} K(dist_{si;ej})$
-with *n* the number of events within the bandwidth arround the sampling point *si*
+with $d_{si}$ the density estimated at sample the point *si*, *n* the number of events within the bandwidth arround the sampling point *si* and *ej* an event.
 
+The proposed kernel functions in the **spNetwork** package are :
 
-The proposed kernel function in the **spNetwork** package are :
-
-* the gaussian kernel : 
+* gaussian kernel: 
 $k(\dfrac{d_{il}}{r})=\dfrac{1}{\sqrt{2\pi}} * \exp(-\dfrac{d_{il}^2}{2r^2})$
 
-* the quartic kernel : 
+* quartic kernel: 
 $k(\dfrac{d_{il}}{r})=\dfrac{3}{\pi} * (1-\dfrac{d_{il}^2}{r^2})$
 
-* the epanechnikov kernel : 
+* epanechnikov kernel: 
 $k(\dfrac{d_{il}}{r})=\dfrac{3}{4}*(1-\dfrac{d_{il}^2}{r^2})$
 
-* the triangle kernel : 
+* triangle kernel: 
 $k(\dfrac{d_{il}}{r})= 1 - |\dfrac{d_{il}}{r}|$
 
-* the triweight kernel
+* triweight kernel:
 $k(\dfrac{d_{il}}{r})= \dfrac{35}{32} * (1-\dfrac{d_{il}}{r}^2)^3$
 
-* the tricube kernel
+* tricube kernel:
 $k(\dfrac{d_{il}}{r})= \dfrac{70}{81} * (1-|\dfrac{d_{il}}{r}|^3)^3$
 
-* the cosine kernel
+* cosine kernel:
 $k(\dfrac{d_{il}}{r})= \dfrac{\pi}{4} * (cos(\dfrac{\pi}{2}*\dfrac{d_{il}}{r}))$
 
-
+with *r* the bandwidth, and $d_{il}$ the distance between an event and the sampling point.
 
 ```{r message=FALSE, warning=FALSE}
 library(ggplot2)
@@ -128,7 +127,7 @@ library(spNetwork)
 x <- seq(-15,15,by = 0.01)
 df <- data.frame(
   x = x,
-  gauss = gaussian_kernel(x,15),
+  gaussian = gaussian_kernel(x,15),
   epanechnikov = epanechnikov_kernel(x,15),
   quartic = quartic_kernel(x,15),
   triangle = triangle_kernel(x,15),
@@ -171,14 +170,14 @@ The **spNetwork** package provides three methods to perform NKDE. We present the
 
 The first method was proposed by @xie2008kernel. Considering the planer KDE, they defined the NKDE with the following formula :
 
-$d_{si} = (1/bandwidth) * \sum_{j=1}^{n} K(dist_{si;ej})$
+$d_{si} = (1/bw) * \sum_{j=1}^{n} K(dist_{si;ej})$
+
+with $d_{si}$ the density estimated at sample the point *si*, $dist_{si;ej}$ the network distance between *si* and event *j*, with all distances  $dist_{si;ej} < bw$.
 
 
-Of course, it uses the network distance instead of the euclidean distance. This method is appealing because it is intuitive, but not statistically satisfying. Note that the divisor of the kernel is not the classical 1/n, but 1/bandwidth. This adjustment allows a simpler interpretation of the density:
+Of course, it uses the network distance instead of the euclidean distance. This method is appealing because it is intuitive, but not statistically satisfying. Note that the divisor of the kernel is not the classical *1/n*, but *1/bw*. This adjustment allows for a simpler interpretation of the density: *"Instead of calculating the density over an area unit, the equation estimates the density over a linear unit"* [@xie2008kernel p.398]
 
-*"Instead of calculating the density over an area unit, the equation estimates the density over a linear unit"*
-
-On the next figure, we show in three dimensions what that kernel looks like. The red point is a simple event, the black lines are the network, and the blue lines are the evaluated densities.
+On the next figure, we show in 3D what that kernel looks like. The red point is a simple event, the black lines are the network, and the blue lines are the evaluated densities.
 
 <center>
 ![Image Title](images/simple_nkde_ex.png){width=150px}
@@ -191,7 +190,7 @@ This method remains useful for two reasons:
 * For quick data visualization. With big datasets, it might be useful to use this simple method to do a primary investigation.
 * In a purely geographical view, this method is intuitive. In the case of crime analysis for example, one could argue that the *strength* of the event should not be affected by intersections on the network. In that case, the kernel function is seen as a distance decaying function.
 
-**What to retain about the simple method**
+**What to retain about the simple method ?**
 
 |   Pros              |           Cons             |
 |:-------------------:|:--------------------------:|
@@ -220,7 +219,7 @@ With the case presented before, we obtain the following result.
 
 As one can see, the values of the NKDE are split at intersections to avoid the multiplication of the mass observed in the simple version. However, this creates a discontinuous NKDE, which is counter-intuitive. This leads to sharp differences between density values in the network, and could be problematic in networks with a lot of intersections.
 
-**What to retain about the discontinuous method**
+**What to retain about the discontinuous method ?**
 
 |   Pros              |           Cons             |
 |:-------------------:|:--------------------------:|
@@ -265,7 +264,7 @@ To avoid this, the first solution provided in **spNetwork** is a gridded applica
 
 
 ```{r message=FALSE, warning=FALSE}
-#first load data and packages
+# first load data and packages
 library(sp)
 library(maptools)
 library(rgeos)
@@ -274,17 +273,16 @@ library(raster)
 data(mtl_network)
 data(bike_accidents)
 
-#then plotting the data
+# then plotting the data
 plot(mtl_network)
 plot(bike_accidents,add=T,col='red',pch = 19)
 
-#then calculating some lixels to use as sampling points
-#set to silent here for the vignette output
+# then calculating some lixels to use as sampling points
+# set to silent here for the vignette output
 invisible(capture.output(lixels <- lixelize_lines(mtl_network,200,mindist = 50)))
 invisible(capture.output(samples <- lines_center(lixels)))
 
-
-#then applying the NKDE
+# then applying the NKDE
 densities <- nkde(mtl_network, 
                   events = bike_accidents,
                   w = rep(1,nrow(bike_accidents)),
@@ -293,7 +291,7 @@ densities <- nkde(mtl_network,
                   bw = 300, div= "bw", 
                   method = "discontinuous", digits = 1, tol = 1,
                   grid_shape = c(1,1), max_depth = 16,
-                  verbose=TRUE)
+                  verbose=FALSE)
 
 
 
@@ -308,22 +306,22 @@ library(dplyr)
 library(RColorBrewer)
 library(classInt)
 
-#rescaling to help the mapping
+# rescaling to help the mapping
 samples$density <- samples$density*1000
 
-#using a discretization method
+# using a discretization method
 breaks <- classIntervals(samples$density, n = 7, style = "jenks", intervalClosure = "right")
 
-PaletteCouleur <- brewer.pal(n = 7, name = "Spectral")
-PaletteCouleur <- rev(PaletteCouleur)
+colorRamp <- brewer.pal(n = 7, name = "Spectral")
+colorRamp <- rev(colorRamp)
 
-samples$class <- as.character(cut(samples$density,breaks$brks,PaletteCouleur,include.lowest =TRUE))
+samples$class <- as.character(cut(samples$density,breaks$brks,colorRamp,include.lowest =TRUE))
 
 xy <- coordinates(samples)
 samples$x <- xy[,1]
 samples$y <- xy[,2]
 
-#and finally map with ggplot
+# and finally map with ggplot
 labels <- names(print(breaks))
 mtl_network$line_id <- 1:nrow(mtl_network)
 Mapnetwork <- fortify(mtl_network,id="line_id")
@@ -332,7 +330,7 @@ ggplot() +
   geom_path(data = Mapnetwork, mapping = aes(x=long,y=lat,group=group), color="black")+
   geom_point(data = samples@data, mapping = aes(x=x,y=y,color=class))+
   scale_color_manual("density",
-    breaks = PaletteCouleur, values = PaletteCouleur, 
+    breaks = colorRamp, values = colorRamp, 
     label = labels)+
   theme(axis.title.x=element_blank(),
         axis.text.x=element_blank(),
@@ -341,28 +339,30 @@ ggplot() +
         axis.text.y=element_blank(),
         axis.ticks.y=element_blank()) +
   coord_fixed()+
-  ggtitle("bike accident density by kilometers in 2016",
-          subtitle = "within a radius of 300 meters")
+  labs(title = "bike accident density by kilometres in 2016",
+          subtitle = "within a radius of 300 metres",
+          caption = "using the quartic kernel")
   
 
 ```
 
-As you can imagine it remains a costly process, especially for the continuous kernel that is calculated with a recursive function. The package **spNetwork** uses three approaches to reduce calculation time: 
-* Rcpp: the main functions are coded with c++
-* Armadillo: the linear algebra is performed with Armadillo
-* multiprocessing: it is possible to split the calculation on multiple cores
+As you can imagine it remains a costly process, especially for the continuous kernel that is calculated with a recursive function. The package **spNetwork** uses three approaches simultaneously to reduce calculation time: 
+
+* Rcpp: the main functions are coded with C++
+* Armadillo: the linear algebra is performed with the RcppArmadillo package
+* multiprocessing: it is possible to split the calculation on multiple cores.
 
 The calculus of the NKDE for each cell could be done by several cores. To do so, **spNetwork** provides a function *nkde.mc*. More specifically, it uses functions from the packages **future** and **future.apply**. The selection of the plan is let to the user to permit the best compatibility on each os and computer. See the documentation of the **future** package if needed.
 
 Note that the combined use of **Rcpp** and **future** is difficult. **Rcpp** functions can not be sent to child processes. To overcome this, a separate package **spNetworkCpp** exists on its own and contains only the **Rcpp** functions. **spNetworkCpp** is then loaded by each child processes.
 
-Let us split the work between 2 cores.
+Let us split the work between two cores.
 ```{r message=FALSE, warning=FALSE}
 
-#setting the multiprocess plan
+# setting the multiprocess plan
 future::plan(future::multiprocess(workers=2))
 
-#then applying the NKDE
+# then applying the NKDE
 densities_mc <- nkde.mc(mtl_network, 
                   events = bike_accidents,
                   w = rep(1,nrow(bike_accidents)),
@@ -377,7 +377,7 @@ densities_mc <- nkde.mc(mtl_network,
 # let's set back the classical sequential plan
 if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
 
-#we can compare the previous result and the new one
+# we can compare the previous result and the new one
 diff <- sum(abs(densities - densities_mc))
 print(paste("overall difference between the regular and paralellized method : ",round(diff,12),sep=""))
 
@@ -385,13 +385,13 @@ print(paste("overall difference between the regular and paralellized method : ",
 
 
 
-## complementary functions
+## Complementary functions
 
 To define the sampling points on the network, some complementary functions are provided : 
 
-* **lines_center**, return the center point of each line in a SpatialLinesDataFrame
-* **lixelize_lines***, return lixels obtained after dividing a SpatialLinesDataFrame
-* **lines_points_along**, return points at a specified distance along each lines in a SpatialLinesDataFrame
+* **lines_center** returns the center point of each line in a *SpatialLinesDataFrame*.
+* **lixelize_lines*** returns lixels obtained after dividing a *SpatialLinesDataFrame*.
+* **lines_points_along** returns points at a specified distance along each lines in a *SpatialLinesDataFrame*.
 
 
 

@@ -11,7 +11,7 @@
 #' @examples
 #' #This is an internal function, no example provided
 build_quadtree <- function(data){
-  #etape 1 : extraire les bbox des geometries
+  #step1 : extracting the bbox of the geometrie
   if(class(data)=="SpatialLinesDataFrame"){
     coords <- sp::coordinates(data)
     bbox_coords <- lapply(coords,function(i){
@@ -22,7 +22,7 @@ build_quadtree <- function(data){
       return(row)
     })
     bbox_coords <- do.call(rbind,bbox_coords)
-    #etape 2 : generer l'index spatial
+    #step2 : generate the spatial index
     spIndex <- SearchTrees::createTree(bbox_coords,dataType = "rect")
   }else if (class(data)=="SpatialPointsDataFrame"){
     coords <- sp::coordinates(data)
@@ -44,11 +44,11 @@ build_quadtree <- function(data){
 #' @examples
 #' #This is an internal function, no example provided
 spatial_request <- function(geometry,tree,data){
-  ##step1 : find candidates
+  ## step1 : find candidates
   box <- t(raster::bbox(geometry))
   idx <- SearchTrees::rectLookup(tree,box[1,],box[2,])
   candidates <- data[idx,]
-  ##step2 : find real intersection
+  ## step2 : find real intersection
   final_vector <- as.vector(rgeos::gIntersects(candidates, geometry, byid = T))
   final_data <- subset(candidates,final_vector)
   return(final_data)
@@ -58,21 +58,21 @@ spatial_request <- function(geometry,tree,data){
 #' build a quad tree index and solve the nearest neighbour problem for two
 #' SpatialPointsDataFrame
 #'
-#' @param points a SpatialPointsDataFrame
-#' @param features a SpatialPointsDataFrame
-#' @return for each point, the index of the nearest line (row-wise)
+#' @param origins a SpatialPointsDataFrame
+#' @param targets a SpatialPointsDataFrame
+#' @return for each origin point, the index of the nearest target point
 #' @examples
 #' #This is an internal function, no example provided
-closest_points <- function(points, features){
-  ## step1 : creer l'index spatial pour les li
-  original_coords <- sp::coordinates(features)
-  original_coords <- cbind(original_coords,1:nrow(features))
+closest_points <- function(origins, targets){
+  ## step1 : create the spatial index for the target points
+  original_coords <- sp::coordinates(targets)
+  original_coords <- cbind(original_coords,1:nrow(targets))
   tree <- SearchTrees::createTree(original_coords[,1:2],dataType = "point")
-  ## realiser la requete a partir des points
-  pts <- sp::coordinates(points)
+  ## step2 : performe the spatial request
+  pts <- sp::coordinates(origins)
   k1 <- SearchTrees::knnLookup(tree,newdat=pts,k = 1)
   extract <- original_coords[k1,]
-  if(nrow(points)==1){
+  if(nrow(origins)==1){
     idx <- extract[3]
   }else{
     idx <- extract[,3]

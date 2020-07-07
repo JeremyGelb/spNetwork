@@ -2,7 +2,7 @@
 % Please edit documentation in R/neighbouring.R
 \name{network_listw_worker}
 \alias{network_listw_worker}
-\title{The worker function of network_listw_gridded}
+\title{The worker function of network_listw}
 \usage{
 network_listw_worker(
   points,
@@ -53,7 +53,7 @@ added as vertices to lines.}
 A list of neihbours as weights.
 }
 \description{
-The worker function of network_listw_gridded
+The worker function of network_listw
 }
 \examples{
 #no example provided, this is an internal function

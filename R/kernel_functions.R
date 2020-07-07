@@ -176,10 +176,12 @@ select_kernel <- function(name){
 #' @examples
 #' #This is an internal function, no example provided
 simple_nkde <- function(graph, events, samples, bw, kernel_func, nodes, edges){
-  ##step 1 : mettre toutes les valeurs a 0
+
+  ## step 1 set all values to 0
   base_k <- rep(0,nrow(samples))
   base_count <- rep(0,nrow(samples))
 
+  #if the number of event is 0, then return only 0 values
   if(nrow(events)==0){
     return(data.frame("sum_k"=base_k,
                       "n"=base_count))
@@ -187,14 +189,15 @@ simple_nkde <- function(graph, events, samples, bw, kernel_func, nodes, edges){
 
   sample_tree <- build_quadtree(samples)
   edges_tree <- build_quadtree(edges)
-  ##step2 : iterer sur chaque event
+  ## step2 iterate over each event
   pb <- txtProgressBar(min = 0, max = nrow(events), style = 3)
   for(i in 1:nrow(events)){
-    #preparer les differentes valeurs de departs pour l'event y
     setTxtProgressBar(pb, i)
+    #extracting the starting values
     e <- events[i,]
     y <- e$vertex_id
     w <- e$weight
+    #calculating the kernel values
     samples_k <- ess_kernel(graph,y,bw, kernel_func, samples, nodes, edges, sample_tree, edges_tree)
     samples_count <- ifelse(samples_k>0,1,0)
     base_k <- samples_k * w + base_k
@@ -228,22 +231,22 @@ ess_kernel <- function(graph, y, bw, kernel_func, samples, nodes, edges, sample_
   samples_k <- rep(0,nrow(samples))
   event_node <- nodes[y,]
   buff <- gBuffer(event_node,width = bw)
-  ##step1 : find all the samples in the radius
+  ## step1 find all the samples in the radius
   ok_samples <- spatial_request(buff,sample_tree,samples)
   if(nrow(ok_samples)==0){
     return(samples_k)
   }
-  ##step2 : find all the edges
+  ## step2 find all the edges in the radius
   ok_edges <- spatial_request(buff,edges_tree,edges)$edge_id
-  ##Step3 : for each edge, find the two vertices
+  ## Step3 for each edge, find its two vertices
   vertices <- ends(graph,ok_edges,names=F)
-  ##calculate the two distances (one for each vertex)
+  ## step4 calculate the the distance between the start node and each edge vertex
   un_vertices <- unique(c(vertices[,1],vertices[,2]))
   dist1 <- as.numeric(distances(graph,y,to=un_vertices,mode="out"))
 
   dist_table <- data.frame("vertex"=un_vertices,
                            "distance" = dist1)
-  ##aggregate all the data
+  ## step5 aggregate all the data
   df_edges <- data.frame("edge_id" = ok_edges,
                          "node1" = vertices[,1],
                          "node2" = vertices[,2]
@@ -290,58 +293,41 @@ ess_kernel <- function(graph, y, bw, kernel_func, samples, nodes, edges, sample_
 #### Functions to perform the discontinuous NKDE ####
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-#' Function to perform the discontinuous nkde
-#'
-#' @param edge_list a list of the edges, accessible with the names of the
-#' two nodes composing the edge
-#' @param neighbour_list a list indicating for each node its neighbours
-#' must indicate for each event its corresponding node
-#' @param v_events a numeric vector of the event nodes
-#' @param weights a numeric vector of the weights of the events
-#' @param samples a SpatialPointsDataFrame of the sampling points
-#' @param bw the kernel bandwidth
-#' @param kernel_func a function obtained with the function select_kernel
-#' @param nodes a SpatialPointsDataFrame representing the nodes of the network
-#' @param linelist the linelist of the network (igraph)
-#' @param max_depth a integer indicating the maximum depth of the kernel
-#' @param verbose a boolean indicating if messages must be displayed
-#' @return a dataframe with two columns. sum_k is the sum for each sample point
-#'  of the kernel values. n is the number of events influencing each sample
-#' point
-#' @examples
-#' #This is an internal function, no example provided
-discontinuous_nkde2 <-  function(edge_list,neighbour_list, v_events, weights,
-                                 samples, bw, kernel_func, nodes, linelist, max_depth, verbose){
-
-  ##step 1 : mettre toutes les valeurs a 0
-  base_k <- rep(0,nrow(samples))
-  base_count <- rep(0,nrow(samples))
-
-
-  if(length(v_events)==0){
-    return(data.frame("sum_k"=base_k,
-                      "n"=base_count))
-  }
-  lines_weight <- linelist$weight
-
-  pb <- txtProgressBar(min = 0, max = length(v_events), style = 3)
-  ##step2 : iterer sur chaque event
-  for(i in 1:length(v_events)){
-    #preparer les differentes valeurs de departs pour l'event y
-    setTxtProgressBar(pb, i)
-    y <- v_events[[i]]
-    w <- weights[[i]]
-
-    samples_k <- esd_kernel2(y, edge_list,neighbour_list,
-                            samples, bw, kernel_func, nodes, lines_weight, linelist, max_depth, verbose)
-
-    samples_count <- ifelse(samples_k>0,1,0)
-    base_k <- samples_k * w + base_k
-    base_count <- base_count + (samples_count * w)
-  }
-  return(data.frame("sum_k"=base_k,
-                    "n"=base_count))
-}
+# Function to perform the discontinuous nkde
+# this function is deprecated and repalced by a Rcpp one
+# the code is keeped for debugging purpose
+# discontinuous_nkde2 <-  function(edge_list,neighbour_list, v_events, weights,
+#                                  samples, bw, kernel_func, nodes, linelist, max_depth, verbose){
+#
+#   ##step 1 : mettre toutes les valeurs a 0
+#   base_k <- rep(0,nrow(samples))
+#   base_count <- rep(0,nrow(samples))
+#
+#
+#   if(length(v_events)==0){
+#     return(data.frame("sum_k"=base_k,
+#                       "n"=base_count))
+#   }
+#   lines_weight <- linelist$weight
+#
+#   pb <- txtProgressBar(min = 0, max = length(v_events), style = 3)
+#   ##step2 : iterer sur chaque event
+#   for(i in 1:length(v_events)){
+#     #preparer les differentes valeurs de departs pour l'event y
+#     setTxtProgressBar(pb, i)
+#     y <- v_events[[i]]
+#     w <- weights[[i]]
+#
+#     samples_k <- esd_kernel2(y, edge_list,neighbour_list,
+#                             samples, bw, kernel_func, nodes, lines_weight, linelist, max_depth, verbose)
+#
+#     samples_count <- ifelse(samples_k>0,1,0)
+#     base_k <- samples_k * w + base_k
+#     base_count <- base_count + (samples_count * w)
+#   }
+#   return(data.frame("sum_k"=base_k,
+#                     "n"=base_count))
+# }
 
 
 #' Worker function for the discontinuous nkde
