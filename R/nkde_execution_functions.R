@@ -636,7 +636,7 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, method, div="bw", m
   events <- data$events
 
   ## step2  creating the grid
-  grid <- build_grid(grid_shape,lines)
+  grid <- build_grid(grid_shape,list(lines,samples,events))
 
   ## step3 splitting the dataset with each rectangle
   selections <- split_by_grid(grid,samples,events,lines,bw, tol, digits)
@@ -776,7 +776,7 @@ nkde.mc <- function(lines, events, w, samples, kernel_name, bw, method, div="bw"
   events <- data$events
 
   ## step2 creating the grid
-  grid <- build_grid(grid_shape,lines)
+  grid <- build_grid(grid_shape,list(lines,samples,events))
 
   ## step3 splitting the dataset with each rectangle
   selections <- split_by_grid.mc(grid,samples,events,lines,bw, digits,tol)

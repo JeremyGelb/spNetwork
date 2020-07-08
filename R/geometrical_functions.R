@@ -487,19 +487,24 @@ surrounding_points <- function(polygons,dist){
 #'
 #' @param grid_shape A numeric vector of length 2 indicating the number
 #' of rows and the numbers of columns of the grid
-#' @param spatial An object of class SpatialLinesDataFrame (package sp)
+#' @param spatial A list of SpatialDataFrames objects (package sp)
 #' @return a SpatialPolygonsDataFrame representing the grid
 #' @examples
 #' #This is an internal function, no example provided
 build_grid <- function(grid_shape, spatial) {
+    boxes <- lapply(spatial,sp::bbox)
+    boxes <- do.call(cbind,boxes)
+    v1 <- as.numeric(c(min(boxes[1,]),max(boxes[1,])))
+    v2 <- as.numeric(c(min(boxes[2,]),max(boxes[2,])))
+    box <- rbind(v1,v2)
     if(prod(grid_shape)==1){
-        ext <- raster::extent(spatial)
+        #ext <- raster::extent(spatial)
+        ext <- raster::extent(box[1,1],box[1,2],box[2,1],box[2,2])
         poly <- methods::as(ext, "SpatialPolygons")
         raster::crs(poly) <- raster::crs(spatial)
         return(poly)
     }else{
         ## step1 : creating the grid
-        box <- sp::bbox(spatial)
         x <- seq(from = box[1, 1], to = box[1, 2], length.out = grid_shape[[1]])
         y <- seq(from = box[2, 1], to = box[2, 2], length.out = grid_shape[[2]])
         xy <- expand.grid(x = x, y = y)

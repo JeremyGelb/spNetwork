@@ -10,7 +10,7 @@ build_grid(grid_shape, spatial)
 \item{grid_shape}{A numeric vector of length 2 indicating the number
 of rows and the numbers of columns of the grid}
 
-\item{spatial}{An object of class SpatialLinesDataFrame (package sp)}
+\item{spatial}{A list of SpatialDataFrames objects (package sp)}
 }
 \value{
 a SpatialPolygonsDataFrame representing the grid
