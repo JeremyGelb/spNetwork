@@ -118,6 +118,7 @@ gaussian_kernel <- function(d, bw){
 }
 
 
+
 #' select the right kernel function with its name
 #'
 #' @param name The name of the kernel to use

@@ -36,18 +36,18 @@ A classical Kernel Density Estimate (KDE) estimates the continuous density of a 
 
 This approach is not adapted to analyze density of events occurring on a network, like accidents and crimes in streets, or leaks on a network of water pipes. Indeed, calculating density values for locations outside the network is meaningless and the Euclidean distance underestimates the real distance between two objects on the network. Moreover, networks are not isotropic spaces, in other words, it is not possible to move in every direction, but only on the edges of the network.
 
-To perform a Network Kernel Density Estimate (NKDE), it is possible to:
+When performing a Network Kernel Density Estimate (NKDE), it is possible to:
 
-* using lixels instead of pixels. A lixel is a linear equivalent of a pixel on a network. The lines of the network are split into lixels according to a chosen resolution. The centres of the lixels are sampling points for which the density will be estimated.
-* calculating network distances between objects instead of euclidean distances.
-* adjusting the kernel function to deal with the anisotropic space
+* use lixels instead of pixels. A lixel is a linear equivalent of a pixel on a network. The lines of the network are split into lixels according to a chosen resolution. The centres of the lixels are sampling points for which the density will be estimated.
+* calculate network distances between objects instead of euclidean distances.
+* adjust the kernel function to deal with the anisotropic space
 
-An image is worth 1000 words, so let us consider this situation : 
+A picture is worth a thousand of words, so let us consider this situation: 
 <center>
 ![Image Title](images/step0.png){width=300px}
 </center>
 
-Each red point is an event and the lines constitute the network. One could realize a simple KDE on that dataset and would obtain something like :
+Each red point is an event and the lines constitute the network. One could realize a simple KDE on that dataset and would obtain something like:
 
 <center>
 ![Image Title](images/example_pixels.png){width=300px}
@@ -61,7 +61,7 @@ To perform a NKDE, the events must be snapped on the network. The snapped events
 ![Image Title](images/step1.png){width=300px}
 </center>
 
-The density of each event can be seen as a third dimension and is evaluated by a selected kernel function (*K*) within a specified bandwidth. The kernel function must satisfy the following conditions :
+The density of each event can be seen as a third dimension and is evaluated by a selected kernel function (*K*) within a specified bandwidth. The kernel function must satisfy the following conditions:
 
 $K(x) >= 0 \text{, if } x < bandwidth$
 
@@ -93,7 +93,7 @@ And in a more general fashion:
 $d_{si} = (1/n) * \sum_{j=1}^{n} K(dist_{si;ej})$
 with $d_{si}$ the density estimated at sample the point *si*, *n* the number of events within the bandwidth arround the sampling point *si* and *ej* an event.
 
-The proposed kernel functions in the **spNetwork** package are :
+The proposed kernel functions in the **spNetwork** package are:
 
 * gaussian kernel: 
 $k(\dfrac{d_{il}}{r})=\dfrac{1}{\sqrt{2\pi}} * \exp(-\dfrac{d_{il}^2}{2r^2})$
@@ -143,7 +143,7 @@ ggplot(df2) +
 
 ```
 
-As one can see, most of the kernels look alike. It is worth mentioning that the gaussian kernel does not integrate to 1. This means that some weight of each event is lost with the gaussian kernel.
+As one can see, most of the kernels look alike. It is worth mentioning that the gaussian kernel does not integrate to 1 within the bandwidth (specific case of non-compact kernel). In the **spNetwork** package, all kernel values beyond the bandwidth are set to 0. This means that some weight of each event is lost with the gaussian kernel.
 
 ```{r message=FALSE, warning=FALSE}
 Funs <- c(gaussian_kernel,epanechnikov_kernel,
@@ -168,14 +168,14 @@ The **spNetwork** package provides three methods to perform NKDE. We present the
 
 ## Simple method
 
-The first method was proposed by @xie2008kernel. Considering the planer KDE, they defined the NKDE with the following formula :
+The first method was proposed by @xie2008kernel. Considering the planar KDE, they defined the NKDE with the following formula:
 
 $d_{si} = (1/bw) * \sum_{j=1}^{n} K(dist_{si;ej})$
 
 with $d_{si}$ the density estimated at sample the point *si*, $dist_{si;ej}$ the network distance between *si* and event *j*, with all distances  $dist_{si;ej} < bw$.
 
 
-Of course, it uses the network distance instead of the euclidean distance. This method is appealing because it is intuitive, but not statistically satisfying. Note that the divisor of the kernel is not the classical *1/n*, but *1/bw*. This adjustment allows for a simpler interpretation of the density: *"Instead of calculating the density over an area unit, the equation estimates the density over a linear unit"* [@xie2008kernel p.398]
+Of course, it uses the network distance instead of the euclidean distance. This method is appealing because it is intuitive, but it is not statistically satisfying. Note that the divisor of the kernel is not the classical *1/n*, but *1/bw*. This adjustment allows for a simpler interpretation of the density: *"Instead of calculating the density over an area unit, the equation estimates the density over a linear unit"* [@xie2008kernel p.398]
 
 On the next figure, we show in 3D what that kernel looks like. The red point is a simple event, the black lines are the network, and the blue lines are the evaluated densities.
 
@@ -203,13 +203,17 @@ This method remains useful for two reasons:
 
 @okabe2012spatial have criticized the previous method, arguing that the produced density estimator  is biased, conducting to overestimation of density. To overcome this limit, they presented two heuristic techniques: the discontinuous and the continuous NKDE.
 
-The discontinuous NKDE is easily presented by a figure : 
+The discontinuous NKDE is easily presented by a figure: 
 
 <center>
 ![Image Title](images/discontinuous.png){width=300px}
 </center>
 
-The density of the kernel function is equally divided at intersections. Note that *spNetwork* implements the modified version proposed by @sugihara2010simple, allowing for use in networks with cycles. In the case of a cycle, the multiple values of the kernel that overlap are added.
+The density of the kernel function is equally divided at intersections. Note that *spNetwork* implements the modified version proposed by @sugihara2010simple, allowing for use in networks with cycles. In the case of a cycle, the multiple values of the kernel that overlap are added, as shown in the next figure.
+
+<center>
+![Image Title](images/cycle_nkde.png){width=300px}
+</center>
 
 With the case presented before, we obtain the following result.
 
@@ -248,7 +252,7 @@ Again, with the case presented before, we obtain the following result.
 
 As one can see, the values of the NKDE are continuous, and the density values close to the events have been adjusted. This leads to smoother results than the discontinuous method.
 
-**what to retain about the discontinuous method**
+**What to retain about the discontinuous method**
 
 |   Pros              |           Cons             |
 |:-------------------:|:--------------------------:|
@@ -291,8 +295,8 @@ densities <- nkde(mtl_network,
                   bw = 300, div= "bw", 
                   method = "discontinuous", digits = 1, tol = 1,
                   grid_shape = c(1,1), max_depth = 16,
-                  agg = 5, #we aggregate events within a 5m radius
-                  sparse = FALSE, #we use regular matrices for speed
+                  agg = 5, #we aggregate events within a 5m radius (faster calculation)
+                  sparse = FALSE, #we use regular matrices (faster calculation)
                   verbose=FALSE)
 
 
@@ -354,7 +358,7 @@ As you can imagine it remains a costly process, especially for the continuous ke
 * Armadillo: the linear algebra is performed with the RcppArmadillo package
 * multiprocessing: it is possible to split the calculation on multiple cores.
 
-The calculus of the NKDE for each cell could be done by several cores. To do so, **spNetwork** provides a function *nkde.mc*. More specifically, it uses functions from the packages **future** and **future.apply**. The selection of the plan is let to the user to permit the best compatibility on each os and computer. See the documentation of the **future** package if needed.
+The calculus of the NKDE for each cell could be done by several cores. To do so, **spNetwork** provides a function *nkde.mc*. More specifically, it uses functions from the packages **future** and **future.apply**. The selection of the plan has to be done by the user to ensure the best compatibility on each os and computer. See the documentation of the **future** package if needed.
 
 Note that the combined use of **Rcpp** and **future** is difficult. **Rcpp** functions can not be sent to child processes. To overcome this, a separate package **spNetworkCpp** exists on its own and contains only the **Rcpp** functions. **spNetworkCpp** is then loaded by each child processes.
 
@@ -391,7 +395,7 @@ print(paste("overall difference between the regular and paralellized method : ",
 
 ## Complementary functions
 
-To define the sampling points on the network, some complementary functions are provided : 
+To define the sampling points on the network, some complementary functions are provided: 
 
 * **lines_center** returns the center point of each line in a *SpatialLinesDataFrame*.
 * **lixelize_lines*** returns lixels obtained after dividing a *SpatialLinesDataFrame*.
