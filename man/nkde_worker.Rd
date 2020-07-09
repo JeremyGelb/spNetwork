@@ -10,11 +10,11 @@ nkde_worker(
   samples,
   kernel_name,
   bw,
+  bws,
   method,
   div,
   digits,
   tol,
-  agg,
   sparse,
   max_depth,
   verbose = FALSE
@@ -33,7 +33,9 @@ which the densities will be estimated.}
 
 \item{kernel_name}{The name of the kernel to use}
 
-\item{bw}{The kernel bandwidth (in meters)}
+\item{bw}{the global kernel bandwidth}
+
+\item{bws}{The kernel bandwidth (in meters) for each event}
 
 \item{method}{The method to use when calculating the NKDE, must be one of
 simple / discontinuous / continuous (see details for more information)}
@@ -48,9 +50,6 @@ ensures that topology is good when building the network. Default is 3}
 \item{tol}{When adding the events and the sampling points to the network,
 the minimum distance between these points and the lines extremities. When
 points are closer, they are added at the extermity of the lines.}
-
-\item{agg}{a double indicating if the events must be aggregated within a distance.
-if NULL, then the events are aggregated by rounding the coordinates.}
 
 \item{sparse}{a boolean indicating if sparse or regular matrice should be
 used by the Rcpp functions. Regular matrices are faster, but require more

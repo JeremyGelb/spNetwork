@@ -266,7 +266,6 @@ The **spNetwork** package makes this type of analysis straightforward in R. The 
 
 To avoid this, the first solution provided in **spNetwork** is a gridded application of the NKDE. The user can split the study area with a grid, the calculation is then performed in each cell of the grid. A buffer is applied on each cell to avoid frontier effect. This behaviour is controlled by the parameter *grid_shape*, indicating the shape of the grid. To split the study area in four rectangles, one can use *grid_shape = c(2,2)*. For a reasonable dataset, it is also possible not to split the study area with *grid_shape = c(1,1)*
 
-
 ```{r message=FALSE, warning=FALSE}
 # first load data and packages
 library(sp)
@@ -332,9 +331,11 @@ labels <- names(print(breaks))
 mtl_network$line_id <- 1:nrow(mtl_network)
 Mapnetwork <- fortify(mtl_network,id="line_id")
 
+df <- samples@data[order(samples@data$density),]
+
 ggplot() + 
   geom_path(data = Mapnetwork, mapping = aes(x=long,y=lat,group=group), color="black")+
-  geom_point(data = samples@data, mapping = aes(x=x,y=y,color=class))+
+  geom_point(data = df, mapping = aes(x=x,y=y,color=class))+
   scale_color_manual("density",
     breaks = colorRamp, values = colorRamp, 
     label = labels)+
@@ -391,7 +392,102 @@ print(paste("overall difference between the regular and paralellized method : ",
 
 ```
 
+# An example with adaptive bandwidth
 
+The examples provided in the previous sections are using only a fixed bandwidth. If we relaxe the need for a fixed bandwidth, we obtain an adaptive estimator. In other words, the bandwidth will vary in the study area. **spNetwork** use the method proposed by @abramson1982bandwidth, implying a variation of the bandwidth that is inversely proportional to the square root of the target density itself. In other words, at places where the density of the spatial process is high, the bandwidth of the kernel will be smaller and inversely. The use of an adaptive bandwidth has many theoritical and pratical advantages. First, it reduces the sensibility to outliers. Second, it reduces smoothing in sub-region with many events (giving more detailed density estimation) and increases the smoothing in sub-region with fiew events (giving more fuzzy results because of the higher uncertainity).
+
+The problem is that the target density itself is unknown (otherwise we would not have to estimate it with a smoothing method). To obtain the adaptive bandwidth, a three steps method is used : 
+
+1. A fixed reference bandwidth ($h_{0}$) is selected. For each event ($e_{i}$) on the network, the density of the spatial process is evaluated by using this reference bandwidth ($\tilde{f}h_{0}(e_{i})$).
+2. For each event, the adaptive bandwidth is calculated with the following formula. A triming values can be defined to limit the maximum adaptive bandwidth.
+3. The densities at sampling points are then evaluated by using the obtained vector of bandwidth for each event.
+
+$$
+h(e_{i}) = h_{0} * \frac{1}{\sqrt{\tilde{f}h_{0}(e_{i})}} * \frac{1}{\gamma_{f}}\\
+\gamma_{f} = \exp(\frac{\sum_{i}log(\frac{1}{\sqrt{\tilde{f}h_{0}(e_{i})}})}{n})
+$$
+
+This method is called event oriented, because the new bandwidths are evaluated for the events rather than the sampling points. The sample oriented method is not implemented because not compatible with the algorithms used to calculate the discontinuous and continuous NKDE.
+
+In **spNetwork**, when an adaptive bandwidth is used, the calculated bandwidth for each event are returned too.
+
+Let us calculate a new NKDE, but with an adaptive bandwidth.
+```{r message=FALSE, warning=FALSE}
+
+adapt_densities <- nkde(mtl_network, 
+                  events = bike_accidents,
+                  w = rep(1,nrow(bike_accidents)),
+                  samples = samples,
+                  kernel_name = "quartic",
+                  bw = 300, div= "bw", 
+                  adaptive = TRUE, # we use here an adaptive bandwidth
+                  trim_bw = 600, # the maximum local values of bandwidth will be 600m
+                  method = "discontinuous", digits = 1, tol = 1,
+                  grid_shape = c(1,1), max_depth = 16,
+                  agg = 5, #we aggregate events within a 5m radius (faster calculation)
+                  sparse = FALSE, #we use regular matrices (faster calculation)
+                  verbose=FALSE)
+
+samples$density <- adapt_densities$k
+
+```
+
+We could now map some of the bandwidths
+```{r message=FALSE, warning=FALSE}
+circles <- gBuffer(adapt_densities$events,byid = TRUE,width = adapt_densities$events$bw)
+
+ids <- c(1,52,20,86,14,75,126,200,177)
+
+plot(mtl_network)
+plot(bike_accidents,add=T,col='red',pch = 19,cex=0.5)
+plot(circles[ids,],add=T,border='blue',lwd=2)
+```
+
+And map the new densities with the same code as previous
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+# rescaling to help the mapping
+samples$density <- samples$density*1000
+
+# using a discretization method
+breaks <- classIntervals(samples$density, n = 7, style = "jenks", intervalClosure = "right")
+
+colorRamp <- brewer.pal(n = 7, name = "Spectral")
+colorRamp <- rev(colorRamp)
+
+samples$class <- as.character(cut(samples$density,breaks$brks,colorRamp,include.lowest =TRUE))
+
+xy <- coordinates(samples)
+samples$x <- xy[,1]
+samples$y <- xy[,2]
+
+# and finally map with ggplot
+labels <- names(print(breaks))
+mtl_network$line_id <- 1:nrow(mtl_network)
+Mapnetwork <- fortify(mtl_network,id="line_id")
+
+df <- samples@data[order(samples@data$density),]
+
+ggplot() + 
+  geom_path(data = Mapnetwork, mapping = aes(x=long,y=lat,group=group), color="black")+
+  geom_point(data = df, mapping = aes(x=x,y=y,color=class))+
+  scale_color_manual("density",
+    breaks = colorRamp, values = colorRamp, 
+    label = labels)+
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank()) +
+  coord_fixed()+
+  labs(title = "bike accident density by kilometres in 2016",
+          subtitle = "within a radius of 300 metres (adaptive bandiwdth)",
+          caption = "using the quartic kernel")
+  
+
+```
+As one can note, the discontinuous Kernel is maybe not the best option to use with an adaptative bandwidth.
 
 ## Complementary functions
 
@@ -400,7 +496,6 @@ To define the sampling points on the network, some complementary functions are p
 * **lines_center** returns the center point of each line in a *SpatialLinesDataFrame*.
 * **lixelize_lines*** returns lixels obtained after dividing a *SpatialLinesDataFrame*.
 * **lines_points_along** returns points at a specified distance along each lines in a *SpatialLinesDataFrame*.
-
 
 
 # References

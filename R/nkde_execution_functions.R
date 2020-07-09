@@ -340,6 +340,127 @@ split_by_grid.mc <- function(grid,samples,events,lines,bw,tol,digits){
 }
 
 
+#' Function to calculate adaptative bandwidth according to Abramson’s smoothing regimen
+#'
+#' @param grid a spatial grid to split the data within
+#' @param events A spatialPointsDataFrame of the events points
+#' @param lines A SpatialLinesDataFrame representing the network
+#' @param bw the fixed kernel bandwidth
+#' @param trim_bw the maximum size of local bandiwidths
+#' @param method The method to use when calculating the NKDE
+#' @param kernel_name The name of the kernel to use
+#' @param max_depth the maximum recursion depth
+#' @param digits the number of digits to keep
+#' @param tol a float indicating the spatial tolerance when snapping events on
+#' lines
+#' @param sparse a boolean indicating if sparse matrix should be used
+#' @param verbose a boolean indicating if update messages should be printed
+#' @return a vector with the local bandwidth
+#' @examples
+#' #This is an internal function, no example provided
+adaptive_bw <- function(grid,events,lines,bw,trim_bw,method,kernel_name,max_depth,tol,digits,sparse,verbose){
+  ##step 1 split the datas !
+  selections <- split_by_grid(grid,events,events,lines,trim_bw, tol, digits)
+  ## step 2 calculating the temp NKDE values
+  if(verbose){
+    print("start calculating the kernel values for the adaptive bandwidth...")
+  }
+  n_quadra <- length(selections)
+  dfs <- lapply(1:n_quadra,function(i){
+    sel <- selections[[i]]
+    bws <- rep(bw,nrow(sel$events))
+    if(verbose){
+      print(paste("    quadra ",i,"/",n_quadra,sep=""))
+    }
+    values <- nkde_worker(sel$lines, sel$events,
+                          sel$samples, kernel_name,bw,
+                          bws, method, div = "none", digits,
+                          tol,sparse, max_depth, verbose)
+
+    df <- data.frame("goid"=sel$samples$goid,
+                     "k" = values)
+    return(df)
+  })
+
+  ## step 3  combining the results
+  tot_df <- do.call(rbind,dfs)
+  tot_df <- tot_df[order(tot_df$goid),]
+
+  ## step 4 calculating the new bandwidth !
+  delta <- calc_gamma(tot_df$k)
+  new_bw <- bw * (tot_df$k**(-1/2) * delta**(-1))
+  return(new_bw)
+}
+
+
+#' Function to calculate adaptative bandwidth according to Abramson’s smoothing regimen (multicore version)
+#'
+#' @param grid a spatial grid to split the data within
+#' @param events A spatialPointsDataFrame of the events points
+#' @param lines A SpatialLinesDataFrame representing the network
+#' @param bw the fixed kernel bandwidth
+#' @param trim_bw the maximum size of local bandiwidths
+#' @param method The method to use when calculating the NKDE
+#' @param kernel_name The name of the kernel to use
+#' @param max_depth the maximum recursion depth
+#' @param digits the number of digits to keep
+#' @param tol a float indicating the spatial tolerance when snapping events on
+#' lines
+#' @param sparse a boolean indicating if sparse matrix should be used
+#' @param verbose a boolean indicating if update messages should be printed
+#' @return a vector with the local bandwidth
+#' @examples
+#' #This is an internal function, no example provided
+adaptive_bw.mc <- function(grid,events,lines,bw,trim_bw,method,kernel_name,max_depth,tol,digits,sparse,verbose){
+  ##step 1 split the datas !
+  selections <- split_by_grid.mc(grid,events,events,lines,trim_bw, tol, digits)
+  ## step 2 calculating the temp NKDE values
+  if(verbose){
+    print("start calculating the kernel values for the adaptive bandwidth...")
+  }
+
+  if(verbose){
+    print("starting the kernel calculations ...")
+    progressr::with_progress({
+      p <- progressr::progressor(along = selections)
+      dfs <- future.apply::future_lapply(selections, function(sel) {
+        bws <- rep(bw,nrow(sel$events))
+        invisible(capture.output(values <- nkde_worker(sel$lines, sel$events,
+                                                       sel$samples, kernel_name,bw,
+                                                       bws, method, div = "none", digits,
+                                                       tol,sparse, max_depth, verbose)))
+
+        df <- data.frame("goid"=sel$samples$goid,
+                         "k" = values)
+        p(sprintf("i=%g", sel$index))
+        return(df)
+      })
+    })
+  }else{
+    dfs <- future.apply::future_lapply(selections, function(sel) {
+      bws <- rep(bw,nrow(sel$events))
+      values <- nkde_worker(sel$lines, sel$events,
+                                  sel$samples, kernel_name,bw,
+                                  bws, method, div = "none", digits,
+                                  tol,sparse, max_depth, verbose)
+
+      df <- data.frame("goid"=sel$samples$goid,
+                       "k" = values)
+      return(df)
+    })
+  }
+
+  ## step 3  combining the results
+  tot_df <- do.call(rbind,dfs)
+  tot_df <- tot_df[order(tot_df$goid),]
+
+  ## step 4 calculating the new bandwidth !
+  delta <- calc_gamma(tot_df$k)
+  new_bw <- bw * (tot_df$k**(-1/2) * delta**(-1))
+  return(new_bw)
+}
+
+
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #### worker functions ####
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -355,7 +476,8 @@ split_by_grid.mc <- function(grid,samples,events,lines,bw,tol,digits){
 #' @param samples A SpatialPointsDataFrame representing the locations for
 #' which the densities will be estimated.
 #' @param kernel_name The name of the kernel to use
-#' @param bw The kernel bandwidth (in meters)
+#' @param bw the global kernel bandwidth
+#' @param bws The kernel bandwidth (in meters) for each event
 #' @param method The method to use when calculating the NKDE, must be one of
 #' simple / discontinuous / continuous (see details for more information)
 #' @param div The divisor to use for the kernel. Must be "n" (the number of
@@ -366,8 +488,6 @@ split_by_grid.mc <- function(grid,samples,events,lines,bw,tol,digits){
 #' @param tol When adding the events and the sampling points to the network,
 #' the minimum distance between these points and the lines extremities. When
 #' points are closer, they are added at the extermity of the lines.
-#' @param agg a double indicating if the events must be aggregated within a distance.
-#' if NULL, then the events are aggregated by rounding the coordinates.
 #' @param sparse a boolean indicating if sparse or regular matrice should be
 #' used by the Rcpp functions. Regular matrices are faster, but require more
 #' memory and could lead to error, in particular with multiprocessing. Sparse
@@ -386,7 +506,7 @@ split_by_grid.mc <- function(grid,samples,events,lines,bw,tol,digits){
 #' @return A numerci vector with the nkde values
 #' @examples
 #' #This is an internal function, no example provided
-nkde_worker <- function(lines, events, samples, kernel_name, bw, method, div, digits, tol, agg, sparse, max_depth, verbose = FALSE){
+nkde_worker <- function(lines, events, samples, kernel_name,bw, bws, method, div, digits, tol, sparse, max_depth, verbose = FALSE){
 
   # if we do not have event in that space, just return 0 values
   if(nrow(events)==0){
@@ -436,9 +556,9 @@ nkde_worker <- function(lines, events, samples, kernel_name, bw, method, div, di
     # the cas of the simple method, no c++ here
     kernel_func <- select_kernel(kernel_name)
     if(verbose){
-      values <- simple_nkde(graph, events, samples, bw, kernel_func, nodes, edges)
+      values <- simple_nkde(graph, events, samples, bws, kernel_func, nodes, edges)
     }else{
-      invisible(capture.output(values <- simple_nkde(graph, events, samples, bw, kernel_func, nodes, edges)))
+      invisible(capture.output(values <- simple_nkde(graph, events, samples, bws, kernel_func, nodes, edges)))
     }
 
   }else{
@@ -453,10 +573,10 @@ nkde_worker <- function(lines, events, samples, kernel_name, bw, method, div, di
       ##and finally calculating the values
       if (sparse){
         values <- spNetworkCpp::continuous_nkde_cpp_arma_sparse(neighbour_list, events$vertex_id, events$weight,
-                                                         samples@data, bw, kernel_name, nodes@data, graph_result$linelist, max_depth, verbose)
+                                                         samples@data, bws, kernel_name, nodes@data, graph_result$linelist, max_depth, verbose)
       }else{
         values <- spNetworkCpp::continuous_nkde_cpp_arma(neighbour_list, events$vertex_id, events$weight,
-                                                                samples@data, bw, kernel_name, nodes@data, graph_result$linelist, max_depth, verbose)
+                                                                samples@data, bws, kernel_name, nodes@data, graph_result$linelist, max_depth, verbose)
       }
 
     }
@@ -467,10 +587,10 @@ nkde_worker <- function(lines, events, samples, kernel_name, bw, method, div, di
         #                                                       samples@data, bw, kernel_func, nodes@data, graph_result$linelist, max_depth, verbose)))
       if(sparse){
         values <- spNetworkCpp::discontinuous_nkde_cpp_arma_sparse(neighbour_list, events$vertex_id, events$weight,
-                                                            samples@data, bw, kernel_name, nodes@data, graph_result$linelist, max_depth, verbose)
+                                                            samples@data, bws, kernel_name, nodes@data, graph_result$linelist, max_depth, verbose)
       }else{
         values <- spNetworkCpp::discontinuous_nkde_cpp_arma(neighbour_list, events$vertex_id, events$weight,
-                                                           samples@data, bw, kernel_name, nodes@data, graph_result$linelist, max_depth, verbose)
+                                                           samples@data, bws, kernel_name, nodes@data, graph_result$linelist, max_depth, verbose)
       }
 
 
@@ -500,6 +620,7 @@ nkde_worker <- function(lines, events, samples, kernel_name, bw, method, div, di
 #' Calculate the Network Kernel Density Estimate based on a network of lines,
 #' sampling points, and events
 #'
+#' **The three NKDE methods**\cr
 #' Estimating the density of a point process is commonly done by using an
 #' ordinary two dimensional kernel density function. However, there is
 #' numerous cases for which the events do not occur in a two dimensional
@@ -527,28 +648,60 @@ nkde_worker <- function(lines, events, samples, kernel_name, bw, method, div, di
 #' }
 #' The three methods are available because, despite the fact that the simple
 #' method is less exact statistically speaking, it might be more intuitive.
-#' In a geographical mind, it migh be seen as sort of distance decay
+#' In a purely geographical view, it migh be seen as sort of distance decay
 #' function like used in Geographically Weighted Regression.\cr
-#' \cr
+#' \cr\cr
+#' **adaptive bandwidth**\cr
+#' It is possible to use adaptive bandiwdth instead of fixed bandwidth. The
+#' adaptive bandwidth are calculated using the Abramson’s smoothing regimen.
+#' To do so, a orignal fixed bandiwdth must be specified (bw parameter), and
+#' is used to estimate a priory densities at event locations. These densities
+#' are then used to calculate local bandwidth. The maximum size of the local
+#' bandwidth can be limited with the parameter trim_bw. For more details, look
+#' at the vignette a_NKDE.
+#' \cr\cr
+#' **Optimization parameters**\cr
 #' The grid_shape parameter allows to split the calculus of the NKDE according
 #' to a grid dividing the study area. It might be necessary for big dataset
 #' to reduce the memory used. If the grid_shape is c(1,1), then a full network
 #' is build for the area. If the grid_shape is c(2,2), then the area is
 #' split in 4 rectangles. For each rectangle, the sample points falling in the
-#' rectangle are used, the events in a radius of the bandwidth length are used
-#' and the lines in a radius of the bandwidth length are used. The results are
-#' combined at the end and ordered to match the original order of the samples.
+#' rectangle are used, the events and the lines in a radius of the bandwidth
+#' length are used The results are combined at the end and ordered to match
+#' the original order of the samples.
 #' \cr\cr
-#' The geographical coordinates of the start and end nodes are used to build
+#' The geographical coordinates of the start and end of lines are used to build
 #' the network. To avoid troubles with digits, we truncate the coordinates
 #' according to the digit parameter. A minimal loss of precision is expected
-#' but results in a fast construction of the network.\cr\cr
-#' To calculate the distances on the network, all the sampling points and the
-#' events are added as vertices. To reduce the size of the network, it is
-#' possible to reduce the number of vertex in the network by adding the events
-#' and the sampling points at the extremity of the lines if they are close to
-#' them. This is controled by the parameter tol.
-#'
+#' but results in a fast construction of the network.
+#' \cr\cr
+#' To calculate the distances on the network, all the events are added as
+#' vertices. To reduce the size of the network, it is possible to reduce the
+#' number of vertices by adding the events at the extremity of
+#' the lines if they are close to them. This is controled by the parameter tol.
+#' \cr\cr
+#' In the same way, it is possible to limit the number of vertices by
+#' aggregating the events that are close to each other. In that case, the
+#' weights of the aggregated events are summed. According to an aggregation
+#' distance, a buffer is drawn around the fist event, each other event falling
+#' in that buffer are aggregated to the first event, forming a new event. The
+#' coordinates of this new event are the mean of the original events
+#' coordinates. This procedure is repeated until no events are aggregated. The
+#' aggregation distance can be fixed with the parameter agg.
+#' \cr\cr
+#' When using the continuous and discontinuous kernel, the density is reduced
+#' at each intersection crossed. After 3 intersections with four directions
+#' each, the density is divided by 27 (3x3x3), leading to very small values.
+#' To reduce calculation time with a small precision loss, it is recommanded
+#' to set a maximum depth value for the two methods. This is controled by the
+#' max_depth parameter.
+#' \cr\cr
+#' When using the continuous and discontinuous kernel, the connexions between
+#' graph nodes are stored in a matrix. This matrix is typically sparse, and
+#' so a sparse matrix object is used to limit memory use. If the network is
+#' small (typically when the grid used to split the data has small rectangles)
+#' then a classical matrix could be used instead of a sparse one. It increases
+#' singnificantly speed, but could lead to memory issues.
 #'
 #' @param lines A SpatialLinesDataFrame with the sampling points. The
 #' geoemtries must be a SpatialLinesDataFrame (may crash if some geometries
@@ -561,6 +714,10 @@ nkde_worker <- function(lines, events, samples, kernel_name, bw, method, div, di
 #' @param kernel_name The name of the kernel to use. Must be one of triangle,
 #' gaussian, tricube, cosine ,triweight, quartic, or epanechnikov.
 #' @param bw The kernel bandwidth (in meters)
+#' @param adaptive A boolean, indicating if an adaptive bandwidth must be
+#' used
+#' @param trim_bw A float, indicating the maximum value for the adaptive
+#' bandwidth
 #' @param method The method to use when calculating the NKDE, must be one of
 #' simple / discontinuous / continuous (see details for more information)
 #' @param div The divisor to use for the kernel. Must be "n" (the number of
@@ -603,10 +760,12 @@ nkde_worker <- function(lines, events, samples, kernel_name, bw, method, div, di
 #'                   samples = samples,
 #'                   kernel_name = "quartic",
 #'                   bw = 300, div= "bw",
+#'                   adaptive = FALSE,
 #'                   method = "discontinuous", digits = 1, tol = 1,
+#'                   agg = 15,
 #'                   grid_shape = c(1,1),
 #'                   verbose=FALSE)
-nkde <- function(lines, events, w, samples, kernel_name, bw, method, div="bw", max_depth = 15, digits=5, tol=0.1, agg=NULL, sparse=TRUE, grid_shape=c(1,1), verbose=TRUE){
+nkde <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, trim_bw=NULL, method, div="bw", max_depth = 15, digits=5, tol=0.1, agg=NULL, sparse=TRUE, grid_shape=c(1,1), verbose=TRUE){
 
   ## step0 basic checks
   if(verbose){
@@ -624,6 +783,10 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, method, div="bw", m
     stop("the bandwidth for the kernel must be superior to 0")
   }
 
+  if(adaptive & is.null(trim_bw)){
+    stop("if adaptive is TRUE, a value for trim_bw must be supplied")
+  }
+
   check_geometries(lines,samples,events)
 
   ## step1 : preparing the data
@@ -638,8 +801,18 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, method, div="bw", m
   ## step2  creating the grid
   grid <- build_grid(grid_shape,list(lines,samples,events))
 
+  ## adaptive bandwidth !
+  if(adaptive==FALSE){
+    bws <- rep(bw,nrow(events))
+  }else{
+    ## we want to use an adaptive bw
+    bws <- adaptive_bw(grid,events,lines,bw,trim_bw,method,kernel_name,max_depth,tol,digits,sparse,verbose)
+  }
+
+  events$bw <- bws
+  max_bw <- max(bws)
   ## step3 splitting the dataset with each rectangle
-  selections <- split_by_grid(grid,samples,events,lines,bw, tol, digits)
+  selections <- split_by_grid(grid,samples,events,lines,max_bw, tol, digits)
 
   ## step 4 calculating the values
   if(verbose){
@@ -654,9 +827,9 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, method, div="bw", m
     }
 
     values <- nkde_worker(sel$lines, sel$events,
-                          sel$samples, kernel_name,
-                          bw, method, div, digits,
-                          tol,agg,sparse, max_depth, verbose)
+                          sel$samples, kernel_name,bw,
+                          sel$events$bw, method, div, digits,
+                          tol,sparse, max_depth, verbose)
 
     df <- data.frame("goid"=sel$samples$goid,
                      "k" = values)
@@ -670,8 +843,12 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, method, div="bw", m
   ## step5  combining the results
   tot_df <- do.call(rbind,dfs)
   tot_df <- tot_df[order(tot_df$goid),]
-  return(tot_df$k)
-
+  if(adaptive){
+    return(list("events" = events,
+                "k" = tot_df$k))
+  }else{
+    return(tot_df$k)
+  }
 }
 
 
@@ -695,6 +872,10 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, method, div="bw", m
 #' @param kernel_name The name of the kernel to use. Must be one of triangle,
 #' gaussian, tricube, cosine ,triweight, quartic, or epanechnikov.
 #' @param bw The kernel bandwidth (in meters)
+#' @param adaptive A boolean, indicating if an adaptive bandwidth must be
+#' used
+#' @param trim_bw A float, indicating the maximum value for the adaptive
+#' bandwidth
 #' @param method The method to use when calculating the NKDE, must be one of
 #' simple / discontinuous / continuous (see details for more information)
 #' @param div The divisor to use for the kernel. Must be "n" (the number of
@@ -729,7 +910,7 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, method, div="bw", m
 #' @examples
 #' data(mtl_network)
 #' data(bike_accidents)
-#' future::plan(future::multiprocess(workers=4))
+#' future::plan(future::multiprocess(workers=2))
 #' lixels <- lixelize_lines(mtl_network,200,mindist = 50)
 #' samples <- lines_center(lixels)
 #' densities <- nkde.mc(mtl_network,
@@ -738,6 +919,7 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, method, div="bw", m
 #'                   samples = samples,
 #'                   kernel_name = "quartic",
 #'                   bw = 300, div= "bw",
+#'                   adaptive = FALSE, agg = 15,
 #'                   method = "discontinuous", digits = 1, tol = 1,
 #'                   grid_shape = c(3,3),
 #'                   verbose=FALSE)
@@ -745,7 +927,7 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, method, div="bw", m
 #'    ## R CMD check: make sure any open connections are closed afterward
 #'    if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
 #'    }
-nkde.mc <- function(lines, events, w, samples, kernel_name, bw, method, div="bw", max_depth = 15, digits=5, tol=0.1,agg=NULL, sparse=TRUE, grid_shape=c(1,1), verbose=TRUE){
+nkde.mc <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, trim_bw=NULL, method, div="bw", max_depth = 15, digits=5, tol=0.1,agg=NULL, sparse=TRUE, grid_shape=c(1,1), verbose=TRUE){
 
   ## step0 basic checks
   if(verbose){
@@ -763,6 +945,9 @@ nkde.mc <- function(lines, events, w, samples, kernel_name, bw, method, div="bw"
   if(bw<=0){
     stop("the bandwidth for the kernel must be superior to 0")
   }
+  if(adaptive & is.null(trim_bw)){
+    stop("if adaptive is TRUE, a value for trim_bw must be supplied")
+  }
 
   check_geometries(lines,samples,events)
 
@@ -778,8 +963,22 @@ nkde.mc <- function(lines, events, w, samples, kernel_name, bw, method, div="bw"
   ## step2 creating the grid
   grid <- build_grid(grid_shape,list(lines,samples,events))
 
+  ## adaptive bandwidth !
+  if(adaptive==FALSE){
+    bws <- rep(bw,nrow(events))
+  }else{
+    if(verbose){
+      print("calculating the local bandwidth ...")
+    }
+    ## we want to use an adaptive bw
+    bws <- adaptive_bw.mc(grid,events,lines,bw,trim_bw,method,kernel_name,max_depth,tol,digits,sparse,verbose)
+  }
+
+  events$bw <- bws
+  max_bw <- max(bws)
+
   ## step3 splitting the dataset with each rectangle
-  selections <- split_by_grid.mc(grid,samples,events,lines,bw, digits,tol)
+  selections <- split_by_grid.mc(grid,samples,events,lines,max_bw, digits,tol)
 
   ## step4 calculating the values
 
@@ -790,9 +989,9 @@ nkde.mc <- function(lines, events, w, samples, kernel_name, bw, method, div="bw"
       dfs <- future.apply::future_lapply(selections, function(sel) {
 
         invisible(capture.output(values <- nkde_worker(sel$lines, sel$events,
-                              sel$samples, kernel_name,
-                              bw, method, div, digits,
-                              tol,agg,sparse, max_depth, verbose)))
+                              sel$samples, kernel_name,bw,
+                              sel$events$bw, method, div, digits,
+                              tol,sparse, max_depth, verbose)))
 
         df <- data.frame("goid"=sel$samples$goid,
                          "k" = values)
@@ -804,9 +1003,9 @@ nkde.mc <- function(lines, events, w, samples, kernel_name, bw, method, div="bw"
     dfs <- future.apply::future_lapply(selections, function(sel) {
 
       values <- nkde_worker(sel$lines, sel$events,
-                            sel$samples, kernel_name,
-                            bw, method, div, digits,
-                            tol,agg,sparse, max_depth, verbose)
+                            sel$samples, kernel_name,bw,
+                            sel$events$bw, method, div, digits,
+                            tol,sparse, max_depth, verbose)
 
       df <- data.frame("goid"=sel$samples$goid,
                        "k" = values)
@@ -821,7 +1020,12 @@ nkde.mc <- function(lines, events, w, samples, kernel_name, bw, method, div="bw"
   ## step5 combining the results
   tot_df <- do.call(rbind,dfs)
   tot_df <- tot_df[order(tot_df$goid),]
-  return(tot_df$k)
+  if(adaptive){
+    return(list("events" = events,
+                "k" = tot_df$k))
+  }else{
+    return(tot_df$k)
+  }
 }
 
 

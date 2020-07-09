@@ -11,6 +11,8 @@ nkde(
   samples,
   kernel_name,
   bw,
+  adaptive = FALSE,
+  trim_bw = NULL,
   method,
   div = "bw",
   max_depth = 15,
@@ -39,6 +41,12 @@ which the densities will be estimated.}
 gaussian, tricube, cosine ,triweight, quartic, or epanechnikov.}
 
 \item{bw}{The kernel bandwidth (in meters)}
+
+\item{adaptive}{A boolean, indicating if an adaptive bandwidth must be
+used}
+
+\item{trim_bw}{A float, indicating the maximum value for the adaptive
+bandwidth}
 
 \item{method}{The method to use when calculating the NKDE, must be one of
 simple / discontinuous / continuous (see details for more information)}
@@ -86,6 +94,7 @@ Calculate the Network Kernel Density Estimate based on a network of lines,
 sampling points, and events
 }
 \details{
+**The three NKDE methods**\cr
 Estimating the density of a point process is commonly done by using an
 ordinary two dimensional kernel density function. However, there is
 numerous cases for which the events do not occur in a two dimensional
@@ -113,27 +122,60 @@ three of them are available in this package.
 }
 The three methods are available because, despite the fact that the simple
 method is less exact statistically speaking, it might be more intuitive.
-In a geographical mind, it migh be seen as sort of distance decay
+In a purely geographical view, it migh be seen as sort of distance decay
 function like used in Geographically Weighted Regression.\cr
-\cr
+\cr\cr
+**adaptive bandwidth**\cr
+It is possible to use adaptive bandiwdth instead of fixed bandwidth. The
+adaptive bandwidth are calculated using the Abramson’s smoothing regimen.
+To do so, a orignal fixed bandiwdth must be specified (bw parameter), and
+is used to estimate a priory densities at event locations. These densities
+are then used to calculate local bandwidth. The maximum size of the local
+bandwidth can be limited with the parameter trim_bw. For more details, look
+at the vignette a_NKDE.
+\cr\cr
+**Optimization parameters**\cr
 The grid_shape parameter allows to split the calculus of the NKDE according
 to a grid dividing the study area. It might be necessary for big dataset
 to reduce the memory used. If the grid_shape is c(1,1), then a full network
 is build for the area. If the grid_shape is c(2,2), then the area is
 split in 4 rectangles. For each rectangle, the sample points falling in the
-rectangle are used, the events in a radius of the bandwidth length are used
-and the lines in a radius of the bandwidth length are used. The results are
-combined at the end and ordered to match the original order of the samples.
+rectangle are used, the events and the lines in a radius of the bandwidth
+length are used The results are combined at the end and ordered to match
+the original order of the samples.
 \cr\cr
-The geographical coordinates of the start and end nodes are used to build
+The geographical coordinates of the start and end of lines are used to build
 the network. To avoid troubles with digits, we truncate the coordinates
 according to the digit parameter. A minimal loss of precision is expected
-but results in a fast construction of the network.\cr\cr
-To calculate the distances on the network, all the sampling points and the
-events are added as vertices. To reduce the size of the network, it is
-possible to reduce the number of vertex in the network by adding the events
-and the sampling points at the extremity of the lines if they are close to
-them. This is controled by the parameter tol.
+but results in a fast construction of the network.
+\cr\cr
+To calculate the distances on the network, all the events are added as
+vertices. To reduce the size of the network, it is possible to reduce the
+number of vertices by adding the events at the extremity of
+the lines if they are close to them. This is controled by the parameter tol.
+\cr\cr
+In the same way, it is possible to limit the number of vertices by
+aggregating the events that are close to each other. In that case, the
+weights of the aggregated events are summed. According to an aggregation
+distance, a buffer is drawn around the fist event, each other event falling
+in that buffer are aggregated to the first event, forming a new event. The
+coordinates of this new event are the mean of the original events
+coordinates. This procedure is repeated until no events are aggregated. The
+aggregation distance can be fixed with the parameter agg.
+\cr\cr
+When using the continuous and discontinuous kernel, the density is reduced
+at each intersection crossed. After 3 intersections with four directions
+each, the density is divided by 27 (3x3x3), leading to very small values.
+To reduce calculation time with a small precision loss, it is recommanded
+to set a maximum depth value for the two methods. This is controled by the
+max_depth parameter.
+\cr\cr
+When using the continuous and discontinuous kernel, the connexions between
+graph nodes are stored in a matrix. This matrix is typically sparse, and
+so a sparse matrix object is used to limit memory use. If the network is
+small (typically when the grid used to split the data has small rectangles)
+then a classical matrix could be used instead of a sparse one. It increases
+singnificantly speed, but could lead to memory issues.
 }
 \examples{
 data(mtl_network)
@@ -146,7 +188,9 @@ densities <- nkde(mtl_network,
                   samples = samples,
                   kernel_name = "quartic",
                   bw = 300, div= "bw",
+                  adaptive = FALSE,
                   method = "discontinuous", digits = 1, tol = 1,
+                  agg = 15,
                   grid_shape = c(1,1),
                   verbose=FALSE)
 }

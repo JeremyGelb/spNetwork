@@ -11,6 +11,8 @@ nkde.mc(
   samples,
   kernel_name,
   bw,
+  adaptive = FALSE,
+  trim_bw = NULL,
   method,
   div = "bw",
   max_depth = 15,
@@ -39,6 +41,12 @@ which the densities will be estimated}
 gaussian, tricube, cosine ,triweight, quartic, or epanechnikov.}
 
 \item{bw}{The kernel bandwidth (in meters)}
+
+\item{adaptive}{A boolean, indicating if an adaptive bandwidth must be
+used}
+
+\item{trim_bw}{A float, indicating the maximum value for the adaptive
+bandwidth}
 
 \item{method}{The method to use when calculating the NKDE, must be one of
 simple / discontinuous / continuous (see details for more information)}
@@ -93,7 +101,7 @@ for details, please see the function nkde
 \examples{
 data(mtl_network)
 data(bike_accidents)
-future::plan(future::multiprocess(workers=4))
+future::plan(future::multiprocess(workers=2))
 lixels <- lixelize_lines(mtl_network,200,mindist = 50)
 samples <- lines_center(lixels)
 densities <- nkde.mc(mtl_network,
@@ -102,6 +110,7 @@ densities <- nkde.mc(mtl_network,
                   samples = samples,
                   kernel_name = "quartic",
                   bw = 300, div= "bw",
+                  adaptive = FALSE, agg = 15,
                   method = "discontinuous", digits = 1, tol = 1,
                   grid_shape = c(3,3),
                   verbose=FALSE)

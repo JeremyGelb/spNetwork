@@ -4,7 +4,7 @@
 \alias{simple_nkde}
 \title{Function to perform the simple nkde}
 \usage{
-simple_nkde(graph, events, samples, bw, kernel_func, nodes, edges)
+simple_nkde(graph, events, samples, bws, kernel_func, nodes, edges)
 }
 \arguments{
 \item{graph}{a graph object from igraph representing the network}
@@ -17,7 +17,8 @@ must indicate for each event its corresponding node}
 The samples must be snapped on the network. A column edge_id must indicate
 for each sample on which edge it is snapped.}
 
-\item{bw}{a float indicating the kernel bandwidth (in meters)}
+\item{bws}{a vector indicating the kernel bandwidth (in meters) for each
+event}
 
 \item{kernel_func}{a function obtained with the function select_kernel}
 

@@ -153,6 +153,33 @@ select_kernel <- function(name){
 
 }
 
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#### Functions for adaptative bandwidth calculation ####
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+#' Function calculating the geometric mean
+#'
+#' @param x a vector of numeric values
+#' @param na.rm a boolean indicating if we filter the NA values
+#' @return the geometric mean of x
+#' @examples
+#' #This is an internal function, no example provided
+gm_mean = function(x, na.rm=TRUE){
+  exp(sum(log(x[x > 0]), na.rm=na.rm) / length(x))
+}
+
+#' Function calculating the gamma parameter in Abramson’s smoothing regimen
+#'
+#' @param k a vector of numeric values (the estimated kernel densities)
+#' @return the gamma parameter in Abramson’s smoothing regimen
+#' @examples
+#' #This is an internal function, no example provided
+calc_gamma <- function(k){
+  return(gm_mean(k**(-1/2)))
+}
+
+
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #### Functions to perform the simple NKDE ####
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -167,7 +194,8 @@ select_kernel <- function(name){
 #' @param samples a SpatialPointsDataFrame representing the sampling points.
 #' The samples must be snapped on the network. A column edge_id must indicate
 #' for each sample on which edge it is snapped.
-#' @param bw a float indicating the kernel bandwidth (in meters)
+#' @param bws a vector indicating the kernel bandwidth (in meters) for each
+#' event
 #' @param kernel_func a function obtained with the function select_kernel
 #' @param nodes a SpatialPointsDataFrame representing the nodes of the network
 #' @param edges a SpatialLinesDataFrame representing the edges of the network
@@ -176,7 +204,7 @@ select_kernel <- function(name){
 #' point
 #' @examples
 #' #This is an internal function, no example provided
-simple_nkde <- function(graph, events, samples, bw, kernel_func, nodes, edges){
+simple_nkde <- function(graph, events, samples, bws, kernel_func, nodes, edges){
 
   ## step 1 set all values to 0
   base_k <- rep(0,nrow(samples))
@@ -194,6 +222,7 @@ simple_nkde <- function(graph, events, samples, bw, kernel_func, nodes, edges){
   pb <- txtProgressBar(min = 0, max = nrow(events), style = 3)
   for(i in 1:nrow(events)){
     setTxtProgressBar(pb, i)
+    bw <- bws[[i]]
     #extracting the starting values
     e <- events[i,]
     y <- e$vertex_id
