@@ -15,6 +15,8 @@ nkde(
   trim_bw = NULL,
   method,
   div = "bw",
+  diggle_correction = FALSE,
+  study_area = NULL,
   max_depth = 15,
   digits = 5,
   tol = 0.1,
@@ -54,6 +56,12 @@ simple / discontinuous / continuous (see details for more information)}
 \item{div}{The divisor to use for the kernel. Must be "n" (the number of
 events within the radius around each sampling point), "bw" (the bandwith)
 "none" (the simple sum).}
+
+\item{diggle_correction}{A boolean indicating if the correction factor
+for edge effect must be used.}
+
+\item{study_area}{A SpatialPolygonsDataFrame or a SpatialPolygon
+representing the limits of the study area.}
 
 \item{max_depth}{when using the continuous and discontinuous methods, the
 calculation time and memory use can go wild  if the network has a lot of

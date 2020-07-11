@@ -220,6 +220,9 @@ lixelize_lines <- function(lines, lx_length, mindist = NULL) {
             xy <- coordinates(coords)
             points2 <- data.frame(x = xy[, 1], y = xy[, 2], distance = gProject(line,
                                                                                 coords), type = "base")
+            if(points2$distance[nrow(points2)]==0){
+                points2$distance[nrow(points2)] <- tot_length
+            }
             # merging both and sorting
             allpts <- rbind(points, points2)
             allpts <- allpts[order(allpts$distance), ]
@@ -232,12 +235,17 @@ lixelize_lines <- function(lines, lx_length, mindist = NULL) {
             return(lixels)
         }
     })
-    oids <- sapply(1:nrow(lines), function(i) {
+    oids <- lapply(1:nrow(lines), function(i) {
         return(rep(i, length(newlixels[[i]])))
     })
     oids <- do.call("c", oids)
+
     new_lines <- do.call(raster::spLines,unlist(newlixels,recursive = F))
-    new_splines <- SpatialLinesDataFrame(new_lines, lines@data[oids, ], match.ID = F)
+    df <- lines@data[oids, ]
+    if(class(df) != "dataframe"){
+        df <- data.frame("oid" = df)
+    }
+    new_splines <- SpatialLinesDataFrame(new_lines, df, match.ID = F)
     raster::crs(new_splines) <- raster::crs(lines)
     return(new_splines)
 }

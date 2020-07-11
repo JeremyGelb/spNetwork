@@ -4,7 +4,7 @@
 \alias{check_geometries}
 \title{Function to check if the geometries given by the user are valide}
 \usage{
-check_geometries(lines, samples, events)
+check_geometries(lines, samples, events, study_area)
 }
 \arguments{
 \item{lines}{a SpatialLinesDataFrame}
@@ -12,6 +12,8 @@ check_geometries(lines, samples, events)
 \item{samples}{a SpatialPointsDataFrame of the samples}
 
 \item{events}{a SpatialPointsDataFrame of the events}
+
+\item{study_area}{a SpatialPointsDataFrame of the study_area}
 }
 \value{
 TRUE if all the checks are passed

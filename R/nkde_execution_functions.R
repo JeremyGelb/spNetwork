@@ -7,12 +7,13 @@
 #' @param lines a SpatialLinesDataFrame
 #' @param samples a SpatialPointsDataFrame of the samples
 #' @param events a SpatialPointsDataFrame of the events
+#' @param study_area a SpatialPointsDataFrame of the study_area
 #' @return TRUE if all the checks are passed
 #' @importFrom rgeos gIsSimple gIsValid
 #' @importFrom sp is.projected
 #' @examples
 #' #This is an internal function, no example provided
-check_geometries <- function(lines,samples,events){
+check_geometries <- function(lines,samples,events, study_area){
 
   # checking if geometries are all valid, simple and planar
   obj_names <- c("lines","samples","events")
@@ -42,9 +43,19 @@ check_geometries <- function(lines,samples,events){
   }
 
   # checking if the CRS are good
-  comp <- c(raster::compareCRS(raster::crs(samples),raster::crs(events)),
-            raster::compareCRS(raster::crs(lines),raster::crs(events)),
-            raster::compareCRS(raster::crs(lines),raster::crs(samples)))
+  if(is.null(study_area)){
+    comp <- c(raster::compareCRS(raster::crs(samples),raster::crs(events)),
+              raster::compareCRS(raster::crs(lines),raster::crs(events)),
+              raster::compareCRS(raster::crs(lines),raster::crs(samples)))
+  }else{
+    comp <- c(raster::compareCRS(raster::crs(study_area),raster::crs(events)),
+              raster::compareCRS(raster::crs(study_area),raster::crs(samples)),
+              raster::compareCRS(raster::crs(study_area),raster::crs(lines)),
+              raster::compareCRS(raster::crs(samples),raster::crs(events)),
+              raster::compareCRS(raster::crs(lines),raster::crs(events)),
+              raster::compareCRS(raster::crs(lines),raster::crs(samples)))
+  }
+
   if(any(comp==FALSE)){
     stop("the lines, events and samples must have the same Coordinates Reference System (crs)")
   }
@@ -723,6 +734,10 @@ nkde_worker <- function(lines, events, samples, kernel_name,bw, bws, method, div
 #' @param div The divisor to use for the kernel. Must be "n" (the number of
 #' events within the radius around each sampling point), "bw" (the bandwith)
 #' "none" (the simple sum).
+#' @param diggle_correction A boolean indicating if the correction factor
+#' for edge effect must be used.
+#' @param study_area A SpatialPolygonsDataFrame or a SpatialPolygon
+#' representing the limits of the study area.
 #' @param max_depth when using the continuous and discontinuous methods, the
 #' calculation time and memory use can go wild  if the network has a lot of
 #' small edges (area with a lot of intersections and a lot of events). To
@@ -765,7 +780,7 @@ nkde_worker <- function(lines, events, samples, kernel_name,bw, bws, method, div
 #'                   agg = 15,
 #'                   grid_shape = c(1,1),
 #'                   verbose=FALSE)
-nkde <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, trim_bw=NULL, method, div="bw", max_depth = 15, digits=5, tol=0.1, agg=NULL, sparse=TRUE, grid_shape=c(1,1), verbose=TRUE){
+nkde <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, trim_bw=NULL, method, div="bw",diggle_correction = FALSE, study_area = NULL, max_depth = 15, digits=5, tol=0.1, agg=NULL, sparse=TRUE, grid_shape=c(1,1), verbose=TRUE){
 
   ## step0 basic checks
   if(verbose){
@@ -776,7 +791,7 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, tri
   }
 
   if(method %in% c("simple","continuous","discontinuous") == FALSE){
-    stop('The method must be one of c("simple","continuous","discontinuous"')
+    stop('the method must be one of c("simple","continuous","discontinuous"')
   }
 
   if(bw<=0){
@@ -786,8 +801,11 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, tri
   if(adaptive & is.null(trim_bw)){
     stop("if adaptive is TRUE, a value for trim_bw must be supplied")
   }
+  if(diggle_correction & is.null(study_area)){
+    stop("the study_area must be defined if the Diggle correction factor is used")
+  }
 
-  check_geometries(lines,samples,events)
+  check_geometries(lines,samples,events, study_area)
 
   ## step1 : preparing the data
   if(verbose){
@@ -808,6 +826,17 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, tri
     ## we want to use an adaptive bw
     bws <- adaptive_bw(grid,events,lines,bw,trim_bw,method,kernel_name,max_depth,tol,digits,sparse,verbose)
   }
+
+  ## calculating the correction factor
+  if(diggle_correction){
+    if(verbose){
+      print("Calculating the correction factor")
+    }
+    corr_factor <- correction_factor(study_area,events,lines,method,bws, kernel_name, tol, digits, max_depth, sparse)
+  }else{
+    corr_factor <- rep(1,nrow(events))
+  }
+  events$weight <- events$weight * corr_factor
 
   events$bw <- bws
   max_bw <- max(bws)
@@ -881,6 +910,10 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, tri
 #' @param div The divisor to use for the kernel. Must be "n" (the number of
 #' events within the radius around each sampling point), "bw" (the bandwith)
 #' "none" (the simple sum).
+#' @param diggle_correction A boolean indicating if the correction factor
+#' for edge effect must be used.
+#' @param study_area A SpatialPolygonsDataFrame or a SpatialPolygon
+#' representing the limits of the study area.
 #' @param max_depth when using the continuous and discontinuous methods, the
 #' calculation time and memory use can go wild  if the network has a lot of
 #' small edges (area with a lot of intersections and a lot of events). To
@@ -927,7 +960,7 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, tri
 #'    ## R CMD check: make sure any open connections are closed afterward
 #'    if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
 #'    }
-nkde.mc <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, trim_bw=NULL, method, div="bw", max_depth = 15, digits=5, tol=0.1,agg=NULL, sparse=TRUE, grid_shape=c(1,1), verbose=TRUE){
+nkde.mc <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, trim_bw=NULL, method, div="bw", diggle_correction = FALSE, study_area = NULL, max_depth = 15, digits=5, tol=0.1,agg=NULL, sparse=TRUE, grid_shape=c(1,1), verbose=TRUE){
 
   ## step0 basic checks
   if(verbose){
@@ -948,8 +981,11 @@ nkde.mc <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, 
   if(adaptive & is.null(trim_bw)){
     stop("if adaptive is TRUE, a value for trim_bw must be supplied")
   }
+  if(diggle_correction & is.null(study_area)){
+    stop("the study_area must be defined if the Diggle correction factor is used")
+  }
 
-  check_geometries(lines,samples,events)
+  check_geometries(lines,samples,events,study_area)
 
   ## step1 preparing the data
   if(verbose){
@@ -973,6 +1009,17 @@ nkde.mc <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, 
     ## we want to use an adaptive bw
     bws <- adaptive_bw.mc(grid,events,lines,bw,trim_bw,method,kernel_name,max_depth,tol,digits,sparse,verbose)
   }
+
+  ## calculating the correction factor
+  if(diggle_correction){
+    if(verbose){
+      print("Calculating the correction factor")
+    }
+    corr_factor <- correction_factor(study_area,events,lines,method,bws, kernel_name, tol, digits, max_depth, sparse)
+  }else{
+    corr_factor <- rep(1,nrow(events))
+  }
+  events$weight <- events$weight * corr_factor
 
   events$bw <- bws
   max_bw <- max(bws)

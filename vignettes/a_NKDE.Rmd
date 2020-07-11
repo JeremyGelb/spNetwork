@@ -489,6 +489,103 @@ ggplot() +
 ```
 As one can note, the discontinuous Kernel is maybe not the best option to use with an adaptative bandwidth.
 
+## Applying a correction factor to avoid edge effects
+
+When the study area is limited, the kernel density estimate is biaised at the border because the events at the other side of the border are not sampled. To mitigate the induced biais, one could apply the Diggle correction factor.
+
+$$d(u) = \sum_{i=1}^{n}\frac{1}{e(x_{i})}K(dist(u-x_{i}))\\e(u) = \int_{W}{K(dist(u,v))}
+$$
+The correction factor $e(u)$ is calculated for each event for which a part of its mass is outside the study area. More precisely, $e(x_{i})$ is the percentage of the mass of the event located inside the study area. The kernel function could be the simple, the continuous or the discontinuous. This correction factor can be used with the adaptive bandiwdth too. Note that this correction is usable only if the network outside the study_area is available.
+
+Let us illustrate it here by using a sub part of the same data
+
+```{r message=FALSE, warning=FALSE}
+
+# selecting the events in a subset of the data
+center_event <- bike_accidents[125,]
+study_area <- rgeos::gBuffer(center_event,width = 800)
+events_sel <- as.vector(rgeos::gIntersects(bike_accidents, study_area,byid=TRUE))
+events <- subset(bike_accidents,events_sel)
+
+# generating the sampling points
+lines_sel <- as.vector(rgeos::gIntersects(mtl_network, study_area,byid=TRUE))
+lines <- subset(mtl_network,lines_sel)
+
+invisible(capture.output(lixels <- lixelize_lines(mtl_network,100,mindist = 50)))
+invisible(capture.output(samples <- lines_center(lixels)))
+
+
+sp::plot(study_area,col="white")
+sp::plot(mtl_network,add=TRUE)
+sp::plot(events,add=TRUE, col="red")
+
+# calculating the NKDE values, adjusted
+adjusted_densities <- nkde(lines = mtl_network,
+                            events = events,
+                            w = rep(1,nrow(events)),
+                            samples = samples,
+                            kernel_name = "quartic",
+                            bw = 150,
+                            adaptive = FALSE,
+                            method = "discontinuous",
+                            div = "bw",
+                            diggle_correction = TRUE, study_area = study_area,
+                            max_depth = 15,
+                            digits = 2,tol = 0.1,agg = 5,sparse = TRUE,
+                            grid_shape = c(1,1),verbose = FALSE)
+
+samples$density <- adjusted_densities
+```
+
+And again, we can map the results.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+extent <- sp::bbox(study_area)
+
+# rescaling to help the mapping
+samples$density <- samples$density*1000
+
+# using a discretization method
+breaks <- classIntervals(samples$density, n = 7, style = "jenks", intervalClosure = "right")
+
+colorRamp <- brewer.pal(n = 7, name = "Spectral")
+colorRamp <- rev(colorRamp)
+
+samples$class <- as.character(cut(samples$density,breaks$brks,colorRamp,include.lowest =TRUE))
+
+xy <- coordinates(samples)
+samples$x <- xy[,1]
+samples$y <- xy[,2]
+
+# and finally map with ggplot
+labels <- names(print(breaks))
+mtl_network$line_id <- 1:nrow(mtl_network)
+Mapnetwork <- fortify(mtl_network,id="line_id")
+
+df <- samples@data[order(samples@data$density),]
+
+ggplot() + 
+  geom_path(data = Mapnetwork, mapping = aes(x=long,y=lat,group=group), color="black")+
+  geom_point(data = df, mapping = aes(x=x,y=y,color=class))+
+  scale_color_manual("density",
+    breaks = colorRamp, values = colorRamp, 
+    label = labels)+
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank()) +
+  coord_fixed()+
+  xlim(extent[1,])+
+  ylim(extent[2,])+
+  labs(title = "bike accident density by kilometres in 2016",
+          subtitle = "within a radius of 100 metres",
+          caption = "using the quartic kernel, adjusted by Diggle factor")
+
+```
+
 ## Complementary functions
 
 To define the sampling points on the network, some complementary functions are provided: 
