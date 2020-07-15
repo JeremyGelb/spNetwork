@@ -176,9 +176,10 @@ prepare_data <- function(samples,lines,events, w ,digits,tol, agg){
   ## step3 remove lines with no length
   lines$length <- gLength(lines,byid=TRUE)
   lines <- subset(lines, lines$length>0)
+  lines$oid <- 1:nrow(lines)
 
   return(list("samples" = samples,
-              "lines" = lines,
+              "lines" = lines[c("length","oid")],
               "events" = events))
 
 }
@@ -209,6 +210,7 @@ split_by_grid <- function(grid,samples,events,lines,bw,tol, digits){
   ## step2 : split the datasets
 
   selections <- lapply(1:length(grid),function(i){
+    print(paste("iterating on quadra ",i,sep=""))
     square <- grid[i,]
     # selecting the samples in the grid
     sel_samples <- spatial_request(square,tree_samples,samples)
@@ -228,8 +230,14 @@ split_by_grid <- function(grid,samples,events,lines,bw,tol, digits){
     if(nrow(sel_events)==0){
       new_lines <- sel_lines
     }else{
-      if(nrow(sel_events) * nrow(sel_lines) >= 2^30-1){
-        stop("The matrix size will be exceeded, please consider using a finer grid to split the study area")
+      a <- nrow(sel_events)
+      b <- nrow(sel_lines)
+      x <-  a*b
+      if(is.na(x)){
+        stop(paste("The matrix size will be exceeded (",a," x ",b,"), please consider using a finer grid to split the study area",sep=""))
+      }
+      if(x >= 2*10^9){
+        stop(paste("The matrix size will be exceeded (",a," x ",b,"), please consider using a finer grid to split the study area",sep=""))
       }
       snapped_events <- snapPointsToLines(sel_events,sel_lines,idField = "oid")
       sel_events <- cbind(snapped_events,sel_events)
@@ -319,8 +327,14 @@ split_by_grid.mc <- function(grid,samples,events,lines,bw,tol,digits){
     if(nrow(sel_events)==0){
       new_lines <- sel_lines
     }else{
-      if(nrow(sel_events) * nrow(sel_lines) >= 2^30-1){
-        stop("The maximum matrix size will be exceeded, please consider using a finer grid to split the study area")
+      a <- nrow(sel_events)
+      b <- nrow(sel_lines)
+      x <-  a*b
+      if(is.na(x)){
+        stop(paste("The matrix size will be exceeded (",a," x ",b,"), please consider using a finer grid to split the study area",sep=""))
+      }
+      if(x >= 2*10^9){
+        stop(paste("The matrix size will be exceeded (",a," x ",b,"), please consider using a finer grid to split the study area",sep=""))
       }
       snapped_events <- snapPointsToLines(sel_events,sel_lines,idField = "oid")
       sel_events <- cbind(snapped_events,sel_events)
@@ -535,8 +549,14 @@ nkde_worker <- function(lines, events, samples, kernel_name,bw, bws, method, div
   edges <- graph_result$spedges
 
   ## step2 for each sample, find its belonging line
-  if(nrow(samples) * nrow(edges) >= 2^30-1){
-    stop("The maximum matrix size will be exceeded, please consider using a finer grid to split the study area")
+  a <- nrow(events)
+  b <- nrow(lines)
+  x <-  a*b
+  if(is.na(x)){
+    stop(paste("The matrix size will be exceeded (",a," x ",b,"), please consider using a finer grid to split the study area",sep=""))
+  }
+  if(x >= 2*10^9){
+    stop(paste("The matrix size will be exceeded (",a," x ",b,"), please consider using a finer grid to split the study area",sep=""))
   }
   snapped_samples <- maptools::snapPointsToLines(samples,edges,idField = "edge_id")
   samples$edge_id <- snapped_samples$nearest_line_id
@@ -761,6 +781,8 @@ nkde_worker <- function(lines, events, samples, kernel_name,bw, bws, method, div
 #' must be splitted when performing the calculus (see details). Defaut is c(1,1)
 #' @param verbose A boolean, indicating if the function should print messages
 #' about process.
+#' @param check A boolean indicating if the geometry checks must be run before
+#' calculating the densities
 #' @return A vector of values, they are the density estimates at samplings
 #' points
 #' @export
@@ -780,7 +802,7 @@ nkde_worker <- function(lines, events, samples, kernel_name,bw, bws, method, div
 #'                   agg = 15,
 #'                   grid_shape = c(1,1),
 #'                   verbose=FALSE)
-nkde <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, trim_bw=NULL, method, div="bw",diggle_correction = FALSE, study_area = NULL, max_depth = 15, digits=5, tol=0.1, agg=NULL, sparse=TRUE, grid_shape=c(1,1), verbose=TRUE){
+nkde <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, trim_bw=NULL, method, div="bw",diggle_correction = FALSE, study_area = NULL, max_depth = 15, digits=5, tol=0.1, agg=NULL, sparse=TRUE, grid_shape=c(1,1), verbose=TRUE, check=TRUE){
 
   ## step0 basic checks
   if(verbose){
@@ -804,8 +826,10 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, tri
   if(diggle_correction & is.null(study_area)){
     stop("the study_area must be defined if the Diggle correction factor is used")
   }
+  if(check){
+    check_geometries(lines,samples,events, study_area)
+  }
 
-  check_geometries(lines,samples,events, study_area)
 
   ## step1 : preparing the data
   if(verbose){
@@ -937,6 +961,8 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, tri
 #' must be splitted when performing the calculus (see details). Defaut is c(1,1)
 #' @param verbose A boolean, indicating if the function should print messages
 #' about process.
+#' @param check A boolean indicating if the geometry checks must be run before
+#' calculating the densities
 #' @return A vector of values, they are the density estimates at samplings
 #' points
 #' @export
@@ -960,7 +986,7 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, tri
 #'    ## R CMD check: make sure any open connections are closed afterward
 #'    if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
 #'    }
-nkde.mc <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, trim_bw=NULL, method, div="bw", diggle_correction = FALSE, study_area = NULL, max_depth = 15, digits=5, tol=0.1,agg=NULL, sparse=TRUE, grid_shape=c(1,1), verbose=TRUE){
+nkde.mc <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, trim_bw=NULL, method, div="bw", diggle_correction = FALSE, study_area = NULL, max_depth = 15, digits=5, tol=0.1,agg=NULL, sparse=TRUE, grid_shape=c(1,1), verbose=TRUE, check=TRUE){
 
   ## step0 basic checks
   if(verbose){
@@ -985,7 +1011,9 @@ nkde.mc <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, 
     stop("the study_area must be defined if the Diggle correction factor is used")
   }
 
-  check_geometries(lines,samples,events,study_area)
+  if(check){
+    check_geometries(lines,samples,events,study_area)
+  }
 
   ## step1 preparing the data
   if(verbose){

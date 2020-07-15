@@ -321,7 +321,9 @@ simple_lines <- function(lines) {
     oids <- sapply(1:nrow(lines), function(i) {
         return(rep(i, counts[[i]]))
     })
-    oids <- do.call("c", oids)
+    if(nrow(lines)>1){
+        oids <- do.call("c", oids)
+    }
 
     ## using the coordinates to create newlines
     new_lines <- lapply(1:length(allcoords), function(i) {

@@ -23,7 +23,8 @@ nkde.mc(
   agg = NULL,
   sparse = TRUE,
   grid_shape = c(1, 1),
-  verbose = TRUE
+  verbose = TRUE,
+  check = TRUE
 )
 }
 \arguments{
@@ -92,6 +93,9 @@ must be splitted when performing the calculus (see details). Defaut is c(1,1)}
 
 \item{verbose}{A boolean, indicating if the function should print messages
 about process.}
+
+\item{check}{A boolean indicating if the geometry checks must be run before
+calculating the densities}
 }
 \value{
 A vector of values, they are the density estimates at samplings
