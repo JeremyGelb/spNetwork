@@ -174,6 +174,7 @@ add_vertices_lines <- function(lines, points, nearest_lines_idx, mindist) {
     return(final_lines)
 }
 
+
 #' Cut a SpatialLines object into lixels with a specified minimal distance
 #' may fail if the lines geometries are self intersecting.
 #'
@@ -524,5 +525,4 @@ build_grid <- function(grid_shape, spatial) {
         grid <- methods::as(grid.pts, "SpatialPolygons")
         return(grid)
     }
-
 }

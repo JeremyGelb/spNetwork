@@ -391,6 +391,9 @@ adaptive_bw <- function(grid,events,lines,bw,trim_bw,method,kernel_name,max_dept
     print("start calculating the kernel values for the adaptive bandwidth...")
   }
   n_quadra <- length(selections)
+  #save(kernel_name,bw,method, digits,
+  #     tol,sparse, max_depth, verbose,selections,file="C:/Users/gelbj/OneDrive/Documents/R/dev-packages/spNetwork/.Rproj.user/Article/weird_case.RDATA")
+
   dfs <- lapply(1:n_quadra,function(i){
     sel <- selections[[i]]
     bws <- rep(bw,nrow(sel$events))
@@ -418,7 +421,7 @@ adaptive_bw <- function(grid,events,lines,bw,trim_bw,method,kernel_name,max_dept
 }
 
 
-#' Function to calculate adaptative bandwidth according to Abramson’s smoothing regimen (multicore version)
+#' Function to calculate adaptative bandwidth according to Abramson's smoothing regimen (multicore version)
 #'
 #' @param grid a spatial grid to split the data within
 #' @param events A spatialPointsDataFrame of the events points
@@ -587,6 +590,8 @@ nkde_worker <- function(lines, events, samples, kernel_name,bw, bws, method, div
     # the cas of the simple method, no c++ here
     kernel_func <- select_kernel(kernel_name)
     if(verbose){
+      ## let the problem case here
+      #save.image(file="pb_NA.RData")
       values <- simple_nkde(graph, events, samples, bws, kernel_func, nodes, edges)
     }else{
       invisible(capture.output(values <- simple_nkde(graph, events, samples, bws, kernel_func, nodes, edges)))
@@ -850,7 +855,6 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, tri
     ## we want to use an adaptive bw
     bws <- adaptive_bw(grid,events,lines,bw,trim_bw,method,kernel_name,max_depth,tol,digits,sparse,verbose)
   }
-
   ## calculating the correction factor
   if(diggle_correction){
     if(verbose){

@@ -260,7 +260,7 @@ simple_nkde <- function(graph, events, samples, bws, kernel_func, nodes, edges){
 ess_kernel <- function(graph, y, bw, kernel_func, samples, nodes, edges, sample_tree, edges_tree){
   samples_k <- rep(0,nrow(samples))
   event_node <- nodes[y,]
-  buff <- gBuffer(event_node,width = bw)
+  buff <- gBuffer(event_node,width = bw+bw*0.25)
   ## step1 find all the samples in the radius
   ok_samples <- spatial_request(buff,sample_tree,samples)
   if(nrow(ok_samples)==0){

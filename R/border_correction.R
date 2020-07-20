@@ -118,14 +118,12 @@ correction_factor <- function(study_area,events,lines,method, bws, kernel_name, 
   boundaries <- gBoundary(study_area, byid=T)
   dists <- as.numeric(gDistance(events,boundaries,byid=TRUE))
   ok_events <- subset(events,dists<bw)
-
   # step 1 create the border elements
   chunks <- split_border(study_area,bw)
   chunks$oid <- 1:nrow(chunks)
   # step 2  associate each events to it closest chunk
   snapped <- snapPointsToLines(ok_events,chunks)
   ok_events$nearest_line_id <- as.numeric(snapped$nearest_line_id)
-
   # step 2 select the elements in each chunks
   tree_lines <- build_quadtree(lines)
 
@@ -142,10 +140,13 @@ correction_factor <- function(study_area,events,lines,method, bws, kernel_name, 
     sel_lines <- spatial_request(buff,tree_lines,lines)
     sel_lines$oid <- 1:nrow(sel_lines)
     # splitting the lines at the border intersection
-    inter <- gIntersection(sel_lines,part,byid = TRUE)
-    snappedinter <- snapPointsToLines(inter,sel_lines,idField = "oid")
-    lines2 <- add_vertices_lines(sel_lines,snappedinter,snappedinter$nearest_line_id,tol)
-
+    inter <- gIntersection(sel_lines,boundaries,byid = TRUE)
+    if(is.null(inter)){
+      lines2 <- sel_lines
+    }else{
+      snappedinter <- snapPointsToLines(inter,sel_lines,idField = "oid")
+      lines2 <- add_vertices_lines(sel_lines,snappedinter,snappedinter$nearest_line_id,tol)
+    }
 
     #and finaly split the lines at the events
     snapped_events <- snapPointsToLines(sel_events,lines2,idField = "oid")
@@ -160,8 +161,6 @@ correction_factor <- function(study_area,events,lines,method, bws, kernel_name, 
                 "sel_events" = sel_events))
   })
   selections <- selections[lengths(selections) != 0]
-
-
   # step 3 iterate over the selections and caclulate the corrections factor
   values <- lapply(selections,function(sel){
     sel_lines <- sel$sel_lines
@@ -205,8 +204,12 @@ correction_factor <- function(study_area,events,lines,method, bws, kernel_name, 
         row <- df[i,]
         start <- row$distances
         end <- row$edge_size + start
-        val <- integrate(kernel_func,lower=start,upper=end,bw=bw)
-        return(val$value * row$alpha)
+        if(bw-start<tol){
+          return(0)
+        }else{
+          val <- integrate(kernel_func,lower=start,upper=end,bw=bw)
+          return(val$value * row$alpha)
+        }
       })
       df$contribs <- contribs
       df <- merge(df,edges@data[c("edge_id","is_inside")],by="edge_id")
