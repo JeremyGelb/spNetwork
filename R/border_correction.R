@@ -103,6 +103,7 @@ split_border <- function(polygon,bw){
 #' @importFrom rgeos gBoundary gUnaryUnion gDistance gConvexHull gBuffer gIntersection
 #' @importFrom maptools snapPointsToLines
 #' @importFrom stats integrate
+#' @importFrom cubature cubintegrate
 #' @return A numeric vector with the correction factor values for each event
 #' @examples
 #' #no example provided, this is an internal function
@@ -207,8 +208,9 @@ correction_factor <- function(study_area,events,lines,method, bws, kernel_name, 
         if(bw-start<tol){
           return(0)
         }else{
-          val <- integrate(kernel_func,lower=start,upper=end,bw=bw)
-          return(val$value * row$alpha)
+          #val <- integrate(kernel_func,lower=start,upper=end,bw=bw,rel.tol = 1e-15)
+          val <- cubintegrate(kernel_func,lower=start,upper=end,bw=bw,relTol = 1e-15)
+          return(val$integral * row$alpha)
         }
       })
       df$contribs <- contribs
