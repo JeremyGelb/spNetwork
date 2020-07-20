@@ -260,14 +260,15 @@ simple_nkde <- function(graph, events, samples, bws, kernel_func, nodes, edges){
 ess_kernel <- function(graph, y, bw, kernel_func, samples, nodes, edges, sample_tree, edges_tree){
   samples_k <- rep(0,nrow(samples))
   event_node <- nodes[y,]
-  buff <- gBuffer(event_node,width = bw+bw*0.25)
+  buff <- gBuffer(event_node,width = bw)
   ## step1 find all the samples in the radius
   ok_samples <- spatial_request(buff,sample_tree,samples)
   if(nrow(ok_samples)==0){
     return(samples_k)
   }
   ## step2 find all the edges in the radius
-  ok_edges <- spatial_request(buff,edges_tree,edges)$edge_id
+  buff2 <- gBuffer(event_node,width = bw+0.1*bw)
+  ok_edges <- spatial_request(buff2,edges_tree,edges)$edge_id
   ## Step3 for each edge, find its two vertices
   vertices <- ends(graph,ok_edges,names=F)
   ## step4 calculate the the distance between the start node and each edge vertex
