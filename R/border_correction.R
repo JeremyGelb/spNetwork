@@ -179,7 +179,7 @@ correction_factor <- function(study_area,events,lines,method, bws, kernel_name, 
     neighbour_list <- adjacent_vertices(graph,nodes$id,mode="out")
     neighbour_list <- lapply(neighbour_list,function(x){return (as.numeric(x))})
     # lets obtain the potential values of each line
-    if(method=="continous"){
+    if(method=="continuous"){
       if(sparse){
         dfs <- spNetworkCpp::corrfactor_continuous_sparse(neighbour_list, sel_events$vertex_id, graph_result$linelist, bws, max_depth)
       }else{
