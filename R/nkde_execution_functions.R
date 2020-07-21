@@ -746,7 +746,7 @@ nkde_worker <- function(lines, events, samples, kernel_name,bw, bws, method, div
 #' @param samples A SpatialPointsDataFrame representing the locations for
 #' which the densities will be estimated.
 #' @param kernel_name The name of the kernel to use. Must be one of triangle,
-#' gaussian, tricube, cosine ,triweight, quartic, or epanechnikov.
+#' gaussian, tricube, cosine ,triweight, quartic, epanechnikov or uniform.
 #' @param bw The kernel bandwidth (in meters)
 #' @param adaptive A boolean, indicating if an adaptive bandwidth must be
 #' used
@@ -811,8 +811,8 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, tri
   if(verbose){
     print("checking inputs ...")
   }
-  if((kernel_name %in% c("triangle", "gaussian", "tricube", "cosine" ,"triweight", "quartic", 'epanechnikov'))==FALSE){
-    stop('the name of the kernel function must be one of c("triangle", "gaussian", "tricube", "cosine" ,"triweight", "quartic", "epanechnikov")')
+  if((kernel_name %in% c("triangle", "gaussian", "tricube", "cosine" ,"triweight", "quartic", 'epanechnikov','uniform'))==FALSE){
+    stop('the name of the kernel function must be one of c("triangle", "gaussian", "tricube", "cosine" ,"triweight", "quartic", "epanechnikov" ,"uniform")')
   }
 
   if(method %in% c("simple","continuous","discontinuous") == FALSE){
@@ -926,7 +926,7 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, tri
 #' @param samples A SpatialPointsDataFrame representing the locations for
 #' which the densities will be estimated
 #' @param kernel_name The name of the kernel to use. Must be one of triangle,
-#' gaussian, tricube, cosine ,triweight, quartic, or epanechnikov.
+#' gaussian, tricube, cosine ,triweight, quartic, epanechnikov or uniform.
 #' @param bw The kernel bandwidth (in meters)
 #' @param adaptive A boolean, indicating if an adaptive bandwidth must be
 #' used
@@ -996,8 +996,8 @@ nkde.mc <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, 
     print("checking inputs ...")
   }
 
-  if((kernel_name %in% c("triangle", "gaussian", "tricube", "cosine" ,"triweight", "quartic", 'epanechnikov'))==FALSE){
-    stop('the name of the kernel function must be one of c("triangle", "gaussian", "tricube", "cosine" ,"triweight", "quartic", "epanechnikov")')
+  if((kernel_name %in% c("triangle", "gaussian", "tricube", "cosine" ,"triweight", "quartic", 'epanechnikov','uniform'))==FALSE){
+    stop('the name of the kernel function must be one of c("triangle", "gaussian", "tricube", "cosine" ,"triweight", "quartic", "epanechnikov" ,"uniform")')
   }
 
   if(method %in% c("simple","continuous","discontinuous") == FALSE){

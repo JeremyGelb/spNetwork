@@ -133,7 +133,8 @@ df <- data.frame(
   triangle = triangle_kernel(x,15),
   tricube = tricube_kernel(x,15),
   triweight = triweight_kernel(x,15),
-  cosine = cosine_kernel(x,15))
+  cosine = cosine_kernel(x,15),
+  uniform = uniform_kernel(x,15))
 
 df2 <- melt(df, id.vars = "x")
 names(df2) <- c("x","kernel","y")

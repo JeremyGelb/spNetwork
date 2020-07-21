@@ -14,7 +14,21 @@ triangle_kernel <- function(d, bw){
   u <- d/bw
   k <- 1 - abs(u)
   k <- k/bw
-  k <- ifelse(d>bw,0,k)
+  k <- ifelse(abs(d)>bw,0,k)
+  return(k)
+}
+
+#' uniform kernel
+#'
+#' @param d the distance from the event
+#' @param bw the bandwidth used for the kernel
+#' @return the estimated density
+#' @export
+#' @examples
+#' #This is an internal function, no example provided
+uniform_kernel <- function(d, bw){
+  k <- 1/(2*bw)
+  k <- ifelse(abs(d)>bw,0,k)
   return(k)
 }
 
@@ -126,8 +140,8 @@ gaussian_kernel <- function(d, bw){
 #' @examples
 #' #This is an internal function, no example provided
 select_kernel <- function(name){
-  if((name %in% c("triangle", "gaussian", "tricube", "cosine" ,"triweight", "quartic", 'epanechnikov'))==FALSE){
-    stop('the name of the kernel function must be one of c("triangle", "gaussian", "tricube", "cosine" ,"triweight", "quartic", "epanechnikov")')
+  if((name %in% c("triangle", "gaussian", "tricube", "cosine" ,"triweight", "quartic", 'epanechnikov','uniform'))==FALSE){
+    stop('the name of the kernel function must be one of c("triangle", "gaussian", "tricube", "cosine" ,"triweight", "quartic", "epanechnikov","uniform")')
   }
   if(name=="gaussian"){
     return(gaussian_kernel)
@@ -149,6 +163,9 @@ select_kernel <- function(name){
   }
   if(name=="epanechnikov"){
     return(epanechnikov_kernel)
+  }
+  if(name=="uniform"){
+    return(uniform_kernel)
   }
 
 }
