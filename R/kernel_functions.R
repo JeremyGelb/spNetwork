@@ -132,6 +132,24 @@ gaussian_kernel <- function(d, bw){
 }
 
 
+#' scaled gaussian kernel
+#'
+#' @param d the distance from the event
+#' @param bw the bandwidth used for the kernel
+#' @return the estimated density
+#' @export
+#' @examples
+#' #This is an internal function, no example provided
+gaussian_kernel_scaled <- function(d, bw){
+  bw2 <- bw/3
+  t1 <- 1/(bw2 * sqrt(2*pi))
+  t2 <- exp(-1 * (d**2 / (2*bw2**2)))
+  k <- t1*t2
+  k <- ifelse(abs(d)>bw,0,k)
+  return(k)
+}
+
+
 
 #' select the right kernel function with its name
 #'
@@ -140,11 +158,14 @@ gaussian_kernel <- function(d, bw){
 #' @examples
 #' #This is an internal function, no example provided
 select_kernel <- function(name){
-  if((name %in% c("triangle", "gaussian", "tricube", "cosine" ,"triweight", "quartic", 'epanechnikov','uniform'))==FALSE){
-    stop('the name of the kernel function must be one of c("triangle", "gaussian", "tricube", "cosine" ,"triweight", "quartic", "epanechnikov","uniform")')
+  if((name %in% c("triangle", "gaussian", "scaled gaussian", "tricube", "cosine" ,"triweight", "quartic", 'epanechnikov','uniform'))==FALSE){
+    stop('the name of the kernel function must be one of c("triangle", "gaussian", "scaled gaussian", "tricube", "cosine" ,"triweight", "quartic", "epanechnikov" ,"uniform")')
   }
   if(name=="gaussian"){
     return(gaussian_kernel)
+  }
+  if(name == "scaled gaussian"){
+    return(gaussian_kernel_scaled)
   }
   if(name=="triangle"){
     return(triangle_kernel)

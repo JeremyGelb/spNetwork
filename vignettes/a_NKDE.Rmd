@@ -147,14 +147,14 @@ ggplot(df2) +
 
 ```
 
-As one can see, most of the kernels look alike. It is worth mentioning that the gaussian kernel does not integrate to 1 within the bandwidth (specific case of non-compact kernel). In the **spNetwork** package, all kernel values beyond the bandwidth are set to 0. This means that some weight of each event is lost with the gaussian kernel.
+As one can see, most of the kernels look alike. It is worth mentioning that the gaussian kernel does not integrate to 1 within the bandwidth (specific case of non-compact kernel). In the **spNetwork** package, all kernel values beyond the bandwidth are set to 0. This means that some weight of each event is lost with the gaussian kernel. To limit this effect, one can use the scaled version of the gaussian kernel for wich the bandwidth is divided by 3, limiting greatly the mass loss.
 
 ```{r message=FALSE, warning=FALSE}
-Funs <- c(gaussian_kernel,epanechnikov_kernel,
+Funs <- c(gaussian_kernel, gaussian_kernel_scaled,epanechnikov_kernel,
           quartic_kernel,triangle_kernel, uniform_kernel,
           tricube_kernel,triweight_kernel,
           cosine_kernel)
-Names <- c("gaussian", "epanechnikov", "quartic",
+Names <- c("gaussian", "scaled gaussian", "epanechnikov", "quartic",
            "triangle","uniform", "tricube", "triweight", "cosine")
 integrals <- sapply(Funs,function(f){
   return(round(integrate(f,upper=15,lower=-15,bw=15)$value,3))
@@ -164,6 +164,24 @@ df <- data.frame("kernel"=Names,
 
 kable(df)
 
+```
+However, the fact that the gaussian kernel does not integrate to 1 within the bandwidth can leads to negative values when using the continuous NKDE (presented latter), we thus recommand using the quartic kernel instead.
+
+```{r message=FALSE, warning=FALSE}
+x <- seq(-15.01,15.01,by = 0.01)
+df <- data.frame(
+  x = x,
+  gaussian = gaussian_kernel(x,15),
+  gaussian_scaled = gaussian_kernel_scaled(x,15),
+  epanechnikov = epanechnikov_kernel(x,15),
+  quartic = quartic_kernel(x,15)
+  )
+
+df2 <- melt(df, id.vars = "x")
+names(df2) <- c("x","kernel","y")
+
+ggplot(df2) + 
+  geom_line(aes(x=x,y=y,color=kernel),size=1)
 ```
 
 # The three versions of NKDE
