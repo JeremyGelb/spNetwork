@@ -400,9 +400,6 @@ adaptive_bw <- function(grid,events,lines,bw,trim_bw,method,kernel_name,max_dept
                           sel$samples, kernel_name,bw,
                           bws, method, div = "none", digits,
                           tol,sparse, max_depth, verbose)
-    if(any(is.na(values))){
-      print(paste("NA values here : ",i,sep=""))
-    }
     df <- data.frame("goid"=sel$samples$goid,
                      "k" = values)
     return(df)
@@ -818,6 +815,9 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, tri
   if(method %in% c("simple","continuous","discontinuous") == FALSE){
     stop('the method must be one of c("simple","continuous","discontinuous"')
   }
+  if(method == "continuous" & kernel_name == "gaussian"){
+    stop("using the continuous NKDE and the gaussian kernel function can yield negative values for densities because the gaussian kernel does not integrate to 1 within the bandiwdth, please consider using the quartic kernel instead")
+  }
 
   if(bw<=0){
     stop("the bandwidth for the kernel must be superior to 0")
@@ -1003,7 +1003,9 @@ nkde.mc <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, 
   if(method %in% c("simple","continuous","discontinuous") == FALSE){
     stop('The method must be one of c("simple","continuous","discontinuous"')
   }
-
+  if(method == "continuous" & kernel_name == "gaussian"){
+    stop("using the continuous NKDE and the gaussian kernel function can yield negative values for densities because the gaussian kernel does not integrate to 1 within the bandiwdth, please consider using the quartic kernel instead")
+  }
   if(bw<=0){
     stop("the bandwidth for the kernel must be superior to 0")
   }
