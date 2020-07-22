@@ -3,6 +3,7 @@
 export(cosine_kernel)
 export(epanechnikov_kernel)
 export(gaussian_kernel)
+export(gaussian_kernel_scaled)
 export(lines_center)
 export(lines_points_along)
 export(lixelize_lines)
