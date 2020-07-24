@@ -480,8 +480,8 @@ adaptive_bw.mc <- function(grid,events,lines,bw,trim_bw,method,kernel_name,max_d
 
   ## step 4 calculating the new bandwidth !
   delta <- calc_gamma(tot_df$k)
-  new_bw <- ifelse(new_bw<trim_bw,new_bw,trim_bw)
   new_bw <- bw * (tot_df$k**(-1/2) * delta**(-1))
+  new_bw <- ifelse(new_bw<trim_bw,new_bw,trim_bw)
   return(new_bw)
 }
 
