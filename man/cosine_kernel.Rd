@@ -2,20 +2,20 @@
 % Please edit documentation in R/kernel_functions.R
 \name{cosine_kernel}
 \alias{cosine_kernel}
-\title{cosine kernel}
+\title{Cosine kernel}
 \usage{
 cosine_kernel(d, bw)
 }
 \arguments{
-\item{d}{the distance from the event}
+\item{d}{The distance from the event}
 
-\item{bw}{the bandwidth used for the kernel}
+\item{bw}{The bandwidth used for the kernel}
 }
 \value{
-the estimated density
+The estimated density
 }
 \description{
-cosine kernel
+Function implementing the cosine kernel.
 }
 \examples{
 #This is an internal function, no example provided

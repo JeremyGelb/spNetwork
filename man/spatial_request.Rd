@@ -2,7 +2,7 @@
 % Please edit documentation in R/spatial_indexing.R
 \name{spatial_request}
 \alias{spatial_request}
-\title{Use a quad tree index to perform spatial request}
+\title{Spatial request}
 \usage{
 spatial_request(geometry, tree, data)
 }
@@ -17,7 +17,7 @@ spatial_request(geometry, tree, data)
 a subset of data, intersecting geometry
 }
 \description{
-Use a quad tree index to perform spatial request
+Use a quad tree index to perform spatial request.
 }
 \examples{
 #This is an internal function, no example provided

@@ -2,7 +2,7 @@
 % Please edit documentation in R/nkde_execution_functions.R
 \name{adaptive_bw.mc}
 \alias{adaptive_bw.mc}
-\title{Function to calculate adaptative bandwidth according to Abramson's smoothing regimen (multicore version)}
+\title{Adaptative bandwidth (multicore)}
 \usage{
 adaptive_bw.mc(
   grid,
@@ -20,37 +20,38 @@ adaptive_bw.mc(
 )
 }
 \arguments{
-\item{grid}{a spatial grid to split the data within}
+\item{grid}{A spatial grid to split the data within}
 
 \item{events}{A spatialPointsDataFrame of the events points}
 
 \item{lines}{A SpatialLinesDataFrame representing the network}
 
-\item{bw}{the fixed kernel bandwidth}
+\item{bw}{The fixed kernel bandwidth}
 
-\item{trim_bw}{the maximum size of local bandiwidths}
+\item{trim_bw}{The maximum size of local bandiwidths}
 
 \item{method}{The method to use when calculating the NKDE}
 
 \item{kernel_name}{The name of the kernel to use}
 
-\item{max_depth}{the maximum recursion depth}
+\item{max_depth}{The maximum recursion depth}
 
-\item{tol}{a float indicating the spatial tolerance when snapping events on
+\item{tol}{A float indicating the spatial tolerance when snapping events on
 lines}
 
-\item{digits}{the number of digits to keep}
+\item{digits}{The number of digits to keep}
 
-\item{sparse}{a boolean indicating if sparse matrix should be used}
+\item{sparse}{A boolean indicating if sparse matrix should be used}
 
-\item{verbose}{a boolean indicating if update messages should be printed}
+\item{verbose}{A boolean indicating if update messages should be printed}
 }
 \value{
-a vector with the local bandwidth
+A vector with the local bandwidths
 }
 \description{
-Function to calculate adaptative bandwidth according to Abramson's smoothing regimen (multicore version)
+Function to calculate Adaptative bandwidths according to Abramson’s smoothing regimen with multicore support
 }
 \examples{
 #This is an internal function, no example provided
 }
+\keyword{internal}

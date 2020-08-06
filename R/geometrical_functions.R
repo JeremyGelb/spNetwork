@@ -6,13 +6,16 @@
 #defining some global variables (weird felx but ok)
 utils::globalVariables(c("Xs", "Ys"))
 
-#' Generate a character vector based on a coodinates matrix and
-#' the maximum number of digits to keep
+#' @title Coordinates to unique character verctor
+#'
+#' @description Generate a character vector based on a coodinates matrix and
+#' the maximum number of digits to keep.
 #'
 #' @param coords A n * 2 matrix representing the coordinates
 #' @param digits The number of digits to keep from the coordinates
 #' @return A vector character vector of length n
 #' @importFrom data.table data.table tstrsplit :=
+#' @keywords internal
 #' @examples
 #' #This is an internal function, no example provided
 sp_char_index <- function(coords, digits) {
@@ -37,12 +40,15 @@ sp_char_index <- function(coords, digits) {
 #### lines manipulations ####
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-#' Generate a SpatialPointsDataFrame with the first and last vertex of each
+#' @title Get lines extremities
+#'
+#' @description Generate a SpatialPointsDataFrame with the first and last vertex of each
 #' line in a SpatialLinesDataFrame.
 #'
 #' @param lines A SpatialLinesDataFrame
 #' @return A SpatialPointsDataFrame
 #' @importFrom sp coordinates
+#' @keywords internal
 #' @examples
 #' #This is an internal function, no example provided
 lines_extremities <- function(lines) {
@@ -70,7 +76,9 @@ lines_extremities <- function(lines) {
     return(data)
 }
 
-#' A function to deal with the directions of lines
+#' @title Unify lines direction
+#'
+#' @description A function to deal with the directions of lines.
 #'
 #' @param lines A SpatialLinesDataFrame
 #' @param field Indicate a field giving informations about authorized
@@ -79,6 +87,7 @@ lines_extremities <- function(lines) {
 #' column must be "FT" (From - To), "TF" (To - From) or "Both".
 #' @return A SpatialLinesDataFrame
 #' @importFrom sp coordinates Line Lines SpatialLines SpatialLinesDataFrame
+#' @keywords internal
 #' @examples
 #' #This is an internal function, no example provided
 lines_direction <- function(lines,field){
@@ -100,8 +109,10 @@ lines_direction <- function(lines,field){
 }
 
 
-#' Add vertices (SpatialPoints) to a single line (SpatialLines), may fail
-#' if the lines geometries are self intersecting
+#' @title Add vertices to a single line
+#'
+#' @description Add vertices (SpatialPoints) to a single line (SpatialLines), may fail
+#' if the lines geometries are self intersecting.
 #'
 #' @param line The SpatialLine to modify
 #' @param points The SpatialPoints to add to as vertex to the lines
@@ -111,6 +122,7 @@ lines_direction <- function(lines,field){
 #' @return A matrix of coordinates to build the new line
 #' @importFrom rgeos gProject
 #' @importFrom sp coordinates SpatialPoints Line Lines
+#' @keywords internal
 #' @examples
 #' #This is an internal function, no example provided
 add_vertices <- function(line, points, i, mindist) {
@@ -138,8 +150,10 @@ add_vertices <- function(line, points, i, mindist) {
 
 
 
-#' Add vertices (SpatialPoints) to their nearest lines (SpatialLines), may fail
-#' if the lines geometries are self intersecting
+#' @title Add vertices to a SpatialLinesDataFrame
+#'
+#' @description Add vertices (SpatialPoints) to their nearest lines (SpatialLines), may fail
+#' if the lines geometries are self intersecting.
 #'
 #' @param lines The SpatialLinesDataframe to modify
 #' @param points The SpatialPoints to add to as vertex to the lines
@@ -150,6 +164,7 @@ add_vertices <- function(line, points, i, mindist) {
 #' @importFrom sp coordinates SpatialPoints SpatialLinesDataFrame Line
 #'   SpatialLines
 #' @importFrom utils txtProgressBar setTxtProgressBar
+#' @keywords internal
 #' @examples
 #' #This is an internal function, no example provided
 add_vertices_lines <- function(lines, points, nearest_lines_idx, mindist) {
@@ -175,7 +190,9 @@ add_vertices_lines <- function(lines, points, nearest_lines_idx, mindist) {
 }
 
 
-#' Cut a SpatialLines object into lixels with a specified minimal distance
+#' @title Cut lines into lixels
+#'
+#' @description Cut a SpatialLines object into lixels with a specified minimal distance
 #' may fail if the lines geometries are self intersecting.
 #'
 #' @param lines The SpatialLinesDataframe to modify
@@ -185,6 +202,7 @@ add_vertices_lines <- function(lines, points, nearest_lines_idx, mindist) {
 #' the previous lixel. if NULL, then mindist = maxdist/10. Note that the
 #' segments that are already shorter than the minimum distance are not
 #' modified.
+#' @param verbose A boolean indicating if a progress bar should be displayed
 #' @return An object of class SpatialLinesDataFrame (package sp)
 #' @importFrom utils txtProgressBar setTxtProgressBar
 #' @importFrom  sp coordinates Line Lines SpatialLines SpatialLinesDataFrame SpatialPoints
@@ -193,13 +211,17 @@ add_vertices_lines <- function(lines, points, nearest_lines_idx, mindist) {
 #' @examples
 #' data('mtl_network')
 #' lixels <- lixelize_lines(mtl_network,150,50)
-lixelize_lines <- function(lines, lx_length, mindist = NULL) {
+lixelize_lines <- function(lines, lx_length, mindist = NULL, verbose = FALSE) {
     if (is.null(mindist)) {
         mindist <- lx_length/10
     }
-    pb <- txtProgressBar(min = 0, max = nrow(lines), style = 3)
+    if(verbose){
+        pb <- txtProgressBar(min = 0, max = nrow(lines), style = 3)
+    }
     newlixels <- lapply(1:nrow(lines), function(i) {
-        setTxtProgressBar(pb, i)
+        if(verbose){
+            setTxtProgressBar(pb, i)
+        }
         line <- lines[i, ]
         tot_length <- gLength(line)
         if (tot_length < lx_length+mindist) {
@@ -252,16 +274,17 @@ lixelize_lines <- function(lines, lx_length, mindist = NULL) {
 }
 
 
-#' Cut a SpatialLines object into lixels with a specified minimal distance
-#' may fail if the lines geometries are self intersecting. This version can
-#' use a plan defined with the package future
+#' @title Cut lines into lixels (multicore)
+#'
+#' @description Cut a SpatialLines object into lixels with a specified minimal distance
+#' may fail if the lines geometries are self intersecting with multicore support.
 #'
 #' @param lines The SpatialLinesDataframe to modify
 #' @param lx_length The length of a lixel
 #' @param mindist The minimum length of a lixel. After cut, if the length of
 #' the final lixel is shorter than the minimum distance, then it is added to
 #' the previous lixel. if NULL, then mindist = maxdist/10
-#' @param show_progress A boolean indicating if a progress bar must be displayed
+#' @param verbose A boolean indicating if a progress bar must be displayed
 #' @param chunk_size The size of a chunk used for multiprocessing. Default is 100.
 #' @return An object of class SpatialLinesDataFrame (package sp)
 #' @export
@@ -274,13 +297,13 @@ lixelize_lines <- function(lines, lx_length, mindist = NULL) {
 #'    ## R CMD check: make sure any open connections are closed afterward
 #'    if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
 #'}
-lixelize_lines.mc <- function(lines, lx_length, mindist = NULL, show_progress = T, chunk_size = 100) {
+lixelize_lines.mc <- function(lines, lx_length, mindist = NULL, verbose = T, chunk_size = 100) {
     chunks <- split(1:nrow(lines), rep(1:ceiling(nrow(lines) / chunk_size),
                 each = chunk_size, length.out = nrow(lines)))
     chunks <- lapply(chunks,function(x){return(lines[x,])})
     # step2 : starting the function
     iseq <- 1:length(chunks)
-    if (show_progress) {
+    if (verbose) {
         progressr::with_progress({
             p <- progressr::progressor(along = iseq)
             values <- future.apply::future_lapply(iseq, function(i) {
@@ -305,12 +328,15 @@ lixelize_lines.mc <- function(lines, lx_length, mindist = NULL, show_progress = 
 }
 
 
-#' Split the polylines of a SpatialLinesDataFrame object in simple lines
+#' @title LineString to simple Line
+#'
+#' @description Split the polylines of a SpatialLinesDataFrame object in simple lines.
 #'
 #' @param lines The SpatialLinesDataframe to modify
 #' @return An object of class SpatialLinesDataFrame (package sp)
 #' @importFrom utils txtProgressBar setTxtProgressBar
 #' @importFrom sp coordinates SpatialLinesDataFrame SpatialLines Lines Line
+#' @keywords internal
 #' @examples
 #' #This is an internal function, no example provided
 simple_lines <- function(lines) {
@@ -343,10 +369,13 @@ simple_lines <- function(lines) {
     return(final_lines)
 }
 
-#' Generate a SpatialPointsDataFrame with line center points. The points are
-#' located at middle of the line based on the length of the line
+#' @title Center points of lines
+#'
+#' @description Generate a SpatialPointsDataFrame with line center points. The points are
+#' located at middle of the line based on the length of the line.
 #'
 #' @param lines The SpatialLinesDataframe to use
+#' @param verbose A boolean indicating of a progressbar should be displayed
 #' @return An object of class SpatialPointsDataFrame (package sp)
 #' @importFrom sp coordinates SpatialPointsDataFrame SpatialPoints
 #' @importFrom rgeos gInterpolate
@@ -355,10 +384,14 @@ simple_lines <- function(lines) {
 #' @examples
 #' data('mtl_network')
 #' centers <- lines_center(mtl_network)
-lines_center <- function(lines) {
-    pb <- txtProgressBar(min = 0, max = nrow(lines), style = 3)
+lines_center <- function(lines, verbose = FALSE) {
+    if(verbose){
+        pb <- txtProgressBar(min = 0, max = nrow(lines), style = 3)
+    }
     listpt <- sapply(1:nrow(lines), function(i) {
-        setTxtProgressBar(pb, i)
+        if(verbose){
+            setTxtProgressBar(pb, i)
+        }
         line <- lines[i, ]
         pt <- gInterpolate(line, gLength(line)/2)
         return(coordinates(pt))
@@ -369,14 +402,17 @@ lines_center <- function(lines) {
     return(centerpoints)
 }
 
-#' Add to each line of a SpatialLinesDataFrame an additionnal vertex at its
-#' center
+#' @title Add center vertex to lines
+#'
+#' @description Add to each line of a SpatialLinesDataFrame an additionnal vertex at its
+#' center.
 #'
 #' @param lines The SpatialLinesDataframe to use
 #' @return An object of class SpatialLinesDataframe (package sp)
 #' @importFrom sp coordinates SpatialPointsDataFrame SpatialPoints
 #' @importFrom rgeos gInterpolate
 #' @importFrom utils txtProgressBar setTxtProgressBar
+#' @keywords internal
 #' @examples
 #' #This is an internal function, no example provided
 add_center_lines <- function(lines) {
@@ -395,14 +431,17 @@ add_center_lines <- function(lines) {
 }
 
 
-#' Add to each line of a SpatialLinesDataFrame an additionnal vertex at its
-#' center (multicore version).
+#' @title Add center vertex to lines (multicore)
+#'
+#' @description Add to each line of a SpatialLinesDataFrame an additionnal vertex at its
+#' center with multicore support.
 #'
 #' @param lines The SpatialLinesDataframe to use
 #' @param show_progress A boolean indicating if a progress bar must be displayed
 #' @param chunk_size The size of a chunk used for multiprocessing. Default is 100.
 #' @return An object of class SpatialLinesDataframe (package sp)
 #' @importFrom utils capture.output
+#' @keywords internal
 #' @examples
 #' #This is an internal function, no example provided
 #' \dontshow{
@@ -439,10 +478,12 @@ add_center_lines.mc <- function(lines, show_progress = T, chunk_size = 100) {
 }
 
 
-#' Generate points along the lines of a SpatialLinesDataFrame
+#' @title Points along lines
+#'
+#' @description Generate points along the lines of a SpatialLinesDataFrame.
 #'
 #' @param lines The SpatialLinesDataframe to use
-#' @param dist the distance between the points along the lines
+#' @param dist The distance between the points along the lines
 #' @return An object of class SpatialLinesDataframe (package sp)
 #' @importFrom utils capture.output
 #' @export
@@ -472,13 +513,16 @@ lines_points_along <- function(lines,dist){
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-#' Generate a SpatialPointsDataFrame by placing points along the border of
-#' polygons of a SpatialPolygonsDataFrame
+#' @title Points along polygon boundary
+#'
+#' @description Generate a SpatialPointsDataFrame by placing points along the border of
+#' polygons of a SpatialPolygonsDataFrame.
 #'
 #' @param polygons A SpatialPolygonsDataFrame
 #' @param dist The distance between the points
 #' @importFrom rgeos gBoundary
-#' @return a SpatialPolygonsDataFrame representing the grid
+#' @return A SpatialPolygonsDataFrame representing the grid
+#' @keywords internal
 #' @examples
 #' #This is an internal function, no example provided
 surrounding_points <- function(polygons,dist){
@@ -494,12 +538,15 @@ surrounding_points <- function(polygons,dist){
 #### gridding function ####
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-#' Generate a grid of a specified shape in the bbox of a Spatial object
+#' @title Spatial grid
+#'
+#' @description Generate a grid of a specified shape in the bbox of a Spatial object.
 #'
 #' @param grid_shape A numeric vector of length 2 indicating the number
 #' of rows and the numbers of columns of the grid
 #' @param spatial A list of SpatialDataFrames objects (package sp)
-#' @return a SpatialPolygonsDataFrame representing the grid
+#' @return A SpatialPolygonsDataFrame representing the grid
+#' @keywords internal
 #' @examples
 #' #This is an internal function, no example provided
 build_grid <- function(grid_shape, spatial) {

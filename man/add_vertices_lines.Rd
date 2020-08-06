@@ -2,8 +2,7 @@
 % Please edit documentation in R/geometrical_functions.R
 \name{add_vertices_lines}
 \alias{add_vertices_lines}
-\title{Add vertices (SpatialPoints) to their nearest lines (SpatialLines), may fail
-if the lines geometries are self intersecting}
+\title{Add vertices to a SpatialLinesDataFrame}
 \usage{
 add_vertices_lines(lines, points, nearest_lines_idx, mindist)
 }
@@ -22,8 +21,9 @@ An object of class SpatialLinesDataFrame (package sp)
 }
 \description{
 Add vertices (SpatialPoints) to their nearest lines (SpatialLines), may fail
-if the lines geometries are self intersecting
+if the lines geometries are self intersecting.
 }
 \examples{
 #This is an internal function, no example provided
 }
+\keyword{internal}

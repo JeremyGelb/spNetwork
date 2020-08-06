@@ -81,10 +81,10 @@ ensures that topology is good when building the network. Default is 3}
 the minimum distance between these points and the lines extremities. When
 points are closer, they are added at the extermity of the lines.}
 
-\item{agg}{a double indicating if the events must be aggregated within a distance.
+\item{agg}{A double indicating if the events must be aggregated within a distance.
 if NULL, then the events are aggregated by rounding the coordinates.}
 
-\item{sparse}{a boolean indicating if sparse or regular matrice should be
+\item{sparse}{A boolean indicating if sparse or regular matrice should be
 used by the Rcpp functions. Regular matrices are faster, but require more
 memory and could lead to error, in particular with multiprocessing. Sparse
 matrices are slower, but require much less memory.}
@@ -177,11 +177,14 @@ coordinates. This procedure is repeated until no events are aggregated. The
 aggregation distance can be fixed with the parameter agg.
 \cr\cr
 When using the continuous and discontinuous kernel, the density is reduced
-at each intersection crossed. After 3 intersections with four directions
-each, the density is divided by 27 (3x3x3), leading to very small values.
-To reduce calculation time with a small precision loss, it is recommanded
-to set a maximum depth value for the two methods. This is controled by the
-max_depth parameter.
+at each intersection crossed. In the discontinuous case, after 5
+intersections with four directions each, the density value is divided by
+243 leading to very small values. In the same situation but with the
+continuous NKDE, the density value is divided by approximately 7.6.
+The max_depth parameters allows the user to control the maximum depth of
+these two NKDE. The base value is 15, but a value of 10 would yield
+very close estimates. A lower value might have a critical impact on speed
+when the bandwidth is large
 \cr\cr
 When using the continuous and discontinuous kernel, the connexions between
 graph nodes are stored in a matrix. This matrix is typically sparse, and

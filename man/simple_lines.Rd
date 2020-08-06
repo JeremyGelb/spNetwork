@@ -2,7 +2,7 @@
 % Please edit documentation in R/geometrical_functions.R
 \name{simple_lines}
 \alias{simple_lines}
-\title{Split the polylines of a SpatialLinesDataFrame object in simple lines}
+\title{LineString to simple Line}
 \usage{
 simple_lines(lines)
 }
@@ -13,8 +13,9 @@ simple_lines(lines)
 An object of class SpatialLinesDataFrame (package sp)
 }
 \description{
-Split the polylines of a SpatialLinesDataFrame object in simple lines
+Split the polylines of a SpatialLinesDataFrame object in simple lines.
 }
 \examples{
 #This is an internal function, no example provided
 }
+\keyword{internal}

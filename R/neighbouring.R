@@ -1,11 +1,14 @@
-#' A helper function to select a function to convert distance to weights
-#'if a function is provided, this function will be vectorized.
+#' @title Select the distance to weight function
 #'
-#'@param dist_func COuld be a name in c('inverse', 'identity',
-#''squared inverse') or a function with only one parameter x
-#'@return a vectorized function used to convert distance into spatial weights
-#'@examples
-#'#This is an internal function, no example provided
+#' @description Select a function to convert distance to weights
+#' if a function is provided, this function will be vectorized.
+#'
+#' @param dist_func Could be a name in c('inverse', 'identity',
+#' 'squared inverse') or a function with only one parameter x
+#' @return A vectorized function used to convert distance into spatial weights
+#' @keywords internal
+#' @examples
+#' #This is an internal function, no example provided
 select_dist_function <- function(dist_func = "inverse") {
     if (class(dist_func) == "character") {
         if (dist_func == "identity") {
@@ -29,7 +32,9 @@ select_dist_function <- function(dist_func = "inverse") {
 #defining some global variables (weird felx but ok)
 utils::globalVariables(c("origin", "fid"))
 
-#' The worker function of network_listw
+#' @title network_listw worker
+#'
+#' @description The worker function of network_listw.
 #'
 #' @param points A SpatialPointsDataFrame corresponding to start and end
 #' points. It must have a column fid, grouping the points if necessary.
@@ -42,7 +47,7 @@ utils::globalVariables(c("origin", "fid"))
 #' It is important for it to be different from 0 when a W style is used.
 #' @param mindist The minimum distance between two different observations.
 #' It is important for it to be different from 0 when a W style is used.
-#' @param direction indicate a field giving informations about authorized
+#' @param direction Indicate a field giving informations about authorized
 #' traveling direction on lines. if NULL, then all lines can be used in both
 #' directions. Must be the name of a column otherwise. The values of the
 #' column must be "FT" (From - To), "TF" (To - From) or "Both".
@@ -59,6 +64,7 @@ utils::globalVariables(c("origin", "fid"))
 #' @importFrom rgeos gLength
 #' @importFrom utils capture.output
 #' @importFrom data.table data.table .SD transpose
+#' @keywords internal
 #' @examples
 #' #no example provided, this is an internal function
 network_listw_worker<-function(points,lines,maxdistance,dist_func, direction=NULL, mindist=10, matrice_type = "B", verbose = FALSE, digits = 3, tol=0.1){
@@ -165,7 +171,9 @@ network_listw_worker<-function(points,lines,maxdistance,dist_func, direction=NUL
 
 
 
-#' Function to prepare selected points and selected lines during the process
+#' @title Data preparation for network_listw
+#'
+#' @description Function to prepare selected points and selected lines during the process.
 #'
 #' @param is The indices of the quadras to use in the grid
 #' @param grid A SpatialPolygonsDataFrame representing the quadras to split
@@ -175,6 +183,7 @@ network_listw_worker<-function(points,lines,maxdistance,dist_func, direction=NUL
 #' @param maxdistance The maximum distance between two observation to
 #' considere them as neighbours.
 #' @return A list of two elements : selected points and selected lines
+#' @keywords internal
 #' @examples
 #' #no example provided, this is an internal function
 prepare_elements_netlistw <- function(is,grid,snapped_points,lines,maxdistance){
@@ -218,7 +227,9 @@ prepare_elements_netlistw <- function(is,grid,snapped_points,lines,maxdistance){
 
 
 
-#' generate listw object (spdep like) based on network distances
+#' @title Network distance listw
+#'
+#' @description Generate listw object (spdep like) based on network distances.
 #'
 #' @param origins A SpatialLinesDataFrame, SpatialPointsDataFrame or
 #' SpatialPolygonsDataFrame for which the spatial neighbouring list will be built
@@ -232,14 +243,14 @@ prepare_elements_netlistw <- function(is,grid,snapped_points,lines,maxdistance){
 #' the first and list vertices of lines are used as startng and ends points.
 #' @param point_dist A float, defining the distance between points when the
 #' method pointsalong is selected.
-#' @param snap_dist the maximum distance to snap the start and end points on
+#' @param snap_dist The maximum distance to snap the start and end points on
 #' the network.
 #' @param line_weight The ponderation to use for lines. Default is "length"
 #' (the geographical length), but can be the name of a column. The value is
 #' considered proportional with the geographical length of the lines.
 #' @param mindist The minimum distance between two different observations.
 #' It is important for it to be different from 0 when a W style is used.
-#' @param direction indicate a field giving informations about authorized
+#' @param direction Indicates a field giving informations about authorized
 #' traveling direction on lines. if NULL, then all lines can be used in both
 #' directions. Must be the name of a column otherwise. The values of the
 #' column must be "FT" (From - To), "TF" (To - From) or "Both".
@@ -254,7 +265,7 @@ prepare_elements_netlistw <- function(is,grid,snapped_points,lines,maxdistance){
 #' done in one go. It might be necessary to split it if the dataset is large.
 #' @param verbose A boolean indicating if the function should print its
 #' progress
-#' @param digits the number of digits to keep in the spatial coordinates (
+#' @param digits The number of digits to keep in the spatial coordinates (
 #' simplification used to reduce risk of topological error)
 #' @param tol A float indicating the spatial tolerance when points are
 #' added as vertices to lines.
@@ -398,8 +409,9 @@ network_listw <- function(origins,lines,maxdistance, method="centroid", point_di
 
 }
 
-#' generate listw object (spdep like) based on network distances. This version
-#' of the function can use a multiprocess plan defined with the package future
+#' @title Network distance listw (multicore)
+#'
+#' @description Generate listw object (spdep like) based on network distances with multicore support.
 #'
 #' @param origins A SpatialLinesDataFrame, SpatialPointsDataFrame or
 #' SpatialPolygonsDataFrame for which the spatial neighbouring list will be built
@@ -420,7 +432,7 @@ network_listw <- function(origins,lines,maxdistance, method="centroid", point_di
 #' considered proportional with the geographical length of the lines.
 #' @param mindist The minimum distance between two different observations.
 #' It is important for it to be different from 0 when a W style is used.
-#' @param direction indicate a field giving informations about authorized
+#' @param direction Indicates a field giving informations about authorized
 #' traveling direction on lines. if NULL, then all lines can be used in both
 #' directions. Must be the name of a column otherwise. The values of the
 #' column must be "FT" (From - To), "TF" (To - From) or "Both".
@@ -435,7 +447,7 @@ network_listw <- function(origins,lines,maxdistance, method="centroid", point_di
 #' done in one go. It might be necessary to split it if the dataset is large.
 #' @param verbose A boolean indicating if the function should print its
 #' progress
-#' @param digits the number of digits to keep in the spatial coordinates (
+#' @param digits The number of digits to keep in the spatial coordinates (
 #' simplification used to reduce risk of topological error)
 #' @param tol A float indicating the spatial tolerance when points are
 #' added as vertices to lines.

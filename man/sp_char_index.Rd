@@ -2,8 +2,7 @@
 % Please edit documentation in R/geometrical_functions.R
 \name{sp_char_index}
 \alias{sp_char_index}
-\title{Generate a character vector based on a coodinates matrix and
-the maximum number of digits to keep}
+\title{Coordinates to unique character verctor}
 \usage{
 sp_char_index(coords, digits)
 }
@@ -17,8 +16,9 @@ A vector character vector of length n
 }
 \description{
 Generate a character vector based on a coodinates matrix and
-the maximum number of digits to keep
+the maximum number of digits to keep.
 }
 \examples{
 #This is an internal function, no example provided
 }
+\keyword{internal}

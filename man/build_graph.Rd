@@ -2,7 +2,7 @@
 % Please edit documentation in R/graph_functions.R
 \name{build_graph}
 \alias{build_graph}
-\title{generate an igraph object from a SpatialLinesDataFrame}
+\title{Network generation}
 \usage{
 build_graph(lines, digits, line_weight, attrs = FALSE)
 }
@@ -29,8 +29,9 @@ A list containing the folowing elements:
 }
 }
 \description{
-generate an igraph object from a SpatialLinesDataFrame
+Generate an igraph object from a SpatialLinesDataFrame.
 }
 \examples{
 #This is an internal function, no example provided
 }
+\keyword{internal}

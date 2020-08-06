@@ -2,11 +2,13 @@
 #### available kernels ####
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-#' triangle kernel
+#' @title triangle kernel
 #'
-#' @param d the distance from the event
-#' @param bw the bandwidth used for the kernel
-#' @return the estimated density
+#' @description Function implementing the triangle kernel.
+#'
+#' @param d The distance from the event
+#' @param bw The bandwidth used for the kernel
+#' @return The estimated density
 #' @export
 #' @examples
 #' #This is an internal function, no example provided
@@ -18,11 +20,13 @@ triangle_kernel <- function(d, bw){
   return(k)
 }
 
-#' uniform kernel
+#' @title Uniform kernel
 #'
-#' @param d the distance from the event
-#' @param bw the bandwidth used for the kernel
-#' @return the estimated density
+#' @description Function implementing the uniform kernel.
+#'
+#' @param d The distance from the event
+#' @param bw The bandwidth used for the kernel
+#' @return The estimated density
 #' @export
 #' @examples
 #' #This is an internal function, no example provided
@@ -32,11 +36,13 @@ uniform_kernel <- function(d, bw){
   return(k)
 }
 
-#' epanechnikov kernel
+#' @title Epanechnikov kernel
 #'
-#' @param d the distance from the event
-#' @param bw the bandwidth used for the kernel
-#' @return the estimated density
+#' @description Function implementing the epanechnikov kernel.
+#'
+#' @param d The distance from the event
+#' @param bw The bandwidth used for the kernel
+#' @return The estimated density
 #' @export
 #' @examples
 #' #This is an internal function, no example provided
@@ -48,11 +54,13 @@ epanechnikov_kernel <- function(d, bw){
   return(k)
 }
 
-#' quartic kernel
+#' @title Quartic kernel
 #'
-#' @param d the distance from the event
-#' @param bw the bandwidth used for the kernel
-#' @return the estimated density
+#' @description Function implementing the quartic kernel.
+#'
+#' @param d The distance from the event
+#' @param bw The bandwidth used for the kernel
+#' @return The estimated density
 #' @export
 #' @examples
 #' #This is an internal function, no example provided
@@ -65,11 +73,13 @@ quartic_kernel <- function(d, bw){
 }
 
 
-#' triweight kernel
+#' @title Triweight kernel
 #'
-#' @param d the distance from the event
-#' @param bw the bandwidth used for the kernel
-#' @return the estimated density
+#' @description Function implementing the triweight kernel.
+#'
+#' @param d The distance from the event
+#' @param bw The bandwidth used for the kernel
+#' @return The estimated density
 #' @export
 #' @examples
 #' #This is an internal function, no example provided
@@ -81,11 +91,13 @@ triweight_kernel <- function(d, bw){
   return(k)
 }
 
-#' tricube kernel
+#' @title Tricube kernel
 #'
-#' @param d the distance from the event
-#' @param bw the bandwidth used for the kernel
-#' @return the estimated density
+#' @description Function implementing the tricube kernel.
+#'
+#' @param d The distance from the event
+#' @param bw The bandwidth used for the kernel
+#' @return The estimated density
 #' @export
 #' @examples
 #' #This is an internal function, no example provided
@@ -97,11 +109,13 @@ tricube_kernel <- function(d, bw){
   return(k)
 }
 
-#' cosine kernel
+#' @title Cosine kernel
 #'
-#' @param d the distance from the event
-#' @param bw the bandwidth used for the kernel
-#' @return the estimated density
+#' @description Function implementing the cosine kernel.
+#'
+#' @param d The distance from the event
+#' @param bw The bandwidth used for the kernel
+#' @return The estimated density
 #' @export
 #' @examples
 #' #This is an internal function, no example provided
@@ -113,11 +127,13 @@ cosine_kernel <- function(d, bw){
   return(k)
 }
 
-#' gaussian kernel
+#' @title Gaussian kernel
 #'
-#' @param d the distance from the event
-#' @param bw the bandwidth used for the kernel
-#' @return the estimated density
+#' @description Function implementing the gaussian kernel.
+#'
+#' @param d The distance from the event
+#' @param bw The bandwidth used for the kernel
+#' @return The estimated density
 #' @export
 #' @examples
 #' #This is an internal function, no example provided
@@ -132,11 +148,13 @@ gaussian_kernel <- function(d, bw){
 }
 
 
-#' scaled gaussian kernel
+#' @title Scaled gaussian kernel
 #'
-#' @param d the distance from the event
-#' @param bw the bandwidth used for the kernel
-#' @return the estimated density
+#' @description Function implementing the scaled gaussian kernel.
+#'
+#' @param d The distance from the event
+#' @param bw The bandwidth used for the kernel
+#' @return The estimated density
 #' @export
 #' @examples
 #' #This is an internal function, no example provided
@@ -151,10 +169,13 @@ gaussian_kernel_scaled <- function(d, bw){
 
 
 
-#' select the right kernel function with its name
+#' @title Select kernel function
+#'
+#' @description select the kernel function with its name.
 #'
 #' @param name The name of the kernel to use
 #' @return A kernel function
+#' @keywords internal
 #' @examples
 #' #This is an internal function, no example provided
 select_kernel <- function(name){
@@ -196,21 +217,27 @@ select_kernel <- function(name){
 #### Functions for adaptative bandwidth calculation ####
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-#' Function calculating the geometric mean
+#' @title Geometric mean
 #'
-#' @param x a vector of numeric values
-#' @param na.rm a boolean indicating if we filter the NA values
-#' @return the geometric mean of x
+#' @description Function to calculate the geometric mean.
+#'
+#' @param x A vector of numeric values
+#' @param na.rm A boolean indicating if we filter the NA values
+#' @return The geometric mean of x
+#' @keywords internal
 #' @examples
 #' #This is an internal function, no example provided
 gm_mean = function(x, na.rm=TRUE){
   exp(sum(log(x[x > 0]), na.rm=na.rm) / length(x))
 }
 
-#' Function calculating the gamma parameter in Abramson’s smoothing regimen
+#' @title Gamma parameter for Abramson’s adaptive bandwidth
+#'
+#' @description Function to calculate the gamma parameter in Abramson’s smoothing regimen.
 #'
 #' @param k a vector of numeric values (the estimated kernel densities)
 #' @return the gamma parameter in Abramson’s smoothing regimen
+#' @keywords internal
 #' @examples
 #' #This is an internal function, no example provided
 calc_gamma <- function(k){
@@ -223,7 +250,9 @@ calc_gamma <- function(k){
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-#' Function to perform the simple nkde
+#' @title Simple NKDE algorithm
+#'
+#' @description Function to perform the simple nkde.
 #'
 #' @param graph a graph object from igraph representing the network
 #' @param events a SpatialPointsDataFrame representing the events. It must be
@@ -240,6 +269,7 @@ calc_gamma <- function(k){
 #' @return a dataframe with two columns. sum_k is the sum for each sample point
 #'  of the kernel values. n is the number of events influencing each sample
 #' point
+#' @keywords internal
 #' @examples
 #' #This is an internal function, no example provided
 simple_nkde <- function(graph, events, samples, bws, kernel_func, nodes, edges){
@@ -276,7 +306,9 @@ simple_nkde <- function(graph, events, samples, bws, kernel_func, nodes, edges){
 }
 
 
-#' Worker function for the simple nkde
+#' @title Worker for simple NKDE algorithm
+#'
+#' @description The worker function to perform the simple nkde.
 #'
 #' @param graph a graph object from igraph representing the network
 #' @param y the index of the actual event
@@ -293,6 +325,7 @@ simple_nkde <- function(graph, events, samples, bws, kernel_func, nodes, edges){
 #' @importFrom rgeos gBuffer
 #' @importFrom igraph ends distances
 #' @importFrom dplyr left_join
+#' @keywords internal
 #' @examples
 #' #This is an internal function, no example provided
 ess_kernel <- function(graph, y, bw, kernel_func, samples, nodes, edges, sample_tree, edges_tree){
@@ -400,122 +433,105 @@ ess_kernel <- function(graph, y, bw, kernel_func, samples, nodes, edges, sample_
 
 
 #' Worker function for the discontinuous nkde
-#'
-#' @param y the vertex index of the actual event
-#' @param edge_list a list of the edges, accessible with the names of the
-#' two nodes composing the edge
-#' @param neighbour_list a list indicating for each node its neighbours
-#' must indicate for each event its corresponding node
-#' @param samples a SpatialPointsDataFrame of the sampling points
-#' @param bw the kernel bandwidth
-#' @param kernel_func a function obtained with the function select_kernel
-#' @param nodes a SpatialPointsDataFrame representing the nodes of the network
-#' @param lines_weight a numeric vector with the weight of the lines
-#' @param linelist the linelist of the network (igraph)
-#' @param max_depth a integer indicating the maximum depth of the kernel
-#' @param verbose a boolean indicating if messages must be displayed
-#' @importFrom igraph get.edge.attribute
-#' @importFrom rgeos gBuffer
-#' @importFrom igraph ends distances shortest_paths adjacent_vertices
-#' @importFrom dplyr left_join
-#' @examples
-#' #This is an internal function, no example provided
-esd_kernel2 <- function(y,edge_list,neighbour_list,
-                        samples, bw, kernel_func, nodes, lines_weight, linelist, max_depth, verbose){
+# this function is deprecated and repalced by a Rcpp one
+# the code is keeped for debugging purpose
 
-  #definit les premiere valeurs a 0
-  samples_k <- rep(0,nrow(samples))
-  #definir la premiere serie de parametres
-  all_parameters <- list(
-    list("v"=y,
-         "d"=0,
-         "alpha" = 1,
-         "depth" = 0,
-         "prev_node"=-999)
-  )
-
-  #lancement des iterations
-  while(length(all_parameters)>0){
-
-    #on cree une petite liste vide
-    new_parameters <- list()
-
-    #on itere sur les cas en cours
-    for(params in all_parameters){
-      #step1 : unpacking the values
-      v <- params[["v"]]
-      alpha <- params[["alpha"]]
-      prev_node <- params[["prev_node"]]
-      d <- params[["d"]]
-      depth <- params[["depth"]]
-
-      #step2 : on trouve les voisins de v (et on enleve le precedent node)
-      v_neighbours <- neighbour_list[[v]]
-      test <- v_neighbours != prev_node
-      v_neighbours <- v_neighbours[test]
-
-      #avec ces voisins, on peut setter le new_alpha
-      if(prev_node!=-999){
-        new_alpha <- (1/(length(v_neighbours))) * alpha
-      }else{
-        new_alpha <- 1
-      }
-
-
-      if(length(v_neighbours)>0){
-
-        #step3 : on trouve les edges entre v et ses voisins
-        edges_id <- paste(v,v_neighbours,sep="_")
-        edges <- sapply(edges_id,function(x){return(edge_list[[x]])})
-        node <- nodes[v,]
-
-        #step4 : on va iterer sur chacune de ces lignes
-        for(i in 1:length(edges)){
-          li <- edges[[i]]
-          vi <- v_neighbours[[i]]
-          #il faut trouver les echantillons concernes
-          test <- samples$edge_id == li
-          sub_samples <- samples[test,]
-          #il faut calculer les distances entre le point de depart et cet echantillon
-          d1 <- sqrt((node$X_coords - sub_samples$X_coords)**2 + (node$Y_coords - sub_samples$Y_coords)**2)
-          d2 <- d1 + d
-          #on calcule maintenant la valeur kernel
-          k1 <- kernel_func(d2,bw) * new_alpha
-          #et on l'ajoute a la valeur precedente
-          old_k <- samples_k[test]
-          samples_k[test] <- old_k + k1
-
-          #il ne reste plus que a voir si on peut continuer sur le prochain noeud
-          d3 <- d+lines_weight[li]
-          if(d3<bw & depth<max_depth){
-
-            if(new_alpha == alpha){
-              new_depth <- depth
-            }else{
-              new_depth <- depth+1
-            }
-
-            new_params <- list("v" = vi,
-                               "prev_node"=v,
-                               "d" = d3,
-                               "depth" = new_depth,
-                               "alpha" = new_alpha
-                               )
-            new_parameters[[length(new_parameters)+1]] <- new_params
-          }
-
-        }
-
-      }
-
-    }
-
-    #on reset les nouveaux parameters
-    all_parameters <- new_parameters
-  }
-
-  return(samples_k)
-}
+# esd_kernel2 <- function(y,edge_list,neighbour_list,
+#                         samples, bw, kernel_func, nodes, lines_weight, linelist, max_depth, verbose){
+#
+#   #definit les premiere valeurs a 0
+#   samples_k <- rep(0,nrow(samples))
+#   #definir la premiere serie de parametres
+#   all_parameters <- list(
+#     list("v"=y,
+#          "d"=0,
+#          "alpha" = 1,
+#          "depth" = 0,
+#          "prev_node"=-999)
+#   )
+#
+#   #lancement des iterations
+#   while(length(all_parameters)>0){
+#
+#     #on cree une petite liste vide
+#     new_parameters <- list()
+#
+#     #on itere sur les cas en cours
+#     for(params in all_parameters){
+#       #step1 : unpacking the values
+#       v <- params[["v"]]
+#       alpha <- params[["alpha"]]
+#       prev_node <- params[["prev_node"]]
+#       d <- params[["d"]]
+#       depth <- params[["depth"]]
+#
+#       #step2 : on trouve les voisins de v (et on enleve le precedent node)
+#       v_neighbours <- neighbour_list[[v]]
+#       test <- v_neighbours != prev_node
+#       v_neighbours <- v_neighbours[test]
+#
+#       #avec ces voisins, on peut setter le new_alpha
+#       if(prev_node!=-999){
+#         new_alpha <- (1/(length(v_neighbours))) * alpha
+#       }else{
+#         new_alpha <- 1
+#       }
+#
+#
+#       if(length(v_neighbours)>0){
+#
+#         #step3 : on trouve les edges entre v et ses voisins
+#         edges_id <- paste(v,v_neighbours,sep="_")
+#         edges <- sapply(edges_id,function(x){return(edge_list[[x]])})
+#         node <- nodes[v,]
+#
+#         #step4 : on va iterer sur chacune de ces lignes
+#         for(i in 1:length(edges)){
+#           li <- edges[[i]]
+#           vi <- v_neighbours[[i]]
+#           #il faut trouver les echantillons concernes
+#           test <- samples$edge_id == li
+#           sub_samples <- samples[test,]
+#           #il faut calculer les distances entre le point de depart et cet echantillon
+#           d1 <- sqrt((node$X_coords - sub_samples$X_coords)**2 + (node$Y_coords - sub_samples$Y_coords)**2)
+#           d2 <- d1 + d
+#           #on calcule maintenant la valeur kernel
+#           k1 <- kernel_func(d2,bw) * new_alpha
+#           #et on l'ajoute a la valeur precedente
+#           old_k <- samples_k[test]
+#           samples_k[test] <- old_k + k1
+#
+#           #il ne reste plus que a voir si on peut continuer sur le prochain noeud
+#           d3 <- d+lines_weight[li]
+#           if(d3<bw & depth<max_depth){
+#
+#             if(new_alpha == alpha){
+#               new_depth <- depth
+#             }else{
+#               new_depth <- depth+1
+#             }
+#
+#             new_params <- list("v" = vi,
+#                                "prev_node"=v,
+#                                "d" = d3,
+#                                "depth" = new_depth,
+#                                "alpha" = new_alpha
+#                                )
+#             new_parameters[[length(new_parameters)+1]] <- new_params
+#           }
+#
+#         }
+#
+#       }
+#
+#     }
+#
+#     #on reset les nouveaux parameters
+#     all_parameters <- new_parameters
+#   }
+#
+#   return(samples_k)
+# }
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

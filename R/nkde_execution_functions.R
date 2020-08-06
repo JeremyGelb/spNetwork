@@ -2,15 +2,18 @@
 #### helper functions ####
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-#' Function to check if the geometries given by the user are valide
+#' @title Geometry sanity check
 #'
-#' @param lines a SpatialLinesDataFrame
-#' @param samples a SpatialPointsDataFrame of the samples
-#' @param events a SpatialPointsDataFrame of the events
-#' @param study_area a SpatialPointsDataFrame of the study_area
+#' @description Function to check if the geometries given by the user are valid.
+#'
+#' @param lines A SpatialLinesDataFrame
+#' @param samples A SpatialPointsDataFrame of the samples
+#' @param events A SpatialPointsDataFrame of the events
+#' @param study_area A SpatialPointsDataFrame of the study_area
 #' @return TRUE if all the checks are passed
 #' @importFrom rgeos gIsSimple gIsValid
 #' @importFrom sp is.projected
+#' @keywords internal
 #' @examples
 #' #This is an internal function, no example provided
 check_geometries <- function(lines,samples,events, study_area){
@@ -65,14 +68,18 @@ check_geometries <- function(lines,samples,events, study_area){
 #defining some global variables (weird felx but ok)
 utils::globalVariables(c("spid", "weight", "."))
 
-#' Function to avoid having events at the same location
+
+#' @title Clean events geometries
 #'
-#' @param events the SpatialPointsDataFrame to contract (must have a weight column)
-#' @param digits the number of digits to keep
-#' @param agg a double indicating if the points must be aggregated within a distance.
+#' @description Function to avoid having events at the same location.
+#'
+#' @param events The SpatialPointsDataFrame to contract (must have a weight column)
+#' @param digits The number of digits to keep
+#' @param agg A double indicating if the points must be aggregated within a distance.
 #' if NULL, then the points are aggregated by rouding the coordinates.
-#' @return a new SpatialPointsDataFrame
+#' @return A new SpatialPointsDataFrame
 #' @importFrom data.table tstrsplit setDF
+#' @keywords internal
 #' @examples
 #' #This is an internal function, no example provided
 clean_events <- function(events,digits=5,agg=NULL){
@@ -97,12 +104,15 @@ clean_events <- function(events,digits=5,agg=NULL){
 
 }
 
-#' Function to aggregate points within a radius
+#' @title Events aggregation
 #'
-#' @param points the SpatialPointsDataFrame to contract (must have a weight column)
-#' @param maxdist the distance to use
-#' @return a new SpatialPointsDataFrame
+#' @description Function to aggregate points within a radius.
+#'
+#' @param points The SpatialPointsDataFrame to contract (must have a weight column)
+#' @param maxdist The distance to use
+#' @return A new SpatialPointsDataFrame
 #' @importFrom rgeos gBuffer
+#' @keywords internal
 #' @examples
 #' #This is an internal function, no example provided
 aggregate_points <- function(points, maxdist){
@@ -145,21 +155,24 @@ aggregate_points <- function(points, maxdist){
 
 
 
-#' A simple function to prepare data before the NKDE calculation
+#' @title Prior data preparation
+#'
+#' @description A simple function to prepare data before the NKDE calculation.
 #'
 #' @param samples A spatialPointsDataFrame of the samples points
 #' @param lines A SpatialLinesDataFrame representing the network
 #' @param events A spatialPointsDataFrame of the events points
 #' @param w A numeric vector reprsenting the weight of the events
-#' @param digits the number of digits to keep
-#' @param tol a float indicating the spatial tolerance when snapping events on
+#' @param digits The number of digits to keep
+#' @param tol A float indicating the spatial tolerance when snapping events on
 #' lines
-#' @param agg a double indicating if the points must be aggregated within a distance.
+#' @param agg A double indicating if the points must be aggregated within a distance.
 #' if NULL, then the points are aggregated by rouding the coordinates.
 #' @return the data prepared for the rest of the operations
 #' @importFrom data.table tstrsplit setDF
 #' @importFrom rgeos gLength
 #' @importFrom maptools snapPointsToLines
+#' @keywords internal
 #' @examples
 #' #This is an internal function, no example provided
 prepare_data <- function(samples,lines,events, w ,digits,tol, agg){
@@ -186,18 +199,21 @@ prepare_data <- function(samples,lines,events, w ,digits,tol, agg){
 
 
 
-#' Function to split the dataset according to a grid
+#' @title Split data with a grid
 #'
-#' @param grid a spatial grid to split the data within
+#' @description Function to split the dataset according to a grid.
+#'
+#' @param grid A spatial grid to split the data within
 #' @param samples A spatialPointsDataFrame of the samples points
 #' @param events A spatialPointsDataFrame of the events points
 #' @param lines A SpatialLinesDataFrame representing the network
-#' @param bw the kernel bandwidth (used to avoid egde effect)
-#' @param digits the number of digits to keep
-#' @param tol a float indicating the spatial tolerance when snapping events on
+#' @param bw The kernel bandwidth (used to avoid egde effect)
+#' @param digits The number of digits to keep
+#' @param tol A float indicating the spatial tolerance when snapping events on
 #' lines
-#' @return a list with the splitted dataset
+#' @return A list with the splitted dataset
 #' @importFrom rgeos gBuffer
+#' @keywords internal
 #' @examples
 #' #This is an internal function, no example provided
 split_by_grid <- function(grid,samples,events,lines,bw,tol, digits){
@@ -268,18 +284,21 @@ split_by_grid <- function(grid,samples,events,lines,bw,tol, digits){
 
 
 
-#' Function to split the dataset according to a grid (multicore version)
+#' @title Split data with a grid (multicore)
 #'
-#' @param grid a spatial grid to split the data within
+#' @description Function to split the dataset according to a grid with multicore support.
+#'
+#' @param grid A spatial grid to split the data within
 #' @param samples A spatialPointsDataFrame of the samples points
 #' @param events A spatialPointsDataFrame of the events points
 #' @param lines A SpatialLinesDataFrame representing the network
-#' @param bw the kernel bandwidth (used to avoid egde effect)
-#' @param digits the number of digits to keep
-#' @param tol a float indicating the spatial tolerance when snapping events on
+#' @param bw The kernel bandwidth (used to avoid egde effect)
+#' @param digits The number of digits to keep
+#' @param tol A float indicating the spatial tolerance when snapping events on
 #' lines
-#' @return a list with the splitted dataset
+#' @return A list with the splitted dataset
 #' @importFrom rgeos gBuffer
+#' @keywords internal
 #' @examples
 #' #This is an internal function, no example provided
 split_by_grid.mc <- function(grid,samples,events,lines,bw,tol,digits){
@@ -355,6 +374,9 @@ split_by_grid.mc <- function(grid,samples,events,lines,bw,tol,digits){
   #let us remove the empty regions
   selections <- selections[lengths(selections) != 0]
 
+  #randomize the elements to minimize calculation time
+  selections <- sample(selections)
+
   for(i in 1:length(selections)){
     selections[[i]]$index <- i
   }
@@ -364,22 +386,25 @@ split_by_grid.mc <- function(grid,samples,events,lines,bw,tol,digits){
 }
 
 
-#' Function to calculate adaptative bandwidth according to Abramson’s smoothing regimen
+#' @title Adaptative bandwidth
 #'
-#' @param grid a spatial grid to split the data within
+#' @description Function to calculate Adaptative bandwidths according to Abramson’s smoothing regimen.
+#'
+#' @param grid A spatial grid to split the data within
 #' @param events A spatialPointsDataFrame of the events points
 #' @param lines A SpatialLinesDataFrame representing the network
-#' @param bw the fixed kernel bandwidth
-#' @param trim_bw the maximum size of local bandiwidths
+#' @param bw The fixed kernel bandwidth
+#' @param trim_bw The maximum size of local bandiwidths
 #' @param method The method to use when calculating the NKDE
 #' @param kernel_name The name of the kernel to use
-#' @param max_depth the maximum recursion depth
-#' @param digits the number of digits to keep
-#' @param tol a float indicating the spatial tolerance when snapping events on
+#' @param max_depth The maximum recursion depth
+#' @param digits The number of digits to keep
+#' @param tol A float indicating the spatial tolerance when snapping events on
 #' lines
-#' @param sparse a boolean indicating if sparse matrix should be used
-#' @param verbose a boolean indicating if update messages should be printed
-#' @return a vector with the local bandwidth
+#' @param sparse A boolean indicating if sparse matrix should be used
+#' @param verbose A boolean indicating if update messages should be printed
+#' @return A vector with the local bandwidths
+#' @keywords internal
 #' @examples
 #' #This is an internal function, no example provided
 adaptive_bw <- function(grid,events,lines,bw,trim_bw,method,kernel_name,max_depth,tol,digits,sparse,verbose){
@@ -417,22 +442,25 @@ adaptive_bw <- function(grid,events,lines,bw,trim_bw,method,kernel_name,max_dept
 }
 
 
-#' Function to calculate adaptative bandwidth according to Abramson's smoothing regimen (multicore version)
+#' @title Adaptative bandwidth (multicore)
 #'
-#' @param grid a spatial grid to split the data within
+#' @description Function to calculate Adaptative bandwidths according to Abramson’s smoothing regimen with multicore support
+#'
+#' @param grid A spatial grid to split the data within
 #' @param events A spatialPointsDataFrame of the events points
 #' @param lines A SpatialLinesDataFrame representing the network
-#' @param bw the fixed kernel bandwidth
-#' @param trim_bw the maximum size of local bandiwidths
+#' @param bw The fixed kernel bandwidth
+#' @param trim_bw The maximum size of local bandiwidths
 #' @param method The method to use when calculating the NKDE
 #' @param kernel_name The name of the kernel to use
-#' @param max_depth the maximum recursion depth
-#' @param digits the number of digits to keep
-#' @param tol a float indicating the spatial tolerance when snapping events on
+#' @param max_depth The maximum recursion depth
+#' @param digits The number of digits to keep
+#' @param tol A float indicating the spatial tolerance when snapping events on
 #' lines
-#' @param sparse a boolean indicating if sparse matrix should be used
-#' @param verbose a boolean indicating if update messages should be printed
-#' @return a vector with the local bandwidth
+#' @param sparse A boolean indicating if sparse matrix should be used
+#' @param verbose A boolean indicating if update messages should be printed
+#' @return A vector with the local bandwidths
+#' @keywords internal
 #' @examples
 #' #This is an internal function, no example provided
 adaptive_bw.mc <- function(grid,events,lines,bw,trim_bw,method,kernel_name,max_depth,tol,digits,sparse,verbose){
@@ -491,7 +519,9 @@ adaptive_bw.mc <- function(grid,events,lines,bw,trim_bw,method,kernel_name,max_d
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-#' The worker function for nkde and nkde.mc
+#' @title NKDE worker
+#'
+#' @description The worker function for nkde and nkde.mc
 #'
 #' @param lines A SpatialLinesDataFrame with the sampling points. The
 #' geoemtries must be a SpatialLinesDataFrame (may crash if some geometries
@@ -501,7 +531,7 @@ adaptive_bw.mc <- function(grid,events,lines,bw,trim_bw,method,kernel_name,max_d
 #' @param samples A SpatialPointsDataFrame representing the locations for
 #' which the densities will be estimated.
 #' @param kernel_name The name of the kernel to use
-#' @param bw the global kernel bandwidth
+#' @param bw The global kernel bandwidth
 #' @param bws The kernel bandwidth (in meters) for each event
 #' @param method The method to use when calculating the NKDE, must be one of
 #' simple / discontinuous / continuous (see details for more information)
@@ -513,11 +543,11 @@ adaptive_bw.mc <- function(grid,events,lines,bw,trim_bw,method,kernel_name,max_d
 #' @param tol When adding the events and the sampling points to the network,
 #' the minimum distance between these points and the lines extremities. When
 #' points are closer, they are added at the extermity of the lines.
-#' @param sparse a boolean indicating if sparse or regular matrice should be
+#' @param sparse A boolean indicating if sparse or regular matrice should be
 #' used by the Rcpp functions. Regular matrices are faster, but require more
 #' memory and could lead to error, in particular with multiprocessing. Sparse
 #' matrices are slower, but require much less memory.
-#' @param max_depth when using the continuous and discontinuous methods, the
+#' @param max_depth When using the continuous and discontinuous methods, the
 #' calculation time and memory use can go wild  if the network has a lot of
 #' small edges (area with a lot of intersections and a lot of events). To
 #' avoid it, it is possible to set here a maximum depth. Considering that the
@@ -529,6 +559,7 @@ adaptive_bw.mc <- function(grid,events,lines,bw,trim_bw,method,kernel_name,max_d
 #' about process.
 #' @importFrom igraph adjacent_vertices get.edge.ids
 #' @return A numerci vector with the nkde values
+#' @keywords internal
 #' @examples
 #' #This is an internal function, no example provided
 nkde_worker <- function(lines, events, samples, kernel_name,bw, bws, method, div, digits, tol, sparse, max_depth, verbose = FALSE){
@@ -646,11 +677,12 @@ nkde_worker <- function(lines, events, samples, kernel_name,bw, bws, method, div
 #### main functions ####
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-#' Network Kernel density estimate
+#' @title Network Kernel density estimate
 #'
-#' Calculate the Network Kernel Density Estimate based on a network of lines,
+#' @description Calculate the Network Kernel Density Estimate based on a network of lines,
 #' sampling points, and events
 #'
+#' @details
 #' **The three NKDE methods**\cr
 #' Estimating the density of a point process is commonly done by using an
 #' ordinary two dimensional kernel density function. However, there is
@@ -721,11 +753,14 @@ nkde_worker <- function(lines, events, samples, kernel_name,bw, bws, method, div
 #' aggregation distance can be fixed with the parameter agg.
 #' \cr\cr
 #' When using the continuous and discontinuous kernel, the density is reduced
-#' at each intersection crossed. After 3 intersections with four directions
-#' each, the density is divided by 27 (3x3x3), leading to very small values.
-#' To reduce calculation time with a small precision loss, it is recommanded
-#' to set a maximum depth value for the two methods. This is controled by the
-#' max_depth parameter.
+#' at each intersection crossed. In the discontinuous case, after 5
+#' intersections with four directions each, the density value is divided by
+#' 243 leading to very small values. In the same situation but with the
+#' continuous NKDE, the density value is divided by approximately 7.6.
+#' The max_depth parameters allows the user to control the maximum depth of
+#' these two NKDE. The base value is 15, but a value of 10 would yield
+#' very close estimates. A lower value might have a critical impact on speed
+#' when the bandwidth is large
 #' \cr\cr
 #' When using the continuous and discontinuous kernel, the connexions between
 #' graph nodes are stored in a matrix. This matrix is typically sparse, and
@@ -772,9 +807,9 @@ nkde_worker <- function(lines, events, samples, kernel_name,bw, bws, method, div
 #' @param tol When adding the events and the sampling points to the network,
 #' the minimum distance between these points and the lines extremities. When
 #' points are closer, they are added at the extermity of the lines.
-#' @param agg a double indicating if the events must be aggregated within a distance.
+#' @param agg A double indicating if the events must be aggregated within a distance.
 #' if NULL, then the events are aggregated by rounding the coordinates.
-#' @param sparse a boolean indicating if sparse or regular matrice should be
+#' @param sparse A boolean indicating if sparse or regular matrice should be
 #' used by the Rcpp functions. Regular matrices are faster, but require more
 #' memory and could lead to error, in particular with multiprocessing. Sparse
 #' matrices are slower, but require much less memory.
@@ -909,14 +944,10 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, tri
 }
 
 
-#' Network Kernel density estimate
+#' @title Network Kernel density estimate (multicore)
 #'
-#' Calculate the Network Kernel Density Estimate based on a network of lines,
-#' sampling points, and events. This version can use the current defined plan
-#' with the package future. This slightly increase the calculus to do, but can
-#' increase speed a lot by dividing the burden on multiple cores.
-#'
-#' for details, please see the function nkde
+#' @description Calculate the Network Kernel Density Estimate based on a network of lines,
+#' sampling points, and events with multicore support. for details, please see the function nkde
 #'
 #' @param lines A SpatialLinesDataFrame with the sampling points. The
 #' geoemtries must be a SpatialLinesDataFrame (may crash if some geometries
@@ -955,9 +986,9 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, tri
 #' @param tol When adding the events and the sampling points to the network,
 #' the minimum distance between these points and the lines extremities. When
 #' points are closer, they are added at the extermity of the lines.
-#' @param agg a double indicating if the events must be aggregated within a distance.
+#' @param agg A double indicating if the events must be aggregated within a distance.
 #' if NULL, then the events are aggregated by rounding the coordinates.
-#' @param sparse a boolean indicating if sparse or regular matrice should be
+#' @param sparse A boolean indicating if sparse or regular matrice should be
 #' used by the Rcpp functions. Regular matrices are faster, but require more
 #' memory and could lead to error, in particular with multiprocessing. Sparse
 #' matrices are slower, but require much less memory.

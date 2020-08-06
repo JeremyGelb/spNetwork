@@ -2,25 +2,26 @@
 % Please edit documentation in R/nkde_execution_functions.R
 \name{check_geometries}
 \alias{check_geometries}
-\title{Function to check if the geometries given by the user are valide}
+\title{Geometry sanity check}
 \usage{
 check_geometries(lines, samples, events, study_area)
 }
 \arguments{
-\item{lines}{a SpatialLinesDataFrame}
+\item{lines}{A SpatialLinesDataFrame}
 
-\item{samples}{a SpatialPointsDataFrame of the samples}
+\item{samples}{A SpatialPointsDataFrame of the samples}
 
-\item{events}{a SpatialPointsDataFrame of the events}
+\item{events}{A SpatialPointsDataFrame of the events}
 
-\item{study_area}{a SpatialPointsDataFrame of the study_area}
+\item{study_area}{A SpatialPointsDataFrame of the study_area}
 }
 \value{
 TRUE if all the checks are passed
 }
 \description{
-Function to check if the geometries given by the user are valide
+Function to check if the geometries given by the user are valid.
 }
 \examples{
 #This is an internal function, no example provided
 }
+\keyword{internal}

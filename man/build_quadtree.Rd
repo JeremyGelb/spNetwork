@@ -2,8 +2,7 @@
 % Please edit documentation in R/spatial_indexing.R
 \name{build_quadtree}
 \alias{build_quadtree}
-\title{Generate quad tree object from package SearchTrees, usefull to speed up
-spatial requesting}
+\title{Build a quadtree}
 \usage{
 build_quadtree(data)
 }
@@ -15,7 +14,7 @@ quad tree object from package SearchTrees
 }
 \description{
 Generate quad tree object from package SearchTrees, usefull to speed up
-spatial requesting
+spatial requesting.
 }
 \examples{
 #This is an internal function, no example provided

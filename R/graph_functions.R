@@ -1,4 +1,6 @@
-#' generate an igraph object from a SpatialLinesDataFrame
+#' @title Network generation
+#'
+#' @description Generate an igraph object from a SpatialLinesDataFrame.
 #'
 #' @param lines A SpatialLinesDataFrame
 #' @param digits The number of digits to keep from the coordinates
@@ -16,6 +18,7 @@
 #'         \item digits : the number of digits keeped for the coordinates
 #' }
 #' @importFrom sp coordinates SpatialPoints
+#' @keywords internal
 #' @examples
 #' #This is an internal function, no example provided
 build_graph <- function(lines, digits, line_weight, attrs = FALSE) {
@@ -79,7 +82,9 @@ build_graph <- function(lines, digits, line_weight, attrs = FALSE) {
                 spvertices = points, digits = digits, spedges = spedges))
 }
 
-#' generate an igraph object from a SpatialLinesDataFrame
+#' @title Directed network generation
+#'
+#' @description Generate a directed igraph object from a SpatialLinesDataFrame.
 #'
 #' @param lines A SpatialLinesDataFrame
 #' @param digits The number of digits to keep from the coordinates
@@ -99,6 +104,7 @@ build_graph <- function(lines, digits, line_weight, attrs = FALSE) {
 #'         \item digits : the number of digits keeped for the coordinates
 #' }
 #' @importFrom sp coordinates SpatialPoints SpatialPointsDataFrame
+#' @keywords internal
 #' @examples
 #' #This is an internal function, no example provided
 build_graph_directed <- function(lines, digits, line_weight, direction, attrs = FALSE) {
@@ -136,8 +142,10 @@ build_graph_directed <- function(lines, digits, line_weight, direction, attrs = 
 }
 
 
-#' function to match some points (SpatialPointsDataFrame) to the vertices of
-#' a graph
+#' @title Match nodes and points
+#'
+#' @description Function to match some points (SpatialPointsDataFrame) to the vertices of
+#' a graph.
 #'
 #' @param spvertices The spatial vertices of a graph (produced whith
 #'build_graph)
@@ -151,6 +159,7 @@ build_graph_directed <- function(lines, digits, line_weight, direction, attrs = 
 #' @importFrom rgeos gIntersects gBuffer
 #' @importFrom dplyr %>%
 #' @importFrom rlang .data
+#' @keywords internal
 #' @examples
 #' #This is an internal function, no example provided
 find_vertices <- function(spvertices, points, digits, tol = 0.1) {
@@ -192,7 +201,9 @@ find_vertices <- function(spvertices, points, digits, tol = 0.1) {
 }
 
 
-#' function to create complementary lines for a directed network
+#' @title Make a network directed
+#'
+#' @description Function to create complementary lines for a directed network.
 #'
 #' @param lines The original SpatialLinesDataFrame
 #' @param direction A vector of integers. 0 indicates a bidirectional line and 1
@@ -201,6 +212,7 @@ find_vertices <- function(spvertices, points, digits, tol = 0.1) {
 #' direction
 #' @importFrom sp coordinates Line Lines SpatialLinesDataFrame SpatialLines
 #' @importFrom raster crs
+#' @keywords internal
 #' @examples
 #' #This is an internal function, no example provided
 direct_lines<-function(lines,direction){
@@ -244,9 +256,12 @@ direct_lines<-function(lines,direction){
 
 
 
-#' function to plot a graph (usefull to check connectivity)
+#' @title Plot graph
+#'
+#' @description Function to plot a graph (usefull to check connectivity).
 #'
 #' @param graph A graph object (produced with build_graph)
+#' @keywords internal
 #' @examples
 #' #This is an internal function, no example provided
 plot_graph <- function(graph) {

@@ -2,7 +2,7 @@
 % Please edit documentation in R/border_correction.R
 \name{correction_factor}
 \alias{correction_factor}
-\title{The function to calculate the border correction factor}
+\title{Border correction for NKDE}
 \usage{
 correction_factor(
   study_area,
@@ -24,7 +24,7 @@ limit of the study area.}
 \item{events}{A SpatialPointsDataFrame representing the events on the
 network.}
 
-\item{lines}{the lines used to create the network}
+\item{lines}{The lines used to create the network}
 
 \item{method}{The method to use when calculating the NKDE, must be one of
 simple / discontinuous / continuous (see details for more information)}
@@ -40,7 +40,7 @@ points are closer, they are added at the extermity of the lines.}
 \item{digits}{The number of digits to keep in the spatial coordinates. It
 ensures that topology is good when building the network. Default is 3}
 
-\item{max_depth}{when using the continuous and discontinuous methods, the
+\item{max_depth}{When using the continuous and discontinuous methods, the
 calculation time and memory use can go wild  if the network has a lot of
 small edges (area with a lot of intersections and a lot of events). To
 avoid it, it is possible to set here a maximum depth. Considering that the
@@ -49,7 +49,7 @@ estimates. A larger value can be used without problem for the discontinuous
 method. For the continuous method, a larger value will strongly impact
 calculation speed.}
 
-\item{sparse}{a boolean indicating if sparse or regular matrice should be
+\item{sparse}{A boolean indicating if sparse or regular matrice should be
 used by the Rcpp functions. Regular matrices are faster, but require more
 memory and could lead to error, in particular with multiprocessing. Sparse
 matrices are slower, but require much less memory.}
@@ -58,8 +58,9 @@ matrices are slower, but require much less memory.}
 A numeric vector with the correction factor values for each event
 }
 \description{
-The function to calculate the border correction factor
+Function to calculate the border correction factor.
 }
 \examples{
 #no example provided, this is an internal function
 }
+\keyword{internal}

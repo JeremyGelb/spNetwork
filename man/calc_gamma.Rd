@@ -2,7 +2,7 @@
 % Please edit documentation in R/kernel_functions.R
 \name{calc_gamma}
 \alias{calc_gamma}
-\title{Function calculating the gamma parameter in Abramson’s smoothing regimen}
+\title{Gamma parameter for Abramson’s adaptive bandwidth}
 \usage{
 calc_gamma(k)
 }
@@ -13,8 +13,9 @@ calc_gamma(k)
 the gamma parameter in Abramson’s smoothing regimen
 }
 \description{
-Function calculating the gamma parameter in Abramson’s smoothing regimen
+Function to calculate the gamma parameter in Abramson’s smoothing regimen.
 }
 \examples{
 #This is an internal function, no example provided
 }
+\keyword{internal}

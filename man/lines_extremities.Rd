@@ -2,8 +2,7 @@
 % Please edit documentation in R/geometrical_functions.R
 \name{lines_extremities}
 \alias{lines_extremities}
-\title{Generate a SpatialPointsDataFrame with the first and last vertex of each
-line in a SpatialLinesDataFrame.}
+\title{Get lines extremities}
 \usage{
 lines_extremities(lines)
 }
@@ -20,3 +19,4 @@ line in a SpatialLinesDataFrame.
 \examples{
 #This is an internal function, no example provided
 }
+\keyword{internal}

@@ -2,15 +2,13 @@
 % Please edit documentation in R/geometrical_functions.R
 \name{lixelize_lines.mc}
 \alias{lixelize_lines.mc}
-\title{Cut a SpatialLines object into lixels with a specified minimal distance
-may fail if the lines geometries are self intersecting. This version can
-use a plan defined with the package future}
+\title{Cut lines into lixels (multicore)}
 \usage{
 lixelize_lines.mc(
   lines,
   lx_length,
   mindist = NULL,
-  show_progress = T,
+  verbose = T,
   chunk_size = 100
 )
 }
@@ -23,7 +21,7 @@ lixelize_lines.mc(
 the final lixel is shorter than the minimum distance, then it is added to
 the previous lixel. if NULL, then mindist = maxdist/10}
 
-\item{show_progress}{A boolean indicating if a progress bar must be displayed}
+\item{verbose}{A boolean indicating if a progress bar must be displayed}
 
 \item{chunk_size}{The size of a chunk used for multiprocessing. Default is 100.}
 }
@@ -32,8 +30,7 @@ An object of class SpatialLinesDataFrame (package sp)
 }
 \description{
 Cut a SpatialLines object into lixels with a specified minimal distance
-may fail if the lines geometries are self intersecting. This version can
-use a plan defined with the package future
+may fail if the lines geometries are self intersecting with multicore support.
 }
 \examples{
 data('mtl_network')

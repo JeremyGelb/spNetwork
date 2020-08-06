@@ -2,7 +2,7 @@
 % Please edit documentation in R/border_correction.R
 \name{split_border}
 \alias{split_border}
-\title{A function to cut the boundary of the study area into chunks}
+\title{Split bundary of polygon}
 \usage{
 split_border(polygon, bw)
 }
@@ -15,5 +15,6 @@ split_border(polygon, bw)
 A SpatialLinesDataFrame
 }
 \description{
-A function to cut the boundary of the study area into chunks
+A function to cut the boundary of the study area into chunks.
 }
+\keyword{internal}

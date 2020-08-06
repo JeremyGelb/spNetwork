@@ -2,7 +2,7 @@
 % Please edit documentation in R/nkde_execution_functions.R
 \name{prepare_data}
 \alias{prepare_data}
-\title{A simple function to prepare data before the NKDE calculation}
+\title{Prior data preparation}
 \usage{
 prepare_data(samples, lines, events, w, digits, tol, agg)
 }
@@ -15,20 +15,21 @@ prepare_data(samples, lines, events, w, digits, tol, agg)
 
 \item{w}{A numeric vector reprsenting the weight of the events}
 
-\item{digits}{the number of digits to keep}
+\item{digits}{The number of digits to keep}
 
-\item{tol}{a float indicating the spatial tolerance when snapping events on
+\item{tol}{A float indicating the spatial tolerance when snapping events on
 lines}
 
-\item{agg}{a double indicating if the points must be aggregated within a distance.
+\item{agg}{A double indicating if the points must be aggregated within a distance.
 if NULL, then the points are aggregated by rouding the coordinates.}
 }
 \value{
 the data prepared for the rest of the operations
 }
 \description{
-A simple function to prepare data before the NKDE calculation
+A simple function to prepare data before the NKDE calculation.
 }
 \examples{
 #This is an internal function, no example provided
 }
+\keyword{internal}

@@ -2,7 +2,7 @@
 % Please edit documentation in R/kernel_functions.R
 \name{select_kernel}
 \alias{select_kernel}
-\title{select the right kernel function with its name}
+\title{Select kernel function}
 \usage{
 select_kernel(name)
 }
@@ -13,8 +13,9 @@ select_kernel(name)
 A kernel function
 }
 \description{
-select the right kernel function with its name
+select the kernel function with its name.
 }
 \examples{
 #This is an internal function, no example provided
 }
+\keyword{internal}

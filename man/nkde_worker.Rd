@@ -2,7 +2,7 @@
 % Please edit documentation in R/nkde_execution_functions.R
 \name{nkde_worker}
 \alias{nkde_worker}
-\title{The worker function for nkde and nkde.mc}
+\title{NKDE worker}
 \usage{
 nkde_worker(
   lines,
@@ -33,7 +33,7 @@ which the densities will be estimated.}
 
 \item{kernel_name}{The name of the kernel to use}
 
-\item{bw}{the global kernel bandwidth}
+\item{bw}{The global kernel bandwidth}
 
 \item{bws}{The kernel bandwidth (in meters) for each event}
 
@@ -51,12 +51,12 @@ ensures that topology is good when building the network. Default is 3}
 the minimum distance between these points and the lines extremities. When
 points are closer, they are added at the extermity of the lines.}
 
-\item{sparse}{a boolean indicating if sparse or regular matrice should be
+\item{sparse}{A boolean indicating if sparse or regular matrice should be
 used by the Rcpp functions. Regular matrices are faster, but require more
 memory and could lead to error, in particular with multiprocessing. Sparse
 matrices are slower, but require much less memory.}
 
-\item{max_depth}{when using the continuous and discontinuous methods, the
+\item{max_depth}{When using the continuous and discontinuous methods, the
 calculation time and memory use can go wild  if the network has a lot of
 small edges (area with a lot of intersections and a lot of events). To
 avoid it, it is possible to set here a maximum depth. Considering that the
@@ -77,3 +77,4 @@ The worker function for nkde and nkde.mc
 \examples{
 #This is an internal function, no example provided
 }
+\keyword{internal}

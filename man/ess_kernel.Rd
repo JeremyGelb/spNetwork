@@ -2,7 +2,7 @@
 % Please edit documentation in R/kernel_functions.R
 \name{ess_kernel}
 \alias{ess_kernel}
-\title{Worker function for the simple nkde}
+\title{Worker for simple NKDE algorithm}
 \usage{
 ess_kernel(
   graph,
@@ -38,8 +38,9 @@ for each sample on which edge it is snapped.}
 \item{edges_tree}{a quadtree object, the spatial index of the edges}
 }
 \description{
-Worker function for the simple nkde
+The worker function to perform the simple nkde.
 }
 \examples{
 #This is an internal function, no example provided
 }
+\keyword{internal}

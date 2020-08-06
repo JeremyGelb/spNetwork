@@ -2,8 +2,7 @@
 % Please edit documentation in R/neighbouring.R
 \name{network_listw.mc}
 \alias{network_listw.mc}
-\title{generate listw object (spdep like) based on network distances. This version
-of the function can use a multiprocess plan defined with the package future}
+\title{Network distance listw (multicore)}
 \usage{
 network_listw.mc(
   origins,
@@ -51,7 +50,7 @@ considered proportional with the geographical length of the lines.}
 \item{mindist}{The minimum distance between two different observations.
 It is important for it to be different from 0 when a W style is used.}
 
-\item{direction}{indicate a field giving informations about authorized
+\item{direction}{Indicates a field giving informations about authorized
 traveling direction on lines. if NULL, then all lines can be used in both
 directions. Must be the name of a column otherwise. The values of the
 column must be "FT" (From - To), "TF" (To - From) or "Both".}
@@ -71,7 +70,7 @@ done in one go. It might be necessary to split it if the dataset is large.}
 \item{verbose}{A boolean indicating if the function should print its
 progress}
 
-\item{digits}{the number of digits to keep in the spatial coordinates (
+\item{digits}{The number of digits to keep in the spatial coordinates (
 simplification used to reduce risk of topological error)}
 
 \item{tol}{A float indicating the spatial tolerance when points are
@@ -81,8 +80,7 @@ added as vertices to lines.}
 A listw object (spdep like)
 }
 \description{
-generate listw object (spdep like) based on network distances. This version
-of the function can use a multiprocess plan defined with the package future
+Generate listw object (spdep like) based on network distances with multicore support.
 }
 \examples{
 data(mtl_network)

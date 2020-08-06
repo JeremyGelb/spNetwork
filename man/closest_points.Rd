@@ -2,8 +2,7 @@
 % Please edit documentation in R/spatial_indexing.R
 \name{closest_points}
 \alias{closest_points}
-\title{build a quad tree index and solve the nearest neighbour problem for two
-SpatialPointsDataFrame}
+\title{Find closest points}
 \usage{
 closest_points(origins, targets)
 }
@@ -17,7 +16,7 @@ for each origin point, the index of the nearest target point
 }
 \description{
 build a quad tree index and solve the nearest neighbour problem for two
-SpatialPointsDataFrame
+SpatialPointsDataFrame.
 }
 \examples{
 #This is an internal function, no example provided

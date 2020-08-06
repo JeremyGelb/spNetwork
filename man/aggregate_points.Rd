@@ -2,21 +2,22 @@
 % Please edit documentation in R/nkde_execution_functions.R
 \name{aggregate_points}
 \alias{aggregate_points}
-\title{Function to aggregate points within a radius}
+\title{Events aggregation}
 \usage{
 aggregate_points(points, maxdist)
 }
 \arguments{
-\item{points}{the SpatialPointsDataFrame to contract (must have a weight column)}
+\item{points}{The SpatialPointsDataFrame to contract (must have a weight column)}
 
-\item{maxdist}{the distance to use}
+\item{maxdist}{The distance to use}
 }
 \value{
-a new SpatialPointsDataFrame
+A new SpatialPointsDataFrame
 }
 \description{
-Function to aggregate points within a radius
+Function to aggregate points within a radius.
 }
 \examples{
 #This is an internal function, no example provided
 }
+\keyword{internal}

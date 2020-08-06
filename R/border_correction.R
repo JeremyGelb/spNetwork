@@ -1,10 +1,13 @@
-#' A function to calculate the Diggle correction factor with the simple NKDE
+#' @title Simple NKDE border correction
 #'
-#' @param graph the graph (igraph) used to calculate distances between nodes
-#' @param events the id of the vertex for each events
-#' @param edges a SpatialLinesDataFrame representing the edges of the graph
-#' @param bws a vector of the bandwidths for each event
-#' @return a numeric vector with the correction factor values
+#' @description A function to calculate the Diggle correction factor with the simple NKDE.
+#'
+#' @param graph The graph (igraph) used to calculate distances between nodes
+#' @param events The id of the vertex for each events
+#' @param edges A SpatialLinesDataFrame representing the edges of the graph
+#' @param bws A vector of the bandwidths for each event
+#' @keywords internal
+#' @return A numeric vector with the correction factor values
 corrfactor_simple <- function(graph,events,edges,bws){
   tree_edges <- build_quadtree(edges)
   #iterons sur chacun des evenements
@@ -56,10 +59,13 @@ corrfactor_simple <- function(graph,events,edges,bws){
 
 
 
-#' A function to cut the boundary of the study area into chunks
+#' @title Split bundary of polygon
+#'
+#' @description A function to cut the boundary of the study area into chunks.
 #'
 #' @param polygon The polygon representing the study area
 #' @param bw The maximum bandwidth
+#' @keywords internal
 #' @return A SpatialLinesDataFrame
 split_border <- function(polygon,bw){
   factor <- 4
@@ -72,13 +78,15 @@ split_border <- function(polygon,bw){
 
 
 
-#' The function to calculate the border correction factor
+#' @title Border correction for NKDE
+#'
+#' @description Function to calculate the border correction factor.
 #'
 #' @param study_area A SpatialPolygonsDataFrame or a SpatialPolygons, the
 #' limit of the study area.
 #' @param events A SpatialPointsDataFrame representing the events on the
 #' network.
-#' @param lines the lines used to create the network
+#' @param lines The lines used to create the network
 #' @param method The method to use when calculating the NKDE, must be one of
 #' simple / discontinuous / continuous (see details for more information)
 #' @param bws The kernel bandwidth (in meters) for each event
@@ -88,7 +96,7 @@ split_border <- function(polygon,bw){
 #' points are closer, they are added at the extermity of the lines.
 #' @param digits The number of digits to keep in the spatial coordinates. It
 #' ensures that topology is good when building the network. Default is 3
-#' @param max_depth when using the continuous and discontinuous methods, the
+#' @param max_depth When using the continuous and discontinuous methods, the
 #' calculation time and memory use can go wild  if the network has a lot of
 #' small edges (area with a lot of intersections and a lot of events). To
 #' avoid it, it is possible to set here a maximum depth. Considering that the
@@ -96,7 +104,7 @@ split_border <- function(polygon,bw){
 #' estimates. A larger value can be used without problem for the discontinuous
 #' method. For the continuous method, a larger value will strongly impact
 #' calculation speed.
-#' @param sparse a boolean indicating if sparse or regular matrice should be
+#' @param sparse A boolean indicating if sparse or regular matrice should be
 #' used by the Rcpp functions. Regular matrices are faster, but require more
 #' memory and could lead to error, in particular with multiprocessing. Sparse
 #' matrices are slower, but require much less memory.
@@ -105,6 +113,7 @@ split_border <- function(polygon,bw){
 #' @importFrom stats integrate
 #' @importFrom cubature cubintegrate
 #' @return A numeric vector with the correction factor values for each event
+#' @keywords internal
 #' @examples
 #' #no example provided, this is an internal function
 correction_factor <- function(study_area,events,lines,method, bws, kernel_name, tol, digits, max_depth, sparse){

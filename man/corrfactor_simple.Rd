@@ -2,22 +2,23 @@
 % Please edit documentation in R/border_correction.R
 \name{corrfactor_simple}
 \alias{corrfactor_simple}
-\title{A function to calculate the Diggle correction factor with the simple NKDE}
+\title{Simple NKDE border correction}
 \usage{
 corrfactor_simple(graph, events, edges, bws)
 }
 \arguments{
-\item{graph}{the graph (igraph) used to calculate distances between nodes}
+\item{graph}{The graph (igraph) used to calculate distances between nodes}
 
-\item{events}{the id of the vertex for each events}
+\item{events}{The id of the vertex for each events}
 
-\item{edges}{a SpatialLinesDataFrame representing the edges of the graph}
+\item{edges}{A SpatialLinesDataFrame representing the edges of the graph}
 
-\item{bws}{a vector of the bandwidths for each event}
+\item{bws}{A vector of the bandwidths for each event}
 }
 \value{
-a numeric vector with the correction factor values
+A numeric vector with the correction factor values
 }
 \description{
-A function to calculate the Diggle correction factor with the simple NKDE
+A function to calculate the Diggle correction factor with the simple NKDE.
 }
+\keyword{internal}

@@ -2,20 +2,20 @@
 % Please edit documentation in R/kernel_functions.R
 \name{tricube_kernel}
 \alias{tricube_kernel}
-\title{tricube kernel}
+\title{Tricube kernel}
 \usage{
 tricube_kernel(d, bw)
 }
 \arguments{
-\item{d}{the distance from the event}
+\item{d}{The distance from the event}
 
-\item{bw}{the bandwidth used for the kernel}
+\item{bw}{The bandwidth used for the kernel}
 }
 \value{
-the estimated density
+The estimated density
 }
 \description{
-tricube kernel
+Function implementing the tricube kernel.
 }
 \examples{
 #This is an internal function, no example provided

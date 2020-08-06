@@ -7,15 +7,15 @@
 triangle_kernel(d, bw)
 }
 \arguments{
-\item{d}{the distance from the event}
+\item{d}{The distance from the event}
 
-\item{bw}{the bandwidth used for the kernel}
+\item{bw}{The bandwidth used for the kernel}
 }
 \value{
-the estimated density
+The estimated density
 }
 \description{
-triangle kernel
+Function implementing the triangle kernel.
 }
 \examples{
 #This is an internal function, no example provided

@@ -2,8 +2,7 @@
 % Please edit documentation in R/geometrical_functions.R
 \name{surrounding_points}
 \alias{surrounding_points}
-\title{Generate a SpatialPointsDataFrame by placing points along the border of
-polygons of a SpatialPolygonsDataFrame}
+\title{Points along polygon boundary}
 \usage{
 surrounding_points(polygons, dist)
 }
@@ -13,12 +12,13 @@ surrounding_points(polygons, dist)
 \item{dist}{The distance between the points}
 }
 \value{
-a SpatialPolygonsDataFrame representing the grid
+A SpatialPolygonsDataFrame representing the grid
 }
 \description{
 Generate a SpatialPointsDataFrame by placing points along the border of
-polygons of a SpatialPolygonsDataFrame
+polygons of a SpatialPolygonsDataFrame.
 }
 \examples{
 #This is an internal function, no example provided
 }
+\keyword{internal}

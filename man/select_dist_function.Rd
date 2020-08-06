@@ -2,22 +2,22 @@
 % Please edit documentation in R/neighbouring.R
 \name{select_dist_function}
 \alias{select_dist_function}
-\title{A helper function to select a function to convert distance to weights
-if a function is provided, this function will be vectorized.}
+\title{Select the distance to weight function}
 \usage{
 select_dist_function(dist_func = "inverse")
 }
 \arguments{
-\item{dist_func}{COuld be a name in c('inverse', 'identity',
+\item{dist_func}{Could be a name in c('inverse', 'identity',
 'squared inverse') or a function with only one parameter x}
 }
 \value{
-a vectorized function used to convert distance into spatial weights
+A vectorized function used to convert distance into spatial weights
 }
 \description{
-A helper function to select a function to convert distance to weights
+Select a function to convert distance to weights
 if a function is provided, this function will be vectorized.
 }
 \examples{
 #This is an internal function, no example provided
 }
+\keyword{internal}

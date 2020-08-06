@@ -2,7 +2,7 @@
 % Please edit documentation in R/graph_functions.R
 \name{build_graph_directed}
 \alias{build_graph_directed}
-\title{generate an igraph object from a SpatialLinesDataFrame}
+\title{Directed network generation}
 \usage{
 build_graph_directed(lines, digits, line_weight, direction, attrs = FALSE)
 }
@@ -32,8 +32,9 @@ A list containing the folowing elements:
 }
 }
 \description{
-generate an igraph object from a SpatialLinesDataFrame
+Generate a directed igraph object from a SpatialLinesDataFrame.
 }
 \examples{
 #This is an internal function, no example provided
 }
+\keyword{internal}

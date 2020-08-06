@@ -2,7 +2,7 @@
 % Please edit documentation in R/kernel_functions.R
 \name{simple_nkde}
 \alias{simple_nkde}
-\title{Function to perform the simple nkde}
+\title{Simple NKDE algorithm}
 \usage{
 simple_nkde(graph, events, samples, bws, kernel_func, nodes, edges)
 }
@@ -32,8 +32,9 @@ a dataframe with two columns. sum_k is the sum for each sample point
 point
 }
 \description{
-Function to perform the simple nkde
+Function to perform the simple nkde.
 }
 \examples{
 #This is an internal function, no example provided
 }
+\keyword{internal}

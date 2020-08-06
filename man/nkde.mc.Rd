@@ -2,7 +2,7 @@
 % Please edit documentation in R/nkde_execution_functions.R
 \name{nkde.mc}
 \alias{nkde.mc}
-\title{Network Kernel density estimate}
+\title{Network Kernel density estimate (multicore)}
 \usage{
 nkde.mc(
   lines,
@@ -80,10 +80,10 @@ ensures that topology is good when building the network. Default is 3}
 the minimum distance between these points and the lines extremities. When
 points are closer, they are added at the extermity of the lines.}
 
-\item{agg}{a double indicating if the events must be aggregated within a distance.
+\item{agg}{A double indicating if the events must be aggregated within a distance.
 if NULL, then the events are aggregated by rounding the coordinates.}
 
-\item{sparse}{a boolean indicating if sparse or regular matrice should be
+\item{sparse}{A boolean indicating if sparse or regular matrice should be
 used by the Rcpp functions. Regular matrices are faster, but require more
 memory and could lead to error, in particular with multiprocessing. Sparse
 matrices are slower, but require much less memory.}
@@ -103,12 +103,7 @@ points
 }
 \description{
 Calculate the Network Kernel Density Estimate based on a network of lines,
-sampling points, and events. This version can use the current defined plan
-with the package future. This slightly increase the calculus to do, but can
-increase speed a lot by dividing the burden on multiple cores.
-}
-\details{
-for details, please see the function nkde
+sampling points, and events with multicore support. for details, please see the function nkde
 }
 \examples{
 data(mtl_network)

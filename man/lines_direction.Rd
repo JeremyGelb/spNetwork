@@ -2,7 +2,7 @@
 % Please edit documentation in R/geometrical_functions.R
 \name{lines_direction}
 \alias{lines_direction}
-\title{A function to deal with the directions of lines}
+\title{Unify lines direction}
 \usage{
 lines_direction(lines, field)
 }
@@ -18,8 +18,9 @@ column must be "FT" (From - To), "TF" (To - From) or "Both".}
 A SpatialLinesDataFrame
 }
 \description{
-A function to deal with the directions of lines
+A function to deal with the directions of lines.
 }
 \examples{
 #This is an internal function, no example provided
 }
+\keyword{internal}

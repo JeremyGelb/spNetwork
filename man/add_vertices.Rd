@@ -2,8 +2,7 @@
 % Please edit documentation in R/geometrical_functions.R
 \name{add_vertices}
 \alias{add_vertices}
-\title{Add vertices (SpatialPoints) to a single line (SpatialLines), may fail
-if the lines geometries are self intersecting}
+\title{Add vertices to a single line}
 \usage{
 add_vertices(line, points, i, mindist)
 }
@@ -22,8 +21,9 @@ A matrix of coordinates to build the new line
 }
 \description{
 Add vertices (SpatialPoints) to a single line (SpatialLines), may fail
-if the lines geometries are self intersecting
+if the lines geometries are self intersecting.
 }
 \examples{
 #This is an internal function, no example provided
 }
+\keyword{internal}

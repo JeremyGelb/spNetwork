@@ -2,20 +2,21 @@
 % Please edit documentation in R/geometrical_functions.R
 \name{lines_center}
 \alias{lines_center}
-\title{Generate a SpatialPointsDataFrame with line center points. The points are
-located at middle of the line based on the length of the line}
+\title{Center points of lines}
 \usage{
-lines_center(lines)
+lines_center(lines, verbose = FALSE)
 }
 \arguments{
 \item{lines}{The SpatialLinesDataframe to use}
+
+\item{verbose}{A boolean indicating of a progressbar should be displayed}
 }
 \value{
 An object of class SpatialPointsDataFrame (package sp)
 }
 \description{
 Generate a SpatialPointsDataFrame with line center points. The points are
-located at middle of the line based on the length of the line
+located at middle of the line based on the length of the line.
 }
 \examples{
 data('mtl_network')

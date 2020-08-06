@@ -2,20 +2,20 @@
 % Please edit documentation in R/kernel_functions.R
 \name{uniform_kernel}
 \alias{uniform_kernel}
-\title{uniform kernel}
+\title{Uniform kernel}
 \usage{
 uniform_kernel(d, bw)
 }
 \arguments{
-\item{d}{the distance from the event}
+\item{d}{The distance from the event}
 
-\item{bw}{the bandwidth used for the kernel}
+\item{bw}{The bandwidth used for the kernel}
 }
 \value{
-the estimated density
+The estimated density
 }
 \description{
-uniform kernel
+Function implementing the uniform kernel.
 }
 \examples{
 #This is an internal function, no example provided

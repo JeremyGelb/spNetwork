@@ -2,20 +2,20 @@
 % Please edit documentation in R/kernel_functions.R
 \name{gaussian_kernel}
 \alias{gaussian_kernel}
-\title{gaussian kernel}
+\title{Gaussian kernel}
 \usage{
 gaussian_kernel(d, bw)
 }
 \arguments{
-\item{d}{the distance from the event}
+\item{d}{The distance from the event}
 
-\item{bw}{the bandwidth used for the kernel}
+\item{bw}{The bandwidth used for the kernel}
 }
 \value{
-the estimated density
+The estimated density
 }
 \description{
-gaussian kernel
+Function implementing the gaussian kernel.
 }
 \examples{
 #This is an internal function, no example provided

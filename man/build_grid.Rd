@@ -2,7 +2,7 @@
 % Please edit documentation in R/geometrical_functions.R
 \name{build_grid}
 \alias{build_grid}
-\title{Generate a grid of a specified shape in the bbox of a Spatial object}
+\title{Spatial grid}
 \usage{
 build_grid(grid_shape, spatial)
 }
@@ -13,11 +13,12 @@ of rows and the numbers of columns of the grid}
 \item{spatial}{A list of SpatialDataFrames objects (package sp)}
 }
 \value{
-a SpatialPolygonsDataFrame representing the grid
+A SpatialPolygonsDataFrame representing the grid
 }
 \description{
-Generate a grid of a specified shape in the bbox of a Spatial object
+Generate a grid of a specified shape in the bbox of a Spatial object.
 }
 \examples{
 #This is an internal function, no example provided
 }
+\keyword{internal}

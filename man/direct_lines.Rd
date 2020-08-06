@@ -2,7 +2,7 @@
 % Please edit documentation in R/graph_functions.R
 \name{direct_lines}
 \alias{direct_lines}
-\title{function to create complementary lines for a directed network}
+\title{Make a network directed}
 \usage{
 direct_lines(lines, direction)
 }
@@ -17,8 +17,9 @@ A SpatialLinesDataFrame with some lines dupplicated according to
 direction
 }
 \description{
-function to create complementary lines for a directed network
+Function to create complementary lines for a directed network.
 }
 \examples{
 #This is an internal function, no example provided
 }
+\keyword{internal}

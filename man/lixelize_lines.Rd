@@ -2,10 +2,9 @@
 % Please edit documentation in R/geometrical_functions.R
 \name{lixelize_lines}
 \alias{lixelize_lines}
-\title{Cut a SpatialLines object into lixels with a specified minimal distance
-may fail if the lines geometries are self intersecting.}
+\title{Cut lines into lixels}
 \usage{
-lixelize_lines(lines, lx_length, mindist = NULL)
+lixelize_lines(lines, lx_length, mindist = NULL, verbose = FALSE)
 }
 \arguments{
 \item{lines}{The SpatialLinesDataframe to modify}
@@ -17,6 +16,8 @@ the final lixel is shorter than the minimum distance, then it is added to
 the previous lixel. if NULL, then mindist = maxdist/10. Note that the
 segments that are already shorter than the minimum distance are not
 modified.}
+
+\item{verbose}{A boolean indicating if a progress bar should be displayed}
 }
 \value{
 An object of class SpatialLinesDataFrame (package sp)

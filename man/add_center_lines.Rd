@@ -2,8 +2,7 @@
 % Please edit documentation in R/geometrical_functions.R
 \name{add_center_lines}
 \alias{add_center_lines}
-\title{Add to each line of a SpatialLinesDataFrame an additionnal vertex at its
-center}
+\title{Add center vertex to lines}
 \usage{
 add_center_lines(lines)
 }
@@ -15,8 +14,9 @@ An object of class SpatialLinesDataframe (package sp)
 }
 \description{
 Add to each line of a SpatialLinesDataFrame an additionnal vertex at its
-center
+center.
 }
 \examples{
 #This is an internal function, no example provided
 }
+\keyword{internal}

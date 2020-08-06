@@ -2,8 +2,7 @@
 % Please edit documentation in R/geometrical_functions.R
 \name{add_center_lines.mc}
 \alias{add_center_lines.mc}
-\title{Add to each line of a SpatialLinesDataFrame an additionnal vertex at its
-center (multicore version).}
+\title{Add center vertex to lines (multicore)}
 \usage{
 add_center_lines.mc(lines, show_progress = T, chunk_size = 100)
 }
@@ -19,7 +18,7 @@ An object of class SpatialLinesDataframe (package sp)
 }
 \description{
 Add to each line of a SpatialLinesDataFrame an additionnal vertex at its
-center (multicore version).
+center with multicore support.
 }
 \examples{
 #This is an internal function, no example provided
@@ -28,3 +27,4 @@ center (multicore version).
    if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
 }
 }
+\keyword{internal}

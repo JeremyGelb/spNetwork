@@ -2,7 +2,7 @@
 % Please edit documentation in R/neighbouring.R
 \name{prepare_elements_netlistw}
 \alias{prepare_elements_netlistw}
-\title{Function to prepare selected points and selected lines during the process}
+\title{Data preparation for network_listw}
 \usage{
 prepare_elements_netlistw(is, grid, snapped_points, lines, maxdistance)
 }
@@ -23,8 +23,9 @@ considere them as neighbours.}
 A list of two elements : selected points and selected lines
 }
 \description{
-Function to prepare selected points and selected lines during the process
+Function to prepare selected points and selected lines during the process.
 }
 \examples{
 #no example provided, this is an internal function
 }
+\keyword{internal}

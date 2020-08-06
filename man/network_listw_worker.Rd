@@ -2,7 +2,7 @@
 % Please edit documentation in R/neighbouring.R
 \name{network_listw_worker}
 \alias{network_listw_worker}
-\title{The worker function of network_listw}
+\title{network_listw worker}
 \usage{
 network_listw_worker(
   points,
@@ -29,7 +29,7 @@ considere them as neighbours.}
 \item{dist_func}{A vectorized function converting spatial distances into
 weights.}
 
-\item{direction}{indicate a field giving informations about authorized
+\item{direction}{Indicate a field giving informations about authorized
 traveling direction on lines. if NULL, then all lines can be used in both
 directions. Must be the name of a column otherwise. The values of the
 column must be "FT" (From - To), "TF" (To - From) or "Both".}
@@ -53,8 +53,9 @@ added as vertices to lines.}
 A list of neihbours as weights.
 }
 \description{
-The worker function of network_listw
+The worker function of network_listw.
 }
 \examples{
 #no example provided, this is an internal function
 }
+\keyword{internal}

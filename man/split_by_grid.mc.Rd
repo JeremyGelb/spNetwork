@@ -2,12 +2,12 @@
 % Please edit documentation in R/nkde_execution_functions.R
 \name{split_by_grid.mc}
 \alias{split_by_grid.mc}
-\title{Function to split the dataset according to a grid (multicore version)}
+\title{Split data with a grid (multicore)}
 \usage{
 split_by_grid.mc(grid, samples, events, lines, bw, tol, digits)
 }
 \arguments{
-\item{grid}{a spatial grid to split the data within}
+\item{grid}{A spatial grid to split the data within}
 
 \item{samples}{A spatialPointsDataFrame of the samples points}
 
@@ -15,19 +15,20 @@ split_by_grid.mc(grid, samples, events, lines, bw, tol, digits)
 
 \item{lines}{A SpatialLinesDataFrame representing the network}
 
-\item{bw}{the kernel bandwidth (used to avoid egde effect)}
+\item{bw}{The kernel bandwidth (used to avoid egde effect)}
 
-\item{tol}{a float indicating the spatial tolerance when snapping events on
+\item{tol}{A float indicating the spatial tolerance when snapping events on
 lines}
 
-\item{digits}{the number of digits to keep}
+\item{digits}{The number of digits to keep}
 }
 \value{
-a list with the splitted dataset
+A list with the splitted dataset
 }
 \description{
-Function to split the dataset according to a grid (multicore version)
+Function to split the dataset according to a grid with multicore support.
 }
 \examples{
 #This is an internal function, no example provided
 }
+\keyword{internal}

@@ -2,20 +2,20 @@
 % Please edit documentation in R/geometrical_functions.R
 \name{lines_points_along}
 \alias{lines_points_along}
-\title{Generate points along the lines of a SpatialLinesDataFrame}
+\title{Points along lines}
 \usage{
 lines_points_along(lines, dist)
 }
 \arguments{
 \item{lines}{The SpatialLinesDataframe to use}
 
-\item{dist}{the distance between the points along the lines}
+\item{dist}{The distance between the points along the lines}
 }
 \value{
 An object of class SpatialLinesDataframe (package sp)
 }
 \description{
-Generate points along the lines of a SpatialLinesDataFrame
+Generate points along the lines of a SpatialLinesDataFrame.
 }
 \examples{
 data(mtl_network)

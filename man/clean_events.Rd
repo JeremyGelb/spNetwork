@@ -2,24 +2,25 @@
 % Please edit documentation in R/nkde_execution_functions.R
 \name{clean_events}
 \alias{clean_events}
-\title{Function to avoid having events at the same location}
+\title{Clean events geometries}
 \usage{
 clean_events(events, digits = 5, agg = NULL)
 }
 \arguments{
-\item{events}{the SpatialPointsDataFrame to contract (must have a weight column)}
+\item{events}{The SpatialPointsDataFrame to contract (must have a weight column)}
 
-\item{digits}{the number of digits to keep}
+\item{digits}{The number of digits to keep}
 
-\item{agg}{a double indicating if the points must be aggregated within a distance.
+\item{agg}{A double indicating if the points must be aggregated within a distance.
 if NULL, then the points are aggregated by rouding the coordinates.}
 }
 \value{
-a new SpatialPointsDataFrame
+A new SpatialPointsDataFrame
 }
 \description{
-Function to avoid having events at the same location
+Function to avoid having events at the same location.
 }
 \examples{
 #This is an internal function, no example provided
 }
+\keyword{internal}

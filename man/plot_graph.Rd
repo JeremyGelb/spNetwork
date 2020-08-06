@@ -2,7 +2,7 @@
 % Please edit documentation in R/graph_functions.R
 \name{plot_graph}
 \alias{plot_graph}
-\title{function to plot a graph (usefull to check connectivity)}
+\title{Plot graph}
 \usage{
 plot_graph(graph)
 }
@@ -10,8 +10,9 @@ plot_graph(graph)
 \item{graph}{A graph object (produced with build_graph)}
 }
 \description{
-function to plot a graph (usefull to check connectivity)
+Function to plot a graph (usefull to check connectivity).
 }
 \examples{
 #This is an internal function, no example provided
 }
+\keyword{internal}

@@ -2,8 +2,7 @@
 % Please edit documentation in R/graph_functions.R
 \name{find_vertices}
 \alias{find_vertices}
-\title{function to match some points (SpatialPointsDataFrame) to the vertices of
-a graph}
+\title{Match nodes and points}
 \usage{
 find_vertices(spvertices, points, digits, tol = 0.1)
 }
@@ -22,9 +21,10 @@ A vector of the corresponding vertices id, multiple points may
 belong to the same vertex
 }
 \description{
-function to match some points (SpatialPointsDataFrame) to the vertices of
-a graph
+Function to match some points (SpatialPointsDataFrame) to the vertices of
+a graph.
 }
 \examples{
 #This is an internal function, no example provided
 }
+\keyword{internal}

@@ -2,21 +2,22 @@
 % Please edit documentation in R/kernel_functions.R
 \name{gm_mean}
 \alias{gm_mean}
-\title{Function calculating the geometric mean}
+\title{Geometric mean}
 \usage{
 gm_mean(x, na.rm = TRUE)
 }
 \arguments{
-\item{x}{a vector of numeric values}
+\item{x}{A vector of numeric values}
 
-\item{na.rm}{a boolean indicating if we filter the NA values}
+\item{na.rm}{A boolean indicating if we filter the NA values}
 }
 \value{
-the geometric mean of x
+The geometric mean of x
 }
 \description{
-Function calculating the geometric mean
+Function to calculate the geometric mean.
 }
 \examples{
 #This is an internal function, no example provided
 }
+\keyword{internal}
