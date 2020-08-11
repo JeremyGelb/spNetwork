@@ -273,3 +273,56 @@ plot_graph <- function(graph) {
     graphics::plot(graph, vertex.size = 0.01, layout = as.matrix(N[c("x", "y")]), vertex.label.cex = 0.1)
 
 }
+
+#' @title Topological error
+#'
+#' @description An utility function to find topological errors in a network.
+#'
+#' @param lines A SpatialLinesDataFrame representing the network
+#' @param digits An integer indicating the number of digits to keep for coordinates
+#' @param tol A float indicating the tolerance distance to indentify a dangle node
+#' @return A list with two elements. The first is a SpatialPointsDataFrame
+#' indicating for each node of the network to which component it belongs. The
+#' second is a SpatialPointsDataFrame with the dangle nodes of the network.
+#' @importFrom rgeos gLength
+#' @importFrom sp coordinates
+#' @export
+#' @examples
+#' data(mtl_network)
+#' topo_errors <- graph_checking(mtl_network, 2, 2)
+graph_checking <- function(lines,digits, tol){
+
+  ##step1 : adjusting the lines
+  lines$length <- gLength(lines,byid=TRUE)
+  lines <- subset(lines, lines$length>0)
+  lines$oid <- 1:nrow(lines)
+
+  lines <- simple_lines(lines)
+  lines$length <- gLength(lines)
+
+  ##step2 : building the graph
+  graph_results <- build_graph(lines, digits, "length", attrs = FALSE)
+
+  ##step3 : identify components
+  parts <- igraph::components(graph_results$graph)
+  graph_results$spvertices$component <- parts$membership
+
+  ##step4 : identify dangle nodes
+  graph_results$spvertices$degree <- igraph::degree(graph_results$graph)
+  potential_error <- subset(graph_results$spvertices,graph_results$spvertices$degree==1)
+
+  node_tree <- build_quadtree(graph_results$spvertices)
+  close_nodes_idx <- sapply(1:nrow(potential_error),function(i){
+    row <- potential_error[i,]
+    knn2 <- SearchTrees::knnLookup(node_tree,newdat = coordinates(row))
+    return(knn2[[2]])
+  })
+  close_nodes <- graph_results$spvertices[close_nodes_idx,]
+  XY1 <- coordinates(potential_error)
+  XY2 <- coordinates(close_nodes)
+  dist <- sqrt(rowSums((XY1 - XY2)**2))
+  dangle_nodes <- subset(potential_error,dist<tol)
+  return(list("dangle_nodes" = dangle_nodes,
+              "vertex_components" = graph_results$spvertices))
+
+}

@@ -263,6 +263,9 @@ split_by_grid <- function(grid,samples,events,lines,bw,tol, digits){
     new_lines <- simple_lines(new_lines)
     new_lines$length <- gLength(new_lines,byid = T)
     new_lines <- subset(new_lines,new_lines$length>0)
+
+    # remove lines that are loops
+    new_lines <- remove_loop_lines(new_lines,digits)
     new_lines$oid <- 1:nrow(new_lines)
     new_lines <- new_lines[c("length","oid")]
 
@@ -363,6 +366,9 @@ split_by_grid.mc <- function(grid,samples,events,lines,bw,tol,digits){
     new_lines <- simple_lines(new_lines)
     new_lines$length <- gLength(new_lines,byid = T)
     new_lines <- subset(new_lines,new_lines$length>0)
+
+    # remove lines that are loops
+    new_lines <- remove_loop_lines(new_lines,digits)
     new_lines$oid <- 1:nrow(new_lines)
     new_lines <- new_lines[c("length","oid")]
 

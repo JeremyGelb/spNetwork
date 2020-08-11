@@ -76,6 +76,28 @@ lines_extremities <- function(lines) {
     return(data)
 }
 
+#' @title Remove loops
+#'
+#' @description Remove from a SpatialLinesDataFrame the lines that have the
+#' same starting and ending point.
+#'
+#' @param lines A SpatialLinesDataFrame
+#' @param digits An integer indicating the number of digits to keep for the
+#' spatial coordinates
+#' @return A SpatialLinesDataFrame
+#' @keywords internal
+#' @examples
+#' #This is an internal function, no example provided
+remove_loop_lines <- function(lines, digits){
+    lines_ext <- lines_extremities(lines)
+    starts <- subset(lines_ext,lines_ext$pttype=="start")
+    ends <- subset(lines_ext,lines_ext$pttype=="end")
+    starts$spoid <- sp_char_index(coordinates(starts),digits)
+    ends$spoid <- sp_char_index(coordinates(ends),digits)
+    test <- starts$spoid != ends$spoid
+    return(subset(lines,test))
+}
+
 #' @title Unify lines direction
 #'
 #' @description A function to deal with the directions of lines.
