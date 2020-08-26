@@ -18,6 +18,7 @@
 #'         \item digits : the number of digits keeped for the coordinates
 #' }
 #' @importFrom sp coordinates SpatialPoints
+#' @importFrom utils strcapture
 #' @keywords internal
 #' @examples
 #' #This is an internal function, no example provided
@@ -46,10 +47,9 @@ build_graph <- function(lines, digits, line_weight, attrs = FALSE) {
     vertices <- igraph::V(graph)
     dfvertices <- data.frame(name = names(vertices), id = as.vector(vertices))
     dfvertices$name <- as.character(dfvertices$name)
-    dfvertices <- tidyr::separate(dfvertices, col = "name", into = c("x",
-        "y"), sep = "_", remove = F)
-    dfvertices$x <- as.numeric(dfvertices$x)
-    dfvertices$y <- as.numeric(dfvertices$y)
+    cols <- strcapture("(.*)_(.*)",dfvertices$name,data.frame(x = "", y = ""))
+    dfvertices$x <- as.numeric(cols$x)
+    dfvertices$y <- as.numeric(cols$y)
     points <- SpatialPoints(dfvertices[c("x", "y")])
     points <- SpatialPointsDataFrame(points, dfvertices)
     raster::crs(points) <- raster::crs(lines)
@@ -104,6 +104,7 @@ build_graph <- function(lines, digits, line_weight, attrs = FALSE) {
 #'         \item digits : the number of digits keeped for the coordinates
 #' }
 #' @importFrom sp coordinates SpatialPoints SpatialPointsDataFrame
+#' @importFrom utils strcapture
 #' @keywords internal
 #' @examples
 #' #This is an internal function, no example provided
@@ -130,10 +131,9 @@ build_graph_directed <- function(lines, digits, line_weight, direction, attrs = 
   vertices <- igraph::V(graph)
   dfvertices <- data.frame(name = names(vertices), id = as.vector(vertices))
   dfvertices$name <- as.character(dfvertices$name)
-  dfvertices <- tidyr::separate(dfvertices, col = "name", into = c("x",
-                                                                   "y"), sep = "_", remove = F)
-  dfvertices$x <- as.numeric(dfvertices$x)
-  dfvertices$y <- as.numeric(dfvertices$y)
+  cols <- strcapture("(.*)_(.*)",dfvertices$name,data.frame(x = "", y = ""))
+  dfvertices$x <- as.numeric(cols$x)
+  dfvertices$y <- as.numeric(cols$y)
   points <- SpatialPoints(dfvertices[c("x", "y")])
   points <- SpatialPointsDataFrame(points, dfvertices)
   raster::crs(points) <- raster::crs(lines)
@@ -262,13 +262,14 @@ direct_lines<-function(lines,direction){
 #'
 #' @param graph A graph object (produced with build_graph)
 #' @keywords internal
+#' @importFrom utils strcapture
 #' @examples
 #' #This is an internal function, no example provided
 plot_graph <- function(graph) {
     N <- data.frame(name = names(igraph::V(graph)), id = as.vector(igraph::V(graph)))
-    N <- tidyr::separate(N, "name", into = c("x", "y"), sep = "_", remove = F)
-    N$x <- as.numeric(N$x)
-    N$y <- as.numeric(N$y)
+    cols <- strcapture("(.*)_(.*)",N$name,data.frame(x = "", y = ""))
+    N$x <- as.numeric(cols$x)
+    N$y <- as.numeric(cols$y)
 
     graphics::plot(graph, vertex.size = 0.01, layout = as.matrix(N[c("x", "y")]), vertex.label.cex = 0.1)
 

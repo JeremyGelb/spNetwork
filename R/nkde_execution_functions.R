@@ -286,6 +286,92 @@ split_by_grid <- function(grid,samples,events,lines,bw,tol, digits){
 }
 
 
+#' @title Split data with a grid for the adaptive bw function
+#'
+#' @description Function to split the dataset according to a grid for the
+#' adaptive bw function.
+#'
+#' @param grid A spatial grid to split the data within
+#' @param events A spatialPointsDataFrame of the events points
+#' @param lines A SpatialLinesDataFrame representing the network
+#' @param bw The kernel bandwidth (used to avoid egde effect)
+#' @param digits The number of digits to keep
+#' @param tol A float indicating the spatial tolerance when snapping events on
+#' lines
+#' @return A list with the splitted dataset
+#' @importFrom rgeos gBuffer
+#' @keywords internal
+#' @examples
+#' #This is an internal function, no example provided
+split_by_grid_abw <- function(grid,events,lines,bw,tol,digits){
+
+  ## step1 : creating the spatial trees
+  tree_events <- build_quadtree(events)
+  tree_lines <- build_quadtree(lines)
+
+  ## step2 : split the datasets
+
+  selections <- lapply(1:length(grid),function(i){
+    square <- grid[i,]
+    # selecting the events in the grid
+    sel_events_rect <- spatial_request(square,tree_events,events)
+    # if there is no event points in the rectangle, then return NULL
+    if(nrow(sel_events_rect)==0){
+      return(NULL)
+    }
+    # selecting the events in a buffer
+    buff <- gBuffer(square,width=bw)
+    buff2 <- gBuffer(square,width=(bw+0.5*bw))
+    sel_events <- spatial_request(buff,tree_events,events)
+    # selecting the lines in a buffer
+    sel_lines <- spatial_request(buff2,tree_lines,lines)
+    sel_lines$oid <- 1:nrow(sel_lines)
+
+    # snapping the events on the lines
+    if(nrow(sel_events)==0){
+      new_lines <- sel_lines
+    }else{
+      a <- nrow(sel_events)
+      b <- nrow(sel_lines)
+      x <-  a*b
+      if(is.na(x)){
+        stop(paste("The matrix size will be exceeded (",a," x ",b,"), please consider using a finer grid to split the study area",sep=""))
+      }
+      if(x >= 2*10^9){
+        stop(paste("The matrix size will be exceeded (",a," x ",b,"), please consider using a finer grid to split the study area",sep=""))
+      }
+      snapped_events <- snapPointsToLines(sel_events,sel_lines,idField = "oid")
+      sel_events <- cbind(snapped_events,sel_events)
+      new_lines <- add_vertices_lines(sel_lines,sel_events,sel_events$nearest_line_id,tol)
+    }
+
+    # split lines at events
+    new_lines <- simple_lines(new_lines)
+    new_lines$length <- gLength(new_lines,byid = T)
+    new_lines <- subset(new_lines,new_lines$length>0)
+
+    # remove lines that are loops
+    new_lines <- remove_loop_lines(new_lines,digits)
+    new_lines$oid <- 1:nrow(new_lines)
+    new_lines <- new_lines[c("length","oid")]
+
+    sel_events_rect <- subset(sel_events, sel_events$goid %in% sel_events_rect$goid)
+
+    return(list("samples" = sel_events_rect,
+                "events" = sel_events,
+                "lines" = new_lines))
+  })
+  #let us remove all the empty quadra
+  selections <- selections[lengths(selections) != 0]
+
+  for(i in 1:length(selections)){
+    selections[[i]]$index <- i
+  }
+
+  return(selections)
+
+}
+
 
 #' @title Split data with a grid (multicore)
 #'
@@ -392,6 +478,112 @@ split_by_grid.mc <- function(grid,samples,events,lines,bw,tol,digits){
 }
 
 
+#' @title Split data with a grid for the adaptive bw function (multicore)
+#'
+#' @description Function to split the dataset according to a grid for the
+#' adaptive bw function with multicore support
+#'
+#' @param grid A spatial grid to split the data within
+#' @param events A spatialPointsDataFrame of the events points
+#' @param lines A SpatialLinesDataFrame representing the network
+#' @param bw The kernel bandwidth (used to avoid egde effect)
+#' @param digits The number of digits to keep
+#' @param tol A float indicating the spatial tolerance when snapping events on
+#' lines
+#' @return A list with the splitted dataset
+#' @importFrom rgeos gBuffer
+#' @keywords internal
+#' @examples
+#' #This is an internal function, no example provided
+split_by_grid_abw.mc <- function(grid,events,lines,bw,tol,digits){
+
+  ## step1 creating the spatial trees
+  tree_events <- build_quadtree(events)
+  tree_lines <- build_quadtree(lines)
+
+  ## step2 split the datasets
+  #NB : because we can't send c++ pointer to child process, we must start with
+  #splitting the spatial objects in a sequential way and only after
+  #snapping and splitting in a multicore fashion
+
+  sub_samples <- lapply(1:length(grid),function(i){
+    square <- grid[i,]
+    #selecting the samples in the grid
+    sel_events_rect <- spatial_request(square,tree_events,events)
+    ##return NULL if there is no sampling point in the rectangle
+    if(nrow(sel_events_rect)==0){
+      return(NULL)
+    }
+    #selecting the events in a buffer
+    buff <- gBuffer(square,width=bw)
+    buff2 <- gBuffer(square,width=(bw+0.5*bw))
+    sel_events <- spatial_request(buff,tree_events,events)
+    #selecting the lines in a buffer
+    sel_lines <- spatial_request(buff2,tree_lines,lines)
+    sel_lines$oid <- 1:nrow(sel_lines)
+    return(list("sel_lines" = sel_lines,
+                "sel_events"=sel_events,
+                "sel_events_rect"=sel_events_rect))
+  })
+
+  selections <- future.apply::future_lapply(sub_samples,function(sub){
+    if(is.null(sub)){
+      return (NULL)
+    }
+    sel_lines <- sub$sel_lines
+    sel_events <- sub$sel_events
+    sel_events_rect <- sub$sel_events_rect
+
+    #snapping the events on the lines
+    if(nrow(sel_events)==0){
+      new_lines <- sel_lines
+    }else{
+      a <- nrow(sel_events)
+      b <- nrow(sel_lines)
+      x <-  a*b
+      if(is.na(x)){
+        stop(paste("The matrix size will be exceeded (",a," x ",b,"), please consider using a finer grid to split the study area",sep=""))
+      }
+      if(x >= 2*10^9){
+        stop(paste("The matrix size will be exceeded (",a," x ",b,"), please consider using a finer grid to split the study area",sep=""))
+      }
+      snapped_events <- snapPointsToLines(sel_events,sel_lines,idField = "oid")
+      sel_events <- cbind(snapped_events,sel_events)
+      invisible(capture.output(new_lines <- add_vertices_lines(sel_lines,sel_events,sel_events$nearest_line_id,tol)))
+    }
+
+    #split lines at events
+    new_lines <- simple_lines(new_lines)
+    new_lines$length <- gLength(new_lines,byid = T)
+    new_lines <- subset(new_lines,new_lines$length>0)
+
+    # remove lines that are loops
+    new_lines <- remove_loop_lines(new_lines,digits)
+    new_lines$oid <- 1:nrow(new_lines)
+    new_lines <- new_lines[c("length","oid")]
+
+    sel_events_rect <- subset(sel_events, sel_events$goid %in% sel_events_rect$goid)
+
+
+    return(list("samples" = sel_events_rect,
+                "events" = sel_events,
+                "lines" = new_lines))
+  })
+  #let us remove the empty regions
+  selections <- selections[lengths(selections) != 0]
+
+  #randomize the elements to minimize calculation time
+  selections <- sample(selections)
+
+  for(i in 1:length(selections)){
+    selections[[i]]$index <- i
+  }
+
+  return(selections)
+
+}
+
+
 #' @title Adaptative bandwidth
 #'
 #' @description Function to calculate Adaptative bandwidths according to Abramson’s smoothing regimen.
@@ -415,7 +607,7 @@ split_by_grid.mc <- function(grid,samples,events,lines,bw,tol,digits){
 #' #This is an internal function, no example provided
 adaptive_bw <- function(grid,events,lines,bw,trim_bw,method,kernel_name,max_depth,tol,digits,sparse,verbose){
   ##step 1 split the datas !
-  selections <- split_by_grid(grid,events,events,lines,trim_bw, tol, digits)
+  selections <- split_by_grid_abw(grid,events,lines,trim_bw, tol, digits)
   ## step 2 calculating the temp NKDE values
   if(verbose){
     print("start calculating the kernel values for the adaptive bandwidth...")
@@ -431,6 +623,9 @@ adaptive_bw <- function(grid,events,lines,bw,trim_bw,method,kernel_name,max_dept
                           sel$samples, kernel_name,bw,
                           bws, method, div = "none", digits,
                           tol,sparse, max_depth, verbose)
+    if(any(values==0)){
+      print("zero values here !")
+    }
     df <- data.frame("goid"=sel$samples$goid,
                      "k" = values)
     return(df)
@@ -471,7 +666,7 @@ adaptive_bw <- function(grid,events,lines,bw,trim_bw,method,kernel_name,max_dept
 #' #This is an internal function, no example provided
 adaptive_bw.mc <- function(grid,events,lines,bw,trim_bw,method,kernel_name,max_depth,tol,digits,sparse,verbose){
   ##step 1 split the datas !
-  selections <- split_by_grid.mc(grid,events,events,lines,trim_bw, tol, digits)
+  selections <- split_by_grid_abw.mc(grid,events,lines,trim_bw, tol, digits)
   ## step 2 calculating the temp NKDE values
   if(verbose){
     print("start calculating the kernel values for the adaptive bandwidth...")
@@ -893,7 +1088,7 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, tri
     bws <- rep(bw,nrow(events))
   }else{
     ## we want to use an adaptive bw
-    bws <- adaptive_bw(grid,events,lines,bw,trim_bw,method,kernel_name,max_depth,tol,digits,sparse,verbose)
+    bws <- adaptive_bw.mc(grid,events,lines,bw,trim_bw,method,kernel_name,max_depth,tol,digits,sparse,verbose)
   }
 
   ## calculating the correction factor

@@ -595,3 +595,119 @@ build_grid <- function(grid_shape, spatial) {
         return(grid)
     }
 }
+
+
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#### snapping function ####
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+#' @title Nearest point on segment
+#'
+#' @description Find the nearest projected point on a segment (from maptools)
+#'
+#' @param s The coordinates of the segment
+#' @param p The coordinates of the point
+#'
+#' @return A numeric vector with the coordinates of the projected point
+#' @keywords internal
+#' @examples
+#' #This is an internal function, no example provided
+nearestPointOnSegment <- function(s, p){
+    # Adapted from http://pastebin.com/n9rUuGRh
+    ap <- c(p[1] - s[1,1], p[2] - s[1,2])
+    ab <- c(s[2,1] - s[1,1], s[2,2] - s[1,2])
+    t <- sum(ap*ab) / sum(ab*ab)
+    t <- ifelse(t<0,0,ifelse(t>1,1,t))
+    t <- ifelse(is.na(t), 0, t) # when start and end of segment are identical t is NA
+    x <- s[1,1] + ab[1] * t
+    y <- s[1,2] + ab[2] * t
+    result <- c(x, y, sqrt((x-p[1])^2 + (y-p[2])^2))  # Return nearest point and distance
+    names(result) <- c("X","Y","distance")
+    return(result)
+}
+
+
+#' @title Nearest point on Line
+#'
+#' @description Find the nearest projected point on a LineString (from maptools)
+#'
+#' @param coordsLine The coordinates of the line (matrix)
+#' @param coordsPoint The coordinates of the point
+#'
+#' @return A numeric vector with the coordinates of the projected point
+#' @keywords internal
+#' @examples
+#' #This is an internal function, no example provided
+nearestPointOnLine <- function(coordsLine, coordsPoint){
+    nearest_points <- vapply(2:nrow(coordsLine), function(x){
+        nearestPointOnSegment(coordsLine[(x-1):x,], coordsPoint)
+    }, FUN.VALUE=c(0,0,0))
+
+    # Return coordinates of the nearest point on this line
+    return(nearest_points[1:2, which.min(nearest_points[3,])])
+
+}
+
+
+#' @title Nearest feature
+#'
+#' @description Find the nearest feature from set X in set Y
+#'
+#' @param x A SpatialDataFrame
+#' @param y A SpatialDataFrame
+#'
+#' @return A numeric vector with the index of the nearest features
+#' @keywords internal
+#' @examples
+#' #This is an internal function, no example provided
+nearest <- function(x,y){
+    sf1 <- sf::st_as_sf(x)
+    sf2 <- sf::st_as_sf(y)
+    sf::st_crs(sf1) <- sf::st_crs(sf2)
+    best <- sf::st_nearest_feature(sf1,sf2)
+    return(best)
+}
+
+
+#' @title Snap points to lines
+#'
+#' @description Snap points to their nearest lines (edited from maptools)
+#'
+#' @param points A SpatialPointsDataFrame
+#' @param lines A SpatialLinesDataFrame
+#' @param idField The name of the column to use as index for the lines
+#'
+#' @return A SpatialPointsDataFrame with the projected geometries
+#' @keywords internal
+#' @importFrom methods slot
+#' @examples
+#' #This is an internal function, no example provided
+snapPointsToLines2 <- function(points, lines ,idField=NA) {
+
+    nearest_line_index <- nearest(points,lines)
+    coordsLines <- sp::coordinates(lines)
+    coordsPoints <- sp::coordinates(points)
+
+
+    # Get coordinates of nearest points lying on nearest lines
+    mNewCoords <- vapply(1:length(points),function(x){
+            return(nearestPointOnLine(coordsLines[[nearest_line_index[x]]][[1]],
+                               coordsPoints[x,]))}, FUN.VALUE=c(0,0))
+
+    # Recover lines' Ids (If no id field has been specified, take the sp-lines id)
+    if (!is.na(idField)) {
+        nearest_line_id <- lines@data[,idField][nearest_line_index]
+    }  else {
+        nearest_line_id <- sapply(slot(lines, "lines"), function(i){slot(i, "ID")})[nearest_line_index]
+    }
+    # Create data frame and sp points
+    df <- points@data
+    df$nearest_line_id <- nearest_line_id
+
+    return(SpatialPointsDataFrame(coords=t(mNewCoords),
+                           data=df,
+                           proj4string=sp::CRS(sp::proj4string(points))))
+
+}
+
+

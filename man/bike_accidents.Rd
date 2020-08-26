@@ -5,7 +5,7 @@
 \alias{bike_accidents}
 \title{An extract of the bike accidents on Montreal road network}
 \format{
-A SpatialLinesDataFrame with 2946 rows and 4 variables: \describe{
+A SpatialPointsDataFrame with 2946 rows and 4 variables: \describe{
   \item{LOC_X}{The X coordinates of the accident (EPSG : 32188)}
   \item{LOC_Y}{The Y coordinates of the accident (EPSG : 32188)}
   \item{NB_VICTIME}{the number of victims} \item{AN}{the year of the
