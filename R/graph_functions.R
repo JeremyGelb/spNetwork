@@ -157,8 +157,6 @@ build_graph_directed <- function(lines, digits, line_weight, direction, attrs = 
 #' @importFrom sp coordinates SpatialPoints SpatialPointsDataFrame
 #' @importFrom utils txtProgressBar setTxtProgressBar
 #' @importFrom rgeos gIntersects gBuffer
-#' @importFrom dplyr %>%
-#' @importFrom rlang .data
 #' @keywords internal
 #' @examples
 #' #This is an internal function, no example provided
@@ -168,10 +166,14 @@ find_vertices <- function(spvertices, points, digits, tol = 0.1) {
     points$tempoid <- 1:nrow(points)
     points$spIndex <- sp_char_index(coords, digits)
     # step2 : check which points are already well matched
-    matching <- dplyr::left_join(points@data, spvertices@data, by = c(spIndex = "name"),
-        keep = T)
-    matching <- matching %>% dplyr::group_by(.data$tempoid) %>%
-      dplyr::summarise_all(dplyr::first)
+    matching <- data.table(points@data)
+    B <- data.table(spvertices@data)
+    matching[B, on = c("spIndex"="name"), names(B) := mget(paste0("i.", names(B)))]
+    #matching <- dplyr::left_join(points@data, spvertices@data, by = c(spIndex = "name"),keep = T)
+
+    matching <- matching[, .SD[1], "tempoid"]
+    #matching <- matching %>% dplyr::group_by(.data$tempoid) %>%
+    #  dplyr::summarise_all(dplyr::first)
 
     if (any(is.na(matching$id)) == F) {
         return(matching$id)

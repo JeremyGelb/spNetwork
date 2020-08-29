@@ -324,7 +324,6 @@ simple_nkde <- function(graph, events, samples, bws, kernel_func, nodes, edges){
 #' @importFrom igraph get.edge.attribute
 #' @importFrom rgeos gBuffer
 #' @importFrom igraph ends distances
-#' @importFrom dplyr left_join
 #' @keywords internal
 #' @examples
 #' #This is an internal function, no example provided
@@ -353,17 +352,29 @@ ess_kernel <- function(graph, y, bw, kernel_func, samples, nodes, edges, sample_
                          "node1" = vertices[,1],
                          "node2" = vertices[,2]
                          )
-
-  df_edges$d1 <- left_join(df_edges,dist_table,by=c("node1"="vertex"))$distance
-  df_edges$d2 <- left_join(df_edges,dist_table,by=c("node2"="vertex"))$distance
+  A <- data.table(df_edges)
+  B <- data.table(dist_table)
+  df_edges$d1 <- A[B, on = c("node1" = "vertex"),
+                   names(B) := mget(paste0("i.", names(B)))]$distance
+  df_edges$d2 <- A[B, on = c("node2" = "vertex"),
+                   names(B) := mget(paste0("i.", names(B)))]$distance
+  #df_edges$d1 <- left_join(df_edges,dist_table,by=c("node1"="vertex"))$distance
+  #df_edges$d2 <- left_join(df_edges,dist_table,by=c("node2"="vertex"))$distance
 
   ## now, we will calculate for each sample, the minimum distance for the two distances
   df1 <- df_edges[c("edge_id","node1","d1")]
   df2 <- df_edges[c("edge_id","node2","d2")]
 
   ## getting the first part of the distances
-  df_samples1 <-  left_join(ok_samples@data,df1,by="edge_id")
-  df_samples2 <-  left_join(ok_samples@data,df2,by="edge_id")
+  df_samples1 <- data.table(ok_samples@data)
+  df_samples2 <- data.table(ok_samples@data)
+  B <- data.table(df1)
+  C <- data.table(df2)
+
+  df_samples1[B, on = "edge_id", names(B) := mget(paste0("i.", names(B)))]
+  df_samples2[C, on = "edge_id", names(C) := mget(paste0("i.", names(C)))]
+  #df_samples1 <-  left_join(ok_samples@data,df1,by="edge_id")
+  #df_samples2 <-  left_join(ok_samples@data,df2,by="edge_id")
 
   ## getting the second part of the distance
   start_nodes1 <- nodes@data[df_samples1$node1,]

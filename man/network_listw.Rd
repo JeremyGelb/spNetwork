@@ -84,7 +84,4 @@ Generate listw object (spdep like) based on network distances.
 }
 \examples{
 data(mtl_network)
-listw <- network_listw(mtl_network,mtl_network,maxdistance=500,
-        method = "centroid", line_weight = "length",
-        dist_func = 'squared inverse', matrice_type='B', grid_shape = c(2,2))
 }

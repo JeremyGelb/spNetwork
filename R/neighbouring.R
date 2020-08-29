@@ -71,8 +71,10 @@ network_listw_worker<-function(points,lines,maxdistance,dist_func, direction=NUL
     ## step1 : adding the points to the lines
     lines$worker_id <- 1:nrow(lines)
     points$nearest_line_id <- as.numeric(as.character(points$nearest_line_id))
-    joined <- dplyr::left_join(x=points@data,y=lines@data,
-                               by = c("nearest_line_id" = "tmpid"))
+    joined <- data.table(points@data)
+    B <- data.table(lines@data)
+    joined[B,  on = c("nearest_line_id" = "tmpid"),
+           names(B) := mget(paste0("i.", names(B)))]
 
     if(verbose){
         print("adding the points as vertices to nearest lines")
@@ -273,14 +275,13 @@ prepare_elements_netlistw <- function(is,grid,snapped_points,lines,maxdistance){
 #' @importFrom sp coordinates SpatialPoints SpatialPointsDataFrame
 #' @importFrom utils txtProgressBar setTxtProgressBar
 #' @importFrom rgeos gCentroid gLength gBuffer gIntersects gPointOnSurface
-#' @importFrom dplyr left_join group_by summarize summarize_all
 #' @importFrom graphics plot
 #' @export
 #' @examples
 #' data(mtl_network)
-#' listw <- network_listw(mtl_network,mtl_network,maxdistance=500,
-#'         method = "centroid", line_weight = "length",
-#'         dist_func = 'squared inverse', matrice_type='B', grid_shape = c(2,2))
+# listw <- network_listw(mtl_network,mtl_network,maxdistance=500,
+#         method = "centroid", line_weight = "length",
+#         dist_func = 'squared inverse', matrice_type='B', grid_shape = c(2,2))
 network_listw <- function(origins,lines,maxdistance, method="centroid", point_dist=NULL, snap_dist=Inf, line_weight = "length", mindist=10, direction=NULL, dist_func = "inverse", matrice_type = "B", grid_shape=c(1,1), verbose = FALSE, digits = 3, tol=0.1){
 
     ## step1 adjusting the weights of the lines
@@ -455,7 +456,6 @@ network_listw <- function(origins,lines,maxdistance, method="centroid", point_di
 #' @importFrom sp coordinates SpatialPoints SpatialPointsDataFrame
 #' @importFrom utils txtProgressBar setTxtProgressBar
 #' @importFrom rgeos gCentroid gLength gBuffer gIntersects gPointOnSurface
-#' @importFrom dplyr left_join group_by summarize summarize_all
 #' @export
 #' @examples
 #' data(mtl_network)

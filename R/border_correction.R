@@ -32,8 +32,15 @@ corrfactor_simple <- function(graph,events,edges,bws){
                            "node1" = vertices[,1],
                            "node2" = vertices[,2]
     )
-    df_edges$d1 <- left_join(df_edges,dist_table,by=c("node1"="vertex"))$distance
-    df_edges$d2 <- left_join(df_edges,dist_table,by=c("node2"="vertex"))$distance
+    A <- data.table(df_edges)
+    B <- data.table(dist_table)
+    df_edges$d1 <- A[B, on = c("node1" = "vertex"),
+                     names(B) := mget(paste0("i.", names(B)))]$distance
+    df_edges$d2 <- A[B, on = c("node2" = "vertex"),
+                     names(B) := mget(paste0("i.", names(B)))]$distance
+
+    #df_edges$d1 <- left_join(df_edges,dist_table,by=c("node1"="vertex"))$distance
+    #df_edges$d2 <- left_join(df_edges,dist_table,by=c("node2"="vertex"))$distance
 
     df_edges <- subset(df_edges,df_edges$d1<bw & df_edges$d2<bw)
 
@@ -234,8 +241,13 @@ correction_factor <- function(study_area,events,lines,method, bws, kernel_name, 
     return(df)
   })
   comb_values <- do.call(rbind,values)
+  events_df <- data.table(events@data)
+  B <- data.table(comb_values)
+  events_df[B,  on = c("goid"),
+            names(B) := mget(paste0("i.", names(B)))]
 
-  events_df <- dplyr::left_join(events@data,comb_values,by=c("goid"="goid"))
+  #events_df <- dplyr::left_join(events@data,comb_values,by=c("goid"="goid"))
+
   events_df$corrfactor <- ifelse(is.na(events_df$corrfactor),1,events_df$corrfactor)
   return(events_df$corrfactor)
 }
