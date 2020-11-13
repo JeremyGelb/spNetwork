@@ -49,9 +49,9 @@ ensures that topology is good when building the network. Default is 3}
 
 \item{tol}{When adding the events and the sampling points to the network,
 the minimum distance between these points and the lines extremities. When
-points are closer, they are added at the extermity of the lines.}
+points are closer, they are added at the extremity of the lines.}
 
-\item{sparse}{A boolean indicating if sparse or regular matrice should be
+\item{sparse}{A boolean indicating if sparse or regular matrices should be
 used by the Rcpp functions. Regular matrices are faster, but require more
 memory and could lead to error, in particular with multiprocessing. Sparse
 matrices are slower, but require much less memory.}

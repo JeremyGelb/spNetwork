@@ -211,7 +211,7 @@ prepare_data <- function(samples,lines,events, w ,digits,tol, agg){
 #' @param digits The number of digits to keep
 #' @param tol A float indicating the spatial tolerance when snapping events on
 #' lines
-#' @return A list with the splitted dataset
+#' @return A list with the split dataset
 #' @importFrom rgeos gBuffer
 #' @keywords internal
 #' @examples
@@ -298,7 +298,7 @@ split_by_grid <- function(grid,samples,events,lines,bw,tol, digits){
 #' @param digits The number of digits to keep
 #' @param tol A float indicating the spatial tolerance when snapping events on
 #' lines
-#' @return A list with the splitted dataset
+#' @return A list with the split dataset
 #' @importFrom rgeos gBuffer
 #' @keywords internal
 #' @examples
@@ -385,7 +385,7 @@ split_by_grid_abw <- function(grid,events,lines,bw,tol,digits){
 #' @param digits The number of digits to keep
 #' @param tol A float indicating the spatial tolerance when snapping events on
 #' lines
-#' @return A list with the splitted dataset
+#' @return A list with the split dataset
 #' @importFrom rgeos gBuffer
 #' @keywords internal
 #' @examples
@@ -490,7 +490,7 @@ split_by_grid.mc <- function(grid,samples,events,lines,bw,tol,digits){
 #' @param digits The number of digits to keep
 #' @param tol A float indicating the spatial tolerance when snapping events on
 #' lines
-#' @return A list with the splitted dataset
+#' @return A list with the split dataset
 #' @importFrom rgeos gBuffer
 #' @keywords internal
 #' @examples
@@ -599,8 +599,8 @@ split_by_grid_abw.mc <- function(grid,events,lines,bw,tol,digits){
 #' @param digits The number of digits to keep
 #' @param tol A float indicating the spatial tolerance when snapping events on
 #' lines
-#' @param sparse A boolean indicating if sparse matrix should be used
-#' @param verbose A boolean indicating if update messages should be printed
+#' @param sparse A Boolean indicating if sparse matrix should be used
+#' @param verbose A Boolean indicating if update messages should be printed
 #' @return A vector with the local bandwidths
 #' @keywords internal
 #' @examples
@@ -658,8 +658,8 @@ adaptive_bw <- function(grid,events,lines,bw,trim_bw,method,kernel_name,max_dept
 #' @param digits The number of digits to keep
 #' @param tol A float indicating the spatial tolerance when snapping events on
 #' lines
-#' @param sparse A boolean indicating if sparse matrix should be used
-#' @param verbose A boolean indicating if update messages should be printed
+#' @param sparse A Boolean indicating if sparse matrix should be used
+#' @param verbose A Boolean indicating if update messages should be printed
 #' @return A vector with the local bandwidths
 #' @keywords internal
 #' @examples
@@ -743,8 +743,8 @@ adaptive_bw.mc <- function(grid,events,lines,bw,trim_bw,method,kernel_name,max_d
 #' ensures that topology is good when building the network. Default is 3
 #' @param tol When adding the events and the sampling points to the network,
 #' the minimum distance between these points and the lines extremities. When
-#' points are closer, they are added at the extermity of the lines.
-#' @param sparse A boolean indicating if sparse or regular matrice should be
+#' points are closer, they are added at the extremity of the lines.
+#' @param sparse A Boolean indicating if sparse or regular matrices should be
 #' used by the Rcpp functions. Regular matrices are faster, but require more
 #' memory and could lead to error, in particular with multiprocessing. Sparse
 #' matrices are slower, but require much less memory.
@@ -756,7 +756,7 @@ adaptive_bw.mc <- function(grid,events,lines,bw,trim_bw,method,kernel_name,max_d
 #' estimates. A larger value can be used without problem for the discontinuous
 #' method. For the continuous method, a larger value will strongly impact
 #' calculation speed.
-#' @param verbose A boolean, indicating if the function should print messages
+#' @param verbose A Boolean, indicating if the function should print messages
 #' about process.
 #' @importFrom igraph adjacent_vertices get.edge.ids
 #' @return A numerci vector with the nkde values
@@ -886,52 +886,52 @@ nkde_worker <- function(lines, events, samples, kernel_name,bw, bws, method, div
 #' @details
 #' **The three NKDE methods**\cr
 #' Estimating the density of a point process is commonly done by using an
-#' ordinary two dimensional kernel density function. However, there is
+#' ordinary two dimensional kernel density function. However, there are
 #' numerous cases for which the events do not occur in a two dimensional
-#' space but on a network (like car crash, outdoor crimes, leaks in pipelines,
-#' etc.). New methods were developped to adapt the methodology to networks,
+#' space but on a network (like car crashes, outdoor crimes, leaks in pipelines,
+#' etc.). New methods were developed to adapt the methodology to networks,
 #' three of them are available in this package.
 #' \itemize{
-#'   \item{method="simple"}{this first method was presented by Xie et al.
+#'   \item{method="simple"}{This first method was presented by Xie et al.
 #'   (2008) and proposes an intuitive solution. The distances between events
 #'   and sampling points are replaced by network distances, and the formula of
 #'   the kernel is adapted to calculate the density over a linear unit
 #'   instead of an areal unit.}
-#'   \item{method="discontinuous"}{the previous method has been critized by
-#'   Okabe et al (2008), arguing that the estimator proposed is biaised,
-#'   conducting to overestimation of density in hot-spots of events. More
+#'   \item{method="discontinuous"}{The previous method has been criticized by
+#'   Okabe et al (2008), arguing that the estimator proposed is biased,
+#'   leading to an overestimation of density in events hot-spots. More
 #'   specifically, the simple method does not conserve mass and the induced
 #'   kernel is not a probability density along the network. They thus
 #'   proposed a discontinuous version of the kernel function on network, which
-#'   "divide" equaly the mass density of an event at intersections}
-#'   \item{method="continuous"}{if the discontinuous method is unbiased, it
+#'   equally "divides" the mass density of an event at intersections}
+#'   \item{method="continuous"}{If the discontinuous method is unbiased, it
 #'   leads to a discontinuous kernel function which is a bit counter-intuitive.
 #'   Okabe et al (2008) proposed another version of the kernel, that divide
-#'   the mass of the density at intersection but adjust the density before the
-#'   intersection to keep the function continuous.}
+#'   the mass of the density at intersection but adjusts the density before the
+#'   intersection to make the function continuous.}
 #' }
-#' The three methods are available because, despite the fact that the simple
-#' method is less exact statistically speaking, it might be more intuitive.
-#' In a purely geographical view, it migh be seen as sort of distance decay
-#' function like used in Geographically Weighted Regression.\cr
+#' The three methods are available because, even though that the simple
+#' method is less precise statistically speaking, it might be more intuitive.
+#' From a purely geographical view, it might be seen as a sort of distance decay
+#' function as used in Geographically Weighted Regression.\cr
 #' \cr\cr
 #' **adaptive bandwidth**\cr
-#' It is possible to use adaptive bandiwdth instead of fixed bandwidth. The
-#' adaptive bandwidth are calculated using the Abramson’s smoothing regimen.
-#' To do so, a orignal fixed bandiwdth must be specified (bw parameter), and
-#' is used to estimate a priory densities at event locations. These densities
+#' It is possible to use adaptive bandwidth instead of fixed bandwidth.
+#' Adaptive bandwidths are calculated using the Abramson’s smoothing regimen.
+#' To do so, an original fixed bandwidth must be specified (bw parameter), and
+#' is used to estimate priory densities at event locations. These densities
 #' are then used to calculate local bandwidth. The maximum size of the local
-#' bandwidth can be limited with the parameter trim_bw. For more details, look
-#' at the vignette a_NKDE.
+#' bandwidth can be limited with the parameter trim_bw. For more details, see
+#' the vignettes.
 #' \cr\cr
 #' **Optimization parameters**\cr
 #' The grid_shape parameter allows to split the calculus of the NKDE according
 #' to a grid dividing the study area. It might be necessary for big dataset
 #' to reduce the memory used. If the grid_shape is c(1,1), then a full network
-#' is build for the area. If the grid_shape is c(2,2), then the area is
+#' is built for the area. If the grid_shape is c(2,2), then the area is
 #' split in 4 rectangles. For each rectangle, the sample points falling in the
 #' rectangle are used, the events and the lines in a radius of the bandwidth
-#' length are used The results are combined at the end and ordered to match
+#' length are used. The results are combined at the end and ordered to match
 #' the original order of the samples.
 #' \cr\cr
 #' The geographical coordinates of the start and end of lines are used to build
@@ -963,12 +963,12 @@ nkde_worker <- function(lines, events, samples, kernel_name,bw, bws, method, div
 #' very close estimates. A lower value might have a critical impact on speed
 #' when the bandwidth is large
 #' \cr\cr
-#' When using the continuous and discontinuous kernel, the connexions between
+#' When using the continuous and discontinuous kernel, the connections between
 #' graph nodes are stored in a matrix. This matrix is typically sparse, and
 #' so a sparse matrix object is used to limit memory use. If the network is
 #' small (typically when the grid used to split the data has small rectangles)
-#' then a classical matrix could be used instead of a sparse one. It increases
-#' singnificantly speed, but could lead to memory issues.
+#' then a classical matrix could be used instead of a sparse one. It
+#' singnificantly increases speed, but could lead to memory issues.
 #'
 #' @param lines A SpatialLinesDataFrame with the sampling points. The
 #' geoemtries must be a SpatialLinesDataFrame (may crash if some geometries
@@ -982,7 +982,7 @@ nkde_worker <- function(lines, events, samples, kernel_name,bw, bws, method, div
 #' gaussian, scaled gaussian, tricube, cosine ,triweight, quartic,
 #' epanechnikov or uniform.
 #' @param bw The kernel bandwidth (in meters)
-#' @param adaptive A boolean, indicating if an adaptive bandwidth must be
+#' @param adaptive A Boolean, indicating if an adaptive bandwidth must be
 #' used
 #' @param trim_bw A float, indicating the maximum value for the adaptive
 #' bandwidth
@@ -991,34 +991,34 @@ nkde_worker <- function(lines, events, samples, kernel_name,bw, bws, method, div
 #' @param div The divisor to use for the kernel. Must be "n" (the number of
 #' events within the radius around each sampling point), "bw" (the bandwith)
 #' "none" (the simple sum).
-#' @param diggle_correction A boolean indicating if the correction factor
+#' @param diggle_correction A Boolean indicating if the correction factor
 #' for edge effect must be used.
 #' @param study_area A SpatialPolygonsDataFrame or a SpatialPolygon
 #' representing the limits of the study area.
 #' @param max_depth when using the continuous and discontinuous methods, the
-#' calculation time and memory use can go wild  if the network has a lot of
-#' small edges (area with a lot of intersections and a lot of events). To
+#' calculation time and memory use can go wild  if the network has many
+#' small edges (area with many of intersections and many events). To
 #' avoid it, it is possible to set here a maximum depth. Considering that the
 #' kernel is divided at intersections, a value of 10 should yield good
 #' estimates in most cases. A larger value can be used without problem for the
 #' discontinuous method. For the continuous method, a larger value will
 #' strongly impact calculation speed.
-#' @param digits The number of digits to keep in the spatial coordinates. It
+#' @param digits The number of digits to retain in the spatial coordinates. It
 #' ensures that topology is good when building the network. Default is 3
 #' @param tol When adding the events and the sampling points to the network,
-#' the minimum distance between these points and the lines extremities. When
-#' points are closer, they are added at the extermity of the lines.
+#' the minimum distance between these points and the lines' extremities. When
+#' points are closer, they are added at the extremity of the lines.
 #' @param agg A double indicating if the events must be aggregated within a distance.
-#' if NULL, then the events are aggregated by rounding the coordinates.
-#' @param sparse A boolean indicating if sparse or regular matrice should be
-#' used by the Rcpp functions. Regular matrices are faster, but require more
+#' If NULL, the events are aggregated by rounding the coordinates.
+#' @param sparse A Boolean indicating if sparse or regular matrix should be
+#' used by the Rcpp functions. Regular matrix are faster, but require more
 #' memory and could lead to error, in particular with multiprocessing. Sparse
-#' matrices are slower, but require much less memory.
+#' matrix are slower, but require much less memory.
 #' @param grid_shape A vector of two values indicating how the study area
-#' must be splitted when performing the calculus (see details). Defaut is c(1,1)
-#' @param verbose A boolean, indicating if the function should print messages
+#' must be split when performing the calculus (see details). Default is c(1,1)
+#' @param verbose A Boolean, indicating if the function should print messages
 #' about process.
-#' @param check A boolean indicating if the geometry checks must be run before
+#' @param check A Boolean indicating if the geometry checks must be run before
 #' calculating the densities
 #' @return A vector of values, they are the density estimates at samplings
 #' points
@@ -1148,7 +1148,7 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, tri
 #' @title Network Kernel density estimate (multicore)
 #'
 #' @description Calculate the Network Kernel Density Estimate based on a network of lines,
-#' sampling points, and events with multicore support. for details, please see the function nkde
+#' sampling points, and events with multicore support. For details, please see the function nkde
 #'
 #' @param lines A SpatialLinesDataFrame with the sampling points. The
 #' geoemtries must be a SpatialLinesDataFrame (may crash if some geometries
@@ -1161,7 +1161,7 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, tri
 #' @param kernel_name The name of the kernel to use. Must be one of triangle,
 #' gaussian, tricube, cosine ,triweight, quartic, epanechnikov or uniform.
 #' @param bw The kernel bandwidth (in meters)
-#' @param adaptive A boolean, indicating if an adaptive bandwidth must be
+#' @param adaptive A Boolean, indicating if an adaptive bandwidth must be
 #' used
 #' @param trim_bw A float, indicating the maximum value for the adaptive
 #' bandwidth
@@ -1170,35 +1170,35 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, tri
 #' @param div The divisor to use for the kernel. Must be "n" (the number of
 #' events within the radius around each sampling point), "bw" (the bandwith)
 #' "none" (the simple sum).
-#' @param diggle_correction A boolean indicating if the correction factor
+#' @param diggle_correction A Boolean indicating if the correction factor
 #' for edge effect must be used.
 #' @param study_area A SpatialPolygonsDataFrame or a SpatialPolygon
 #' representing the limits of the study area.
 #' @param max_depth when using the continuous and discontinuous methods, the
-#' calculation time and memory use can go wild  if the network has a lot of
-#' small edges (area with a lot of intersections and a lot of events). To
+#' calculation time and memory use can go wild  if the network has many
+#' small edges (area with many of intersections and many events). To
 #' avoid it, it is possible to set here a maximum depth. Considering that the
 #' kernel is divided at intersections, a value of 10 should yield good
 #' estimates in most cases. A larger value can be used without problem for the
 #' discontinuous method. For the continuous method, a larger value will
 #' strongly impact calculation speed.
-#' @param digits The number of digits to keep in the spatial coordinates. It
+#' @param digits The number of digits to retain in the spatial coordinates. It
 #' ensures that topology is good when building the network. Default is 3
 #' @param tol When adding the events and the sampling points to the network,
-#' the minimum distance between these points and the lines extremities. When
-#' points are closer, they are added at the extermity of the lines.
+#' the minimum distance between these points and the lines' extremities. When
+#' points are closer, they are added at the extremity of the lines.
 #' @param agg A double indicating if the events must be aggregated within a distance.
-#' if NULL, then the events are aggregated by rounding the coordinates.
-#' @param sparse A boolean indicating if sparse or regular matrice should be
-#' used by the Rcpp functions. Regular matrices are faster, but require more
+#' If NULL, the events are aggregated by rounding the coordinates.
+#' @param sparse A Boolean indicating if sparse or regular matrix should be
+#' used by the Rcpp functions. Regular matrix are faster, but require more
 #' memory and could lead to error, in particular with multiprocessing. Sparse
-#' matrices are slower, but require much less memory.
+#' matrix are slower, but require much less memory.
 #' @param grid_shape A vector of two values indicating how the study area
-#' must be splitted when performing the calculus (see details). Defaut is c(1,1)
-#' @param verbose A boolean, indicating if the function should print messages
+#' must be split when performing the calculus (see details). Defaut is c(1,1)
+#' @param verbose A Boolean, indicating if the function should print messages
 #' about process.
-#' @param check A boolean indicating if the geometry checks must be run before
-#' calculating the densities
+#' @param check A Boolean indicating if the geometry checks must be run before
+#' calculating the density.
 #' @return A vector of values, they are the density estimates at samplings
 #' points
 #' @export

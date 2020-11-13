@@ -78,18 +78,18 @@ ensures that topology is good when building the network. Default is 3}
 
 \item{tol}{When adding the events and the sampling points to the network,
 the minimum distance between these points and the lines extremities. When
-points are closer, they are added at the extermity of the lines.}
+points are closer, they are added at the extremity of the lines.}
 
 \item{agg}{A double indicating if the events must be aggregated within a distance.
 if NULL, then the events are aggregated by rounding the coordinates.}
 
-\item{sparse}{A boolean indicating if sparse or regular matrice should be
+\item{sparse}{A boolean indicating if sparse or regular matrices should be
 used by the Rcpp functions. Regular matrices are faster, but require more
 memory and could lead to error, in particular with multiprocessing. Sparse
 matrices are slower, but require much less memory.}
 
 \item{grid_shape}{A vector of two values indicating how the study area
-must be splitted when performing the calculus (see details). Defaut is c(1,1)}
+must be split when performing the calculus (see details). Defaut is c(1,1)}
 
 \item{verbose}{A boolean, indicating if the function should print messages
 about process.}

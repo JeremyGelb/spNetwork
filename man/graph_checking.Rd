@@ -11,7 +11,7 @@ graph_checking(lines, digits, tol)
 
 \item{digits}{An integer indicating the number of digits to keep for coordinates}
 
-\item{tol}{A float indicating the tolerance distance to indentify a dangle node}
+\item{tol}{A float indicating the tolerance distance to identify a dangle node}
 }
 \value{
 A list with two elements. The first is a SpatialPointsDataFrame

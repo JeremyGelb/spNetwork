@@ -47,13 +47,13 @@ utils::globalVariables(c("origin", "fid"))
 #' It is important for it to be different from 0 when a W style is used.
 #' @param mindist The minimum distance between two different observations.
 #' It is important for it to be different from 0 when a W style is used.
-#' @param direction Indicate a field giving informations about authorized
+#' @param direction Indicate a field giving information about authorized
 #' traveling direction on lines. if NULL, then all lines can be used in both
 #' directions. Must be the name of a column otherwise. The values of the
 #' column must be "FT" (From - To), "TF" (To - From) or "Both".
 #' @param matrice_type The type of the weighting scheme. Can be 'B' for Binary,
 #' 'W' for row weighted, see the documentation of spdep::nb2listw for details
-#' @param verbose A boolean indicating if the function should print its
+#' @param verbose A Boolean indicating if the function should print its
 #' progress
 #' @param digits the number of digits to keep in the spatial coordinates (
 #' simplification used to reduce risk of topological error)
@@ -236,23 +236,23 @@ prepare_elements_netlistw <- function(is,grid,snapped_points,lines,maxdistance){
 #' @param origins A SpatialLinesDataFrame, SpatialPointsDataFrame or
 #' SpatialPolygonsDataFrame for which the spatial neighbouring list will be built
 #' @param lines A SpatialLinesDataFrame representing the network
-#' @param maxdistance The maximum distance between two observation to
-#' considere them as neighbours.
+#' @param maxdistance The maximum distance between two observations to
+#' consider them as neighbours.
 #' @param method A string indicating how the starting points will be built.
-#' If centroid is used, then the center of lines or polygons is used. If
-#' pointsalong is used, then points will be placed alon polygons' borders or
-#' along lines as starting and end points. If ends is used (only for lines)
-#' the first and list vertices of lines are used as startng and ends points.
+#' If 'centroid' is used, then the center of lines or polygons is used. If
+#' 'pointsalong' is used, then points will be placed along polygons' borders or
+#' along lines as starting and end points. If 'ends' is used (only for lines)
+#' the first and last vertices of lines are used as starting and ending points.
 #' @param point_dist A float, defining the distance between points when the
-#' method pointsalong is selected.
+#' method 'pointsalong' is selected.
 #' @param snap_dist The maximum distance to snap the start and end points on
 #' the network.
-#' @param line_weight The ponderation to use for lines. Default is "length"
+#' @param line_weight The weighting to use for lines. Default is "length"
 #' (the geographical length), but can be the name of a column. The value is
-#' considered proportional with the geographical length of the lines.
+#' considered proportional to the geographical length of the lines.
 #' @param mindist The minimum distance between two different observations.
 #' It is important for it to be different from 0 when a W style is used.
-#' @param direction Indicates a field giving informations about authorized
+#' @param direction Indicates a field providing information about authorized
 #' traveling direction on lines. if NULL, then all lines can be used in both
 #' directions. Must be the name of a column otherwise. The values of the
 #' column must be "FT" (From - To), "TF" (To - From) or "Both".
@@ -265,9 +265,9 @@ prepare_elements_netlistw <- function(is,grid,snapped_points,lines,maxdistance){
 #' @param grid_shape A vector of length 2 indicating the shape of the grid to
 #' use for splitting the dataset. Default is c(1,1), so all the calculation is
 #' done in one go. It might be necessary to split it if the dataset is large.
-#' @param verbose A boolean indicating if the function should print its
+#' @param verbose A Boolean indicating if the function should print its
 #' progress
-#' @param digits The number of digits to keep in the spatial coordinates (
+#' @param digits The number of digits to retain in the spatial coordinates (
 #' simplification used to reduce risk of topological error)
 #' @param tol A float indicating the spatial tolerance when points are
 #' added as vertices to lines.
@@ -417,13 +417,13 @@ network_listw <- function(origins,lines,maxdistance, method="centroid", point_di
 #' @param origins A SpatialLinesDataFrame, SpatialPointsDataFrame or
 #' SpatialPolygonsDataFrame for which the spatial neighbouring list will be built
 #' @param lines A SpatialLinesDataFrame representing the network
-#' @param maxdistance The maximum distance between two observation to
-#' considere them as neighbours.
+#' @param maxdistance The maximum distance between two observations to
+#' consider them as neighbours.
 #' @param method A string indicating how the starting points will be built.
-#' If centroid is used, then the center of lines or polygons is used. If
-#' pointsalong is used, then points will be placed alon polygons' borders or
-#' along lines as starting and end points. If ends is used (only for lines)
-#' the first and list vertices of lines are used as startng and ends points.
+#' If 'centroid' is used, then the center of lines or polygons is used. If
+#' 'pointsalong' is used, then points will be placed along polygons' borders or
+#' along lines as starting and end points. If 'ends' is used (only for lines)
+#' the first and last vertices of lines are used as starting and ending points.
 #' @param point_dist A float, defining the distance between points when the
 #' method pointsalong is selected.
 #' @param snap_dist the maximum distance to snap the start and end points on
@@ -433,7 +433,7 @@ network_listw <- function(origins,lines,maxdistance, method="centroid", point_di
 #' considered proportional with the geographical length of the lines.
 #' @param mindist The minimum distance between two different observations.
 #' It is important for it to be different from 0 when a W style is used.
-#' @param direction Indicates a field giving informations about authorized
+#' @param direction Indicates a field giving information about authorized
 #' traveling direction on lines. if NULL, then all lines can be used in both
 #' directions. Must be the name of a column otherwise. The values of the
 #' column must be "FT" (From - To), "TF" (To - From) or "Both".
@@ -446,9 +446,9 @@ network_listw <- function(origins,lines,maxdistance, method="centroid", point_di
 #' @param grid_shape A vector of length 2 indicating the shape of the grid to
 #' use for splitting the dataset. Default is c(1,1), so all the calculation is
 #' done in one go. It might be necessary to split it if the dataset is large.
-#' @param verbose A boolean indicating if the function should print its
+#' @param verbose A Boolean indicating if the function should print its
 #' progress
-#' @param digits The number of digits to keep in the spatial coordinates (
+#' @param digits The number of digits to retain in the spatial coordinates (
 #' simplification used to reduce risk of topological error)
 #' @param tol A float indicating the spatial tolerance when points are
 #' added as vertices to lines.

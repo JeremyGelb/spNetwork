@@ -224,7 +224,7 @@ add_vertices_lines <- function(lines, points, nearest_lines_idx, mindist) {
 #' the previous lixel. if NULL, then mindist = maxdist/10. Note that the
 #' segments that are already shorter than the minimum distance are not
 #' modified.
-#' @param verbose A boolean indicating if a progress bar should be displayed
+#' @param verbose A Boolean indicating if a progress bar should be displayed
 #' @return An object of class SpatialLinesDataFrame (package sp)
 #' @importFrom utils txtProgressBar setTxtProgressBar
 #' @importFrom  sp coordinates Line Lines SpatialLines SpatialLinesDataFrame SpatialPoints
@@ -305,8 +305,8 @@ lixelize_lines <- function(lines, lx_length, mindist = NULL, verbose = FALSE) {
 #' @param lx_length The length of a lixel
 #' @param mindist The minimum length of a lixel. After cut, if the length of
 #' the final lixel is shorter than the minimum distance, then it is added to
-#' the previous lixel. if NULL, then mindist = maxdist/10
-#' @param verbose A boolean indicating if a progress bar must be displayed
+#' the previous lixel. If NULL, then mindist = maxdist/10
+#' @param verbose A Boolean indicating if a progress bar must be displayed
 #' @param chunk_size The size of a chunk used for multiprocessing. Default is 100.
 #' @return An object of class SpatialLinesDataFrame (package sp)
 #' @export
@@ -394,10 +394,10 @@ simple_lines <- function(lines) {
 #' @title Center points of lines
 #'
 #' @description Generate a SpatialPointsDataFrame with line center points. The points are
-#' located at middle of the line based on the length of the line.
+#' located at center of the line based on the length of the line.
 #'
 #' @param lines The SpatialLinesDataframe to use
-#' @param verbose A boolean indicating of a progressbar should be displayed
+#' @param verbose A Boolean indicating if a progressbar should be displayed
 #' @return An object of class SpatialPointsDataFrame (package sp)
 #' @importFrom sp coordinates SpatialPointsDataFrame SpatialPoints
 #' @importFrom rgeos gInterpolate
@@ -459,7 +459,7 @@ add_center_lines <- function(lines) {
 #' center with multicore support.
 #'
 #' @param lines The SpatialLinesDataframe to use
-#' @param show_progress A boolean indicating if a progress bar must be displayed
+#' @param show_progress A Boolean indicating if a progress bar must be displayed
 #' @param chunk_size The size of a chunk used for multiprocessing. Default is 100.
 #' @return An object of class SpatialLinesDataframe (package sp)
 #' @importFrom utils capture.output

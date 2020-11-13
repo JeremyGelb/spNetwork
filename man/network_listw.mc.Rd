@@ -50,7 +50,7 @@ considered proportional with the geographical length of the lines.}
 \item{mindist}{The minimum distance between two different observations.
 It is important for it to be different from 0 when a W style is used.}
 
-\item{direction}{Indicates a field giving informations about authorized
+\item{direction}{Indicates a field giving information about authorized
 traveling direction on lines. if NULL, then all lines can be used in both
 directions. Must be the name of a column otherwise. The values of the
 column must be "FT" (From - To), "TF" (To - From) or "Both".}

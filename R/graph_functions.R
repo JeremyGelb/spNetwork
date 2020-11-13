@@ -279,11 +279,11 @@ plot_graph <- function(graph) {
 
 #' @title Topological error
 #'
-#' @description An utility function to find topological errors in a network.
+#' @description A utility function to find topological errors in a network.
 #'
 #' @param lines A SpatialLinesDataFrame representing the network
-#' @param digits An integer indicating the number of digits to keep for coordinates
-#' @param tol A float indicating the tolerance distance to indentify a dangle node
+#' @param digits An integer indicating the number of digits to retain for coordinates
+#' @param tol A float indicating the tolerance distance to identify a dangle node
 #' @return A list with two elements. The first is a SpatialPointsDataFrame
 #' indicating for each node of the network to which component it belongs. The
 #' second is a SpatialPointsDataFrame with the dangle nodes of the network.

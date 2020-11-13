@@ -23,7 +23,7 @@ lines}
 \item{digits}{The number of digits to keep}
 }
 \value{
-A list with the splitted dataset
+A list with the split dataset
 }
 \description{
 Function to split the dataset according to a grid.

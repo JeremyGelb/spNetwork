@@ -21,7 +21,7 @@ kfunctions(
 }
 \arguments{
 \item{lines}{A SpatialLinesDataFrame with the sampling points. The
-geoemtries must be a SpatialLinesDataFrame (may crash if some geometries
+geometries must be a SpatialLinesDataFrame (may crash if some geometries
  are invalid)}
 
 \item{points}{A SpatialPointsDataFrame representing the points on the
@@ -64,19 +64,18 @@ Calculate the k and g functions for a set of points on a network.
 }
 \details{
 The k-function is a method to characterize the dispersion of a set
-of points. For each point, the numbers of other points in subsequent
-radius are calculated. This empirical k-function can be more or less
-clustered than a k-function obtained if the points were randomly located
-in space. In a network, the network distance is used instead of the
-euclidean distance. This function use Monte Carlo simulations to assess if
-the points are clustered or dispersed and gives the results as a line plot.
-If the line of the observed k-function is higher than the shaded area
-representing the values of the simulations, then the points are more
-clustered than what we can expect from randomness and vice-versa. The
-function also calculate the g-function, a modified version of the
-k-function using rings instead of disks. The width of the ring must be
-chosen. The principal interest is to avoid the cumulative effect of the
-classical k-function.
+  of points. For each point, the numbers of other points in subsequent radius
+  are calculated. This empirical k-function can be more or less clustered
+  than a k-function obtained if the points were randomly located in space. In
+  a network, the network distance is used instead of the euclidean distance.
+  This function use Monte Carlo simulations to assess if the points are
+  clustered or dispersed and gives the results as a line plot. If the line of
+  the observed k-function is higher than the shaded area representing the
+  values of the simulations, then the points are more clustered than what we
+  can expect from randomness and vice-versa. The function also calculates the
+  g-function, a modified version of the k-function using rings instead of
+  disks. The width of the ring must be chosen. The principal interest is to
+  avoid the cumulative effect of the classical k-function.
 }
 \examples{
 data("libraries_mtl")

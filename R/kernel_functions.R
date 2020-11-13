@@ -352,11 +352,12 @@ ess_kernel <- function(graph, y, bw, kernel_func, samples, nodes, edges, sample_
                          "node1" = vertices[,1],
                          "node2" = vertices[,2]
                          )
-  A <- data.table(df_edges)
+  A1 <- data.table(df_edges)
+  A2 <- data.table(df_edges)
   B <- data.table(dist_table)
-  df_edges$d1 <- A[B, on = c("node1" = "vertex"),
+  df_edges$d1 <- A1[B, on = c("node1" = "vertex"),
                    names(B) := mget(paste0("i.", names(B)))]$distance
-  df_edges$d2 <- A[B, on = c("node2" = "vertex"),
+  df_edges$d2 <- A2[B, on = c("node2" = "vertex"),
                    names(B) := mget(paste0("i.", names(B)))]$distance
   #df_edges$d1 <- left_join(df_edges,dist_table,by=c("node1"="vertex"))$distance
   #df_edges$d2 <- left_join(df_edges,dist_table,by=c("node2"="vertex"))$distance

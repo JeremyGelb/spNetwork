@@ -5,11 +5,11 @@
 
 #' @title Build a quadtree
 #'
-#' @description Generate quad tree object from package SearchTrees, usefull to speed up
+#' @description Generate quadtree object from package SearchTrees, useful to speed up
 #' spatial requesting.
 #'
 #' @param data a SpatialLinesDataFrame or a SpatialPointsDataFrame
-#' @return quad tree object from package SearchTrees
+#' @return quadtree object from package SearchTrees
 #' @examples
 #' #This is an internal function, no example provided
 build_quadtree <- function(data){
@@ -39,9 +39,9 @@ build_quadtree <- function(data){
 
 #' @title Spatial request
 #'
-#' @description Use a quad tree index to perform spatial request.
+#' @description Use a quadtree index to perform spatial request.
 #'
-#' @param geometry object like SpatialLine, SpatialPolygon or SpatialPoint
+#' @param geometry objects such as SpatialLine, SpatialPolygon or SpatialPoint
 #' @param tree a tree object from package SearchTrees
 #' @param data the original data used to build the tree object
 #' @return a subset of data, intersecting geometry
@@ -61,7 +61,7 @@ spatial_request <- function(geometry,tree,data){
 
 #' @title Find closest points
 #'
-#' @description build a quad tree index and solve the nearest neighbour problem for two
+#' @description build a quadtree index and solve the nearest neighbour problem for two
 #' SpatialPointsDataFrame.
 #'
 #' @param origins a SpatialPointsDataFrame

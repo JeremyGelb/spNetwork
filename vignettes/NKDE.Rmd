@@ -27,19 +27,19 @@ knitr::opts_chunk$set(
 ```
 
 
-This vignette is a short introduction to the **NKDE** feature of the **spNetwork** package by using datasets provided with the package.
+This vignette is a short introduction to the **NKDE** feature of the **spNetwork** package.
 
 
 # Quick introduction to NKDE
 
-A classical Kernel Density Estimate (KDE) estimates the continuous density of a set of events in a two-dimensional space. The density is estimated at sampling points, traditionally the centres of pixels dividing in equal zones the study area.
+A classical Kernel Density Estimate (KDE) estimates the continuous density of a set of events in a two-dimensional space. The density is estimated at sampling points, traditionally the centres of pixels dividing into equal zones the study area.
 
-This approach is not adapted to analyze density of events occurring on a network, like accidents and crimes in streets, or leaks on a network of water pipes. Indeed, calculating density values for locations outside the network is meaningless and the Euclidean distance underestimates the real distance between two objects on the network. Moreover, networks are not isotropic spaces, in other words, it is not possible to move in every direction, but only on the edges of the network.
+This approach is not adapted to analyze density of events occurring on a network, like accidents and crimes in streets, or leaks on a network of water pipes. Indeed, calculating density values for locations outside the network is meaningless and the Euclidean distance underestimates the real distance between two objects on the network. Moreover, networks are not isotropic spaces. In other words, it is not possible to move in every direction, but only along the edges of the network.
 
-When performing a Network Kernel Density Estimate (NKDE), it is possible to:
+To calculate a Network Kernel Density Estimate (NKDE), it is possible to:
 
 * use lixels instead of pixels. A lixel is a linear equivalent of a pixel on a network. The lines of the network are split into lixels according to a chosen resolution. The centres of the lixels are sampling points for which the density will be estimated.
-* calculate network distances between objects instead of euclidean distances.
+* calculate network distances between objects instead of Euclidean distances.
 * adjust the kernel function to deal with the anisotropic space
 
 A picture is worth a thousand of words, so let us consider this situation: 
@@ -47,7 +47,7 @@ A picture is worth a thousand of words, so let us consider this situation:
 ![Image Title](images/step0.png){width=300px}
 </center>
 
-Each red point is an event and the lines constitute the network. One could realize a simple KDE on that dataset and would obtain something like:
+Each red point is an event and the lines constitute the network. One could calculate a simple KDE on that dataset and would obtain something like this:
 
 <center>
 ![Image Title](images/example_pixels.png){width=300px}
@@ -61,15 +61,15 @@ To perform a NKDE, the events must be snapped on the network. The snapped events
 ![Image Title](images/step1.png){width=300px}
 </center>
 
-The density of each event can be seen as a third dimension and is evaluated by a selected kernel function (*K*) within a specified bandwidth. The kernel function must satisfy the following conditions:
+The mass of each event can be seen as a third dimension and is evaluated by a selected kernel function (*K*) within a specified bandwidth. The kernel function must satisfy the following conditions:
 
 $K(x) >= 0 \text{, if } x < bandwidth$
 
 $K(x) = 0 \text{, if } x > bandwidth$
 
-$\int K(x)dx= 1$
+$\int K(x)= 1$
 
-The total mass of an event is 1, and spread according to the function *K* within the bandwidth distance.
+The total mass of an event is 1, and is spread according to the function *K* within the bandwidth distance.
 
 For an easier representation, let us consider here the triangle kernel function.
 
@@ -77,21 +77,21 @@ For an easier representation, let us consider here the triangle kernel function.
 ![Image Title](images/step2.png){width=300px}
 </center>
 
-We can see that the "influence" of each point is limited within the bandwidth and decreases when we are farther from the event.
+We can see that the "influence" of each point is limited within the bandwidth and decreases when we move away from the event.
 
-With this method, one can evaluate the density of the studied phenomenon at each point of the network. In the next figure, 3 sampling points (s1, s2 and s3) are added in blue.
+With this method, one can evaluate the density of the studied phenomenon at each location on the network. In the next figure, 3 sampling points (s1, s2 and s3) are added in blue.
 
 <center>
 ![Image Title](images/step3.png){width=300px}
 </center>
 
-$$d_{s1} = K(dist_{s1;e1})$$
-$$d_{s2} = K(dist_{s2;e2})$$
-$$d_{s3} = (1/2) * (K(dist_{s3;e2}) + K(dist_{s3;e3}))$$
+$$d_{s1} = \frac{1}{bw^2}K(dist_{s1;e1})$$
+$$d_{s2} = \frac{1}{bw^2}K(dist_{s2;e2})$$
+$$d_{s3} = \frac{1}{bw^2}(K(dist_{s3;e2}) + K(dist_{s3;e3}))$$
 
 And in a more general fashion: 
-$d_{si} = (1/n) * \sum_{j=1}^{n} K(dist_{si;ej})$
-with $d_{si}$ the density estimated at sample the point *si*, *n* the number of events within the bandwidth arround the sampling point *si* and *ej* an event.
+$d_{si} = \frac{1}{bw^2} \sum_{j=1}^{n} K(dist_{si;ej})$
+with $d_{si}$ the density estimated at the sample point *si*, *bw* the bandwidth and *ej* an event.
 
 The proposed kernel functions in the **spNetwork** package are:
 
@@ -147,7 +147,7 @@ ggplot(df2) +
 
 ```
 
-As one can see, most of the kernels look alike. It is worth mentioning that the gaussian kernel does not integrate to 1 within the bandwidth (specific case of non-compact kernel). In the **spNetwork** package, all kernel values beyond the bandwidth are set to 0. This means that some weight of each event is lost with the gaussian kernel. To limit this effect, one can use the scaled version of the gaussian kernel for wich the bandwidth is divided by 3, limiting greatly the mass loss.
+As one can see, most of the kernels look alike. It is worth mentioning that the gaussian kernel does not integrate to 1 within the bandwidth (specific case of non-compact kernel). In the **spNetwork** package, all kernel values beyond the bandwidth are set to 0. This means that some mass of each event is lost with the gaussian kernel. To limit this effect, one can use the scaled version of the gaussian kernel for wich the bandwidth is divided by 3, limiting greatly the mass loss.
 
 ```{r message=FALSE, warning=FALSE}
 Funs <- c(gaussian_kernel, gaussian_kernel_scaled,epanechnikov_kernel,
@@ -165,7 +165,7 @@ df <- data.frame("kernel"=Names,
 kable(df)
 
 ```
-However, the fact that the gaussian kernel does not integrate to 1 within the bandwidth can leads to negative values when using the continuous NKDE (presented latter), we thus recommand using the quartic kernel instead.
+However, the fact that the gaussian kernel does not integrate to 1 within the bandwidth can leads to negative values when using the continuous NKDE (presented latter). Thus, we recommend using the quartic kernel instead.
 
 ```{r message=FALSE, warning=FALSE}
 x <- seq(-15.01,15.01,by = 0.01)
@@ -186,31 +186,31 @@ ggplot(df2) +
 
 # The three versions of NKDE
 
-The **spNetwork** package provides three methods to perform NKDE. We present them briefly here. For more details, please read the original papers and books cited. 
+The **spNetwork** package provides three methods to calculate NKDE. We present them briefly here. For more details, please read the original papers and books cited. 
 
 ## Simple method
 
 The first method was proposed by @xie2008kernel. Considering the planar KDE, they defined the NKDE with the following formula:
 
-$d_{si} = (1/bw) * \sum_{j=1}^{n} K(dist_{si;ej})$
+$d_{si} = \frac{1}{bw}\sum_{j=1}^{n} K(dist_{si;ej})$
 
 with $d_{si}$ the density estimated at sample the point *si*, $dist_{si;ej}$ the network distance between *si* and event *j*, with all distances  $dist_{si;ej} < bw$.
 
 
-Of course, it uses the network distance instead of the euclidean distance. This method is appealing because it is intuitive, but it is not statistically satisfying. Note that the divisor of the kernel is not the classical *1/n*, but *1/bw*. This adjustment allows for a simpler interpretation of the density: *"Instead of calculating the density over an area unit, the equation estimates the density over a linear unit"* [@xie2008kernel p.398]
+Of course, it uses the network distance instead of the Euclidean distance. This method is appealing because it is intuitive, but it is not statistically satisfying. Note that the divisor of the kernel is not the classical $\frac{1}{bw^2}$, but $\frac{1}{bw}$. This adjustment allows for a simpler interpretation of the density: *"Instead of calculating the density over an area unit, the equation estimates the density over a linear unit"* [@xie2008kernel p.398]
 
-On the next figure, we show in 3D what that kernel looks like. The red point is a simple event, the black lines are the network, and the blue lines are the evaluated densities.
+In the next figure, we show in 3D what that kernel looks like. The red point is a simple event, the black lines are the network, and the blue lines are the calculated densities.
 
 <center>
 ![Image Title](images/simple_nkde_ex.png){width=150px}
 </center>
 
-As one can see, this NKDE is only determined by the distance between the sampling points and the event. This is a problem because at intersections, the event's mass is multiplied by the number of edges adjacent to that intersection. As a consequence this is not a real kernel because it does not integrate to 1 on its domain.
+As one can see, this NKDE is only determined by the distance between the sampling points and the event. This is a problem because at intersections, the event's mass is multiplied by the number of edges at that intersection. Consequently, this is not a true kernel because it does not integrate to 1 on its domain.
 
 This method remains useful for two reasons: 
 
 * For quick data visualization. With big datasets, it might be useful to use this simple method to do a primary investigation.
-* In a purely geographical view, this method is intuitive. In the case of crime analysis for example, one could argue that the *strength* of the event should not be affected by intersections on the network. In that case, the kernel function is seen as a distance decaying function.
+* In a purely geographical view, this method is intuitive. In the case of crime analysis for example, one could argue that the *strength* of an event should not be affected by intersections on the network. In that case, the kernel function is seen as a distance decaying function.
 
 **What to retain about the simple method ?**
 
@@ -231,7 +231,7 @@ The discontinuous NKDE is easily presented by a figure:
 ![Image Title](images/discontinuous.png){width=300px}
 </center>
 
-The density of the kernel function is equally divided at intersections. Note that *spNetwork* implements the modified version proposed by @sugihara2010simple, allowing for use in networks with cycles. In the case of a cycle, the multiple values of the kernel that overlap are added, as shown in the next figure.
+The density of the kernel function is equally divided at intersections. Note that *spNetwork* implements the modified version proposed by @sugihara2010simple, allowing for use in networks with cycles. In the case of a cycle, the multiple overlapping values of the kernel are added, as shown in the next figure.
 
 <center>
 ![Image Title](images/cycle_nkde.png){width=300px}
@@ -243,7 +243,7 @@ With the case presented before, we obtain the following result.
 ![Image Title](images/discontinuous_nkde_ex.png){width=150px}
 </center>
 
-As one can see, the values of the NKDE are split at intersections to avoid the multiplication of the mass observed in the simple version. However, this creates a discontinuous NKDE, which is counter-intuitive. This leads to sharp differences between density values in the network, and could be problematic in networks with a lot of intersections.
+As one can see, the values of the NKDE are split at intersections to avoid the multiplication of the mass observed in the simple version. However, this creates a discontinuous NKDE, which is counter-intuitive. It leads to sharp differences between density values in the network, and could be problematic in networks with many intersections.
 
 **What to retain about the discontinuous method ?**
 
@@ -257,14 +257,14 @@ As one can see, the values of the NKDE are split at intersections to avoid the m
 
 ## Continuous NKDE
 
-If the previous method is an ubaised estimator and quite easy to calculate, its discontinuous nature might be counter-intuitive in comparison with the simple method. The continuous NKDE tries to take the best of the two worlds: it adjusts the values of the NKDE at intersections to ensure that it integrates to 1 on its domain, and applies a backward correction to force the density values to be continuous. This process is accomplished by a recursive function, described in the book *Spatial Analysis Along Networks* [@okabe2012spatial]. This function is more time consuming, so it might be necessary to stop it when the recursion is too deep. Considering that the kernel density is divided at each intersection, stopping the function at deep level 16 should yield results very close to the true values.
+If the previous method is an ubaised estimator and quite easy to calculate, its discontinuous nature might be counter-intuitive in comparison with the simple method. The continuous NKDE merges the best of the two worlds: it adjusts the values of the NKDE at intersections to ensure that it integrates to 1 on its domain, and applies a backward correction to force the density values to be continuous. This process is accomplished by a recursive function, described in the book *Spatial Analysis Along Networks* [@okabe2012spatial]. This function is more time consuming, so it might be necessary to stop it when the recursion is too deep. Considering that the kernel density is divided at each intersection, stopping the function at deep level 16 should give results almost identical to the true values.
 
 
 <center>
 ![Image Title](images/continuous.png){width=300px}
 </center>
 
-There are three different equations to calculate the kernel density depending on the situation (here, q1, q2, q3). One can note that intersections will affect kernel values on the edges before the intersection. This behaviour is desribed in [@okabe2012spatial; @okabe2009kernel] as a recursive function, and implemented in the same way in **spNetwork**.
+There are three different equations to calculate the kernel density depending on the situation (here, q1, q2, q3).
 
 Again, with the case presented before, we obtain the following result.
 
@@ -286,7 +286,7 @@ As one can see, the values of the NKDE are continuous, and the density values cl
 
 The **spNetwork** package makes this type of analysis straightforward in R. The main problem of the implementation of the NKDE is to reduce computation time. Indeed, for a large dataset, building the network and evaluating the distances between each event and each sampling point would be too long and could lead to memory issues.
 
-To avoid this, the first solution provided in **spNetwork** is a gridded application of the NKDE. The user can split the study area with a grid, the calculation is then performed in each cell of the grid. A buffer is applied on each cell to avoid frontier effect. This behaviour is controlled by the parameter *grid_shape*, indicating the shape of the grid. To split the study area in four rectangles, one can use *grid_shape = c(2,2)*. For a reasonable dataset, it is also possible not to split the study area with *grid_shape = c(1,1)*
+To avoid this, the first solution provided in **spNetwork** is a gridded application of the NKDE. The user can split the study area with a grid, the calculation is then performed in each cell of the grid. A buffer is applied on each cell to avoid frontier effect. This behaviour is controlled by the parameter `grid_shape`, indicating the shape of the grid. To split the study area in four rectangles, one can use `grid_shape = c(2,2)`. For a reasonable dataset, it is also possible not to split the study area with `grid_shape = c(1,1)`.
 
 ```{r message=FALSE, warning=FALSE}
 # first load data and packages
@@ -303,9 +303,8 @@ plot(mtl_network)
 plot(bike_accidents,add=T,col='red',pch = 19)
 
 # then calculating some lixels to use as sampling points
-# set to silent here for the vignette output
-invisible(capture.output(lixels <- lixelize_lines(mtl_network,200,mindist = 50)))
-invisible(capture.output(samples <- lines_center(lixels)))
+lixels <- lixelize_lines(mtl_network,200,mindist = 50)
+samples <- lines_center(lixels)
 
 # then applying the NKDE
 densities <- nkde(mtl_network, 
@@ -325,7 +324,7 @@ densities <- nkde(mtl_network,
 samples$density <- densities
 ```
 
-We can then map the density values estimated for each lixel centre:
+We can now map the density values estimated for each lixel centre:
 
 ```{r message=FALSE, warning=FALSE}
 library(ggplot2)
@@ -379,11 +378,11 @@ As you can imagine it remains a costly process, especially for the continuous ke
 
 * Rcpp: the main functions are coded with C++
 * Armadillo: the linear algebra is performed with the RcppArmadillo package
-* multiprocessing: it is possible to split the calculation on multiple cores.
+* multiprocessing: it is possible to split the calculation on multiple cores
 
 The calculus of the NKDE for each cell could be done by several cores. To do so, **spNetwork** provides a function *nkde.mc*. More specifically, it uses functions from the packages **future** and **future.apply**. The selection of the plan has to be done by the user to ensure the best compatibility on each os and computer. See the documentation of the **future** package if needed.
 
-Note that the combined use of **Rcpp** and **future** is difficult. **Rcpp** functions can not be sent to child processes. To overcome this, a separate package **spNetworkCpp** exists on its own and contains only the **Rcpp** functions. **spNetworkCpp** is then loaded by each child processes.
+Note that the combined use of **Rcpp** and **future** is difficult. **Rcpp** functions can not be sent to child processes. To overcome this, a separate package **spNetworkCpp** exists on its own and contains only the **Rcpp** functions. This separate package is installed with **spNetwork**. **spNetworkCpp** is then loaded by each child processes.
 
 Let us split the work between two cores.
 ```{r message=FALSE, warning=FALSE}
@@ -416,12 +415,12 @@ print(paste("overall difference between the regular and paralellized method : ",
 
 # An example with adaptive bandwidth
 
-The examples provided in the previous sections are using only a fixed bandwidth. If we relaxe the need for a fixed bandwidth, we obtain an adaptive estimator. In other words, the bandwidth will vary in the study area. **spNetwork** use the method proposed by @abramson1982bandwidth, implying a variation of the bandwidth that is inversely proportional to the square root of the target density itself. In other words, at places where the density of the spatial process is high, the bandwidth of the kernel will be smaller and inversely. The use of an adaptive bandwidth has many theoritical and pratical advantages. First, it reduces the sensibility to outliers. Second, it reduces smoothing in sub-region with many events (giving more detailed density estimation) and increases the smoothing in sub-region with fiew events (giving more fuzzy results because of the higher uncertainity).
+The examples provided in the previous sections are using only a fixed bandwidth. If we relax the need for a fixed bandwidth, we obtain an adaptive estimator. In other words, the bandwidth vary in the study area. **spNetwork** uses the method proposed by @abramson1982bandwidth, implying a variation of the bandwidth that is inversely proportional to the square root of the target density itself. In other words, at places where the density of the spatial process is high, the bandwidth of the kernel will be smaller and inversely. The use of an adaptive bandwidth has many theoretical and practical advantages. First, it reduces the sensibility to outliers. Second, it reduces smoothing in sub-region with many events (giving more detailed density estimation) and increases the smoothing in sub-region with few events (giving fuzzier results because of the higher uncertainty).
 
-The problem is that the target density itself is unknown (otherwise we would not have to estimate it with a smoothing method). To obtain the adaptive bandwidth, a three steps method is used : 
+The problem is that the true density itself is unknown (otherwise we would not have to estimate it with a smoothing method). To obtain the adaptive bandwidth, a three steps method is used : 
 
 1. A fixed reference bandwidth ($h_{0}$) is selected. For each event ($e_{i}$) on the network, the density of the spatial process is evaluated by using this reference bandwidth ($\tilde{f}h_{0}(e_{i})$).
-2. For each event, the adaptive bandwidth is calculated with the following formula. A triming values can be defined to limit the maximum adaptive bandwidth.
+2. For each event, the adaptive bandwidth is calculated with the following formula. A trimming values can be defined to limit the maximum adaptive bandwidth.
 3. The densities at sampling points are then evaluated by using the obtained vector of bandwidth for each event.
 
 $$
@@ -431,7 +430,7 @@ $$
 
 This method is called event oriented, because the new bandwidths are evaluated for the events rather than the sampling points. The sample oriented method is not implemented because not compatible with the algorithms used to calculate the discontinuous and continuous NKDE.
 
-In **spNetwork**, when an adaptive bandwidth is used, the calculated bandwidth for each event are returned too.
+In **spNetwork**, when an adaptive bandwidth is used, the calculated bandwidth for each event is returned too.
 
 Let us calculate a new NKDE, but with an adaptive bandwidth.
 ```{r message=FALSE, warning=FALSE}
@@ -454,7 +453,7 @@ samples$density <- adapt_densities$k
 
 ```
 
-We could now map some of the bandwidths
+We can now map some of the bandwidths
 ```{r message=FALSE, warning=FALSE}
 circles <- gBuffer(adapt_densities$events,byid = TRUE,width = adapt_densities$events$bw)
 
@@ -509,15 +508,15 @@ ggplot() +
   
 
 ```
-As one can note, the discontinuous Kernel is maybe not the best option to use with an adaptative bandwidth.
+
 
 ## Applying a correction factor to avoid edge effects
 
-When the study area is limited, the kernel density estimate is biaised at the border because the events at the other side of the border are not sampled. To mitigate the induced biais, one could apply the Diggle correction factor.
+When the study area is limited, the kernel density estimate is biased at the border because the events at the other side of the border are not sampled. To mitigate the induced bias, one could apply the Diggle correction factor.
 
 $$d(u) = \sum_{i=1}^{n}\frac{1}{e(x_{i})}K(dist(u-x_{i}))\\e(u) = \int_{W}{K(dist(u,v))}
 $$
-The correction factor $e(u)$ is calculated for each event for which a part of its mass is outside the study area. More precisely, $e(x_{i})$ is the percentage of the mass of the event located inside the study area. The kernel function could be the simple, the continuous or the discontinuous. This correction factor can be used with the adaptive bandiwdth too. Note that this correction is usable only if the network outside the study_area is available.
+The correction factor $e(u)$ is calculated for each event for which a part of its mass is outside the study area. More precisely, $e(x_{i})$ is the percentage of the mass of the event $x_i$ located inside the study area. The kernel function could be the simple, the continuous or the discontinuous. This correction factor can be used with the adaptive bandwidth too. Note that this correction is usable only if the network outside the study_area is available.
 
 Let us illustrate it here by using a sub part of the same data
 
@@ -603,8 +602,7 @@ ggplot() +
   xlim(extent[1,])+
   ylim(extent[2,])+
   labs(title = "bike accident density by kilometres in 2016",
-          subtitle = "within a radius of 100 metres",
-          caption = "using the quartic kernel, adjusted by Diggle factor")
+          subtitle = "within a radius of 100 metres")
 
 ```
 
@@ -612,9 +610,9 @@ ggplot() +
 
 To define the sampling points on the network, some complementary functions are provided: 
 
-* **lines_center** returns the center point of each line in a *SpatialLinesDataFrame*.
-* **lixelize_lines*** returns lixels obtained after dividing a *SpatialLinesDataFrame*.
-* **lines_points_along** returns points at a specified distance along each lines in a *SpatialLinesDataFrame*.
+* `lines_center` returns the center point of each line in a *SpatialLinesDataFrame*.
+* `lixelize_lines` returns lixels obtained after dividing a *SpatialLinesDataFrame*.
+* `lines_points_along` returns points at a specified distance along each lines in a *SpatialLinesDataFrame*.
 
 
 # References

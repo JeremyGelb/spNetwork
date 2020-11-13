@@ -22,7 +22,7 @@ cross_kfunctions.mc(
 }
 \arguments{
 \item{lines}{A SpatialLinesDataFrame with the sampling points. The
-geoemtries must be a SpatialLinesDataFrame (may crash if some geometries
+geometries must be a SpatialLinesDataFrame (may crash if some geometries
  are invalid)}
 
 \item{pointsA}{A SpatialPointsDataFrame representing the points to which

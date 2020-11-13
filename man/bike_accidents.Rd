@@ -18,7 +18,7 @@ A SpatialPointsDataFrame with 2946 rows and 4 variables: \describe{
 bike_accidents
 }
 \description{
-A SpatialPointsDataFrame representing bike accidents that occured on the
-montreal road network in 2016
+A SpatialPointsDataFrame representing bike accidents that occurred on the
+Montreal road network in 2016
 }
 \keyword{datasets}

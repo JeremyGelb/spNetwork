@@ -22,7 +22,7 @@ cross_kfunctions(
 }
 \arguments{
 \item{lines}{A SpatialLinesDataFrame with the sampling points. The
-geoemtries must be a SpatialLinesDataFrame (may crash if some geometries
+geometries must be a SpatialLinesDataFrame (may crash if some geometries
  are invalid)}
 
 \item{pointsA}{A SpatialPointsDataFrame representing the points to which
@@ -65,6 +65,25 @@ A list with the folowing values : \cr
 }
 \description{
 Calculate the cross k and g functions for a set of points on a network.
+}
+\details{
+The cross k-function is a method to characterize the dispersion of a
+  set of points (A) around a second set of points (B). For each point in B,
+  the numbers of other points in A in subsequent radius are calculated. This
+  empirical cross k-function can be more or less clustered than a cross
+  k-function obtained if the points in A were randomly located in around
+  points in B. In a network, the network distance is used instead of the
+  euclidean distance. This function use Monte Carlo simulations to assess if
+  the points are clustered or dispersed and gives the results as a line plot.
+  If the line of the observed cross k-function is higher than the shaded area
+  representing the values of the simulations, then the points in A are more
+  clustered around points in B than what we can expect from randomness and
+  vice-versa. The function also calculates the cross g-function, a modified
+  version of the cross k-function using rings instead of disks. The width of
+  the ring must be chosen. The principal interest is to avoid the cumulative
+  effect of the classical k-function. Note that the cross k-function of
+  points A around B is not necessarily the same as the cross k-function of
+  points B around A.
 }
 \examples{
 data("libraries_mtl")
