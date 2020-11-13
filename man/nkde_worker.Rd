@@ -51,7 +51,7 @@ ensures that topology is good when building the network. Default is 3}
 the minimum distance between these points and the lines extremities. When
 points are closer, they are added at the extremity of the lines.}
 
-\item{sparse}{A boolean indicating if sparse or regular matrices should be
+\item{sparse}{A Boolean indicating if sparse or regular matrices should be
 used by the Rcpp functions. Regular matrices are faster, but require more
 memory and could lead to error, in particular with multiprocessing. Sparse
 matrices are slower, but require much less memory.}
@@ -65,7 +65,7 @@ estimates. A larger value can be used without problem for the discontinuous
 method. For the continuous method, a larger value will strongly impact
 calculation speed.}
 
-\item{verbose}{A boolean, indicating if the function should print messages
+\item{verbose}{A Boolean, indicating if the function should print messages
 about process.}
 }
 \value{

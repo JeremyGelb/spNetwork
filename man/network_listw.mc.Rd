@@ -28,14 +28,14 @@ SpatialPolygonsDataFrame for which the spatial neighbouring list will be built}
 
 \item{lines}{A SpatialLinesDataFrame representing the network}
 
-\item{maxdistance}{The maximum distance between two observation to
-considere them as neighbours.}
+\item{maxdistance}{The maximum distance between two observations to
+consider them as neighbours.}
 
 \item{method}{A string indicating how the starting points will be built.
-If centroid is used, then the center of lines or polygons is used. If
-pointsalong is used, then points will be placed alon polygons' borders or
-along lines as starting and end points. If ends is used (only for lines)
-the first and list vertices of lines are used as startng and ends points.}
+If 'centroid' is used, then the center of lines or polygons is used. If
+'pointsalong' is used, then points will be placed along polygons' borders or
+along lines as starting and end points. If 'ends' is used (only for lines)
+the first and last vertices of lines are used as starting and ending points.}
 
 \item{point_dist}{A float, defining the distance between points when the
 method pointsalong is selected.}
@@ -67,10 +67,10 @@ vectorized internally}
 use for splitting the dataset. Default is c(1,1), so all the calculation is
 done in one go. It might be necessary to split it if the dataset is large.}
 
-\item{verbose}{A boolean indicating if the function should print its
+\item{verbose}{A Boolean indicating if the function should print its
 progress}
 
-\item{digits}{The number of digits to keep in the spatial coordinates (
+\item{digits}{The number of digits to retain in the spatial coordinates (
 simplification used to reduce risk of topological error)}
 
 \item{tol}{A float indicating the spatial tolerance when points are

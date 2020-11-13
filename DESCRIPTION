@@ -1,13 +1,13 @@
 Package: spNetwork
 Type: Package
-Title: Spatial Analysis on network
-Version: 0.1.2.9000
+Title: Spatial Analysis on Network
+Version: 0.1.0.9000
 Authors@R: c(
     person("Jeremy", "Gelb", email = "jeremy.gelb@ucs.inrs.ca",role = c("aut", "cre")),
     person("Philippe", "Apparicio", email="philippe.apparicio@ucs.inrs.ca", role=c("ctb")))
 Description: The spNetwork package provides functions to perform spatial analysis on network.
     In its actual form, it allows to calculate Network Kernel Density Estimate, and to build
-    spatial matrices (listw objects like in spdep package) to perform any kind of traditional 
+    spatial matrices (listw objects like in 'spdep' package) to perform any kind of traditional 
     spatial analysis with spatial weights based on reticular distances.
 License: GPL-2
 Encoding: UTF-8
@@ -31,7 +31,7 @@ Imports:
     Rcpp (>= 1.0.4.6),
     RcppProgress (>= 0.4.2),
     RcppArmadillo (>= 0.9.8.50.1.0),
-    spNetworkCpp (>= 0.1.4)
+    spNetworkCpp (>= 0.1.0)
 Depends:
     R (>= 3.6)
 Suggests:

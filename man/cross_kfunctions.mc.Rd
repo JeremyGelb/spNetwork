@@ -39,24 +39,24 @@ the distances are calculated.}
 
 \item{width}{The width of each donut for the g-function}
 
-\item{nsim}{An integer indicating the number of Monte Carlo simulations to perform}
+\item{nsim}{An integer indicating the number of Monte Carlo simulations required}
 
 \item{conf_int}{A double indicating the width confidence interval (default = 0.05)}
 
-\item{digits}{An integer indicating the number of digits to keep for the
+\item{digits}{An integer indicating the number of digits to retain for the
 spatial coordinates}
 
 \item{tol}{When adding the points to the network, specify the minimum distance
-between these points and the lines extremities. When points are closer, they
+between these points and the lines' extremities. When points are closer, they
  are added at the extremity of the lines.}
 
 \item{agg}{A double indicating if the events must be aggregated within a distance.
-if NULL, then the events are aggregated by rounding the coordinates.}
+If NULL, the events are aggregated by rounding the coordinates.}
 
-\item{verbose}{A boolean indicating if progress messages should be displayed}
+\item{verbose}{A Boolean indicating if progress messages should be displayed}
 }
 \value{
-A list with the folowing values : \cr
+A list with the following values : \cr
  \itemize{
   \item{plotk}{A ggplot2 object representing the values of the cross k-function}
   \item{plotg}{A ggplot2 object representing the values of the cross g-function}

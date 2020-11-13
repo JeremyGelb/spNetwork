@@ -3,10 +3,10 @@
 \docType{data}
 \name{main_network_mtl}
 \alias{main_network_mtl}
-\title{An extract of Montreal road network with only the main roads}
+\title{An extract of the Montreal road network with only the main roads}
 \format{
 A SpatialLinesDataFrame with 17304 rows and 3 variables: \describe{
-  \item{CLASS}{The class of the road}
+  \item{CLASS}{The category of the road}
   \item{NAME}{The name of the road}
   \item{TYPE}{the type of the road}
   }
@@ -18,7 +18,6 @@ A SpatialLinesDataFrame with 17304 rows and 3 variables: \describe{
 main_network_mtl
 }
 \description{
-A SpatialLinesDataFrame representing the main roads of the road network of
-Montreal.
+A SpatialLinesDataFrame representing the main roads of the Montreal road network.
 }
 \keyword{datasets}

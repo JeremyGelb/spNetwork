@@ -41,9 +41,9 @@ lines}
 
 \item{digits}{The number of digits to keep}
 
-\item{sparse}{A boolean indicating if sparse matrix should be used}
+\item{sparse}{A Boolean indicating if sparse matrix should be used}
 
-\item{verbose}{A boolean indicating if update messages should be printed}
+\item{verbose}{A Boolean indicating if update messages should be printed}
 }
 \value{
 A vector with the local bandwidths

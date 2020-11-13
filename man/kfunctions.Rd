@@ -35,24 +35,24 @@ network. These points will be snapped on the network.}
 
 \item{width}{The width of each donut for the g-function}
 
-\item{nsim}{An integer indicating the number of Monte Carlo simulations to perform}
+\item{nsim}{An integer indicating the number of Monte Carlo simulations required}
 
 \item{conf_int}{A double indicating the width confidence interval (default = 0.05)}
 
-\item{digits}{An integer indicating the number of digits to keep for the
+\item{digits}{An integer indicating the number of digits to retain for the
 spatial coordinates}
 
 \item{tol}{When adding the points to the network, specify the minimum distance
-between these points and the lines extremities. When points are closer, they
+between these points and the lines' extremities. When points are closer, they
  are added at the extremity of the lines.}
 
 \item{agg}{A double indicating if the events must be aggregated within a distance.
-if NULL, then the events are aggregated by rounding the coordinates.}
+If NULL, the events are aggregated by rounding the coordinates.}
 
-\item{verbose}{A boolean indicating if progress messages should be displayed}
+\item{verbose}{A Boolean indicating if progress messages should be displayed}
 }
 \value{
-A list with the folowing values : \cr
+A list with the following values : \cr
  \itemize{
   \item{plotk}{A ggplot2 object representing the values of the k-function}
   \item{plotg}{A ggplot2 object representing the values of the g-function}
@@ -64,17 +64,17 @@ Calculate the k and g functions for a set of points on a network.
 }
 \details{
 The k-function is a method to characterize the dispersion of a set
-  of points. For each point, the numbers of other points in subsequent radius
+  of points. For each point, the numbers of other points in subsequent radii
   are calculated. This empirical k-function can be more or less clustered
   than a k-function obtained if the points were randomly located in space. In
-  a network, the network distance is used instead of the euclidean distance.
-  This function use Monte Carlo simulations to assess if the points are
-  clustered or dispersed and gives the results as a line plot. If the line of
+  a network, the network distance is used instead of the Euclidean distance.
+  This function uses Monte Carlo simulations to assess if the points are
+  clustered or dispersed, and gives the results as a line plot. If the line of
   the observed k-function is higher than the shaded area representing the
   values of the simulations, then the points are more clustered than what we
   can expect from randomness and vice-versa. The function also calculates the
   g-function, a modified version of the k-function using rings instead of
-  disks. The width of the ring must be chosen. The principal interest is to
+  disks. The width of the ring must be chosen. The main interest is to
   avoid the cumulative effect of the classical k-function.
 }
 \examples{

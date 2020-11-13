@@ -3,7 +3,7 @@
 \docType{data}
 \name{bike_accidents}
 \alias{bike_accidents}
-\title{An extract of the bike accidents on Montreal road network}
+\title{An extract of the bike accidents on the Montreal road network}
 \format{
 A SpatialPointsDataFrame with 2946 rows and 4 variables: \describe{
   \item{LOC_X}{The X coordinates of the accident (EPSG : 32188)}

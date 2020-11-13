@@ -17,7 +17,7 @@ the previous lixel. if NULL, then mindist = maxdist/10. Note that the
 segments that are already shorter than the minimum distance are not
 modified.}
 
-\item{verbose}{A boolean indicating if a progress bar should be displayed}
+\item{verbose}{A Boolean indicating if a progress bar should be displayed}
 }
 \value{
 An object of class SpatialLinesDataFrame (package sp)

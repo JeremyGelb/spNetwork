@@ -14,6 +14,6 @@ A SpatialPointsDataFrame with 54 rows and 2 variables
 theatres_mtl
 }
 \description{
-A SpatialPointsDataFrame representing some theatres in Montreal
+A SpatialPointsDataFrame representing theatres in Montreal
 }
 \keyword{datasets}

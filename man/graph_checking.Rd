@@ -9,7 +9,7 @@ graph_checking(lines, digits, tol)
 \arguments{
 \item{lines}{A SpatialLinesDataFrame representing the network}
 
-\item{digits}{An integer indicating the number of digits to keep for coordinates}
+\item{digits}{An integer indicating the number of digits to retain for coordinates}
 
 \item{tol}{A float indicating the tolerance distance to identify a dangle node}
 }
@@ -19,7 +19,7 @@ indicating for each node of the network to which component it belongs. The
 second is a SpatialPointsDataFrame with the dangle nodes of the network.
 }
 \description{
-An utility function to find topological errors in a network.
+A utility function to find topological errors in a network.
 }
 \examples{
 data(mtl_network)

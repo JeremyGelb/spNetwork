@@ -7,7 +7,7 @@
 spatial_request(geometry, tree, data)
 }
 \arguments{
-\item{geometry}{object like SpatialLine, SpatialPolygon or SpatialPoint}
+\item{geometry}{objects such as SpatialLine, SpatialPolygon or SpatialPoint}
 
 \item{tree}{a tree object from package SearchTrees}
 
@@ -17,7 +17,7 @@ spatial_request(geometry, tree, data)
 a subset of data, intersecting geometry
 }
 \description{
-Use a quad tree index to perform spatial request.
+Use a quadtree index to perform spatial request.
 }
 \examples{
 #This is an internal function, no example provided

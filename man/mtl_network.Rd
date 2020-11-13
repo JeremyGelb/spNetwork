@@ -8,7 +8,7 @@
 A SpatialLinesDataFrame with 2946 rows and 4 variables:
 \describe{
   \item{IdRte}{a unique id for each road}
-  \item{ClsRte}{the type of the road}
+  \item{ClsRte}{the category of the road}
   \item{ClsFnction}{the function of the road}
   \item{nbAccident}{the number of
   bike accidents recorded on the road} ... }
@@ -20,7 +20,6 @@ A SpatialLinesDataFrame with 2946 rows and 4 variables:
 mtl_network
 }
 \description{
-A SpatialLinesDataFrame representing a portion of the road network of
-Montreal.
+A SpatialLinesDataFrame representing a portion of the Montreal road network
 }
 \keyword{datasets}

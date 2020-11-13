@@ -39,21 +39,21 @@ the distances are calculated.}
 
 \item{width}{The width of each donut for the g-function}
 
-\item{nsim}{An integer indicating the number of Monte Carlo simulations to perform}
+\item{nsim}{An integer indicating the number of Monte Carlo simulations required}
 
 \item{conf_int}{A double indicating the width confidence interval (default = 0.05)}
 
-\item{digits}{An integer indicating the number of digits to keep for the
+\item{digits}{An integer indicating the number of digits to retain for the
 spatial coordinates}
 
 \item{tol}{When adding the points to the network, specify the minimum distance
-between these points and the lines extremities. When points are closer, they
+between these points and the lines' extremities. When points are closer, they
  are added at the extremity of the lines.}
 
 \item{agg}{A double indicating if the events must be aggregated within a distance.
 if NULL, then the events are aggregated by rounding the coordinates.}
 
-\item{verbose}{A boolean indicating if progress messages should be displayed}
+\item{verbose}{A Boolean indicating if progress messages should be displayed}
 }
 \value{
 A list with the folowing values : \cr
@@ -69,18 +69,18 @@ Calculate the cross k and g functions for a set of points on a network.
 \details{
 The cross k-function is a method to characterize the dispersion of a
   set of points (A) around a second set of points (B). For each point in B,
-  the numbers of other points in A in subsequent radius are calculated. This
+  the numbers of other points in A in subsequent radii are calculated. This
   empirical cross k-function can be more or less clustered than a cross
-  k-function obtained if the points in A were randomly located in around
+  k-function obtained if the points in A were randomly located around
   points in B. In a network, the network distance is used instead of the
-  euclidean distance. This function use Monte Carlo simulations to assess if
+  Euclidean distance. This function uses Monte Carlo simulations to assess if
   the points are clustered or dispersed and gives the results as a line plot.
   If the line of the observed cross k-function is higher than the shaded area
   representing the values of the simulations, then the points in A are more
   clustered around points in B than what we can expect from randomness and
   vice-versa. The function also calculates the cross g-function, a modified
   version of the cross k-function using rings instead of disks. The width of
-  the ring must be chosen. The principal interest is to avoid the cumulative
+  the ring must be chosen. The main interest is to avoid the cumulative
   effect of the classical k-function. Note that the cross k-function of
   points A around B is not necessarily the same as the cross k-function of
   points B around A.

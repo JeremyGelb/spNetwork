@@ -1,10 +1,10 @@
 ---
-title: "Network k functions"
+title: "Network k Functions"
 author: "Jeremy Gelb"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Network k functions}
+  %\VignetteIndexEntry{Network k Functions}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 bibliography: spnetwork_bilbio.bibtex

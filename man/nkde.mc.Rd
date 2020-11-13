@@ -45,7 +45,7 @@ gaussian, tricube, cosine ,triweight, quartic, epanechnikov or uniform.}
 
 \item{bw}{The kernel bandwidth (in meters)}
 
-\item{adaptive}{A boolean, indicating if an adaptive bandwidth must be
+\item{adaptive}{A Boolean, indicating if an adaptive bandwidth must be
 used}
 
 \item{trim_bw}{A float, indicating the maximum value for the adaptive
@@ -58,44 +58,44 @@ simple / discontinuous / continuous (see details for more information)}
 events within the radius around each sampling point), "bw" (the bandwith)
 "none" (the simple sum).}
 
-\item{diggle_correction}{A boolean indicating if the correction factor
+\item{diggle_correction}{A Boolean indicating if the correction factor
 for edge effect must be used.}
 
 \item{study_area}{A SpatialPolygonsDataFrame or a SpatialPolygon
 representing the limits of the study area.}
 
 \item{max_depth}{when using the continuous and discontinuous methods, the
-calculation time and memory use can go wild  if the network has a lot of
-small edges (area with a lot of intersections and a lot of events). To
+calculation time and memory use can go wild  if the network has many
+small edges (area with many of intersections and many events). To
 avoid it, it is possible to set here a maximum depth. Considering that the
 kernel is divided at intersections, a value of 10 should yield good
 estimates in most cases. A larger value can be used without problem for the
 discontinuous method. For the continuous method, a larger value will
 strongly impact calculation speed.}
 
-\item{digits}{The number of digits to keep in the spatial coordinates. It
+\item{digits}{The number of digits to retain in the spatial coordinates. It
 ensures that topology is good when building the network. Default is 3}
 
 \item{tol}{When adding the events and the sampling points to the network,
-the minimum distance between these points and the lines extremities. When
+the minimum distance between these points and the lines' extremities. When
 points are closer, they are added at the extremity of the lines.}
 
 \item{agg}{A double indicating if the events must be aggregated within a distance.
-if NULL, then the events are aggregated by rounding the coordinates.}
+If NULL, the events are aggregated by rounding the coordinates.}
 
-\item{sparse}{A boolean indicating if sparse or regular matrices should be
-used by the Rcpp functions. Regular matrices are faster, but require more
+\item{sparse}{A Boolean indicating if sparse or regular matrix should be
+used by the Rcpp functions. Regular matrix are faster, but require more
 memory and could lead to error, in particular with multiprocessing. Sparse
-matrices are slower, but require much less memory.}
+matrix are slower, but require much less memory.}
 
 \item{grid_shape}{A vector of two values indicating how the study area
 must be split when performing the calculus (see details). Defaut is c(1,1)}
 
-\item{verbose}{A boolean, indicating if the function should print messages
+\item{verbose}{A Boolean, indicating if the function should print messages
 about process.}
 
-\item{check}{A boolean indicating if the geometry checks must be run before
-calculating the densities}
+\item{check}{A Boolean indicating if the geometry checks must be run before
+calculating the density.}
 }
 \value{
 A vector of values, they are the density estimates at samplings
@@ -103,7 +103,7 @@ points
 }
 \description{
 Calculate the Network Kernel Density Estimate based on a network of lines,
-sampling points, and events with multicore support. for details, please see the function nkde
+sampling points, and events with multicore support. For details, please see the function nkde
 }
 \examples{
 data(mtl_network)

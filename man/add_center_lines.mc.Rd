@@ -9,7 +9,7 @@ add_center_lines.mc(lines, show_progress = T, chunk_size = 100)
 \arguments{
 \item{lines}{The SpatialLinesDataframe to use}
 
-\item{show_progress}{A boolean indicating if a progress bar must be displayed}
+\item{show_progress}{A Boolean indicating if a progress bar must be displayed}
 
 \item{chunk_size}{The size of a chunk used for multiprocessing. Default is 100.}
 }

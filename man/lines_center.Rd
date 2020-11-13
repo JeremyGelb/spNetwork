@@ -9,14 +9,14 @@ lines_center(lines, verbose = FALSE)
 \arguments{
 \item{lines}{The SpatialLinesDataframe to use}
 
-\item{verbose}{A boolean indicating of a progressbar should be displayed}
+\item{verbose}{A Boolean indicating if a progressbar should be displayed}
 }
 \value{
 An object of class SpatialPointsDataFrame (package sp)
 }
 \description{
 Generate a SpatialPointsDataFrame with line center points. The points are
-located at middle of the line based on the length of the line.
+located at center of the line based on the length of the line.
 }
 \examples{
 data('mtl_network')

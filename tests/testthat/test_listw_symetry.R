@@ -8,11 +8,11 @@ test_that("A listw object returned by the function network_listw must be symetri
                                   dist_func = "squared inverse",
                                   matrice_type = "B",
                                   grid_shape = c(1,1),
-                                  verbose = "silent",
+                                  verbose = FALSE,
                                   mindist = 10,
                                   digits = 3
                                   )
-  Value <- is.symmetric.nb(listw$neighbours)
+  Value <- spdep::is.symmetric.nb(listw$neighbours)
   expect_true(Value)
 })
 
@@ -25,11 +25,11 @@ test_that("A listw object returned by the function network_listw must be symetri
                          dist_func = "squared inverse",
                          matrice_type = "B",
                          grid_shape = c(1,1),
-                         verbose = "silent",
+                         verbose = FALSE,
                          mindist = 10,
                          digits = 3
   )
-  Value <- is.symmetric.nb(listw$neighbours)
+  Value <- spdep::is.symmetric.nb(listw$neighbours)
   expect_true(Value)
 })
 
@@ -42,7 +42,7 @@ test_that("A listw object returned by the function network_listw must be the sam
                          dist_func = "squared inverse",
                          matrice_type = "W",
                          grid_shape = c(1,1),
-                         verbose = "silent",
+                         verbose = FALSE,
                          mindist = 10,
                          digits = 3
   )
@@ -53,7 +53,7 @@ test_that("A listw object returned by the function network_listw must be the sam
                            dist_func = "squared inverse",
                            matrice_type = "W",
                            grid_shape = c(1,1),
-                           verbose = "silent",
+                           verbose = FALSE,
                            mindist = 10,
                            digits = 3
   )

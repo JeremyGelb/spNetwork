@@ -15,7 +15,7 @@ closest_points(origins, targets)
 for each origin point, the index of the nearest target point
 }
 \description{
-build a quad tree index and solve the nearest neighbour problem for two
+build a quadtree index and solve the nearest neighbour problem for two
 SpatialPointsDataFrame.
 }
 \examples{

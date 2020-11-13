@@ -19,9 +19,9 @@ lixelize_lines.mc(
 
 \item{mindist}{The minimum length of a lixel. After cut, if the length of
 the final lixel is shorter than the minimum distance, then it is added to
-the previous lixel. if NULL, then mindist = maxdist/10}
+the previous lixel. If NULL, then mindist = maxdist/10}
 
-\item{verbose}{A boolean indicating if a progress bar must be displayed}
+\item{verbose}{A Boolean indicating if a progress bar must be displayed}
 
 \item{chunk_size}{The size of a chunk used for multiprocessing. Default is 100.}
 }

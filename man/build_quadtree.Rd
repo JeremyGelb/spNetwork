@@ -10,10 +10,10 @@ build_quadtree(data)
 \item{data}{a SpatialLinesDataFrame or a SpatialPointsDataFrame}
 }
 \value{
-quad tree object from package SearchTrees
+quadtree object from package SearchTrees
 }
 \description{
-Generate quad tree object from package SearchTrees, useful to speed up
+Generate quadtree object from package SearchTrees, useful to speed up
 spatial requesting.
 }
 \examples{
