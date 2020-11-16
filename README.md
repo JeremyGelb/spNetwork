@@ -76,6 +76,8 @@ Note that you can use this in every spatial analysis you would like to perform. 
 
 ### Work in progress
 
+<img src="man/figures/spNetwork_logo.png" width = 120 alt="spNetwork Logo"/>
+
 Currently, functions to calculate K-function and cross-K-function for sets of points are available but still need to be validated.
 
 ## Authors

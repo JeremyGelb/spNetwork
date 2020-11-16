@@ -26,7 +26,6 @@ knitr::opts_chunk$set(
 )
 ```
 
-
 This vignette is a short introduction to the **NKDE** feature of the **spNetwork** package.
 
 
