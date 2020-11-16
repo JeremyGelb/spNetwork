@@ -2,7 +2,7 @@
 % Please edit documentation in R/nkde_execution_functions.R
 \name{adaptive_bw}
 \alias{adaptive_bw}
-\title{Adaptative bandwidth}
+\title{Adaptive bandwidth}
 \usage{
 adaptive_bw(
   grid,
@@ -49,7 +49,7 @@ lines}
 A vector with the local bandwidths
 }
 \description{
-Function to calculate Adaptative bandwidths according to Abramson’s smoothing regimen.
+Function to calculate Adaptive bandwidths according to Abramson’s smoothing regimen.
 }
 \examples{
 #This is an internal function, no example provided

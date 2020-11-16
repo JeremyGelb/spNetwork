@@ -8,7 +8,7 @@ lixelize_lines.mc(
   lines,
   lx_length,
   mindist = NULL,
-  verbose = T,
+  verbose = TRUE,
   chunk_size = 100
 )
 }
@@ -17,27 +17,31 @@ lixelize_lines.mc(
 
 \item{lx_length}{The length of a lixel}
 
-\item{mindist}{The minimum length of a lixel. After cut, if the length of
-the final lixel is shorter than the minimum distance, then it is added to
-the previous lixel. If NULL, then mindist = maxdist/10}
+\item{mindist}{The minimum length of a lixel. After cut, if the length of the
+final lixel is shorter than the minimum distance, then it is added to the
+previous lixel. If NULL, then mindist = maxdist/10}
 
 \item{verbose}{A Boolean indicating if a progress bar must be displayed}
 
-\item{chunk_size}{The size of a chunk used for multiprocessing. Default is 100.}
+\item{chunk_size}{The size of a chunk used for multiprocessing. Default is
+100.}
 }
 \value{
 An object of class SpatialLinesDataFrame (package sp)
 }
 \description{
-Cut a SpatialLines object into lixels with a specified minimal distance
-may fail if the lines geometries are self intersecting with multicore support.
+Cut a SpatialLines object into lixels with a specified minimal
+ distance may fail if the lines geometries are self intersecting with
+ multicore support.
 }
 \examples{
 data('mtl_network')
 future::plan(future::multiprocess(workers=2))
 lixels <- lixelize_lines.mc(mtl_network,150,50)
 \dontshow{
-   ## R CMD check: make sure any open connections are closed afterward
-   if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
+ ## R CMD check: make sure any open connections are closed afterward
+ if (!inherits(future::plan(), "sequential")){
+ future::plan(future::sequential)
+ }
 }
 }

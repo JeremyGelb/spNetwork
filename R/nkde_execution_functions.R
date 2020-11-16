@@ -87,7 +87,7 @@ clean_events <- function(events,digits=5,agg=NULL){
     events$spid <- sp_char_index(raster::coordinates(events),digits)
     new_events <- data.table(events@data[c("weight","spid")])
     agg_events <- new_events[, .(sum(weight)), by = .(spid)]
-    agg_events[,  c("X", "Y") := tstrsplit(spid, "_", fixed=TRUE)]
+    agg_events[,  c("X", "Y") := tstrsplit(spid, "_", fixed = TRUE)]
     agg_events$X <- as.numeric(agg_events$X)
     agg_events$Y <- as.numeric(agg_events$Y)
     agg_events$weight <- agg_events$V1
@@ -162,12 +162,12 @@ aggregate_points <- function(points, maxdist){
 #' @param samples A spatialPointsDataFrame of the samples points
 #' @param lines A SpatialLinesDataFrame representing the network
 #' @param events A spatialPointsDataFrame of the events points
-#' @param w A numeric vector reprsenting the weight of the events
+#' @param w A numeric vector representing the weight of the events
 #' @param digits The number of digits to keep
 #' @param tol A float indicating the spatial tolerance when snapping events on
 #' lines
 #' @param agg A double indicating if the points must be aggregated within a distance.
-#' if NULL, then the points are aggregated by rouding the coordinates.
+#' if NULL, then the points are aggregated by rounding the coordinates.
 #' @return the data prepared for the rest of the operations
 #' @importFrom data.table tstrsplit setDF
 #' @importFrom rgeos gLength
@@ -187,7 +187,7 @@ prepare_data <- function(samples,lines,events, w ,digits,tol, agg){
   samples <- samples[c("goid")]
 
   ## step3 remove lines with no length
-  lines$length <- gLength(lines,byid=TRUE)
+  lines$length <- gLength(lines,byid = TRUE)
   lines <- subset(lines, lines$length>0)
   lines$oid <- 1:nrow(lines)
 
@@ -207,7 +207,7 @@ prepare_data <- function(samples,lines,events, w ,digits,tol, agg){
 #' @param samples A spatialPointsDataFrame of the samples points
 #' @param events A spatialPointsDataFrame of the events points
 #' @param lines A SpatialLinesDataFrame representing the network
-#' @param bw The kernel bandwidth (used to avoid egde effect)
+#' @param bw The kernel bandwidth (used to avoid edge effect)
 #' @param digits The number of digits to keep
 #' @param tol A float indicating the spatial tolerance when snapping events on
 #' lines
@@ -261,7 +261,7 @@ split_by_grid <- function(grid,samples,events,lines,bw,tol, digits){
 
     # split lines at events
     new_lines <- simple_lines(new_lines)
-    new_lines$length <- gLength(new_lines,byid = T)
+    new_lines$length <- gLength(new_lines,byid = TRUE)
     new_lines <- subset(new_lines,new_lines$length>0)
 
     # remove lines that are loops
@@ -294,7 +294,7 @@ split_by_grid <- function(grid,samples,events,lines,bw,tol, digits){
 #' @param grid A spatial grid to split the data within
 #' @param events A spatialPointsDataFrame of the events points
 #' @param lines A SpatialLinesDataFrame representing the network
-#' @param bw The kernel bandwidth (used to avoid egde effect)
+#' @param bw The kernel bandwidth (used to avoid edge effect)
 #' @param digits The number of digits to keep
 #' @param tol A float indicating the spatial tolerance when snapping events on
 #' lines
@@ -347,7 +347,7 @@ split_by_grid_abw <- function(grid,events,lines,bw,tol,digits){
 
     # split lines at events
     new_lines <- simple_lines(new_lines)
-    new_lines$length <- gLength(new_lines,byid = T)
+    new_lines$length <- gLength(new_lines,byid = TRUE)
     new_lines <- subset(new_lines,new_lines$length>0)
 
     # remove lines that are loops
@@ -381,7 +381,7 @@ split_by_grid_abw <- function(grid,events,lines,bw,tol,digits){
 #' @param samples A spatialPointsDataFrame of the samples points
 #' @param events A spatialPointsDataFrame of the events points
 #' @param lines A SpatialLinesDataFrame representing the network
-#' @param bw The kernel bandwidth (used to avoid egde effect)
+#' @param bw The kernel bandwidth (used to avoid edge effect)
 #' @param digits The number of digits to keep
 #' @param tol A float indicating the spatial tolerance when snapping events on
 #' lines
@@ -450,7 +450,7 @@ split_by_grid.mc <- function(grid,samples,events,lines,bw,tol,digits){
 
     #split lines at events
     new_lines <- simple_lines(new_lines)
-    new_lines$length <- gLength(new_lines,byid = T)
+    new_lines$length <- gLength(new_lines,byid = TRUE)
     new_lines <- subset(new_lines,new_lines$length>0)
 
     # remove lines that are loops
@@ -486,7 +486,7 @@ split_by_grid.mc <- function(grid,samples,events,lines,bw,tol,digits){
 #' @param grid A spatial grid to split the data within
 #' @param events A spatialPointsDataFrame of the events points
 #' @param lines A SpatialLinesDataFrame representing the network
-#' @param bw The kernel bandwidth (used to avoid egde effect)
+#' @param bw The kernel bandwidth (used to avoid edge effect)
 #' @param digits The number of digits to keep
 #' @param tol A float indicating the spatial tolerance when snapping events on
 #' lines
@@ -554,7 +554,7 @@ split_by_grid_abw.mc <- function(grid,events,lines,bw,tol,digits){
 
     #split lines at events
     new_lines <- simple_lines(new_lines)
-    new_lines$length <- gLength(new_lines,byid = T)
+    new_lines$length <- gLength(new_lines,byid = TRUE)
     new_lines <- subset(new_lines,new_lines$length>0)
 
     # remove lines that are loops
@@ -584,9 +584,9 @@ split_by_grid_abw.mc <- function(grid,events,lines,bw,tol,digits){
 }
 
 
-#' @title Adaptative bandwidth
+#' @title Adaptive bandwidth
 #'
-#' @description Function to calculate Adaptative bandwidths according to Abramson’s smoothing regimen.
+#' @description Function to calculate Adaptive bandwidths according to Abramson’s smoothing regimen.
 #'
 #' @param grid A spatial grid to split the data within
 #' @param events A spatialPointsDataFrame of the events points
@@ -643,15 +643,15 @@ adaptive_bw <- function(grid,events,lines,bw,trim_bw,method,kernel_name,max_dept
 }
 
 
-#' @title Adaptative bandwidth (multicore)
+#' @title Adaptive bandwidth (multicore)
 #'
-#' @description Function to calculate Adaptative bandwidths according to Abramson’s smoothing regimen with multicore support
+#' @description Function to calculate Adaptive bandwidths according to Abramson’s smoothing regimen with multicore support
 #'
 #' @param grid A spatial grid to split the data within
 #' @param events A spatialPointsDataFrame of the events points
 #' @param lines A SpatialLinesDataFrame representing the network
 #' @param bw The fixed kernel bandwidth
-#' @param trim_bw The maximum size of local bandiwidths
+#' @param trim_bw The maximum size of local bandwidths
 #' @param method The method to use when calculating the NKDE
 #' @param kernel_name The name of the kernel to use
 #' @param max_depth The maximum recursion depth
@@ -725,7 +725,7 @@ adaptive_bw.mc <- function(grid,events,lines,bw,trim_bw,method,kernel_name,max_d
 #' @description The worker function for nkde and nkde.mc
 #'
 #' @param lines A SpatialLinesDataFrame with the sampling points. The
-#' geoemtries must be a SpatialLinesDataFrame (may crash if some geometries
+#' geometries must be a SpatialLinesDataFrame (may crash if some geometries
 #'  are invalid)
 #' @param events A SpatialPointsDataFrame representing the events on the
 #' network. The points will be snapped on the network.
@@ -737,7 +737,7 @@ adaptive_bw.mc <- function(grid,events,lines,bw,trim_bw,method,kernel_name,max_d
 #' @param method The method to use when calculating the NKDE, must be one of
 #' simple / discontinuous / continuous (see details for more information)
 #' @param div The divisor to use for the kernel. Must be "n" (the number of
-#' events within the radius around each sampling point), "bw" (the bandwith)
+#' events within the radius around each sampling point), "bw" (the bandwidth)
 #' "none" (the simple sum).
 #' @param digits The number of digits to keep in the spatial coordinates. It
 #' ensures that topology is good when building the network. Default is 3
@@ -759,7 +759,7 @@ adaptive_bw.mc <- function(grid,events,lines,bw,trim_bw,method,kernel_name,max_d
 #' @param verbose A Boolean, indicating if the function should print messages
 #' about process.
 #' @importFrom igraph adjacent_vertices get.edge.ids
-#' @return A numerci vector with the nkde values
+#' @return A numeric vector with the nkde values
 #' @keywords internal
 #' @examples
 #' #This is an internal function, no example provided
@@ -942,7 +942,7 @@ nkde_worker <- function(lines, events, samples, kernel_name,bw, bws, method, div
 #' To calculate the distances on the network, all the events are added as
 #' vertices. To reduce the size of the network, it is possible to reduce the
 #' number of vertices by adding the events at the extremity of
-#' the lines if they are close to them. This is controled by the parameter tol.
+#' the lines if they are close to them. This is controlled by the parameter tol.
 #' \cr\cr
 #' In the same way, it is possible to limit the number of vertices by
 #' aggregating the events that are close to each other. In that case, the
@@ -968,10 +968,10 @@ nkde_worker <- function(lines, events, samples, kernel_name,bw, bws, method, div
 #' so a sparse matrix object is used to limit memory use. If the network is
 #' small (typically when the grid used to split the data has small rectangles)
 #' then a classical matrix could be used instead of a sparse one. It
-#' singnificantly increases speed, but could lead to memory issues.
+#' significantly increases speed, but could lead to memory issues.
 #'
 #' @param lines A SpatialLinesDataFrame with the sampling points. The
-#' geoemtries must be a SpatialLinesDataFrame (may crash if some geometries
+#' geometries must be a SpatialLinesDataFrame (may crash if some geometries
 #'  are invalid)
 #' @param events A SpatialPointsDataFrame representing the events on the
 #' network. The points will be snapped on the network.
@@ -1088,7 +1088,8 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, tri
     bws <- rep(bw,nrow(events))
   }else{
     ## we want to use an adaptive bw
-    bws <- adaptive_bw.mc(grid,events,lines,bw,trim_bw,method,kernel_name,max_depth,tol,digits,sparse,verbose)
+    bws <- adaptive_bw.mc(grid, events, lines, bw, trim_bw, method,
+                          kernel_name, max_depth, tol, digits, sparse, verbose)
   }
 
   ## calculating the correction factor
@@ -1151,7 +1152,7 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, tri
 #' sampling points, and events with multicore support. For details, please see the function nkde
 #'
 #' @param lines A SpatialLinesDataFrame with the sampling points. The
-#' geoemtries must be a SpatialLinesDataFrame (may crash if some geometries
+#' geometries must be a SpatialLinesDataFrame (may crash if some geometries
 #'  are invalid)
 #' @param events A SpatialPointsDataFrame representing the events on the
 #' network. The points will be snapped on the network.
@@ -1194,12 +1195,12 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, tri
 #' memory and could lead to error, in particular with multiprocessing. Sparse
 #' matrix are slower, but require much less memory.
 #' @param grid_shape A vector of two values indicating how the study area
-#' must be split when performing the calculus (see details). Defaut is c(1,1)
+#' must be split when performing the calculus (see details). Default is c(1,1)
 #' @param verbose A Boolean, indicating if the function should print messages
 #' about process.
 #' @param check A Boolean indicating if the geometry checks must be run before
 #' calculating the density.
-#' @return A vector of values, they are the density estimates at samplings
+#' @return A vector of values, they are the density estimates at sampling
 #' points
 #' @export
 #' @examples

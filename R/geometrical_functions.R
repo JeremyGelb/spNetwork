@@ -3,12 +3,12 @@
 #### helper functions ####
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-#defining some global variables (weird felx but ok)
+#defining some global variables to prevent check error (weird flex but ok)
 utils::globalVariables(c("Xs", "Ys"))
 
-#' @title Coordinates to unique character verctor
+#' @title Coordinates to unique character vector
 #'
-#' @description Generate a character vector based on a coodinates matrix and
+#' @description Generate a character vector based on a coordinates matrix and
 #' the maximum number of digits to keep.
 #'
 #' @param coords A n * 2 matrix representing the coordinates
@@ -23,15 +23,15 @@ sp_char_index <- function(coords, digits) {
                          Ys = as.character(coords[, 2]))
     tempdt <- data.table(tempdf)
 
-    tempdt[,  c("xint", "xdec") := tstrsplit(Xs, ".", fixed=TRUE)]
-    tempdt[,  c("yint", "ydec") := tstrsplit(Ys, ".", fixed=TRUE)]
+    tempdt[,  c("xint", "xdec") := tstrsplit(Xs, ".", fixed = TRUE)]
+    tempdt[,  c("yint", "ydec") := tstrsplit(Ys, ".", fixed = TRUE)]
 
     X <- paste(tempdt$xint, substr(tempdt$xdec, start = 1, stop = digits),
         sep = ".")
-    X <- gsub("NA","0",X,fixed=T)
+    X <- gsub("NA","0",X,fixed = TRUE)
     Y <- paste(tempdt$yint, substr(tempdt$ydec, start = 1, stop = digits),
         sep = ".")
-    Y <- gsub("NA","0",Y,fixed=T)
+    Y <- gsub("NA","0",Y,fixed = TRUE)
     return(paste(X, Y, sep = "_"))
 }
 
@@ -42,8 +42,8 @@ sp_char_index <- function(coords, digits) {
 
 #' @title Get lines extremities
 #'
-#' @description Generate a SpatialPointsDataFrame with the first and last vertex of each
-#' line in a SpatialLinesDataFrame.
+#' @description Generate a SpatialPointsDataFrame with the first and last vertex
+#'   of each line in a SpatialLinesDataFrame.
 #'
 #' @param lines A SpatialLinesDataFrame
 #' @return A SpatialPointsDataFrame
@@ -125,7 +125,7 @@ lines_direction <- function(lines,field){
         return(new_line)
     })
     spLines <- SpatialLines(listlines)
-    df <- SpatialLinesDataFrame(spLines,lines@data,match.ID = F)
+    df <- SpatialLinesDataFrame(spLines,lines@data,match.ID = FALSE)
     raster::crs(df) <- raster::crs(lines)
     return(df)
 }
@@ -133,14 +133,14 @@ lines_direction <- function(lines,field){
 
 #' @title Add vertices to a single line
 #'
-#' @description Add vertices (SpatialPoints) to a single line (SpatialLines), may fail
-#' if the lines geometries are self intersecting.
+#' @description Add vertices (SpatialPoints) to a single line (SpatialLines),
+#'   may fail if the lines geometries are self intersecting.
 #'
 #' @param line The SpatialLine to modify
 #' @param points The SpatialPoints to add to as vertex to the lines
 #' @param i The index of the line (for recombining after all lines)
 #' @param mindist The minimum distance between one point and the extremity of
-#' the line to add the point as a vertex.
+#'   the line to add the point as a vertex.
 #' @return A matrix of coordinates to build the new line
 #' @importFrom rgeos gProject
 #' @importFrom sp coordinates SpatialPoints Line Lines
@@ -174,14 +174,14 @@ add_vertices <- function(line, points, i, mindist) {
 
 #' @title Add vertices to a SpatialLinesDataFrame
 #'
-#' @description Add vertices (SpatialPoints) to their nearest lines (SpatialLines), may fail
-#' if the lines geometries are self intersecting.
+#' @description Add vertices (SpatialPoints) to their nearest lines
+#'   (SpatialLines), may fail if the lines geometries are self intersecting.
 #'
 #' @param lines The SpatialLinesDataframe to modify
 #' @param points The SpatialPoints to add to as vertex to the lines
 #' @param nearest_lines_idx For each point, the index of the nearest line
 #' @param mindist The minimum distance between one point and the extremity of
-#' the line to add the point as a vertex.
+#'   the line to add the point as a vertex.
 #' @return An object of class SpatialLinesDataFrame (package sp)
 #' @importFrom sp coordinates SpatialPoints SpatialLinesDataFrame Line
 #'   SpatialLines
@@ -206,7 +206,8 @@ add_vertices_lines <- function(lines, points, nearest_lines_idx, mindist) {
 
     })
     final_lines <- do.call(raster::spLines,new_lines_list)
-    final_lines <- SpatialLinesDataFrame(final_lines, lines@data,match.ID = F)
+    final_lines <- SpatialLinesDataFrame(final_lines,
+                                         lines@data,match.ID = FALSE)
     raster::crs(final_lines) <- raster::crs(lines)
     return(final_lines)
 }
@@ -214,20 +215,20 @@ add_vertices_lines <- function(lines, points, nearest_lines_idx, mindist) {
 
 #' @title Cut lines into lixels
 #'
-#' @description Cut a SpatialLines object into lixels with a specified minimal distance
-#' may fail if the lines geometries are self intersecting.
+#' @description Cut a SpatialLines object into lixels with a specified minimal
+#'   distance may fail if the lines geometries are self intersecting.
 #'
 #' @param lines The SpatialLinesDataframe to modify
 #' @param lx_length The length of a lixel
-#' @param mindist The minimum length of a lixel. After cut, if the length of
-#' the final lixel is shorter than the minimum distance, then it is added to
-#' the previous lixel. if NULL, then mindist = maxdist/10. Note that the
-#' segments that are already shorter than the minimum distance are not
-#' modified.
+#' @param mindist The minimum length of a lixel. After cut, if the length of the
+#'   final lixel is shorter than the minimum distance, then it is added to the
+#'   previous lixel. if NULL, then mindist = maxdist/10. Note that the segments
+#'   that are already shorter than the minimum distance are not modified.
 #' @param verbose A Boolean indicating if a progress bar should be displayed
 #' @return An object of class SpatialLinesDataFrame (package sp)
 #' @importFrom utils txtProgressBar setTxtProgressBar
-#' @importFrom  sp coordinates Line Lines SpatialLines SpatialLinesDataFrame SpatialPoints
+#' @importFrom  sp coordinates Line Lines SpatialLines SpatialLinesDataFrame
+#'   SpatialPoints
 #' @importFrom rgeos gLength gInterpolate
 #' @export
 #' @examples
@@ -258,13 +259,16 @@ lixelize_lines <- function(lines, lx_length, mindist = NULL, verbose = FALSE) {
             points <- t(sapply(distances, function(d) {
                 return(coordinates(gInterpolate(line, d)))
             }))
-            points <- data.frame(x = points[, 1], y = points[, 2], distance = distances,
+            points <- data.frame(x = points[, 1], y = points[, 2],
+                                 distance = distances,
                                  type = "cut")
             # extracting the original coordinates
             coords <- SpatialPoints(coordinates(line))
             xy <- coordinates(coords)
-            points2 <- data.frame(x = xy[, 1], y = xy[, 2], distance = gProject(line,
-                                                                                coords), type = "base")
+            points2 <- data.frame(x = xy[, 1],
+                                  y = xy[, 2],
+                                  distance = gProject(line,coords),
+                                  type = "base")
             if(points2$distance[nrow(points2)]==0){
                 points2$distance[nrow(points2)] <- tot_length
             }
@@ -285,41 +289,45 @@ lixelize_lines <- function(lines, lx_length, mindist = NULL, verbose = FALSE) {
     })
     oids <- do.call("c", oids)
 
-    new_lines <- do.call(raster::spLines,unlist(newlixels,recursive = F))
+    new_lines <- do.call(raster::spLines,unlist(newlixels,recursive = FALSE))
     df <- lines@data[oids, ]
     if(class(df) != "dataframe"){
         df <- data.frame("oid" = df)
     }
-    new_splines <- SpatialLinesDataFrame(new_lines, df, match.ID = F)
+    new_splines <- SpatialLinesDataFrame(new_lines, df, match.ID = FALSE)
     raster::crs(new_splines) <- raster::crs(lines)
     return(new_splines)
 }
 
 
-#' @title Cut lines into lixels (multicore)
+#'@title Cut lines into lixels (multicore)
 #'
-#' @description Cut a SpatialLines object into lixels with a specified minimal distance
-#' may fail if the lines geometries are self intersecting with multicore support.
+#'@description Cut a SpatialLines object into lixels with a specified minimal
+#'  distance may fail if the lines geometries are self intersecting with
+#'  multicore support.
 #'
-#' @param lines The SpatialLinesDataframe to modify
-#' @param lx_length The length of a lixel
-#' @param mindist The minimum length of a lixel. After cut, if the length of
-#' the final lixel is shorter than the minimum distance, then it is added to
-#' the previous lixel. If NULL, then mindist = maxdist/10
-#' @param verbose A Boolean indicating if a progress bar must be displayed
-#' @param chunk_size The size of a chunk used for multiprocessing. Default is 100.
-#' @return An object of class SpatialLinesDataFrame (package sp)
-#' @export
-#' @importFrom utils capture.output
+#'@param lines The SpatialLinesDataframe to modify
+#'@param lx_length The length of a lixel
+#'@param mindist The minimum length of a lixel. After cut, if the length of the
+#'  final lixel is shorter than the minimum distance, then it is added to the
+#'  previous lixel. If NULL, then mindist = maxdist/10
+#'@param verbose A Boolean indicating if a progress bar must be displayed
+#'@param chunk_size The size of a chunk used for multiprocessing. Default is
+#'  100.
+#'@return An object of class SpatialLinesDataFrame (package sp)
+#'@export
+#'@importFrom utils capture.output
 #' @examples
 #' data('mtl_network')
 #' future::plan(future::multiprocess(workers=2))
 #' lixels <- lixelize_lines.mc(mtl_network,150,50)
 #' \dontshow{
-#'    ## R CMD check: make sure any open connections are closed afterward
-#'    if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
+#'  ## R CMD check: make sure any open connections are closed afterward
+#'  if (!inherits(future::plan(), "sequential")){
+#'  future::plan(future::sequential)
+#'  }
 #'}
-lixelize_lines.mc <- function(lines, lx_length, mindist = NULL, verbose = T, chunk_size = 100) {
+lixelize_lines.mc <- function(lines, lx_length, mindist = NULL, verbose = TRUE, chunk_size = 100) {
     chunks <- split(1:nrow(lines), rep(1:ceiling(nrow(lines) / chunk_size),
                 each = chunk_size, length.out = nrow(lines)))
     chunks <- lapply(chunks,function(x){return(lines[x,])})
@@ -352,7 +360,8 @@ lixelize_lines.mc <- function(lines, lx_length, mindist = NULL, verbose = T, chu
 
 #' @title LineString to simple Line
 #'
-#' @description Split the polylines of a SpatialLinesDataFrame object in simple lines.
+#' @description Split the polylines of a SpatialLinesDataFrame object in simple
+#'   lines.
 #'
 #' @param lines The SpatialLinesDataframe to modify
 #' @return An object of class SpatialLinesDataFrame (package sp)
@@ -385,16 +394,16 @@ simple_lines <- function(lines) {
     })
     data <- lines@data[oids, ]
 
-    final_lines <- do.call(raster::spLines,unlist(new_lines,recursive = F))
-    final_lines <- SpatialLinesDataFrame(final_lines,data, match.ID = F)
+    final_lines <- do.call(raster::spLines,unlist(new_lines,recursive = FALSE))
+    final_lines <- SpatialLinesDataFrame(final_lines,data, match.ID = FALSE)
     raster::crs(final_lines) <- raster::crs(lines)
     return(final_lines)
 }
 
 #' @title Center points of lines
 #'
-#' @description Generate a SpatialPointsDataFrame with line center points. The points are
-#' located at center of the line based on the length of the line.
+#' @description Generate a SpatialPointsDataFrame with line center points. The
+#'   points are located at center of the line based on the length of the line.
 #'
 #' @param lines The SpatialLinesDataframe to use
 #' @param verbose A Boolean indicating if a progressbar should be displayed
@@ -426,7 +435,7 @@ lines_center <- function(lines, verbose = FALSE) {
 
 #' @title Add center vertex to lines
 #'
-#' @description Add to each line of a SpatialLinesDataFrame an additionnal vertex at its
+#' @description Add to each line of a SpatialLinesDataFrame an additional vertex at its
 #' center.
 #'
 #' @param lines The SpatialLinesDataframe to use
@@ -447,30 +456,31 @@ add_center_lines <- function(lines) {
         return(newline)
     })
     final_lines <- SpatialLinesDataFrame(SpatialLines(listline), lines@data,
-        match.ID = F)
+        match.ID = FALSE)
     raster::crs(final_lines) <- raster::crs(lines)
     return(final_lines)
 }
 
 
-#' @title Add center vertex to lines (multicore)
+#'@title Add center vertex to lines (multicore)
 #'
-#' @description Add to each line of a SpatialLinesDataFrame an additionnal vertex at its
-#' center with multicore support.
+#'@description Add to each line of a SpatialLinesDataFrame an additional vertex
+#'  at its center with multicore support.
 #'
-#' @param lines The SpatialLinesDataframe to use
-#' @param show_progress A Boolean indicating if a progress bar must be displayed
-#' @param chunk_size The size of a chunk used for multiprocessing. Default is 100.
-#' @return An object of class SpatialLinesDataframe (package sp)
-#' @importFrom utils capture.output
-#' @keywords internal
+#'@param lines The SpatialLinesDataframe to use
+#'@param show_progress A Boolean indicating if a progress bar must be displayed
+#'@param chunk_size The size of a chunk used for multiprocessing. Default is
+#'  100.
+#'@return An object of class SpatialLinesDataframe (package sp)
+#'@importFrom utils capture.output
+#'@keywords internal
 #' @examples
 #' #This is an internal function, no example provided
 #' \dontshow{
 #'    ## R CMD check: make sure any open connections are closed afterward
 #'    if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
 #'}
-add_center_lines.mc <- function(lines, show_progress = T, chunk_size = 100) {
+add_center_lines.mc <- function(lines, show_progress = TRUE, chunk_size = 100) {
     # step1 : splitting the data into chunks
     chunks <- split(1:nrow(lines), rep(1:ceiling(nrow(lines) / chunk_size), each = chunk_size,
         length.out = nrow(lines)))
@@ -513,7 +523,7 @@ add_center_lines.mc <- function(lines, show_progress = T, chunk_size = 100) {
 #' data(mtl_network)
 #' new_pts <- lines_points_along(mtl_network,50)
 lines_points_along <- function(lines,dist){
-    lenghts <- gLength(lines, byid = T)
+    lenghts <- gLength(lines, byid = TRUE)
     list_pts <- lapply(1:nrow(lines),function(i){
         line <- lines[i,]
         line_lenght <- lenghts[i]
@@ -549,7 +559,7 @@ lines_points_along <- function(lines,dist){
 #' #This is an internal function, no example provided
 surrounding_points <- function(polygons,dist){
     #extracting the boundaries and their lengths
-    boundaries <- gBoundary(polygons, byid=T)
+    boundaries <- gBoundary(polygons, byid = TRUE)
     df <- sp::SpatialLinesDataFrame(boundaries,polygons@data)
     all_pts <- lines_points_along(df,dist)
     return(df)
@@ -618,10 +628,12 @@ nearestPointOnSegment <- function(s, p){
     ab <- c(s[2,1] - s[1,1], s[2,2] - s[1,2])
     t <- sum(ap*ab) / sum(ab*ab)
     t <- ifelse(t<0,0,ifelse(t>1,1,t))
-    t <- ifelse(is.na(t), 0, t) # when start and end of segment are identical t is NA
+    # when start and end of segment are identical t is NA
+    t <- ifelse(is.na(t), 0, t)
     x <- s[1,1] + ab[1] * t
     y <- s[1,2] + ab[2] * t
-    result <- c(x, y, sqrt((x-p[1])^2 + (y-p[2])^2))  # Return nearest point and distance
+    # Return nearest point and distance
+    result <- c(x, y, sqrt((x-p[1])^2 + (y-p[2])^2))
     names(result) <- c("X","Y","distance")
     return(result)
 }
@@ -682,7 +694,7 @@ nearest <- function(x,y){
 #' @importFrom methods slot
 #' @examples
 #' #This is an internal function, no example provided
-snapPointsToLines2 <- function(points, lines ,idField=NA) {
+snapPointsToLines2 <- function(points, lines ,idField = NA) {
 
     nearest_line_index <- nearest(points,lines)
     coordsLines <- sp::coordinates(lines)

@@ -13,7 +13,7 @@ split_by_grid_abw(grid, events, lines, bw, tol, digits)
 
 \item{lines}{A SpatialLinesDataFrame representing the network}
 
-\item{bw}{The kernel bandwidth (used to avoid egde effect)}
+\item{bw}{The kernel bandwidth (used to avoid edge effect)}
 
 \item{tol}{A float indicating the spatial tolerance when snapping events on
 lines}

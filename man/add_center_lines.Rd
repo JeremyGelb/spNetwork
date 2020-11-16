@@ -13,7 +13,7 @@ add_center_lines(lines)
 An object of class SpatialLinesDataframe (package sp)
 }
 \description{
-Add to each line of a SpatialLinesDataFrame an additionnal vertex at its
+Add to each line of a SpatialLinesDataFrame an additional vertex at its
 center.
 }
 \examples{

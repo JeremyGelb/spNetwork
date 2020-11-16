@@ -13,7 +13,7 @@ prepare_data(samples, lines, events, w, digits, tol, agg)
 
 \item{events}{A spatialPointsDataFrame of the events points}
 
-\item{w}{A numeric vector reprsenting the weight of the events}
+\item{w}{A numeric vector representing the weight of the events}
 
 \item{digits}{The number of digits to keep}
 
@@ -21,7 +21,7 @@ prepare_data(samples, lines, events, w, digits, tol, agg)
 lines}
 
 \item{agg}{A double indicating if the points must be aggregated within a distance.
-if NULL, then the points are aggregated by rouding the coordinates.}
+if NULL, then the points are aggregated by rounding the coordinates.}
 }
 \value{
 the data prepared for the rest of the operations

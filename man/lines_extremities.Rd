@@ -13,8 +13,8 @@ lines_extremities(lines)
 A SpatialPointsDataFrame
 }
 \description{
-Generate a SpatialPointsDataFrame with the first and last vertex of each
-line in a SpatialLinesDataFrame.
+Generate a SpatialPointsDataFrame with the first and last vertex
+  of each line in a SpatialLinesDataFrame.
 }
 \examples{
 #This is an internal function, no example provided

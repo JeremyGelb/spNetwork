@@ -28,6 +28,7 @@ Imports:
     progressr (>= 0.4.0),
     data.table (>= 1.12.8),
     SearchTrees (>= 0.5.2),
+    testthat (>= 3.0.0),
     Rcpp (>= 1.0.4.6),
     RcppProgress (>= 0.4.2),
     RcppArmadillo (>= 0.9.8.50.1.0),

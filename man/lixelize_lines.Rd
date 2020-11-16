@@ -11,11 +11,10 @@ lixelize_lines(lines, lx_length, mindist = NULL, verbose = FALSE)
 
 \item{lx_length}{The length of a lixel}
 
-\item{mindist}{The minimum length of a lixel. After cut, if the length of
-the final lixel is shorter than the minimum distance, then it is added to
-the previous lixel. if NULL, then mindist = maxdist/10. Note that the
-segments that are already shorter than the minimum distance are not
-modified.}
+\item{mindist}{The minimum length of a lixel. After cut, if the length of the
+final lixel is shorter than the minimum distance, then it is added to the
+previous lixel. if NULL, then mindist = maxdist/10. Note that the segments
+that are already shorter than the minimum distance are not modified.}
 
 \item{verbose}{A Boolean indicating if a progress bar should be displayed}
 }
@@ -23,8 +22,8 @@ modified.}
 An object of class SpatialLinesDataFrame (package sp)
 }
 \description{
-Cut a SpatialLines object into lixels with a specified minimal distance
-may fail if the lines geometries are self intersecting.
+Cut a SpatialLines object into lixels with a specified minimal
+  distance may fail if the lines geometries are self intersecting.
 }
 \examples{
 data('mtl_network')

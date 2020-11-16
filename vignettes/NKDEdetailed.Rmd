@@ -72,8 +72,8 @@ event <- data.frame(x=c(5),
                     y=c(-2.5))
 coordinates(event) <- cbind(event$x,event$y)
 
-proj4string(event) <- CRS("+init=EPSG:32633")
-proj4string(all_lines) <- CRS("+init=EPSG:32633")
+proj4string(event) <- CRS("EPSG:32633")
+proj4string(all_lines) <- CRS("EPSG:32633")
 
 
 # and map the situation

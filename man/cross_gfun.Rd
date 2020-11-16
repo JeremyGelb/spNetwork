@@ -17,7 +17,7 @@ cross_gfun(dist_mat, start, end, step, width, Lt, na, nb, wa, wb)
 
 \item{width}{The width of each donut}
 
-\item{Lt}{The total lenght of the network}
+\item{Lt}{The total length of the network}
 
 \item{na}{The number of points in set A}
 

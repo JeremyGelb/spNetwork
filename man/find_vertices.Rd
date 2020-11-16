@@ -7,8 +7,7 @@
 find_vertices(spvertices, points, digits, tol = 0.1)
 }
 \arguments{
-\item{spvertices}{The spatial vertices of a graph (produced whith
-build_graph)}
+\item{spvertices}{The spatial vertices of a graph (produced with build_graph)}
 
 \item{points}{the SpatialPointsDataFrame to match}
 
@@ -17,12 +16,12 @@ build_graph)}
 \item{tol}{the maximum distance between a point and a vertex}
 }
 \value{
-A vector of the corresponding vertices id, multiple points may
-belong to the same vertex
+A vector of the corresponding vertices id, multiple points may belong
+ to the same vertex
 }
 \description{
-Function to match some points (SpatialPointsDataFrame) to the vertices of
-a graph.
+Function to match some points (SpatialPointsDataFrame) to the
+ vertices of a graph.
 }
 \examples{
 #This is an internal function, no example provided

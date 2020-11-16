@@ -10,7 +10,7 @@ plot_graph(graph)
 \item{graph}{A graph object (produced with build_graph)}
 }
 \description{
-Function to plot a graph (usefull to check connectivity).
+Function to plot a graph (useful to check connectivity).
 }
 \examples{
 #This is an internal function, no example provided

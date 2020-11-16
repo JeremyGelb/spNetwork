@@ -19,6 +19,7 @@ corrfactor_simple(graph, events, edges, bws)
 A numeric vector with the correction factor values
 }
 \description{
-A function to calculate the Diggle correction factor with the simple NKDE.
+A function to calculate the Diggle correction factor with the
+simple NKDE.
 }
 \keyword{internal}

@@ -14,7 +14,7 @@
 
 #' A smaller extract of the Montreal road network
 #'
-#' A SpatialLinesDataFrame representing a smaller portion of the montreal road
+#' A SpatialLinesDataFrame representing a smaller portion of the Montreal road
 #'  network.
 #'
 #' @format A SpatialLinesDataFrame with 1244 rows and 4 variables:
@@ -45,13 +45,12 @@
 
 #' An extract of the Montreal road network with only the main roads
 #'
-#' A SpatialLinesDataFrame representing the main roads of the Montreal road network.
+#' A SpatialLinesDataFrame representing the main roads of the Montreal road
+#' network.
 #'
 #' @format A SpatialLinesDataFrame with 17304 rows and 3 variables: \describe{
-#'   \item{CLASS}{The category of the road}
-#'   \item{NAME}{The name of the road}
-#'   \item{TYPE}{the type of the road}
-#'   }
+#'   \item{CLASS}{The category of the road} \item{NAME}{The name of the road}
+#'   \item{TYPE}{the type of the road} }
 #' @source \url{http://donnees.ville.montreal.qc.ca/}
 "main_network_mtl"
 

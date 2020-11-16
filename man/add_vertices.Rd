@@ -20,8 +20,8 @@ the line to add the point as a vertex.}
 A matrix of coordinates to build the new line
 }
 \description{
-Add vertices (SpatialPoints) to a single line (SpatialLines), may fail
-if the lines geometries are self intersecting.
+Add vertices (SpatialPoints) to a single line (SpatialLines),
+  may fail if the lines geometries are self intersecting.
 }
 \examples{
 #This is an internal function, no example provided

@@ -22,7 +22,7 @@ nkde_worker(
 }
 \arguments{
 \item{lines}{A SpatialLinesDataFrame with the sampling points. The
-geoemtries must be a SpatialLinesDataFrame (may crash if some geometries
+geometries must be a SpatialLinesDataFrame (may crash if some geometries
  are invalid)}
 
 \item{events}{A SpatialPointsDataFrame representing the events on the
@@ -41,7 +41,7 @@ which the densities will be estimated.}
 simple / discontinuous / continuous (see details for more information)}
 
 \item{div}{The divisor to use for the kernel. Must be "n" (the number of
-events within the radius around each sampling point), "bw" (the bandwith)
+events within the radius around each sampling point), "bw" (the bandwidth)
 "none" (the simple sum).}
 
 \item{digits}{The number of digits to keep in the spatial coordinates. It
@@ -69,7 +69,7 @@ calculation speed.}
 about process.}
 }
 \value{
-A numerci vector with the nkde values
+A numeric vector with the nkde values
 }
 \description{
 The worker function for nkde and nkde.mc

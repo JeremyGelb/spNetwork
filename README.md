@@ -80,7 +80,7 @@ Currently, functions to calculate K-function and cross-K-function for sets of po
 
 ## Authors
 
-* **Jeremy Gelb** - *Creator and maintener*
+* **Jeremy Gelb** - *Creator and maintainer*
 
 
 ## License
@@ -89,5 +89,5 @@ This project is licensed under the GPL2 License
 
 ## Acknowledgments
 
-* Hat tip to Hadley Wickham and its helpfull book *R packages*
+* Hat tip to Hadley Wickham and its helpful book *R packages*
 

@@ -14,13 +14,12 @@ build_graph_directed(lines, digits, line_weight, direction, attrs = FALSE)
 \item{line_weight}{The name of a field that represent the cost to use a line}
 
 \item{direction}{A vector of integers. 0 indicates a bidirectional line and 1
-an unidirectional line
-must be added to the graph lines}
+an unidirectional line must be added to the graph lines}
 
 \item{attrs}{A boolean indicating if the original lines attributes}
 }
 \value{
-A list containing the folowing elements:
+A list containing the following elements:
 \itemize{
         \item graph: an igraph object that preserves the original lines
         characteristics
@@ -28,7 +27,7 @@ A list containing the folowing elements:
         \item lines: the original SpatialLinesDataFrame
         \item spvertices: a SpatialPointsDataFrame representing the vertices
         of the graph
-        \item digits : the number of digits keeped for the coordinates
+        \item digits : the number of digits kept for the coordinates
 }
 }
 \description{

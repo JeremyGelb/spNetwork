@@ -24,7 +24,7 @@ points. It must have a column fid, grouping the points if necessary.}
 \item{lines}{A SpatialLinesDataFrame representing the network}
 
 \item{maxdistance}{The maximum distance between two observation to
-considere them as neighbours.}
+consider them as neighbours.}
 
 \item{dist_func}{A vectorized function converting spatial distances into
 weights.}

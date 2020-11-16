@@ -53,7 +53,8 @@ spatial_request <- function(geometry,tree,data){
   idx <- SearchTrees::rectLookup(tree,box[1,],box[2,])
   candidates <- data[idx,]
   ## step2 : find real intersection
-  final_vector <- as.vector(rgeos::gIntersects(candidates, geometry, byid = T))
+  final_vector <- as.vector(rgeos::gIntersects(candidates,
+                                               geometry, byid = TRUE))
   final_data <- subset(candidates,final_vector)
   return(final_data)
 }

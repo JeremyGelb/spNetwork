@@ -29,7 +29,7 @@ nkde.mc(
 }
 \arguments{
 \item{lines}{A SpatialLinesDataFrame with the sampling points. The
-geoemtries must be a SpatialLinesDataFrame (may crash if some geometries
+geometries must be a SpatialLinesDataFrame (may crash if some geometries
  are invalid)}
 
 \item{events}{A SpatialPointsDataFrame representing the events on the
@@ -89,7 +89,7 @@ memory and could lead to error, in particular with multiprocessing. Sparse
 matrix are slower, but require much less memory.}
 
 \item{grid_shape}{A vector of two values indicating how the study area
-must be split when performing the calculus (see details). Defaut is c(1,1)}
+must be split when performing the calculus (see details). Default is c(1,1)}
 
 \item{verbose}{A Boolean, indicating if the function should print messages
 about process.}
@@ -98,7 +98,7 @@ about process.}
 calculating the density.}
 }
 \value{
-A vector of values, they are the density estimates at samplings
+A vector of values, they are the density estimates at sampling
 points
 }
 \description{

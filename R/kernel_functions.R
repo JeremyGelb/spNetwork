@@ -179,8 +179,13 @@ gaussian_kernel_scaled <- function(d, bw){
 #' @examples
 #' #This is an internal function, no example provided
 select_kernel <- function(name){
-  if((name %in% c("triangle", "gaussian", "scaled gaussian", "tricube", "cosine" ,"triweight", "quartic", 'epanechnikov','uniform'))==FALSE){
-    stop('the name of the kernel function must be one of c("triangle", "gaussian", "scaled gaussian", "tricube", "cosine" ,"triweight", "quartic", "epanechnikov" ,"uniform")')
+  list_kernels <- c("triangle", "gaussian", "scaled gaussian", "tricube",
+                    "cosine" ,"triweight", "quartic", 'epanechnikov',
+                    'uniform')
+  if((name %in% list_kernels)==FALSE){
+    allkernels <- paste(list_kernels,collapse = ", ")
+    stop(paste("the name of the kernel function must be one of",
+               allkernels, sep=" "))
   }
   if(name=="gaussian"){
     return(gaussian_kernel)
@@ -227,13 +232,14 @@ select_kernel <- function(name){
 #' @keywords internal
 #' @examples
 #' #This is an internal function, no example provided
-gm_mean = function(x, na.rm=TRUE){
+gm_mean <- function(x, na.rm=TRUE){
   exp(sum(log(x[x > 0]), na.rm=na.rm) / length(x))
 }
 
 #' @title Gamma parameter for Abramson’s adaptive bandwidth
 #'
-#' @description Function to calculate the gamma parameter in Abramson’s smoothing regimen.
+#' @description Function to calculate the gamma parameter in Abramson’s
+#'   smoothing regimen.
 #'
 #' @param k a vector of numeric values (the estimated kernel densities)
 #' @return the gamma parameter in Abramson’s smoothing regimen
@@ -296,7 +302,8 @@ simple_nkde <- function(graph, events, samples, bws, kernel_func, nodes, edges){
     y <- e$vertex_id
     w <- e$weight
     #calculating the kernel values
-    samples_k <- ess_kernel(graph,y,bw, kernel_func, samples, nodes, edges, sample_tree, edges_tree)
+    samples_k <- ess_kernel(graph,y,bw, kernel_func, samples,
+                            nodes, edges, sample_tree, edges_tree)
     samples_count <- ifelse(samples_k>0,1,0)
     base_k <- samples_k * w + base_k
     base_count <- base_count + (samples_count * w)
@@ -314,9 +321,9 @@ simple_nkde <- function(graph, events, samples, bws, kernel_func, nodes, edges){
 #' @param y the index of the actual event
 #' @param bw a float indicating the kernel bandwidth (in meters)
 #' @param kernel_func a function obtained with the function select_kernel
-#' @param samples a SpatialPointsDataFrame representing the sampling points.
-#' The samples must be snapped on the network. A column edge_id must indicate
-#' for each sample on which edge it is snapped.
+#' @param samples a SpatialPointsDataFrame representing the sampling points. The
+#'   samples must be snapped on the network. A column edge_id must indicate for
+#'   each sample on which edge it is snapped.
 #' @param nodes a SpatialPointsDataFrame representing the nodes of the network
 #' @param edges a SpatialLinesDataFrame representing the edges of the network
 #' @param sample_tree a quadtree object, the spatial index of the samples
@@ -340,7 +347,7 @@ ess_kernel <- function(graph, y, bw, kernel_func, samples, nodes, edges, sample_
   buff2 <- gBuffer(event_node,width = bw+0.1*bw)
   ok_edges <- spatial_request(buff2,edges_tree,edges)$edge_id
   ## Step3 for each edge, find its two vertices
-  vertices <- ends(graph,ok_edges,names=F)
+  vertices <- ends(graph,ok_edges,names = FALSE)
   ## step4 calculate the the distance between the start node and each edge vertex
   un_vertices <- unique(c(vertices[,1],vertices[,2]))
   dist1 <- as.numeric(distances(graph,y,to=un_vertices,mode="out"))

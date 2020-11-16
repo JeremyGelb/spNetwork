@@ -10,7 +10,7 @@
 #' @param start A float, the start value for evaluating the k-function
 #' @param end A float, the last value for evaluating the k-function
 #' @param step A float, the jump between two evaluations of the k-function
-#' @param Lt The total lenght of the network
+#' @param Lt The total length of the network
 #' @param n The number of points
 #' @param w The weight of the points (coincident points)
 #'
@@ -41,7 +41,7 @@ kfunc <- function(dist_mat,start,end,step,Lt,n,w){
 #' @param end A float, the last value for evaluating the g-function
 #' @param step A float, the jump between two evaluations of the k-function
 #' @param width The width of each donut
-#' @param Lt The total lenght of the network
+#' @param Lt The total length of the network
 #' @param n The number of points
 #' @param w The weight of the points (coincident points)
 #'
@@ -76,7 +76,7 @@ gfunc <- function(dist_mat,start,end,step,width,Lt,n,w){
 #' @param start A float, the start value for evaluating the k-function
 #' @param end A float, the last value for evaluating the k-function
 #' @param step A float, the jump between two evaluations of the k-function
-#' @param Lt The total lenght of the network
+#' @param Lt The total length of the network
 #' @param na The number of points in set A
 #' @param nb The number of points in set B
 #' @param wa The weight of the points in set A (coincident points)
@@ -116,7 +116,7 @@ cross_kfunc <- function(dist_mat,start,end,step,Lt,na,nb,wa,wb){
 #' @param end A float, the last value for evaluating the g-function
 #' @param step A float, the jump between two evaluations of the k-function
 #' @param width The width of each donut
-#' @param Lt The total lenght of the network
+#' @param Lt The total length of the network
 #' @param na The number of points in set A
 #' @param nb The number of points in set B
 #' @param wa The weight of the points in set A (coincident points)
@@ -156,7 +156,7 @@ cross_gfun <- function(dist_mat,start,end,step,width,Lt,na,nb,wa,wb){
 #' @param graph An graph object from igraph
 #' @param edge_df A DataFrame describing the edges
 #' @param n The number of point
-#' @param start_vert The vertices from wich the distances will be calculated.
+#' @param start_vert The vertices from which the distances will be calculated.
 #' if null, then the distances are calculated from the generated locations.
 #'
 #' @return A numeric matrix with the distances between points
@@ -193,7 +193,7 @@ randomize_distmatrix <- function(graph, edge_df, n, start_vert = NULL){
   df <- data.frame(start = c(start_names,new_vert),
                 end = c(new_vert,end_names),
                 weight = c(dists,(sel_edges_len - dists)))
-  new_graph <- igraph::graph_from_data_frame(df, directed=F)
+  new_graph <- igraph::graph_from_data_frame(df, directed = FALSE)
   tot_graph <- igraph::union(graph,new_graph, byname = TRUE)
   ws <- igraph::E(tot_graph)
   df_tmp <- data.frame("w1" = ws$weight_1,
@@ -226,7 +226,8 @@ randomize_distmatrix <- function(graph, edge_df, n, start_vert = NULL){
 
 #' @title Network k and g functions
 #'
-#' @description Calculate the k and g functions for a set of points on a network.
+#' @description Calculate the k and g functions for a set of points on a
+#'   network.
 #'
 #' @details The k-function is a method to characterize the dispersion of a set
 #'   of points. For each point, the numbers of other points in subsequent radii
@@ -234,40 +235,40 @@ randomize_distmatrix <- function(graph, edge_df, n, start_vert = NULL){
 #'   than a k-function obtained if the points were randomly located in space. In
 #'   a network, the network distance is used instead of the Euclidean distance.
 #'   This function uses Monte Carlo simulations to assess if the points are
-#'   clustered or dispersed, and gives the results as a line plot. If the line of
-#'   the observed k-function is higher than the shaded area representing the
+#'   clustered or dispersed, and gives the results as a line plot. If the line
+#'   of the observed k-function is higher than the shaded area representing the
 #'   values of the simulations, then the points are more clustered than what we
 #'   can expect from randomness and vice-versa. The function also calculates the
 #'   g-function, a modified version of the k-function using rings instead of
-#'   disks. The width of the ring must be chosen. The main interest is to
-#'   avoid the cumulative effect of the classical k-function.
+#'   disks. The width of the ring must be chosen. The main interest is to avoid
+#'   the cumulative effect of the classical k-function.
 #'
-#' @param lines A SpatialLinesDataFrame with the sampling points. The
-#' geometries must be a SpatialLinesDataFrame (may crash if some geometries
-#'  are invalid)
+#' @param lines A SpatialLinesDataFrame with the sampling points. The geometries
+#'   must be a SpatialLinesDataFrame (may crash if some geometries are invalid)
 #' @param points A SpatialPointsDataFrame representing the points on the
-#' network. These points will be snapped on the network.
+#'   network. These points will be snapped on the network.
 #' @param start A double, the start value for evaluating the k and g functions
 #' @param end A double, the last value for evaluating the k and g functions
-#' @param step A double, the jump between two evaluations of the k and g function
+#' @param step A double, the jump between two evaluations of the k and g
+#'   function
 #' @param width The width of each donut for the g-function
-#' @param nsim An integer indicating the number of Monte Carlo simulations required
-#' @param conf_int A double indicating the width confidence interval (default = 0.05)
+#' @param nsim An integer indicating the number of Monte Carlo simulations
+#'   required
+#' @param conf_int A double indicating the width confidence interval (default =
+#'   0.05)
 #' @param digits An integer indicating the number of digits to retain for the
-#' spatial coordinates
-#' @param tol When adding the points to the network, specify the minimum distance
-#' between these points and the lines' extremities. When points are closer, they
-#'  are added at the extremity of the lines.
-#' @param agg A double indicating if the events must be aggregated within a distance.
-#' If NULL, the events are aggregated by rounding the coordinates.
+#'   spatial coordinates
+#' @param tol When adding the points to the network, specify the minimum
+#'   distance between these points and the lines' extremities. When points are
+#'   closer, they are added at the extremity of the lines.
+#' @param agg A double indicating if the events must be aggregated within a
+#'   distance. If NULL, the events are aggregated by rounding the coordinates.
 #' @param verbose A Boolean indicating if progress messages should be displayed
 #'
-#' @return A list with the following values : \cr
-#'  \itemize{
-#'   \item{plotk}{A ggplot2 object representing the values of the k-function}
-#'   \item{plotg}{A ggplot2 object representing the values of the g-function}
-#'   \item{values}{A DataFrame with the values used to build the plots}
-#' }
+#' @return A list with the following values : \cr \itemize{ \item{plotk}{A
+#'   ggplot2 object representing the values of the k-function} \item{plotg}{A
+#'   ggplot2 object representing the values of the g-function} \item{values}{A
+#'   DataFrame with the values used to build the plots} }
 #' @importFrom stats quantile
 #' @importFrom rgeos gLength
 #' @importFrom ggplot2 ggplot geom_ribbon geom_path aes_string labs
@@ -300,7 +301,7 @@ kfunctions <- function(lines, points, start, end, step, width, nsim, conf_int = 
     lines$probs <- probs
   }
 
-  lines$length <- gLength(lines,byid=TRUE)
+  lines$length <- gLength(lines,byid = TRUE)
   lines <- subset(lines, lines$length>0)
   lines$oid <- seq_len(nrow(lines))
 
@@ -310,14 +311,15 @@ kfunctions <- function(lines, points, start, end, step, width, nsim, conf_int = 
     print("Snapping points on lines ...")
   }
   snapped_events <- snapPointsToLines2(points,lines,idField = "oid")
-  new_lines <- add_vertices_lines(lines,snapped_events,snapped_events$nearest_line_id,tol)
+  new_lines <- add_vertices_lines(lines,snapped_events,
+                                  snapped_events$nearest_line_id, tol)
 
   ## step3 : splitting the lines
   if (verbose){
     print("Building graph ...")
   }
   new_lines <- simple_lines(new_lines)
-  new_lines$length <- gLength(new_lines,byid = T)
+  new_lines$length <- gLength(new_lines,byid = TRUE)
   new_lines <- subset(new_lines,new_lines$length>0)
   new_lines <- remove_loop_lines(new_lines,digits)
   new_lines$oid <- seq_len(nrow(new_lines))
@@ -325,7 +327,9 @@ kfunctions <- function(lines, points, start, end, step, width, nsim, conf_int = 
   Lt <- gLength(new_lines)
 
   ## step4 : building the graph for the real case
-  graph_result <- build_graph(new_lines,digits = digits,line_weight = "length", attrs = T)
+  graph_result <- build_graph(new_lines,digits = digits,
+                              line_weight = "length",
+                              attrs = TRUE)
   graph <- graph_result$graph
   nodes <- graph_result$spvertices
   graph_result$spedges$probs <- igraph::get.edge.attribute(graph_result$graph,
@@ -385,17 +389,23 @@ kfunctions <- function(lines, points, start, end, step, width, nsim, conf_int = 
   )
 
   plotk <- ggplot(plot_df)+
-    geom_ribbon(aes_string(x = "distances", ymin="lower_k", ymax = "upper_k"), fill = grDevices::rgb(0.1,0.1,0.1),alpha=0.4, )+
-    geom_path(aes_string(x = "distances", y = "lower_k"), col="black", linetype="dashed")+
-    geom_path(aes_string(x = "distances", y = "upper_k"), col="black", linetype="dashed")+
+    geom_ribbon(aes_string(x = "distances", ymin="lower_k",ymax = "upper_k"),
+                fill = grDevices::rgb(0.1,0.1,0.1), alpha=0.4)+
+    geom_path(aes_string(x = "distances", y = "lower_k"), col="black",
+              linetype="dashed")+
+    geom_path(aes_string(x = "distances", y = "upper_k"), col="black",
+              linetype="dashed")+
     geom_path(aes_string(x = "distances", y = "obs_k"), col="blue")+
     labs(x = "distances",
          y = "empirical K-function")
 
   plotg <- ggplot(plot_df)+
-    geom_ribbon(aes_string(x = "distances", ymin="lower_g", ymax = "upper_g"), fill = grDevices::rgb(0.1,0.1,0.1),alpha=0.4, )+
-    geom_path(aes_string(x = "distances", y = "lower_g"), col="black", linetype="dashed")+
-    geom_path(aes_string(x = "distances", y = "upper_g"), col="black", linetype="dashed")+
+    geom_ribbon(aes_string(x = "distances", ymin="lower_g", ymax = "upper_g"),
+                fill = grDevices::rgb(0.1,0.1,0.1),alpha=0.4, )+
+    geom_path(aes_string(x = "distances", y = "lower_g"), col="black",
+              linetype="dashed")+
+    geom_path(aes_string(x = "distances", y = "upper_g"), col="black",
+              linetype="dashed")+
     geom_path(aes_string(x = "distances", y = "obs_g"), col="blue")+
     labs(x = "distances",
          y = "empirical G-function")
@@ -410,37 +420,37 @@ kfunctions <- function(lines, points, start, end, step, width, nsim, conf_int = 
 
 #' @title Network k and g functions (multicore)
 #'
-#' @description Calculate the k and g functions for a set of points on a
-#' network with multicore support. For details, please see the function kfunctions.
+#' @description Calculate the k and g functions for a set of points on a network
+#'   with multicore support. For details, please see the function kfunctions.
 #'
 #' @details For details, please look at the function kfunctions.
 #'
-#' @param lines A SpatialLinesDataFrame with the sampling points. The
-#' geometries must be a SpatialLinesDataFrame (may crash if some geometries
-#'  are invalid)
+#' @param lines A SpatialLinesDataFrame with the sampling points. The geometries
+#'   must be a SpatialLinesDataFrame (may crash if some geometries are invalid)
 #' @param points A SpatialPointsDataFrame representing the points on the
-#' network. These points will be snapped on the network.
+#'   network. These points will be snapped on the network.
 #' @param start A double, the start value for evaluating the k and g functions
 #' @param end A double, the last value for evaluating the k and g functions
-#' @param step A double, the jump between two evaluations of the k and g functions
+#' @param step A double, the jump between two evaluations of the k and g
+#'   functions
 #' @param width The width of each donut for the g-function
-#' @param nsim An integer indicating the number of Monte Carlo simulations required
-#' @param conf_int A double indicating the width confidence interval (default = 0.05)
+#' @param nsim An integer indicating the number of Monte Carlo simulations
+#'   required
+#' @param conf_int A double indicating the width confidence interval (default =
+#'   0.05)
 #' @param digits An integer indicating the number of digits to retain for the
-#' spatial coordinates
-#' @param tol When adding the points to the network, specify the minimum distance
-#' between these points and the lines' extremities. When points are closer, they
-#'  are added at the extremity of the lines.
-#' @param agg A double indicating if the events must be aggregated within a distance.
-#' If NULL, the events are aggregated by rounding the coordinates.
+#'   spatial coordinates
+#' @param tol When adding the points to the network, specify the minimum
+#'   distance between these points and the lines' extremities. When points are
+#'   closer, they are added at the extremity of the lines.
+#' @param agg A double indicating if the events must be aggregated within a
+#'   distance. If NULL, the events are aggregated by rounding the coordinates.
 #' @param verbose A Boolean indicating if progress messages should be displayed
 #'
-#' @return A list with the following values : \cr
-#'  \itemize{
-#'   \item{plotk}{A ggplot2 object representing the values of the k-function}
-#'   \item{plotg}{A ggplot2 object representing the values of the g-function}
-#'   \item{values}{A DataFrame with the values used to build the plots}
-#' }
+#' @return A list with the following values : \cr \itemize{ \item{plotk}{A
+#'   ggplot2 object representing the values of the k-function} \item{plotg}{A
+#'   ggplot2 object representing the values of the g-function} \item{values}{A
+#'   DataFrame with the values used to build the plots} }
 #'
 #' @importFrom stats quantile
 #' @importFrom rgeos gLength
@@ -480,7 +490,7 @@ kfunctions.mc <- function(lines, points, start, end, step, width, nsim, conf_int
   }else{
     lines$probs <- probs
   }
-  lines$length <- gLength(lines,byid=TRUE)
+  lines$length <- gLength(lines,byid = TRUE)
   lines <- subset(lines, lines$length>0)
   lines$oid <- seq_len(nrow(lines))
 
@@ -496,7 +506,7 @@ kfunctions.mc <- function(lines, points, start, end, step, width, nsim, conf_int
     print("Building graph ...")
   }
   new_lines <- simple_lines(new_lines)
-  new_lines$length <- gLength(new_lines,byid = T)
+  new_lines$length <- gLength(new_lines,byid = TRUE)
   new_lines <- subset(new_lines,new_lines$length>0)
   new_lines <- remove_loop_lines(new_lines,digits)
   new_lines$oid <- seq_len(nrow(new_lines))
@@ -504,7 +514,7 @@ kfunctions.mc <- function(lines, points, start, end, step, width, nsim, conf_int
   Lt <- gLength(new_lines)
 
   ## step4 : building the graph for the real case
-  graph_result <- build_graph(new_lines,digits = digits,line_weight = "length", attrs = T)
+  graph_result <- build_graph(new_lines,digits = digits,line_weight = "length", attrs = TRUE)
   graph_result$spedges$probs <- igraph::get.edge.attribute(graph_result$graph,
                                                            name = "probs")
   graph <- graph_result$graph
@@ -528,13 +538,11 @@ kfunctions.mc <- function(lines, points, start, end, step, width, nsim, conf_int
   w <- rep(1,times = n)
   sim_seq <- 1:nsim
   graph <- graph_result$graph
-  #graph_df <- igraph::as_data_frame(graph, what="both")
   edgesdf <- graph_result$spedges@data
   if(verbose){
     progressr::with_progress({
       p <- progressr::progressor(along = sim_seq)
       all_values <- future.apply::future_lapply(sim_seq, function(i){
-        #graphtmp <- igraph::graph_from_data_frame(graph_df$edges, directed = F)
         dist_mat <- randomize_distmatrix(graph, edgesdf, n)
         k_vals <- kfunc(dist_mat,start,end,step,Lt,n,w = w)
         g_vals <- gfunc(dist_mat,start,end,step,width,Lt,n,w = w)
@@ -577,17 +585,23 @@ kfunctions.mc <- function(lines, points, start, end, step, width, nsim, conf_int
   )
 
   plotk <- ggplot(plot_df)+
-    geom_ribbon(aes_string(x = "distances", ymin="lower_k", ymax = "upper_k"), fill = grDevices::rgb(0.1,0.1,0.1),alpha=0.4, )+
-    geom_path(aes_string(x = "distances", y = "lower_k"), col="black", linetype="dashed")+
-    geom_path(aes_string(x = "distances", y = "upper_k"), col="black", linetype="dashed")+
+    geom_ribbon(aes_string(x = "distances", ymin="lower_k", ymax = "upper_k"),
+                fill = grDevices::rgb(0.1,0.1,0.1),alpha=0.4, )+
+    geom_path(aes_string(x = "distances", y = "lower_k"), col="black",
+              linetype="dashed")+
+    geom_path(aes_string(x = "distances", y = "upper_k"), col="black",
+              linetype="dashed")+
     geom_path(aes_string(x = "distances", y = "obs_k"), col="blue")+
     labs(x = "distances",
          y = "empirical K-function")
 
   plotg <- ggplot(plot_df)+
-    geom_ribbon(aes_string(x = "distances", ymin="lower_g", ymax = "upper_g"), fill = grDevices::rgb(0.1,0.1,0.1),alpha=0.4, )+
-    geom_path(aes_string(x = "distances", y = "lower_g"), col="black", linetype="dashed")+
-    geom_path(aes_string(x = "distances", y = "upper_g"), col="black", linetype="dashed")+
+    geom_ribbon(aes_string(x = "distances", ymin="lower_g", ymax = "upper_g"),
+                fill = grDevices::rgb(0.1,0.1,0.1),alpha=0.4, )+
+    geom_path(aes_string(x = "distances", y = "lower_g"), col="black",
+              linetype="dashed")+
+    geom_path(aes_string(x = "distances", y = "upper_g"), col="black",
+              linetype="dashed")+
     geom_path(aes_string(x = "distances", y = "obs_g"), col="blue")+
     labs(x = "distances",
          y = "empirical G-function")
@@ -607,17 +621,18 @@ kfunctions.mc <- function(lines, points, start, end, step, width, nsim, conf_int
 
 #' @title Network cross k and g functions
 #'
-#' @description Calculate the cross k and g functions for a set of points on a network.
+#' @description Calculate the cross k and g functions for a set of points on a
+#'   network.
 #'
 #' @details The cross k-function is a method to characterize the dispersion of a
 #'   set of points (A) around a second set of points (B). For each point in B,
 #'   the numbers of other points in A in subsequent radii are calculated. This
 #'   empirical cross k-function can be more or less clustered than a cross
-#'   k-function obtained if the points in A were randomly located around
-#'   points in B. In a network, the network distance is used instead of the
-#'   Euclidean distance. This function uses Monte Carlo simulations to assess if
-#'   the points are clustered or dispersed and gives the results as a line plot.
-#'   If the line of the observed cross k-function is higher than the shaded area
+#'   k-function obtained if the points in A were randomly located around points
+#'   in B. In a network, the network distance is used instead of the Euclidean
+#'   distance. This function uses Monte Carlo simulations to assess if the
+#'   points are clustered or dispersed and gives the results as a line plot. If
+#'   the line of the observed cross k-function is higher than the shaded area
 #'   representing the values of the simulations, then the points in A are more
 #'   clustered around points in B than what we can expect from randomness and
 #'   vice-versa. The function also calculates the cross g-function, a modified
@@ -627,34 +642,36 @@ kfunctions.mc <- function(lines, points, start, end, step, width, nsim, conf_int
 #'   points A around B is not necessarily the same as the cross k-function of
 #'   points B around A.
 #'
-#' @param lines A SpatialLinesDataFrame with the sampling points. The
-#' geometries must be a SpatialLinesDataFrame (may crash if some geometries
-#'  are invalid)
-#' @param pointsA A SpatialPointsDataFrame representing the points to which
-#' the distances are calculated.
+#' @param lines A SpatialLinesDataFrame with the sampling points. The geometries
+#'   must be a SpatialLinesDataFrame (may crash if some geometries are invalid)
+#' @param pointsA A SpatialPointsDataFrame representing the points to which the
+#'   distances are calculated.
 #' @param pointsB A SpatialPointsDataFrame representing the points from which
-#' the distances are calculated.
+#'   the distances are calculated.
 #' @param start A double, the start value for evaluating the k and g functions
 #' @param end A double, the last value for evaluating the k and g functions
-#' @param step A double, the jump between two evaluations of the k and g function
+#' @param step A double, the jump between two evaluations of the k and g
+#'   function
 #' @param width The width of each donut for the g-function
-#' @param nsim An integer indicating the number of Monte Carlo simulations required
-#' @param conf_int A double indicating the width confidence interval (default = 0.05)
+#' @param nsim An integer indicating the number of Monte Carlo simulations
+#'   required
+#' @param conf_int A double indicating the width confidence interval (default =
+#'   0.05)
 #' @param digits An integer indicating the number of digits to retain for the
-#' spatial coordinates
-#' @param tol When adding the points to the network, specify the minimum distance
-#' between these points and the lines' extremities. When points are closer, they
-#'  are added at the extremity of the lines.
-#' @param agg A double indicating if the events must be aggregated within a distance.
-#' if NULL, then the events are aggregated by rounding the coordinates.
+#'   spatial coordinates
+#' @param tol When adding the points to the network, specify the minimum
+#'   distance between these points and the lines' extremities. When points are
+#'   closer, they are added at the extremity of the lines.
+#' @param agg A double indicating if the events must be aggregated within a
+#'   distance. if NULL, then the events are aggregated by rounding the
+#'   coordinates.
 #' @param verbose A Boolean indicating if progress messages should be displayed
 #'
-#' @return A list with the folowing values : \cr
-#'  \itemize{
-#'   \item{plotk}{A ggplot2 object representing the values of the cross k-function}
-#'   \item{plotg}{A ggplot2 object representing the values of the cross g-function}
-#'   \item{values}{A DataFrame with the values used to build the plots}
-#' }
+#' @return A list with the folowing values : \cr \itemize{ \item{plotk}{A
+#'   ggplot2 object representing the values of the cross k-function}
+#'   \item{plotg}{A ggplot2 object representing the values of the cross
+#'   g-function} \item{values}{A DataFrame with the values used to build the
+#'   plots} }
 #' @importFrom stats quantile
 #' @importFrom rgeos gLength
 #' @importFrom ggplot2 ggplot geom_ribbon geom_path aes_string labs
@@ -693,7 +710,7 @@ cross_kfunctions <- function(lines, pointsA, pointsB, start, end, step, width, n
   }else{
     lines$probs <- probs
   }
-  lines$length <- gLength(lines,byid=TRUE)
+  lines$length <- gLength(lines,byid = TRUE)
   lines <- subset(lines, lines$length>0)
   lines$oid <- seq_len(nrow(lines))
 
@@ -703,25 +720,28 @@ cross_kfunctions <- function(lines, pointsA, pointsB, start, end, step, width, n
   }
   pointsA$type <- "A"
   pointsB$type <- "B"
-  all_events <- rbind(pointsA[c("type","goid","weight")],pointsB[c("type","goid","weight")])
+  all_events <- rbind(pointsA[c("type","goid","weight")],
+                      pointsB[c("type","goid","weight")])
 
-  snapped_events <- snapPointsToLines2(all_events,lines,idField = "oid")
-  new_lines <- add_vertices_lines(lines,snapped_events,snapped_events$nearest_line_id,tol)
+  snapped_events <- snapPointsToLines2(all_events, lines, idField = "oid")
+  new_lines <- add_vertices_lines(lines, snapped_events,
+                                  snapped_events$nearest_line_id, tol)
 
   ## step3 : splitting the lines
   if(verbose){
     print("Building graph ...")
   }
   new_lines <- simple_lines(new_lines)
-  new_lines$length <- gLength(new_lines,byid = T)
-  new_lines <- subset(new_lines,new_lines$length>0)
-  new_lines <- remove_loop_lines(new_lines,digits)
+  new_lines$length <- gLength(new_lines ,byid = TRUE)
+  new_lines <- subset(new_lines, new_lines$length>0)
+  new_lines <- remove_loop_lines(new_lines, digits)
   new_lines$oid <- seq_len(nrow(new_lines))
   new_lines <- new_lines[c("length","oid","probs")]
   Lt <- gLength(new_lines)
 
   ## step4 : building the graph for the real case
-  graph_result <- build_graph(new_lines,digits = digits,line_weight = "length", attrs = T)
+  graph_result <- build_graph(new_lines,digits = digits,
+                              line_weight = "length", attrs = TRUE)
   graph_result$spedges$probs <- igraph::get.edge.attribute(graph_result$graph,
                                                            name = "probs")
   graph <- graph_result$graph
@@ -782,17 +802,23 @@ cross_kfunctions <- function(lines, pointsA, pointsB, start, end, step, width, n
   )
 
   plotk <- ggplot(plot_df)+
-    geom_ribbon(aes_string(x = "distances", ymin = "lower_k", ymax = "upper_k"), fill = rgb(0.1,0.1,0.1),alpha=0.4, )+
-    geom_path(aes_string(x = "distances", y = "lower_k"), col="black", linetype="dashed")+
-    geom_path(aes_string(x = "distances", y = "upper_k"), col="black", linetype="dashed")+
+    geom_ribbon(aes_string(x = "distances", ymin = "lower_k", ymax = "upper_k"),
+                fill = rgb(0.1,0.1,0.1),alpha=0.4, )+
+    geom_path(aes_string(x = "distances", y = "lower_k"), col="black",
+              linetype="dashed")+
+    geom_path(aes_string(x = "distances", y = "upper_k"), col="black",
+              linetype="dashed")+
     geom_path(aes_string(x = "distances", y = "obs_k"), col="blue")+
     labs(x = "distances",
          y = "empirical cross-K-function")
 
   plotg <- ggplot(plot_df)+
-    geom_ribbon(aes_string(x = "distances", ymin = "lower_g", ymax = "upper_g"), fill = rgb(0.1,0.1,0.1),alpha=0.4, )+
-    geom_path(aes_string(x = "distances", y = "lower_g"), col="black", linetype="dashed")+
-    geom_path(aes_string(x = "distances", y = "upper_g"), col="black", linetype="dashed")+
+    geom_ribbon(aes_string(x = "distances", ymin = "lower_g", ymax = "upper_g"),
+                fill = rgb(0.1,0.1,0.1),alpha=0.4, )+
+    geom_path(aes_string(x = "distances", y = "lower_g"), col="black",
+              linetype="dashed")+
+    geom_path(aes_string(x = "distances", y = "upper_g"), col="black",
+              linetype="dashed")+
     geom_path(aes_string(x = "distances", y = "obs_g"), col="blue")+
     labs(x = "distances",
          y = "empirical cross-G-function")
@@ -807,37 +833,38 @@ cross_kfunctions <- function(lines, pointsA, pointsB, start, end, step, width, n
 
 #' @title Network cross k and g functions (multicore)
 #'
-#' @description Calculate the cross k and g functions for a set of points on
-#' a network with multicore support.
+#' @description Calculate the cross k and g functions for a set of points on a
+#'   network with multicore support.
 #'
-#' @param lines A SpatialLinesDataFrame with the sampling points. The
-#' geometries must be a SpatialLinesDataFrame (may crash if some geometries
-#'  are invalid)
-#' @param pointsA A SpatialPointsDataFrame representing the points to which
-#' the distances are calculated.
+#' @param lines A SpatialLinesDataFrame with the sampling points. The geometries
+#'   must be a SpatialLinesDataFrame (may crash if some geometries are invalid)
+#' @param pointsA A SpatialPointsDataFrame representing the points to which the
+#'   distances are calculated.
 #' @param pointsB A SpatialPointsDataFrame representing the points from which
-#' the distances are calculated.
+#'   the distances are calculated.
 #' @param start A double, the start value for evaluating the k and g functions
 #' @param end A double, the last value for evaluating the k and g functions
-#' @param step A double, the jump between two evaluations of the k and g function
+#' @param step A double, the jump between two evaluations of the k and g
+#'   function
 #' @param width The width of each donut for the g-function
-#' @param nsim An integer indicating the number of Monte Carlo simulations required
-#' @param conf_int A double indicating the width confidence interval (default = 0.05)
+#' @param nsim An integer indicating the number of Monte Carlo simulations
+#'   required
+#' @param conf_int A double indicating the width confidence interval (default =
+#'   0.05)
 #' @param digits An integer indicating the number of digits to retain for the
-#' spatial coordinates
-#' @param tol When adding the points to the network, specify the minimum distance
-#' between these points and the lines' extremities. When points are closer, they
-#'  are added at the extremity of the lines.
-#' @param agg A double indicating if the events must be aggregated within a distance.
-#' If NULL, the events are aggregated by rounding the coordinates.
+#'   spatial coordinates
+#' @param tol When adding the points to the network, specify the minimum
+#'   distance between these points and the lines' extremities. When points are
+#'   closer, they are added at the extremity of the lines.
+#' @param agg A double indicating if the events must be aggregated within a
+#'   distance. If NULL, the events are aggregated by rounding the coordinates.
 #' @param verbose A Boolean indicating if progress messages should be displayed
 #'
-#' @return A list with the following values : \cr
-#'  \itemize{
-#'   \item{plotk}{A ggplot2 object representing the values of the cross k-function}
-#'   \item{plotg}{A ggplot2 object representing the values of the cross g-function}
-#'   \item{values}{A DataFrame with the values used to build the plots}
-#' }
+#' @return A list with the following values : \cr \itemize{ \item{plotk}{A
+#'   ggplot2 object representing the values of the cross k-function}
+#'   \item{plotg}{A ggplot2 object representing the values of the cross
+#'   g-function} \item{values}{A DataFrame with the values used to build the
+#'   plots} }
 #' @importFrom stats quantile
 #' @importFrom rgeos gLength
 #' @importFrom ggplot2 ggplot geom_ribbon geom_path aes_string labs
@@ -881,7 +908,7 @@ cross_kfunctions.mc <- function(lines, pointsA, pointsB, start, end, step, width
   }else{
     lines$probs <- probs
   }
-  lines$length <- gLength(lines,byid=TRUE)
+  lines$length <- gLength(lines,byid = TRUE)
   lines <- subset(lines, lines$length>0)
   lines$oid <- seq_len(nrow(lines))
 
@@ -891,17 +918,19 @@ cross_kfunctions.mc <- function(lines, pointsA, pointsB, start, end, step, width
   }
   pointsA$type <- "A"
   pointsB$type <- "B"
-  all_events <- rbind(pointsA[c("type","goid","weight")],pointsB[c("type","goid","weight")])
+  all_events <- rbind(pointsA[c("type","goid","weight")],
+                      pointsB[c("type","goid","weight")])
 
-  snapped_events <- snapPointsToLines2(all_events,lines,idField = "oid")
-  new_lines <- add_vertices_lines(lines,snapped_events,snapped_events$nearest_line_id,tol)
+  snapped_events <- snapPointsToLines2(all_events, lines, idField = "oid")
+  new_lines <- add_vertices_lines(lines, snapped_events,
+                                  snapped_events$nearest_line_id, tol)
 
   ## step3 : splitting the lines
   if(verbose){
     print("Building graph ...")
   }
   new_lines <- simple_lines(new_lines)
-  new_lines$length <- gLength(new_lines,byid = T)
+  new_lines$length <- gLength(new_lines,byid = TRUE)
   new_lines <- subset(new_lines,new_lines$length>0)
   new_lines <- remove_loop_lines(new_lines,digits)
   new_lines$oid <- seq_len(nrow(new_lines))
@@ -909,7 +938,8 @@ cross_kfunctions.mc <- function(lines, pointsA, pointsB, start, end, step, width
   Lt <- gLength(new_lines)
 
   ## step4 : building the graph for the real case
-  graph_result <- build_graph(new_lines,digits = digits,line_weight = "length", attrs = T)
+  graph_result <- build_graph(new_lines,digits = digits,
+                              line_weight = "length", attrs = TRUE)
   graph_result$spedges$probs <- igraph::get.edge.attribute(graph_result$graph,
                                                            name = "probs")
   graph <- graph_result$graph
@@ -925,8 +955,10 @@ cross_kfunctions.mc <- function(lines, pointsA, pointsB, start, end, step, width
   if(verbose){
     print("Calculating k and g functions ...")
   }
-  k_vals <- cross_kfunc(dist_mat,start,end,step,Lt,na,nb,snappedA$weight,snappedB$weight)
-  g_vals <- cross_gfun(dist_mat,start,end,step,width,Lt,na,nb,snappedA$weight,snappedB$weight)
+  k_vals <- cross_kfunc(dist_mat, start, end, step, Lt, na, nb,
+                        snappedA$weight, snappedB$weight)
+  g_vals <- cross_gfun(dist_mat, start, end, step, width, Lt, na,
+                       nb, snappedA$weight, snappedB$weight)
 
   ## step7 : generate the permutations
   if(verbose){
@@ -937,10 +969,12 @@ cross_kfunctions.mc <- function(lines, pointsA, pointsB, start, end, step, width
   progressr::with_progress({
     p <- progressr::progressor(along = sim_seq)
     all_values <- future.apply::future_lapply(sim_seq,function(i){
-      dist_mat <- randomize_distmatrix(graph_result$graph,graph_result$spedges,
-                                       na,start_vert = snappedB$vertex_id)
-      k_vals <- cross_kfunc(dist_mat,start,end,step,Lt,na,nb,w,snappedB$weight)
-      g_vals <- cross_gfun(dist_mat,start,end,step,width,Lt,na,nb,
+      dist_mat <- randomize_distmatrix(graph_result$graph,
+                                       graph_result$spedges,
+                                       na, start_vert = snappedB$vertex_id)
+      k_vals <- cross_kfunc(dist_mat, start, end, step, Lt, na, nb,
+                            w, snappedB$weight)
+      g_vals <- cross_gfun(dist_mat, start, end, step, width, Lt, na, nb,
                             w,snappedB$weight)
       return(cbind(k_vals,g_vals))
     },future.packages = c("igraph","base"))
@@ -971,17 +1005,23 @@ cross_kfunctions.mc <- function(lines, pointsA, pointsB, start, end, step, width
   )
 
   plotk <- ggplot(plot_df)+
-    geom_ribbon(aes_string(x = "distances", ymin = "lower_k", ymax = "upper_k"), fill = rgb(0.1,0.1,0.1),alpha=0.4, )+
-    geom_path(aes_string(x = "distances", y = "lower_k"), col="black", linetype="dashed")+
-    geom_path(aes_string(x = "distances", y = "upper_k"), col="black", linetype="dashed")+
+    geom_ribbon(aes_string(x = "distances", ymin = "lower_k", ymax = "upper_k"),
+                fill = rgb(0.1,0.1,0.1),alpha=0.4, )+
+    geom_path(aes_string(x = "distances", y = "lower_k"), col="black",
+              linetype="dashed")+
+    geom_path(aes_string(x = "distances", y = "upper_k"), col="black",
+              linetype="dashed")+
     geom_path(aes_string(x = "distances", y = "obs_k"), col="blue")+
     labs(x = "distances",
          y = "empirical cross-K-function")
 
   plotg <- ggplot(plot_df)+
-    geom_ribbon(aes_string(x = "distances", ymin = "lower_g", ymax = "upper_g"), fill = rgb(0.1,0.1,0.1),alpha=0.4, )+
-    geom_path(aes_string(x = "distances", y = "lower_g"), col="black", linetype="dashed")+
-    geom_path(aes_string(x = "distances", y = "upper_g"), col="black", linetype="dashed")+
+    geom_ribbon(aes_string(x = "distances", ymin = "lower_g", ymax = "upper_g"),
+                fill = rgb(0.1,0.1,0.1),alpha=0.4, )+
+    geom_path(aes_string(x = "distances", y = "lower_g"), col="black",
+              linetype="dashed")+
+    geom_path(aes_string(x = "distances", y = "upper_g"), col="black",
+              linetype="dashed")+
     geom_path(aes_string(x = "distances", y = "obs_g"), col="blue")+
     labs(x = "distances",
          y = "empirical cross-G-function")

@@ -2,7 +2,7 @@
 % Please edit documentation in R/border_correction.R
 \name{split_border}
 \alias{split_border}
-\title{Split bundary of polygon}
+\title{Split boundary of polygon}
 \usage{
 split_border(polygon, bw)
 }

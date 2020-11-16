@@ -20,9 +20,8 @@ kfunctions(
 )
 }
 \arguments{
-\item{lines}{A SpatialLinesDataFrame with the sampling points. The
-geometries must be a SpatialLinesDataFrame (may crash if some geometries
- are invalid)}
+\item{lines}{A SpatialLinesDataFrame with the sampling points. The geometries
+must be a SpatialLinesDataFrame (may crash if some geometries are invalid)}
 
 \item{points}{A SpatialPointsDataFrame representing the points on the
 network. These points will be snapped on the network.}
@@ -31,36 +30,38 @@ network. These points will be snapped on the network.}
 
 \item{end}{A double, the last value for evaluating the k and g functions}
 
-\item{step}{A double, the jump between two evaluations of the k and g function}
+\item{step}{A double, the jump between two evaluations of the k and g
+function}
 
 \item{width}{The width of each donut for the g-function}
 
-\item{nsim}{An integer indicating the number of Monte Carlo simulations required}
+\item{nsim}{An integer indicating the number of Monte Carlo simulations
+required}
 
-\item{conf_int}{A double indicating the width confidence interval (default = 0.05)}
+\item{conf_int}{A double indicating the width confidence interval (default =
+0.05)}
 
 \item{digits}{An integer indicating the number of digits to retain for the
 spatial coordinates}
 
-\item{tol}{When adding the points to the network, specify the minimum distance
-between these points and the lines' extremities. When points are closer, they
- are added at the extremity of the lines.}
+\item{tol}{When adding the points to the network, specify the minimum
+distance between these points and the lines' extremities. When points are
+closer, they are added at the extremity of the lines.}
 
-\item{agg}{A double indicating if the events must be aggregated within a distance.
-If NULL, the events are aggregated by rounding the coordinates.}
+\item{agg}{A double indicating if the events must be aggregated within a
+distance. If NULL, the events are aggregated by rounding the coordinates.}
 
 \item{verbose}{A Boolean indicating if progress messages should be displayed}
 }
 \value{
-A list with the following values : \cr
- \itemize{
-  \item{plotk}{A ggplot2 object representing the values of the k-function}
-  \item{plotg}{A ggplot2 object representing the values of the g-function}
-  \item{values}{A DataFrame with the values used to build the plots}
-}
+A list with the following values : \cr \itemize{ \item{plotk}{A
+  ggplot2 object representing the values of the k-function} \item{plotg}{A
+  ggplot2 object representing the values of the g-function} \item{values}{A
+  DataFrame with the values used to build the plots} }
 }
 \description{
-Calculate the k and g functions for a set of points on a network.
+Calculate the k and g functions for a set of points on a
+  network.
 }
 \details{
 The k-function is a method to characterize the dispersion of a set
@@ -69,13 +70,13 @@ The k-function is a method to characterize the dispersion of a set
   than a k-function obtained if the points were randomly located in space. In
   a network, the network distance is used instead of the Euclidean distance.
   This function uses Monte Carlo simulations to assess if the points are
-  clustered or dispersed, and gives the results as a line plot. If the line of
-  the observed k-function is higher than the shaded area representing the
+  clustered or dispersed, and gives the results as a line plot. If the line
+  of the observed k-function is higher than the shaded area representing the
   values of the simulations, then the points are more clustered than what we
   can expect from randomness and vice-versa. The function also calculates the
   g-function, a modified version of the k-function using rings instead of
-  disks. The width of the ring must be chosen. The main interest is to
-  avoid the cumulative effect of the classical k-function.
+  disks. The width of the ring must be chosen. The main interest is to avoid
+  the cumulative effect of the classical k-function.
 }
 \examples{
 data("libraries_mtl")

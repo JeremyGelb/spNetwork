@@ -18,8 +18,8 @@ correction_factor(
 )
 }
 \arguments{
-\item{study_area}{A SpatialPolygonsDataFrame or a SpatialPolygons, the
-limit of the study area.}
+\item{study_area}{A SpatialPolygonsDataFrame or a SpatialPolygons, the limit
+of the study area.}
 
 \item{events}{A SpatialPointsDataFrame representing the events on the
 network.}
@@ -33,9 +33,9 @@ simple / discontinuous / continuous (see details for more information)}
 
 \item{kernel_name}{The name of the kernel to use}
 
-\item{tol}{When adding the events and the sampling points to the network,
-the minimum distance between these points and the lines extremities. When
-points are closer, they are added at the extermity of the lines.}
+\item{tol}{When adding the events and the sampling points to the network, the
+minimum distance between these points and the lines extremities. When
+points are closer, they are added at the extremity of the lines.}
 
 \item{digits}{The number of digits to keep in the spatial coordinates. It
 ensures that topology is good when building the network. Default is 3}
@@ -49,7 +49,7 @@ estimates. A larger value can be used without problem for the discontinuous
 method. For the continuous method, a larger value will strongly impact
 calculation speed.}
 
-\item{sparse}{A boolean indicating if sparse or regular matrice should be
+\item{sparse}{A boolean indicating if sparse or regular matrix should be
 used by the Rcpp functions. Regular matrices are faster, but require more
 memory and could lead to error, in particular with multiprocessing. Sparse
 matrices are slower, but require much less memory.}

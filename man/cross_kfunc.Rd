@@ -15,7 +15,7 @@ cross_kfunc(dist_mat, start, end, step, Lt, na, nb, wa, wb)
 
 \item{step}{A float, the jump between two evaluations of the k-function}
 
-\item{Lt}{The total lenght of the network}
+\item{Lt}{The total length of the network}
 
 \item{na}{The number of points in set A}
 

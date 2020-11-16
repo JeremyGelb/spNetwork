@@ -21,12 +21,11 @@ cross_kfunctions(
 )
 }
 \arguments{
-\item{lines}{A SpatialLinesDataFrame with the sampling points. The
-geometries must be a SpatialLinesDataFrame (may crash if some geometries
- are invalid)}
+\item{lines}{A SpatialLinesDataFrame with the sampling points. The geometries
+must be a SpatialLinesDataFrame (may crash if some geometries are invalid)}
 
-\item{pointsA}{A SpatialPointsDataFrame representing the points to which
-the distances are calculated.}
+\item{pointsA}{A SpatialPointsDataFrame representing the points to which the
+distances are calculated.}
 
 \item{pointsB}{A SpatialPointsDataFrame representing the points from which
 the distances are calculated.}
@@ -35,47 +34,51 @@ the distances are calculated.}
 
 \item{end}{A double, the last value for evaluating the k and g functions}
 
-\item{step}{A double, the jump between two evaluations of the k and g function}
+\item{step}{A double, the jump between two evaluations of the k and g
+function}
 
 \item{width}{The width of each donut for the g-function}
 
-\item{nsim}{An integer indicating the number of Monte Carlo simulations required}
+\item{nsim}{An integer indicating the number of Monte Carlo simulations
+required}
 
-\item{conf_int}{A double indicating the width confidence interval (default = 0.05)}
+\item{conf_int}{A double indicating the width confidence interval (default =
+0.05)}
 
 \item{digits}{An integer indicating the number of digits to retain for the
 spatial coordinates}
 
-\item{tol}{When adding the points to the network, specify the minimum distance
-between these points and the lines' extremities. When points are closer, they
- are added at the extremity of the lines.}
+\item{tol}{When adding the points to the network, specify the minimum
+distance between these points and the lines' extremities. When points are
+closer, they are added at the extremity of the lines.}
 
-\item{agg}{A double indicating if the events must be aggregated within a distance.
-if NULL, then the events are aggregated by rounding the coordinates.}
+\item{agg}{A double indicating if the events must be aggregated within a
+distance. if NULL, then the events are aggregated by rounding the
+coordinates.}
 
 \item{verbose}{A Boolean indicating if progress messages should be displayed}
 }
 \value{
-A list with the folowing values : \cr
- \itemize{
-  \item{plotk}{A ggplot2 object representing the values of the cross k-function}
-  \item{plotg}{A ggplot2 object representing the values of the cross g-function}
-  \item{values}{A DataFrame with the values used to build the plots}
-}
+A list with the folowing values : \cr \itemize{ \item{plotk}{A
+  ggplot2 object representing the values of the cross k-function}
+  \item{plotg}{A ggplot2 object representing the values of the cross
+  g-function} \item{values}{A DataFrame with the values used to build the
+  plots} }
 }
 \description{
-Calculate the cross k and g functions for a set of points on a network.
+Calculate the cross k and g functions for a set of points on a
+  network.
 }
 \details{
 The cross k-function is a method to characterize the dispersion of a
   set of points (A) around a second set of points (B). For each point in B,
   the numbers of other points in A in subsequent radii are calculated. This
   empirical cross k-function can be more or less clustered than a cross
-  k-function obtained if the points in A were randomly located around
-  points in B. In a network, the network distance is used instead of the
-  Euclidean distance. This function uses Monte Carlo simulations to assess if
-  the points are clustered or dispersed and gives the results as a line plot.
-  If the line of the observed cross k-function is higher than the shaded area
+  k-function obtained if the points in A were randomly located around points
+  in B. In a network, the network distance is used instead of the Euclidean
+  distance. This function uses Monte Carlo simulations to assess if the
+  points are clustered or dispersed and gives the results as a line plot. If
+  the line of the observed cross k-function is higher than the shaded area
   representing the values of the simulations, then the points in A are more
   clustered around points in B than what we can expect from randomness and
   vice-versa. The function also calculates the cross g-function, a modified

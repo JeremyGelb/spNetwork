@@ -13,11 +13,11 @@ build_graph(lines, digits, line_weight, attrs = FALSE)
 
 \item{line_weight}{The name of a field that represent the cost to use a line}
 
-\item{attrs}{A boolean indicating if the original lines attributes
+\item{attrs}{A Boolean indicating if the original lines attributes
 must be added to the graph lines}
 }
 \value{
-A list containing the folowing elements:
+A list containing the following elements:
 \itemize{
         \item graph: an igraph object that preserves the original lines
         characteristics
@@ -25,7 +25,7 @@ A list containing the folowing elements:
         \item lines: the original SpatialLinesDataFrame
         \item spvertices: a SpatialPointsDataFrame representing the vertices
         of the graph
-        \item digits : the number of digits keeped for the coordinates
+        \item digits : the number of digits kept for the coordinates
 }
 }
 \description{

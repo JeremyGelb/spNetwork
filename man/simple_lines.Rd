@@ -13,7 +13,8 @@ simple_lines(lines)
 An object of class SpatialLinesDataFrame (package sp)
 }
 \description{
-Split the polylines of a SpatialLinesDataFrame object in simple lines.
+Split the polylines of a SpatialLinesDataFrame object in simple
+  lines.
 }
 \examples{
 #This is an internal function, no example provided

@@ -6,10 +6,8 @@
 \title{An extract of the Montreal road network with only the main roads}
 \format{
 A SpatialLinesDataFrame with 17304 rows and 3 variables: \describe{
-  \item{CLASS}{The category of the road}
-  \item{NAME}{The name of the road}
-  \item{TYPE}{the type of the road}
-  }
+  \item{CLASS}{The category of the road} \item{NAME}{The name of the road}
+  \item{TYPE}{the type of the road} }
 }
 \source{
 \url{http://donnees.ville.montreal.qc.ca/}
@@ -18,6 +16,7 @@ A SpatialLinesDataFrame with 17304 rows and 3 variables: \describe{
 main_network_mtl
 }
 \description{
-A SpatialLinesDataFrame representing the main roads of the Montreal road network.
+A SpatialLinesDataFrame representing the main roads of the Montreal road
+network.
 }
 \keyword{datasets}

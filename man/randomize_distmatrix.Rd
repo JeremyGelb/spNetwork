@@ -13,7 +13,7 @@ randomize_distmatrix(graph, edge_df, n, start_vert = NULL)
 
 \item{n}{The number of point}
 
-\item{start_vert}{The vertices from wich the distances will be calculated.
+\item{start_vert}{The vertices from which the distances will be calculated.
 if null, then the distances are calculated from the generated locations.}
 }
 \value{

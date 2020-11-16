@@ -17,7 +17,7 @@ gfunc(dist_mat, start, end, step, width, Lt, n, w)
 
 \item{width}{The width of each donut}
 
-\item{Lt}{The total lenght of the network}
+\item{Lt}{The total length of the network}
 
 \item{n}{The number of points}
 

@@ -20,7 +20,7 @@ A SpatialLinesDataFrame with 1244 rows and 4 variables:
 small_mtl_network
 }
 \description{
-A SpatialLinesDataFrame representing a smaller portion of the montreal road
+A SpatialLinesDataFrame representing a smaller portion of the Montreal road
  network.
 }
 \keyword{datasets}

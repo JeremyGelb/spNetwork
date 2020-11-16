@@ -5,9 +5,9 @@
 #' @param lines A SpatialLinesDataFrame
 #' @param digits The number of digits to keep from the coordinates
 #' @param line_weight The name of a field that represent the cost to use a line
-#' @param attrs A boolean indicating if the original lines attributes
+#' @param attrs A Boolean indicating if the original lines attributes
 #' must be added to the graph lines
-#' @return A list containing the folowing elements:
+#' @return A list containing the following elements:
 #' \itemize{
 #'         \item graph: an igraph object that preserves the original lines
 #'         characteristics
@@ -15,7 +15,7 @@
 #'         \item lines: the original SpatialLinesDataFrame
 #'         \item spvertices: a SpatialPointsDataFrame representing the vertices
 #'         of the graph
-#'         \item digits : the number of digits keeped for the coordinates
+#'         \item digits : the number of digits kept for the coordinates
 #' }
 #' @importFrom sp coordinates SpatialPoints
 #' @importFrom utils strcapture
@@ -35,12 +35,13 @@ build_graph <- function(lines, digits, line_weight, attrs = FALSE) {
 
     # building the line list
     linelist <- data.frame(start = start, end = end, weight = weights,
-        graph_id = 1:nrow(lines), wkt= rgeos::writeWKT(lines,byid=TRUE))
+        graph_id = 1:nrow(lines), wkt= rgeos::writeWKT(lines,byid = TRUE))
     if (attrs) {
         linelist <- cbind(linelist, lines@data)
     }
     ## generating the graph
-    graph <- igraph::graph_from_data_frame(linelist, directed = FALSE, vertices = NULL)
+    graph <- igraph::graph_from_data_frame(linelist, directed = FALSE,
+                                           vertices = NULL)
 
 
     ## building a spatial object for the vertices
@@ -68,13 +69,13 @@ build_graph <- function(lines, digits, line_weight, attrs = FALSE) {
       return(geom)
     }))
 
-    spedges <- SpatialLinesDataFrame(geoms, edge_df,match.ID = F)
+    spedges <- SpatialLinesDataFrame(geoms, edge_df,match.ID = FALSE)
     raster::crs(spedges) <- raster::crs(lines)
-    vertex_df <- igraph::ends(graph,spedges$edge_id,names=F)
+    vertex_df <- igraph::ends(graph,spedges$edge_id,names = FALSE)
     spedges$start_oid <- vertex_df[,1]
     spedges$end_oid <- vertex_df[,2]
 
-    vertex_df <- igraph::ends(graph,linelist$graph_id,names=F)
+    vertex_df <- igraph::ends(graph,linelist$graph_id,names = FALSE)
     linelist$start_oid <- vertex_df[,1]
     linelist$end_oid <- vertex_df[,2]
 
@@ -91,9 +92,8 @@ build_graph <- function(lines, digits, line_weight, attrs = FALSE) {
 #' @param line_weight The name of a field that represent the cost to use a line
 #' @param attrs A boolean indicating if the original lines attributes
 #' @param direction A vector of integers. 0 indicates a bidirectional line and 1
-#' an unidirectional line
-#' must be added to the graph lines
-#' @return A list containing the folowing elements:
+#'   an unidirectional line must be added to the graph lines
+#' @return A list containing the following elements:
 #' \itemize{
 #'         \item graph: an igraph object that preserves the original lines
 #'         characteristics
@@ -101,7 +101,7 @@ build_graph <- function(lines, digits, line_weight, attrs = FALSE) {
 #'         \item lines: the original SpatialLinesDataFrame
 #'         \item spvertices: a SpatialPointsDataFrame representing the vertices
 #'         of the graph
-#'         \item digits : the number of digits keeped for the coordinates
+#'         \item digits : the number of digits kept for the coordinates
 #' }
 #' @importFrom sp coordinates SpatialPoints SpatialPointsDataFrame
 #' @importFrom utils strcapture
@@ -127,7 +127,7 @@ build_graph_directed <- function(lines, digits, line_weight, direction, attrs = 
   if (attrs) {
     linelist <- cbind(linelist, all_lines@data)
   }
-  graph <- igraph::graph_from_data_frame(linelist, directed = T, vertices = NULL)
+  graph <- igraph::graph_from_data_frame(linelist, directed = TRUE, vertices = NULL)
   vertices <- igraph::V(graph)
   dfvertices <- data.frame(name = names(vertices), id = as.vector(vertices))
   dfvertices$name <- as.character(dfvertices$name)
@@ -142,22 +142,21 @@ build_graph_directed <- function(lines, digits, line_weight, direction, attrs = 
 }
 
 
-#' @title Match nodes and points
+#'@title Match nodes and points
 #'
-#' @description Function to match some points (SpatialPointsDataFrame) to the vertices of
-#' a graph.
+#'@description Function to match some points (SpatialPointsDataFrame) to the
+#'  vertices of a graph.
 #'
-#' @param spvertices The spatial vertices of a graph (produced whith
-#'build_graph)
-#' @param points the SpatialPointsDataFrame to match
-#' @param digits The number of digits to keep from the coordinates
-#' @param tol the maximum distance between a point and a vertex
-#' @return A vector of the corresponding vertices id, multiple points may
-#' belong to the same vertex
-#' @importFrom sp coordinates SpatialPoints SpatialPointsDataFrame
-#' @importFrom utils txtProgressBar setTxtProgressBar
-#' @importFrom rgeos gIntersects gBuffer
-#' @keywords internal
+#'@param spvertices The spatial vertices of a graph (produced with build_graph)
+#'@param points the SpatialPointsDataFrame to match
+#'@param digits The number of digits to keep from the coordinates
+#'@param tol the maximum distance between a point and a vertex
+#'@return A vector of the corresponding vertices id, multiple points may belong
+#'  to the same vertex
+#'@importFrom sp coordinates SpatialPoints SpatialPointsDataFrame
+#'@importFrom utils txtProgressBar setTxtProgressBar
+#'@importFrom rgeos gIntersects gBuffer
+#'@keywords internal
 #' @examples
 #' #This is an internal function, no example provided
 find_vertices <- function(spvertices, points, digits, tol = 0.1) {
@@ -169,13 +168,9 @@ find_vertices <- function(spvertices, points, digits, tol = 0.1) {
     matching <- data.table(points@data)
     B <- data.table(spvertices@data)
     matching[B, on = c("spIndex"="name"), names(B) := mget(paste0("i.", names(B)))]
-    #matching <- dplyr::left_join(points@data, spvertices@data, by = c(spIndex = "name"),keep = T)
-
     matching <- matching[, .SD[1], "tempoid"]
-    #matching <- matching %>% dplyr::group_by(.data$tempoid) %>%
-    #  dplyr::summarise_all(dplyr::first)
 
-    if (any(is.na(matching$id)) == F) {
+    if (any(is.na(matching$id)) == FALSE) {
         return(matching$id)
     } else {
         # so we have some points that need to be matched
@@ -188,8 +183,8 @@ find_vertices <- function(spvertices, points, digits, tol = 0.1) {
             pt <- matching[i, ]
             if (is.na(pt$id)) {
                 test <- as.vector(gIntersects(spvertices, gBuffer(pt, width = tol),
-                  prepared = T, byid = T))
-                if (any(test) == F) {
+                  prepared = TRUE, byid = TRUE))
+                if (any(test) == FALSE) {
                   stop(paste("no node find at the demanded distance here ",
                     pt$spIndex, sep = ""))
                 } else {
@@ -210,7 +205,7 @@ find_vertices <- function(spvertices, points, digits, tol = 0.1) {
 #' @param lines The original SpatialLinesDataFrame
 #' @param direction A vector of integers. 0 indicates a bidirectional line and 1
 #' an unidirectional line
-#' @return A SpatialLinesDataFrame with some lines dupplicated according to
+#' @return A SpatialLinesDataFrame with some lines duplicated according to
 #' direction
 #' @importFrom sp coordinates Line Lines SpatialLinesDataFrame SpatialLines
 #' @importFrom raster crs
@@ -251,7 +246,7 @@ direct_lines<-function(lines,direction){
   oids <- do.call("c",oids)
   data <- lines@data[oids,]
   #combining the lines and the data
-  df <- SpatialLinesDataFrame(splines,data,match.ID = F)
+  df <- SpatialLinesDataFrame(splines,data,match.ID = FALSE)
   raster::crs(df) <- raster::crs(lines)
   return(df)
 }
@@ -260,7 +255,7 @@ direct_lines<-function(lines,direction){
 
 #' @title Plot graph
 #'
-#' @description Function to plot a graph (usefull to check connectivity).
+#' @description Function to plot a graph (useful to check connectivity).
 #'
 #' @param graph A graph object (produced with build_graph)
 #' @keywords internal
@@ -273,7 +268,9 @@ plot_graph <- function(graph) {
     N$x <- as.numeric(cols$x)
     N$y <- as.numeric(cols$y)
 
-    graphics::plot(graph, vertex.size = 0.01, layout = as.matrix(N[c("x", "y")]), vertex.label.cex = 0.1)
+    graphics::plot(graph, vertex.size = 0.01,
+                   layout = as.matrix(N[c("x", "y")]),
+                   vertex.label.cex = 0.1)
 
 }
 
@@ -282,11 +279,13 @@ plot_graph <- function(graph) {
 #' @description A utility function to find topological errors in a network.
 #'
 #' @param lines A SpatialLinesDataFrame representing the network
-#' @param digits An integer indicating the number of digits to retain for coordinates
-#' @param tol A float indicating the tolerance distance to identify a dangle node
+#' @param digits An integer indicating the number of digits to retain for
+#'   coordinates
+#' @param tol A float indicating the tolerance distance to identify a dangle
+#'   node
 #' @return A list with two elements. The first is a SpatialPointsDataFrame
-#' indicating for each node of the network to which component it belongs. The
-#' second is a SpatialPointsDataFrame with the dangle nodes of the network.
+#'   indicating for each node of the network to which component it belongs. The
+#'   second is a SpatialPointsDataFrame with the dangle nodes of the network.
 #' @importFrom rgeos gLength
 #' @importFrom sp coordinates
 #' @export
@@ -296,7 +295,7 @@ plot_graph <- function(graph) {
 graph_checking <- function(lines,digits, tol){
 
   ##step1 : adjusting the lines
-  lines$length <- gLength(lines,byid=TRUE)
+  lines$length <- gLength(lines,byid = TRUE)
   lines <- subset(lines, lines$length>0)
   lines$oid <- 1:nrow(lines)
 
@@ -312,7 +311,8 @@ graph_checking <- function(lines,digits, tol){
 
   ##step4 : identify dangle nodes
   graph_results$spvertices$degree <- igraph::degree(graph_results$graph)
-  potential_error <- subset(graph_results$spvertices,graph_results$spvertices$degree==1)
+  potential_error <- subset(graph_results$spvertices,
+                            graph_results$spvertices$degree==1)
 
   node_tree <- build_quadtree(graph_results$spvertices)
   close_nodes_idx <- sapply(1:nrow(potential_error),function(i){

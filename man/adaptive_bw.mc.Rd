@@ -2,7 +2,7 @@
 % Please edit documentation in R/nkde_execution_functions.R
 \name{adaptive_bw.mc}
 \alias{adaptive_bw.mc}
-\title{Adaptative bandwidth (multicore)}
+\title{Adaptive bandwidth (multicore)}
 \usage{
 adaptive_bw.mc(
   grid,
@@ -28,7 +28,7 @@ adaptive_bw.mc(
 
 \item{bw}{The fixed kernel bandwidth}
 
-\item{trim_bw}{The maximum size of local bandiwidths}
+\item{trim_bw}{The maximum size of local bandwidths}
 
 \item{method}{The method to use when calculating the NKDE}
 
@@ -49,7 +49,7 @@ lines}
 A vector with the local bandwidths
 }
 \description{
-Function to calculate Adaptative bandwidths according to Abramson’s smoothing regimen with multicore support
+Function to calculate Adaptive bandwidths according to Abramson’s smoothing regimen with multicore support
 }
 \examples{
 #This is an internal function, no example provided

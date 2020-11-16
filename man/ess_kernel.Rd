@@ -25,9 +25,9 @@ ess_kernel(
 
 \item{kernel_func}{a function obtained with the function select_kernel}
 
-\item{samples}{a SpatialPointsDataFrame representing the sampling points.
-The samples must be snapped on the network. A column edge_id must indicate
-for each sample on which edge it is snapped.}
+\item{samples}{a SpatialPointsDataFrame representing the sampling points. The
+samples must be snapped on the network. A column edge_id must indicate for
+each sample on which edge it is snapped.}
 
 \item{nodes}{a SpatialPointsDataFrame representing the nodes of the network}
 

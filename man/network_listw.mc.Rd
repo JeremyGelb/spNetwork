@@ -43,7 +43,7 @@ method pointsalong is selected.}
 \item{snap_dist}{the maximum distance to snap the start and end points on
 the network.}
 
-\item{line_weight}{The ponderation to use for lines. Default is "length"
+\item{line_weight}{The weights to use for lines. Default is "length"
 (the geographical length), but can be the name of a column. The value is
 considered proportional with the geographical length of the lines.}
 

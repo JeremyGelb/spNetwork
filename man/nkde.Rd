@@ -29,7 +29,7 @@ nkde(
 }
 \arguments{
 \item{lines}{A SpatialLinesDataFrame with the sampling points. The
-geoemtries must be a SpatialLinesDataFrame (may crash if some geometries
+geometries must be a SpatialLinesDataFrame (may crash if some geometries
  are invalid)}
 
 \item{events}{A SpatialPointsDataFrame representing the events on the
@@ -165,7 +165,7 @@ but results in a fast construction of the network.
 To calculate the distances on the network, all the events are added as
 vertices. To reduce the size of the network, it is possible to reduce the
 number of vertices by adding the events at the extremity of
-the lines if they are close to them. This is controled by the parameter tol.
+the lines if they are close to them. This is controlled by the parameter tol.
 \cr\cr
 In the same way, it is possible to limit the number of vertices by
 aggregating the events that are close to each other. In that case, the
@@ -191,7 +191,7 @@ graph nodes are stored in a matrix. This matrix is typically sparse, and
 so a sparse matrix object is used to limit memory use. If the network is
 small (typically when the grid used to split the data has small rectangles)
 then a classical matrix could be used instead of a sparse one. It
-singnificantly increases speed, but could lead to memory issues.
+significantly increases speed, but could lead to memory issues.
 }
 \examples{
 data(mtl_network)

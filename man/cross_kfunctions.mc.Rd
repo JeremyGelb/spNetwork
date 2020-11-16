@@ -21,12 +21,11 @@ cross_kfunctions.mc(
 )
 }
 \arguments{
-\item{lines}{A SpatialLinesDataFrame with the sampling points. The
-geometries must be a SpatialLinesDataFrame (may crash if some geometries
- are invalid)}
+\item{lines}{A SpatialLinesDataFrame with the sampling points. The geometries
+must be a SpatialLinesDataFrame (may crash if some geometries are invalid)}
 
-\item{pointsA}{A SpatialPointsDataFrame representing the points to which
-the distances are calculated.}
+\item{pointsA}{A SpatialPointsDataFrame representing the points to which the
+distances are calculated.}
 
 \item{pointsB}{A SpatialPointsDataFrame representing the points from which
 the distances are calculated.}
@@ -35,37 +34,39 @@ the distances are calculated.}
 
 \item{end}{A double, the last value for evaluating the k and g functions}
 
-\item{step}{A double, the jump between two evaluations of the k and g function}
+\item{step}{A double, the jump between two evaluations of the k and g
+function}
 
 \item{width}{The width of each donut for the g-function}
 
-\item{nsim}{An integer indicating the number of Monte Carlo simulations required}
+\item{nsim}{An integer indicating the number of Monte Carlo simulations
+required}
 
-\item{conf_int}{A double indicating the width confidence interval (default = 0.05)}
+\item{conf_int}{A double indicating the width confidence interval (default =
+0.05)}
 
 \item{digits}{An integer indicating the number of digits to retain for the
 spatial coordinates}
 
-\item{tol}{When adding the points to the network, specify the minimum distance
-between these points and the lines' extremities. When points are closer, they
- are added at the extremity of the lines.}
+\item{tol}{When adding the points to the network, specify the minimum
+distance between these points and the lines' extremities. When points are
+closer, they are added at the extremity of the lines.}
 
-\item{agg}{A double indicating if the events must be aggregated within a distance.
-If NULL, the events are aggregated by rounding the coordinates.}
+\item{agg}{A double indicating if the events must be aggregated within a
+distance. If NULL, the events are aggregated by rounding the coordinates.}
 
 \item{verbose}{A Boolean indicating if progress messages should be displayed}
 }
 \value{
-A list with the following values : \cr
- \itemize{
-  \item{plotk}{A ggplot2 object representing the values of the cross k-function}
-  \item{plotg}{A ggplot2 object representing the values of the cross g-function}
-  \item{values}{A DataFrame with the values used to build the plots}
-}
+A list with the following values : \cr \itemize{ \item{plotk}{A
+  ggplot2 object representing the values of the cross k-function}
+  \item{plotg}{A ggplot2 object representing the values of the cross
+  g-function} \item{values}{A DataFrame with the values used to build the
+  plots} }
 }
 \description{
-Calculate the cross k and g functions for a set of points on
-a network with multicore support.
+Calculate the cross k and g functions for a set of points on a
+  network with multicore support.
 }
 \examples{
 data("libraries_mtl")

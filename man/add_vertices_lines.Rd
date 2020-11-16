@@ -20,8 +20,8 @@ the line to add the point as a vertex.}
 An object of class SpatialLinesDataFrame (package sp)
 }
 \description{
-Add vertices (SpatialPoints) to their nearest lines (SpatialLines), may fail
-if the lines geometries are self intersecting.
+Add vertices (SpatialPoints) to their nearest lines
+  (SpatialLines), may fail if the lines geometries are self intersecting.
 }
 \examples{
 #This is an internal function, no example provided

@@ -16,14 +16,15 @@ calculus}
 
 \item{lines}{The lines representing the network}
 
-\item{maxdistance}{The maximum distance between two observation to
-considere them as neighbours.}
+\item{maxdistance}{The maximum distance between two observation to considere
+them as neighbours.}
 }
 \value{
 A list of two elements : selected points and selected lines
 }
 \description{
-Function to prepare selected points and selected lines during the process.
+Function to prepare selected points and selected lines during
+  the process.
 }
 \examples{
 #no example provided, this is an internal function

@@ -40,7 +40,7 @@ utils::globalVariables(c("origin", "fid"))
 #' points. It must have a column fid, grouping the points if necessary.
 #' @param lines A SpatialLinesDataFrame representing the network
 #' @param maxdistance The maximum distance between two observation to
-#' considere them as neighbours.
+#' consider them as neighbours.
 #' @param dist_func A vectorized function converting spatial distances into
 #' weights.
 #' @param mindist The minimum distance between two different observations.
@@ -80,7 +80,9 @@ network_listw_worker<-function(points,lines,maxdistance,dist_func, direction=NUL
         print("adding the points as vertices to nearest lines")
         new_lines <- add_vertices_lines(lines, points, joined$worker_id, 1)
     }else{
-        invisible(capture.output(new_lines <- add_vertices_lines(lines, points, joined$worker_id, tol)))
+        invisible(capture.output(
+            new_lines <- add_vertices_lines(lines, points,joined$worker_id, tol)
+            ))
     }
 
     ## step2 : splitting the lines on vertices and adjusting weights
@@ -88,7 +90,7 @@ network_listw_worker<-function(points,lines,maxdistance,dist_func, direction=NUL
         print("splitting the lines for the network")
     }
     graph_lines <- simple_lines(new_lines)
-    graph_lines$lx_length <- gLength(graph_lines,byid=T)
+    graph_lines$lx_length <- gLength(graph_lines,byid = TRUE)
     graph_lines$lx_weight <- (graph_lines$lx_length / graph_lines$line_length) * graph_lines$line_weight
 
     ## step3 building the network
@@ -97,11 +99,12 @@ network_listw_worker<-function(points,lines,maxdistance,dist_func, direction=NUL
     }
     if (is.null(direction)){
         result_graph <- build_graph(graph_lines, digits = digits,
-                                    attrs = T, line_weight = "lx_weight")
+                                    attrs = TRUE, line_weight = "lx_weight")
     }else{
         dir <- ifelse(graph_lines[[direction]]=="Both",0,1)
         result_graph <- build_graph_directed(graph_lines, digits = digits,
-                                    attrs = T, line_weight='line_weight',direction = dir)
+                                    attrs = TRUE, line_weight='line_weight',
+                                    direction = dir)
     }
     ## step4 finding for each point its corresponding vertex
     points$vertex <- closest_points(points,result_graph$spvertices)
@@ -112,7 +115,9 @@ network_listw_worker<-function(points,lines,maxdistance,dist_func, direction=NUL
     u <- unique(points$vertex)
 
     ## step 4 calculating the distances between the start and end points
-    base_distances <- igraph::distances(result_graph$graph,v = starts$vertex, to = u, mode = "out")
+    base_distances <- igraph::distances(result_graph$graph,
+                                        v = starts$vertex, to = u,
+                                        mode = "out")
     all_ditancesdt <- data.table(base_distances)
     all_ditancesdt$origin <- starts$fid
 
@@ -120,7 +125,7 @@ network_listw_worker<-function(points,lines,maxdistance,dist_func, direction=NUL
 
     #first groupby on rows :
     #multiple rows might correspond to the same object (if multiple points like)
-    step1 <- all_ditancesdt[, lapply(.SD, min, na.rm=TRUE), by=origin ]
+    step1 <- all_ditancesdt[, lapply(.SD, min, na.rm = TRUE), by = origin ]
     originid <- step1$origin
 
     #then transpose and merge
@@ -175,15 +180,16 @@ network_listw_worker<-function(points,lines,maxdistance,dist_func, direction=NUL
 
 #' @title Data preparation for network_listw
 #'
-#' @description Function to prepare selected points and selected lines during the process.
+#' @description Function to prepare selected points and selected lines during
+#'   the process.
 #'
 #' @param is The indices of the quadras to use in the grid
 #' @param grid A SpatialPolygonsDataFrame representing the quadras to split
-#' calculus
+#'   calculus
 #' @param snapped_points The start and end points snapped to the lines
 #' @param lines The lines representing the network
-#' @param maxdistance The maximum distance between two observation to
-#' considere them as neighbours.
+#' @param maxdistance The maximum distance between two observation to considere
+#'   them as neighbours.
 #' @return A list of two elements : selected points and selected lines
 #' @keywords internal
 #' @examples
@@ -213,7 +219,7 @@ prepare_elements_netlistw <- function(is,grid,snapped_points,lines,maxdistance){
                 all_pts <- start_pts
             }else{
                 end_pts <- spatial_request(buff, snapped_points_tree, snapped_points)
-                end_pts <- subset(end_pts,(end_pts$oids %in% start_pts$oids)== F)
+                end_pts <- subset(end_pts,(end_pts$oids %in% start_pts$oids)== FALSE)
                 end_pts$pttype <- "end"
                 #combining all the points
                 all_pts <- rbind(start_pts,end_pts)
@@ -285,9 +291,9 @@ prepare_elements_netlistw <- function(is,grid,snapped_points,lines,maxdistance){
 network_listw <- function(origins,lines,maxdistance, method="centroid", point_dist=NULL, snap_dist=Inf, line_weight = "length", mindist=10, direction=NULL, dist_func = "inverse", matrice_type = "B", grid_shape=c(1,1), verbose = FALSE, digits = 3, tol=0.1){
 
     ## step1 adjusting the weights of the lines
-    lines$line_length <- gLength(lines,byid=T)
+    lines$line_length <- gLength(lines,byid = TRUE)
     if(line_weight=="length"){
-        lines$line_weight <- gLength(lines,byid=T)
+        lines$line_weight <- gLength(lines,byid = TRUE)
     }else {
         lines$line_weight <- lines[[line_weight]]
     }
@@ -296,12 +302,12 @@ network_listw <- function(origins,lines,maxdistance, method="centroid", point_di
     }
 
     ## step2 adjusting the directions of the lines
-    if(is.null(direction)==F){
+    if(is.null(direction) == FALSE){
         lines <- lines_direction(lines,direction)
     }
 
     ## step3  checking the matrix type
-    if (matrice_type %in% c("B", "W") == F) {
+    if (matrice_type %in% c("B", "W") == FALSE) {
         stop("Matrice type must be B (binary) or W (row standardized)")
     }
     ## step 4 creating the vectorized distance function
@@ -315,7 +321,7 @@ network_listw <- function(origins,lines,maxdistance, method="centroid", point_di
     origins$fid <- 1:nrow(origins)
     if(class(origins)=="SpatialPolygonsDataFrame"){
         if(method=="centroid"){
-            centers <- gPointOnSurface(origins,byid = T)
+            centers <- gPointOnSurface(origins,byid = TRUE)
             centers <- SpatialPointsDataFrame(centers,origins@data)
         }else if(method=="pointsalong"){
             centers <- surrounding_points(origins,point_dist)
@@ -404,8 +410,8 @@ network_listw <- function(origins,lines,maxdistance, method="centroid", point_di
         print("finally generating the listw object ...")
     }
     # setting the final listw attributes
-    listw <- spdep::nb2listw(ordered_nblist, glist = ordered_weights, zero.policy = T,
-                             style = matrice_type)
+    listw <- spdep::nb2listw(ordered_nblist, glist = ordered_weights,
+                             zero.policy = TRUE, style = matrice_type)
     return(listw)
 
 }
@@ -428,7 +434,7 @@ network_listw <- function(origins,lines,maxdistance, method="centroid", point_di
 #' method pointsalong is selected.
 #' @param snap_dist the maximum distance to snap the start and end points on
 #' the network.
-#' @param line_weight The ponderation to use for lines. Default is "length"
+#' @param line_weight The weights to use for lines. Default is "length"
 #' (the geographical length), but can be the name of a column. The value is
 #' considered proportional with the geographical length of the lines.
 #' @param mindist The minimum distance between two different observations.
@@ -469,9 +475,9 @@ network_listw <- function(origins,lines,maxdistance, method="centroid", point_di
 #'}
 network_listw.mc <- function(origins,lines,maxdistance, method="centroid", point_dist=NULL, snap_dist=Inf, line_weight = "length", mindist=10, direction=NULL, dist_func = "inverse", matrice_type = "B", grid_shape=c(1,1), verbose = FALSE, digits = 3, tol=0.1){
     ##adjusting the weights of the lines
-    lines$line_length <- gLength(lines,byid=T)
+    lines$line_length <- gLength(lines,byid = TRUE)
     if(line_weight=="length"){
-        lines$line_weight <- gLength(lines,byid=T)
+        lines$line_weight <- gLength(lines,byid = TRUE)
     }else {
         lines$line_weight <- lines[[line_weight]]
     }
@@ -480,12 +486,12 @@ network_listw.mc <- function(origins,lines,maxdistance, method="centroid", point
     }
 
     # adjusting the directions of the lines
-    if(is.null(direction)==F){
+    if(is.null(direction) == FALSE){
         lines <- lines_direction(lines,direction)
     }
 
     ## checking the matrix type
-    if (matrice_type %in% c("B", "W") == F) {
+    if (matrice_type %in% c("B", "W") == FALSE) {
         stop("Matrice type must be B (binary) or W (row standardized)")
     }
     ## creating the vectorized distance function
@@ -500,7 +506,7 @@ network_listw.mc <- function(origins,lines,maxdistance, method="centroid", point
     origins$fid <- 1:nrow(origins)
     if(class(origins)=="SpatialPolygonsDataFrame"){
         if(method=="centroid"){
-            centers <- gPointOnSurface(origins,byid = T)
+            centers <- gPointOnSurface(origins,byid = TRUE)
             centers <- SpatialPointsDataFrame(centers,origins@data)
         }else if(method=="pointsalong"){
             centers <- surrounding_points(origins,point_dist)
@@ -596,8 +602,8 @@ network_listw.mc <- function(origins,lines,maxdistance, method="centroid", point
         print("finally generating the listw object ...")
     }
     ## setting the final listw attributes
-    listw <- spdep::nb2listw(ordered_nblist, glist = ordered_weights, zero.policy = T,
-                             style = matrice_type)
+    listw <- spdep::nb2listw(ordered_nblist, glist = ordered_weights,
+                             zero.policy = TRUE, style = matrice_type)
     return(listw)
 
 }

@@ -13,7 +13,7 @@ direct_lines(lines, direction)
 an unidirectional line}
 }
 \value{
-A SpatialLinesDataFrame with some lines dupplicated according to
+A SpatialLinesDataFrame with some lines duplicated according to
 direction
 }
 \description{

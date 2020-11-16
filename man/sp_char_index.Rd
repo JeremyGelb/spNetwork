@@ -2,7 +2,7 @@
 % Please edit documentation in R/geometrical_functions.R
 \name{sp_char_index}
 \alias{sp_char_index}
-\title{Coordinates to unique character verctor}
+\title{Coordinates to unique character vector}
 \usage{
 sp_char_index(coords, digits)
 }
@@ -15,7 +15,7 @@ sp_char_index(coords, digits)
 A vector character vector of length n
 }
 \description{
-Generate a character vector based on a coodinates matrix and
+Generate a character vector based on a coordinates matrix and
 the maximum number of digits to keep.
 }
 \examples{
