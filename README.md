@@ -14,17 +14,17 @@ A good start point for this package is the vignettes. They present the main feat
 you can install this package with the following code in R.
 The packages use mainly the following packages in its internal structure :
 
-*igraph
-*sp
-*rgeos
-*maptools
-*raster
-*future
-*future.apply
-*dplyr
-*tidyR
-*Rcpp
-*RcppArmadillo
+* igraph
+* sp
+* rgeos
+* maptools
+* raster
+* future
+* future.apply
+* dplyr
+* tidyR
+* Rcpp
+* RcppArmadillo
 
 ```{r}
 devtools::install_github("JeremyGelb/spNetwork")
@@ -91,5 +91,6 @@ This project is licensed under the GPL2 License
 
 ## Acknowledgments
 
+* Hat tip to Philippe Apparicio for its support during the development
 * Hat tip to Hadley Wickham and its helpful book *R packages*
 
