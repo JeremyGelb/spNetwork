@@ -383,11 +383,11 @@ The calculus of the NKDE for each cell could be done by several cores. To do so,
 
 Note that the combined use of **Rcpp** and **future** is difficult. **Rcpp** functions can not be sent to child processes. To overcome this, a separate package **spNetworkCpp** exists on its own and contains only the **Rcpp** functions. This separate package is installed with **spNetwork**. **spNetworkCpp** is then loaded by each child processes.
 
-Let us split the work between two cores.
+The following code will produce the same results as before but split the work between two cores. Note that the plan used by the package **future** may vary according to your os.
 ```{r message=FALSE, warning=FALSE}
 
-# setting the multiprocess plan
-future::plan(future::multiprocess(workers=2))
+# setting the multisession plan
+future::plan(future::multisession(workers=2))
 
 # then applying the NKDE
 densities_mc <- nkde.mc(mtl_network, 
@@ -445,7 +445,7 @@ adapt_densities <- nkde(mtl_network,
                   method = "discontinuous", digits = 1, tol = 1,
                   grid_shape = c(1,1), max_depth = 16,
                   agg = 5, #we aggregate events within a 5m radius (faster calculation)
-                  sparse = FALSE, #we use regular matrices (faster calculation)
+                  sparse = TRUE, #we use regular matrices (faster calculation)
                   verbose=FALSE)
 
 samples$density <- adapt_densities$k
@@ -453,7 +453,7 @@ samples$density <- adapt_densities$k
 ```
 
 We can now map some of the bandwidths
-```{r message=FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE, eval = FALSE}
 circles <- gBuffer(adapt_densities$events,byid = TRUE,width = adapt_densities$events$bw)
 
 ids <- c(1,52,20,86,14,75,126,200,177)
@@ -465,7 +465,7 @@ plot(circles[ids,],add=T,border='blue',lwd=2)
 
 And map the new densities with the same code as previous
 
-```{r echo=FALSE, message=FALSE, warning=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE, eval = FALSE}
 # rescaling to help the mapping
 samples$density <- samples$density*1000
 
@@ -513,8 +513,7 @@ ggplot() +
 
 When the study area is limited, the kernel density estimate is biased at the border because the events at the other side of the border are not sampled. To mitigate the induced bias, one could apply the Diggle correction factor.
 
-$$d(u) = \sum_{i=1}^{n}\frac{1}{e(x_{i})}K(dist(u-x_{i}))\\e(u) = \int_{W}{K(dist(u,v))}
-$$
+$$d(u) = \sum_{i=1}^{n}\frac{1}{e(x_{i})}K(dist(u-x_{i}))\\e(u) = \int_{W}{K(dist(u,v))}$$
 The correction factor $e(u)$ is calculated for each event for which a part of its mass is outside the study area. More precisely, $e(x_{i})$ is the percentage of the mass of the event $x_i$ located inside the study area. The kernel function could be the simple, the continuous or the discontinuous. This correction factor can be used with the adaptive bandwidth too. Note that this correction is usable only if the network outside the study_area is available.
 
 Let us illustrate it here by using a sub part of the same data
@@ -560,7 +559,6 @@ samples$density <- adjusted_densities
 And again, we can map the results.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-
 extent <- sp::bbox(study_area)
 
 # rescaling to help the mapping
