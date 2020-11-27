@@ -381,7 +381,6 @@ As you can imagine it remains a costly process, especially for the continuous ke
 
 The calculus of the NKDE for each cell could be done by several cores. To do so, **spNetwork** provides a function *nkde.mc*. More specifically, it uses functions from the packages **future** and **future.apply**. The selection of the plan has to be done by the user to ensure the best compatibility on each os and computer. See the documentation of the **future** package if needed.
 
-Note that the combined use of **Rcpp** and **future** is difficult. **Rcpp** functions can not be sent to child processes. To overcome this, a separate package **spNetworkCpp** exists on its own and contains only the **Rcpp** functions. This separate package is installed with **spNetwork**. **spNetworkCpp** is then loaded by each child processes.
 
 The following code will produce the same results as before but split the work between two cores. Note that the plan used by the package **future** may vary according to your os.
 ```{r message=FALSE, warning=FALSE}

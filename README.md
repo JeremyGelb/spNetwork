@@ -78,7 +78,7 @@ Note that you can use this in every spatial analysis you would like to perform. 
 
 ### Work in progress
 
-Currently, functions to calculate K-function and cross-K-function for sets of points are available but still need to be validated.
+Currently, functions to calculate K-function and cross-K-function for sets of points are available but still experimental.
 
 ## Authors
 

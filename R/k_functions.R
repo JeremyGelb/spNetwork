@@ -224,10 +224,10 @@ randomize_distmatrix <- function(graph, edge_df, n, start_vert = NULL){
 #### execution k functions ####
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-#' @title Network k and g functions
+#' @title Network k and g functions (experimental)
 #'
 #' @description Calculate the k and g functions for a set of points on a
-#'   network.
+#'   network (experimental).
 #'
 #' @details The k-function is a method to characterize the dispersion of a set
 #'   of points. For each point, the numbers of other points in subsequent radii
@@ -418,10 +418,11 @@ kfunctions <- function(lines, points, start, end, step, width, nsim, conf_int = 
 }
 
 
-#' @title Network k and g functions (multicore)
+#' @title Network k and g functions (multicore, experimental)
 #'
 #' @description Calculate the k and g functions for a set of points on a network
 #'   with multicore support. For details, please see the function kfunctions.
+#'   (experimental)
 #'
 #' @details For details, please look at the function kfunctions.
 #'
@@ -619,10 +620,10 @@ kfunctions.mc <- function(lines, points, start, end, step, width, nsim, conf_int
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-#' @title Network cross k and g functions
+#' @title Network cross k and g functions (experimental)
 #'
 #' @description Calculate the cross k and g functions for a set of points on a
-#'   network.
+#'   network. (experimental)
 #'
 #' @details The cross k-function is a method to characterize the dispersion of a
 #'   set of points (A) around a second set of points (B). For each point in B,
@@ -831,10 +832,10 @@ cross_kfunctions <- function(lines, pointsA, pointsB, start, end, step, width, n
 }
 
 
-#' @title Network cross k and g functions (multicore)
+#' @title Network cross k and g functions (multicore, experimental)
 #'
 #' @description Calculate the cross k and g functions for a set of points on a
-#'   network with multicore support.
+#'   network with multicore support. (experimental)
 #'
 #' @param lines A SpatialLinesDataFrame with the sampling points. The geometries
 #'   must be a SpatialLinesDataFrame (may crash if some geometries are invalid)

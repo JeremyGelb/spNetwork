@@ -8,7 +8,8 @@ Authors@R: c(
 Description: The spNetwork package provides functions to perform spatial analysis on network.
     In its actual form, it allows to calculate Network Kernel Density Estimate, and to build
     spatial matrices (listw objects like in 'spdep' package) to perform any kind of traditional 
-    spatial analysis with spatial weights based on reticular distances.
+    spatial analysis with spatial weights based on reticular distances. K functions on network
+    are also available but still experimental.
 License: GPL-2
 Encoding: UTF-8
 LazyData: true
