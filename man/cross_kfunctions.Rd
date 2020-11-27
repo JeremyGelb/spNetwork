@@ -2,7 +2,7 @@
 % Please edit documentation in R/k_functions.R
 \name{cross_kfunctions}
 \alias{cross_kfunctions}
-\title{Network cross k and g functions}
+\title{Network cross k and g functions (experimental)}
 \usage{
 cross_kfunctions(
   lines,
@@ -67,7 +67,7 @@ A list with the folowing values : \cr \itemize{ \item{plotk}{A
 }
 \description{
 Calculate the cross k and g functions for a set of points on a
-  network.
+  network. (experimental)
 }
 \details{
 The cross k-function is a method to characterize the dispersion of a
@@ -89,10 +89,10 @@ The cross k-function is a method to characterize the dispersion of a
   points B around A.
 }
 \examples{
-data("libraries_mtl")
-data("theatres_mtl")
+data("mtl_libraries")
+data("mtl_theatres")
 data("main_network_mtl")
-result <- cross_kfunctions(main_network_mtl, theatres_mtl, libraries_mtl,
+result <- cross_kfunctions(main_network_mtl, mtl_theatres, mtl_libraries,
                            start = 0, end = 2500, step = 10, width = 250,
                            nsim = 50, conf_int = 0.05, digits = 2,
                            tol = 0.1, agg = NULL, verbose = FALSE)

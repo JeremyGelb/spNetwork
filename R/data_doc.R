@@ -61,7 +61,7 @@
 #'
 #' @format A SpatialPointsDataFrame with 55 rows and 2 variables
 #' @source \url{http://donnees.ville.montreal.qc.ca/}
-"libraries_mtl"
+"mtl_libraries"
 
 #' Theatres
 #'
@@ -69,5 +69,5 @@
 #'
 #' @format A SpatialPointsDataFrame with 54 rows and 2 variables
 #' @source \url{http://donnees.ville.montreal.qc.ca/}
-"theatres_mtl"
+"mtl_theatres"
 

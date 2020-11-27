@@ -2,7 +2,7 @@
 % Please edit documentation in R/k_functions.R
 \name{kfunctions.mc}
 \alias{kfunctions.mc}
-\title{Network k and g functions (multicore)}
+\title{Network k and g functions (multicore, experimental)}
 \usage{
 kfunctions.mc(
   lines,
@@ -62,15 +62,16 @@ A list with the following values : \cr \itemize{ \item{plotk}{A
 \description{
 Calculate the k and g functions for a set of points on a network
   with multicore support. For details, please see the function kfunctions.
+  (experimental)
 }
 \details{
 For details, please look at the function kfunctions.
 }
 \examples{
-data("libraries_mtl")
+data("mtl_libraries")
 data("main_network_mtl")
 future::plan(future::multiprocess(workers=2))
-result <- kfunctions.mc(main_network_mtl, libraries_mtl,
+result <- kfunctions.mc(main_network_mtl, mtl_libraries,
      start = 0, end = 2500, step = 10,
      width = 200, nsim = 50,
      conf_int = 0.05, tol = 0.1, agg = NULL,

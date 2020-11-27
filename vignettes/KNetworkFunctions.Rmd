@@ -44,20 +44,20 @@ We present here a short example with the case of theatres and libraries in Montr
 
 ```{r, fig.show='hold', fig.align = 'center'}
 library(spNetwork)
-data("libraries_mtl")
-data("theatres_mtl")
+data("mtl_libraries")
+data("mtl_theatres")
 data("main_network_mtl")
 
 par(mar = c(0, 0, 0, 0))
 sp::plot(main_network_mtl)
-sp::plot(libraries_mtl, col = "blue", add=T, pch = 20)
-sp::plot(theatres_mtl, col = "red", add=T, pch = 20)
+sp::plot(mtl_libraries, col = "blue", add=T, pch = 20)
+sp::plot(mtl_theatres, col = "red", add=T, pch = 20)
 ```
 
 As one can see, the theatres seems to be more clustered than the libraries.
 
 ```{r fig.align="center", fig.show='hold', message=FALSE, warning=FALSE}
-kfun_theatre <- kfunctions(main_network_mtl, theatres_mtl,
+kfun_theatre <- kfunctions(main_network_mtl, mtl_theatres,
                            start = 0, end = 5000, step = 50, 
                            width = 1000, nsim = 100,
                            verbose = FALSE, conf_int = 0.025)
@@ -74,7 +74,7 @@ kfun_theatre$plotg
 The G-function is also indicating a clustering situation, which is maximum between two and three kilometers. This is consistent with the fact that we have a high concentration of theatres in the central neighbourhoods and then more dispersed points. We can perform the same analysis for libraries.
 
 ```{r fig.align="center", fig.show='hold', message=FALSE, warning=FALSE}
-kfun_biblio <- kfunctions(main_network_mtl, libraries_mtl,
+kfun_biblio <- kfunctions(main_network_mtl, mtl_libraries,
                           start = 0, end = 5000, step = 50, 
                           width = 1000, nsim = 100, verbose = F)
 
@@ -98,8 +98,8 @@ with $n_a$ the number of points in A and $n_b$ the number of points in B.
 Note that the cross-K-function A to B is not necessarily the same results as the cross-K-function B to A. Again, in **spNetwork**, the inference is based on Monte Carlo Simulations. The locations of the reference set of points are randomized to estimate if the current situation is more or less clustered that what we could expect at random.
 
 ```{r fig.align="center", fig.show='hold', message=FALSE, warning=FALSE}
-cross_biblio_theatre <- cross_kfunctions(main_network_mtl, libraries_mtl,
-                        theatres_mtl, start = 0, end = 5000, step = 50, 
+cross_biblio_theatre <- cross_kfunctions(main_network_mtl, mtl_libraries,
+                        mtl_theatres, start = 0, end = 5000, step = 50, 
                         width = 1000, nsim = 100, verbose = F)
 
 cross_biblio_theatre$plotk
@@ -108,8 +108,8 @@ cross_biblio_theatre$plotk
 One can conclude from the chart that the libraries are randomly located around the theatres and display nor clustering or dispersion around theatres.
 
 ```{r fig.align="center", fig.show='hold', message=FALSE, warning=FALSE}
-cross_theatre_biblio <- cross_kfunctions(main_network_mtl, theatres_mtl,
-                      libraries_mtl, start = 0, end = 5000, 
+cross_theatre_biblio <- cross_kfunctions(main_network_mtl, mtl_theatres,
+                      mtl_libraries, start = 0, end = 5000, 
                       step = 50, width = 1000, nsim = 100, verbose = F)
 
 cross_theatre_biblio$plotk

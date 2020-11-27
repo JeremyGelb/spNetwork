@@ -2,7 +2,7 @@
 % Please edit documentation in R/k_functions.R
 \name{cross_kfunctions.mc}
 \alias{cross_kfunctions.mc}
-\title{Network cross k and g functions (multicore)}
+\title{Network cross k and g functions (multicore, experimental)}
 \usage{
 cross_kfunctions.mc(
   lines,
@@ -66,14 +66,14 @@ A list with the following values : \cr \itemize{ \item{plotk}{A
 }
 \description{
 Calculate the cross k and g functions for a set of points on a
-  network with multicore support.
+  network with multicore support. (experimental)
 }
 \examples{
-data("libraries_mtl")
-data("theatres_mtl")
+data("mtl_libraries")
+data("mtl_theatres")
 data("main_network_mtl")
 future::plan(future::multiprocess(workers=2))
-result <- cross_kfunctions.mc(main_network_mtl, libraries_mtl, theatres_mtl,
+result <- cross_kfunctions.mc(main_network_mtl, mtl_libraries, mtl_theatres,
                            start = 0, end = 2500, step = 10, width = 250,
                            nsim = 50, conf_int = 0.05, digits = 2,
                            tol = 0.1, agg = NULL, verbose = TRUE)

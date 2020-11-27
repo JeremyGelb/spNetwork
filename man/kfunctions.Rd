@@ -2,7 +2,7 @@
 % Please edit documentation in R/k_functions.R
 \name{kfunctions}
 \alias{kfunctions}
-\title{Network k and g functions}
+\title{Network k and g functions (experimental)}
 \usage{
 kfunctions(
   lines,
@@ -61,7 +61,7 @@ A list with the following values : \cr \itemize{ \item{plotk}{A
 }
 \description{
 Calculate the k and g functions for a set of points on a
-  network.
+  network (experimental).
 }
 \details{
 The k-function is a method to characterize the dispersion of a set
@@ -79,9 +79,9 @@ The k-function is a method to characterize the dispersion of a set
   the cumulative effect of the classical k-function.
 }
 \examples{
-data("libraries_mtl")
+data("mtl_libraries")
 data("main_network_mtl")
-result <- kfunctions(main_network_mtl, libraries_mtl,
+result <- kfunctions(main_network_mtl, mtl_libraries,
      start = 0, end = 2500, step = 10,
      width = 200, nsim = 50,
      conf_int = 0.05, tol = 0.1, agg = NULL,

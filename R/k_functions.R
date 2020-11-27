@@ -274,9 +274,9 @@ randomize_distmatrix <- function(graph, edge_df, n, start_vert = NULL){
 #' @importFrom ggplot2 ggplot geom_ribbon geom_path aes_string labs
 #' @export
 #' @examples
-#' data("libraries_mtl")
+#' data("mtl_libraries")
 #' data("main_network_mtl")
-#' result <- kfunctions(main_network_mtl, libraries_mtl,
+#' result <- kfunctions(main_network_mtl, mtl_libraries,
 #'      start = 0, end = 2500, step = 10,
 #'      width = 200, nsim = 50,
 #'      conf_int = 0.05, tol = 0.1, agg = NULL,
@@ -460,10 +460,10 @@ kfunctions <- function(lines, points, start, end, step, width, nsim, conf_int = 
 #'
 #' @export
 #' @examples
-#' data("libraries_mtl")
+#' data("mtl_libraries")
 #' data("main_network_mtl")
 #' future::plan(future::multiprocess(workers=2))
-#' result <- kfunctions.mc(main_network_mtl, libraries_mtl,
+#' result <- kfunctions.mc(main_network_mtl, mtl_libraries,
 #'      start = 0, end = 2500, step = 10,
 #'      width = 200, nsim = 50,
 #'      conf_int = 0.05, tol = 0.1, agg = NULL,
@@ -679,10 +679,10 @@ kfunctions.mc <- function(lines, points, start, end, step, width, nsim, conf_int
 #' @importFrom grDevices rgb
 #' @export
 #' @examples
-#' data("libraries_mtl")
-#' data("theatres_mtl")
+#' data("mtl_libraries")
+#' data("mtl_theatres")
 #' data("main_network_mtl")
-#' result <- cross_kfunctions(main_network_mtl, theatres_mtl, libraries_mtl,
+#' result <- cross_kfunctions(main_network_mtl, mtl_theatres, mtl_libraries,
 #'                            start = 0, end = 2500, step = 10, width = 250,
 #'                            nsim = 50, conf_int = 0.05, digits = 2,
 #'                            tol = 0.1, agg = NULL, verbose = FALSE)
@@ -872,11 +872,11 @@ cross_kfunctions <- function(lines, pointsA, pointsB, start, end, step, width, n
 #' @importFrom grDevices rgb
 #' @export
 #' @examples
-#' data("libraries_mtl")
-#' data("theatres_mtl")
+#' data("mtl_libraries")
+#' data("mtl_theatres")
 #' data("main_network_mtl")
 #' future::plan(future::multiprocess(workers=2))
-#' result <- cross_kfunctions.mc(main_network_mtl, libraries_mtl, theatres_mtl,
+#' result <- cross_kfunctions.mc(main_network_mtl, mtl_libraries, mtl_theatres,
 #'                            start = 0, end = 2500, step = 10, width = 250,
 #'                            nsim = 50, conf_int = 0.05, digits = 2,
 #'                            tol = 0.1, agg = NULL, verbose = TRUE)
