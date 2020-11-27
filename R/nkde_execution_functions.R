@@ -835,10 +835,10 @@ nkde_worker <- function(lines, events, samples, kernel_name,bw, bws, method, div
     if(method=="continuous"){
       ##and finally calculating the values
       if (sparse){
-        values <- spNetworkCpp::continuous_nkde_cpp_arma_sparse(neighbour_list, events$vertex_id, events$weight,
+        values <- spNetwork::continuous_nkde_cpp_arma_sparse(neighbour_list, events$vertex_id, events$weight,
                                                          samples@data, bws, kernel_name, nodes@data, graph_result$linelist, max_depth, verbose)
       }else{
-        values <- spNetworkCpp::continuous_nkde_cpp_arma(neighbour_list, events$vertex_id, events$weight,
+        values <- spNetwork::continuous_nkde_cpp_arma(neighbour_list, events$vertex_id, events$weight,
                                                                 samples@data, bws, kernel_name, nodes@data, graph_result$linelist, max_depth, verbose)
       }
 
@@ -849,10 +849,10 @@ nkde_worker <- function(lines, events, samples, kernel_name,bw, bws, method, div
         # invisible(capture.output(values <- discontinuous_nkde2(edge_list,neighbour_list, events$vertex_id, events$weight,
         #                                                       samples@data, bw, kernel_func, nodes@data, graph_result$linelist, max_depth, verbose)))
       if(sparse){
-        values <- spNetworkCpp::discontinuous_nkde_cpp_arma_sparse(neighbour_list, events$vertex_id, events$weight,
+        values <- spNetwork::discontinuous_nkde_cpp_arma_sparse(neighbour_list, events$vertex_id, events$weight,
                                                             samples@data, bws, kernel_name, nodes@data, graph_result$linelist, max_depth, verbose)
       }else{
-        values <- spNetworkCpp::discontinuous_nkde_cpp_arma(neighbour_list, events$vertex_id, events$weight,
+        values <- spNetwork::discontinuous_nkde_cpp_arma(neighbour_list, events$vertex_id, events$weight,
                                                            samples@data, bws, kernel_name, nodes@data, graph_result$linelist, max_depth, verbose)
       }
 

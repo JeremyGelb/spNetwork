@@ -199,12 +199,12 @@ correction_factor <- function(study_area,events,lines,method, bws, kernel_name, 
     # lets obtain the potential values of each line
     if(method=="continuous"){
       if(sparse){
-        dfs <- spNetworkCpp::corrfactor_continuous_sparse(neighbour_list,
+        dfs <- spNetwork::corrfactor_continuous_sparse(neighbour_list,
                                                           sel_events$vertex_id,
                                                           graph_result$linelist,
                                                           bws, max_depth)
       }else{
-        dfs <- spNetworkCpp::corrfactor_continuous(neighbour_list,
+        dfs <- spNetwork::corrfactor_continuous(neighbour_list,
                                                    sel_events$vertex_id,
                                                    graph_result$linelist,
                                                    bws, max_depth)
@@ -212,12 +212,12 @@ correction_factor <- function(study_area,events,lines,method, bws, kernel_name, 
     }
     if(method=="discontinuous"){
       if(sparse){
-        dfs <- spNetworkCpp::corrfactor_discontinuous_sparse(neighbour_list,
+        dfs <- spNetwork::corrfactor_discontinuous_sparse(neighbour_list,
                                                              sel_events$vertex_id,
                                                              graph_result$linelist,
                                                              bws, max_depth)
       }else{
-        dfs <- spNetworkCpp::corrfactor_discontinuous(neighbour_list,
+        dfs <- spNetwork::corrfactor_discontinuous(neighbour_list,
                                                       sel_events$vertex_id,
                                                       graph_result$linelist,
                                                       bws, max_depth)

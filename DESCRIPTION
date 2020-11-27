@@ -31,8 +31,7 @@ Imports:
     testthat (>= 3.0.0),
     Rcpp (>= 1.0.4.6),
     RcppProgress (>= 0.4.2),
-    RcppArmadillo (>= 0.9.8.50.1.0),
-    spNetworkCpp (>= 0.1.0)
+    RcppArmadillo (>= 0.9.8.50.1.0)
 Depends:
     R (>= 3.6)
 Suggests:
@@ -49,4 +48,8 @@ RoxygenNote: 7.1.1
 VignetteBuilder: knitr
 URL: http://github.com/JeremyGelb/spNetwork
 BugReports: http://github.com/JeremyGelb/spNetwork/issues
-Remotes: JeremyGelb/spNetworkCpp
+LinkingTo: 
+    Rcpp,
+    RcppProgress,
+    RcppArmadillo
+SystemRequirements: C++11
