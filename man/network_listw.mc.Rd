@@ -83,7 +83,10 @@ A listw object (spdep like)
 Generate listw object (spdep like) based on network distances with multicore support.
 }
 \examples{
-data(mtl_network)
+\dontrun{
+# data(mtl_network)
+networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
+mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
 future::plan(future::multiprocess(workers=4))
 listw <- network_listw.mc(mtl_network,mtl_network,maxdistance=500,
         method = "centroid", line_weight = "length",
@@ -91,5 +94,6 @@ listw <- network_listw.mc(mtl_network,mtl_network,maxdistance=500,
 \dontshow{
    ## R CMD check: make sure any open connections are closed afterward
    if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
+ }
 }
 }

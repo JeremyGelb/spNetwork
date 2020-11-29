@@ -79,11 +79,17 @@ The k-function is a method to characterize the dispersion of a set
   the cumulative effect of the classical k-function.
 }
 \examples{
-data("mtl_libraries")
-data("main_network_mtl")
+\dontrun{
+#data("mtl_libraries")
+#data("main_network_mtl")
+networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
+eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
+main_network_mtl <- rgdal::readOGR(networkgpkg,layer="main_network_mtl", verbose=FALSE)
+mtl_libraries <- rgdal::readOGR(eventsgpkg,layer="mtl_libraries", verbose=FALSE)
 result <- kfunctions(main_network_mtl, mtl_libraries,
      start = 0, end = 2500, step = 10,
      width = 200, nsim = 50,
      conf_int = 0.05, tol = 0.1, agg = NULL,
      verbose = FALSE)
+}
 }

@@ -19,6 +19,10 @@ Generate a SpatialPointsDataFrame with line center points. The
   points are located at center of the line based on the length of the line.
 }
 \examples{
-data('mtl_network')
+\dontrun{
+#data('mtl_network')
+networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
+mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
 centers <- lines_center(mtl_network)
+}
 }

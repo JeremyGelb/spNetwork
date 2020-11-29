@@ -232,8 +232,11 @@ add_vertices_lines <- function(lines, points, nearest_lines_idx, mindist) {
 #' @importFrom rgeos gLength gInterpolate
 #' @export
 #' @examples
-#' data('mtl_network')
+#' \dontrun{
+#' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
+#' mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
 #' lixels <- lixelize_lines(mtl_network,150,50)
+#' }
 lixelize_lines <- function(lines, lx_length, mindist = NULL, verbose = FALSE) {
     if (is.null(mindist)) {
         mindist <- lx_length/10
@@ -297,6 +300,7 @@ lixelize_lines <- function(lines, lx_length, mindist = NULL, verbose = FALSE) {
     new_splines <- SpatialLinesDataFrame(new_lines, df, match.ID = FALSE)
     raster::crs(new_splines) <- raster::crs(lines)
     return(new_splines)
+
 }
 
 
@@ -318,14 +322,17 @@ lixelize_lines <- function(lines, lx_length, mindist = NULL, verbose = FALSE) {
 #'@export
 #'@importFrom utils capture.output
 #' @examples
-#' data('mtl_network')
-#' future::plan(future::multiprocess(workers=2))
+#' \dontrun{
+#' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
+#' mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
+#' future::plan(future::multisession(workers=2))
 #' lixels <- lixelize_lines.mc(mtl_network,150,50)
 #' \dontshow{
 #'  ## R CMD check: make sure any open connections are closed afterward
 #'  if (!inherits(future::plan(), "sequential")){
 #'  future::plan(future::sequential)
 #'  }
+#' }
 #'}
 lixelize_lines.mc <- function(lines, lx_length, mindist = NULL, verbose = TRUE, chunk_size = 100) {
     chunks <- split(1:nrow(lines), rep(1:ceiling(nrow(lines) / chunk_size),
@@ -413,8 +420,11 @@ simple_lines <- function(lines) {
 #' @importFrom utils txtProgressBar setTxtProgressBar
 #' @export
 #' @examples
-#' data('mtl_network')
+#' \dontrun{
+#' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
+#' mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
 #' centers <- lines_center(mtl_network)
+#' }
 lines_center <- function(lines, verbose = FALSE) {
     if(verbose){
         pb <- txtProgressBar(min = 0, max = nrow(lines), style = 3)
@@ -520,8 +530,11 @@ add_center_lines.mc <- function(lines, show_progress = TRUE, chunk_size = 100) {
 #' @importFrom utils capture.output
 #' @export
 #' @examples
-#' data(mtl_network)
+#' \dontrun{
+#' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
+#' mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
 #' new_pts <- lines_points_along(mtl_network,50)
+#' }
 lines_points_along <- function(lines,dist){
     lenghts <- gLength(lines, byid = TRUE)
     list_pts <- lapply(1:nrow(lines),function(i){
@@ -718,7 +731,7 @@ snapPointsToLines2 <- function(points, lines ,idField = NA) {
 
     return(SpatialPointsDataFrame(coords=t(mNewCoords),
                            data=df,
-                           proj4string=sp::CRS(sp::proj4string(points))))
+                           proj4string=raster::crs(points)))
 
 }
 

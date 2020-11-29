@@ -290,8 +290,11 @@ plot_graph <- function(graph) {
 #' @importFrom sp coordinates
 #' @export
 #' @examples
-#' data(mtl_network)
+#' \dontrun{
+#' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
+#' mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
 #' topo_errors <- graph_checking(mtl_network, 2, 2)
+#' }
 graph_checking <- function(lines,digits, tol){
 
   ##step1 : adjusting the lines

@@ -598,7 +598,7 @@ arma::vec esd_kernel_rcpp_arma_sparse(fptr kernel_func, arma::sp_mat edge_mat,
     }
 
     double new_alpha;
-    if(prev_node <0  & cnt_n>2){
+    if((prev_node < 0)  & (cnt_n > 2)){
       new_alpha = 2.0/(cnt_n);
     }else{
       new_alpha = alpha * (1.0/(cnt_n-1.0));
@@ -709,7 +709,7 @@ arma::vec esd_kernel_rcpp_arma(fptr kernel_func, IntegerMatrix edge_mat,
     }
 
     double new_alpha;
-    if(prev_node <0  & cnt_n>2){
+    if((prev_node < 0)  & (cnt_n > 2)){
       new_alpha = 2.0/(cnt_n);
     }else{
       new_alpha = alpha * (1.0/(cnt_n-1.0));
@@ -971,7 +971,7 @@ List corrfactor_discontinuous_sparse(List neighbour_list, NumericVector events, 
         new_depth = depth;
       }
       double new_alpha;
-      if(prev_node == -1 & cnt_n>2){
+      if((prev_node == -1) & (cnt_n > 2)){
         new_alpha = 2.0/(cnt_n);
       }else{
         new_alpha = alpha * (1.0/(cnt_n-1.0));
@@ -1080,7 +1080,7 @@ List corrfactor_discontinuous(List neighbour_list, NumericVector events, DataFra
         new_depth = depth;
       }
       double new_alpha;
-      if(prev_node == -1 & cnt_n>2){
+      if((prev_node == -1) & (cnt_n > 2)){
         new_alpha = 2.0/(cnt_n);
       }else{
         new_alpha = alpha * (1.0/(cnt_n-1.0));

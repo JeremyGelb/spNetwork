@@ -194,8 +194,13 @@ then a classical matrix could be used instead of a sparse one. It
 significantly increases speed, but could lead to memory issues.
 }
 \examples{
-data(mtl_network)
-data(bike_accidents)
+\dontrun{
+#data(mtl_network)
+#data(bike_accidents)
+networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
+eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
+mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
+bike_accidents <- rgdal::readOGR(eventsgpkg,layer="bike_accidents", verbose=FALSE)
 lixels <- lixelize_lines(mtl_network,200,mindist = 50)
 samples <- lines_center(lixels)
 densities <- nkde(mtl_network,
@@ -209,4 +214,5 @@ densities <- nkde(mtl_network,
                   agg = 15,
                   grid_shape = c(1,1),
                   verbose=FALSE)
+}
 }

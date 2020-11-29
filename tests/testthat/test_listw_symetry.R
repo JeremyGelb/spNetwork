@@ -1,7 +1,10 @@
 context("symetry and comparison between simple and multicore")
 
 test_that("A listw object returned by the function network_listw must be symetric", {
-  data(small_mtl_network)
+  #data(small_mtl_network)
+  networkgpkg <- system.file("extdata", "networks.gpkg",
+                             package = "spNetwork", mustWork = TRUE)
+  small_mtl_network <- rgdal::readOGR(networkgpkg,layer="small_mtl_network", verbose = FALSE)
   listw <- network_listw(small_mtl_network,small_mtl_network,
                                   method="centroid",
                                   maxdistance = 300,
@@ -18,7 +21,10 @@ test_that("A listw object returned by the function network_listw must be symetri
 
 
 test_that("A listw object returned by the function network_listw must be symetric", {
-  data(small_mtl_network)
+  #data(small_mtl_network)
+  networkgpkg <- system.file("extdata", "networks.gpkg",
+                             package = "spNetwork", mustWork = TRUE)
+  small_mtl_network <- rgdal::readOGR(networkgpkg,layer="small_mtl_network", verbose = FALSE)
   listw <- network_listw(small_mtl_network,small_mtl_network,
                          method="ends",
                          maxdistance = 300,
@@ -35,7 +41,10 @@ test_that("A listw object returned by the function network_listw must be symetri
 
 
 test_that("A listw object returned by the function network_listw must be the same as a listw returned by network_listw.mc", {
-  data(small_mtl_network)
+  #data(small_mtl_network)
+  networkgpkg <- system.file("extdata", "networks.gpkg",
+                             package = "spNetwork", mustWork = TRUE)
+  small_mtl_network <- rgdal::readOGR(networkgpkg,layer="small_mtl_network", verbose = FALSE)
   listw <- network_listw(small_mtl_network,small_mtl_network,
                          method="ends",
                          maxdistance = 300,

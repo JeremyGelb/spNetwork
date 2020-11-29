@@ -1024,8 +1024,11 @@ nkde_worker <- function(lines, events, samples, kernel_name,bw, bws, method, div
 #' points
 #' @export
 #' @examples
-#' data(mtl_network)
-#' data(bike_accidents)
+#' \dontrun{
+#' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
+#' eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
+#' mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
+#' bike_accidents <- rgdal::readOGR(eventsgpkg,layer="bike_accidents", verbose=FALSE)
 #' lixels <- lixelize_lines(mtl_network,200,mindist = 50)
 #' samples <- lines_center(lixels)
 #' densities <- nkde(mtl_network,
@@ -1039,6 +1042,7 @@ nkde_worker <- function(lines, events, samples, kernel_name,bw, bws, method, div
 #'                   agg = 15,
 #'                   grid_shape = c(1,1),
 #'                   verbose=FALSE)
+#' }
 nkde <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, trim_bw=NULL, method, div="bw",diggle_correction = FALSE, study_area = NULL, max_depth = 15, digits=5, tol=0.1, agg=NULL, sparse=TRUE, grid_shape=c(1,1), verbose=TRUE, check=TRUE){
 
   ## step0 basic checks
@@ -1204,8 +1208,11 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, tri
 #' points
 #' @export
 #' @examples
-#' data(mtl_network)
-#' data(bike_accidents)
+#' \dontrun{
+#' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
+#' eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
+#' mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
+#' bike_accidents <- rgdal::readOGR(eventsgpkg,layer="bike_accidents", verbose=FALSE)
 #' future::plan(future::multiprocess(workers=2))
 #' lixels <- lixelize_lines(mtl_network,200,mindist = 50)
 #' samples <- lines_center(lixels)
@@ -1223,6 +1230,7 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, tri
 #'    ## R CMD check: make sure any open connections are closed afterward
 #'    if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
 #'    }
+#' }
 nkde.mc <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, trim_bw=NULL, method, div="bw", diggle_correction = FALSE, study_area = NULL, max_depth = 15, digits=5, tol=0.1,agg=NULL, sparse=TRUE, grid_shape=c(1,1), verbose=TRUE, check=TRUE){
 
   ## step0 basic checks

@@ -35,13 +35,17 @@ Cut a SpatialLines object into lixels with a specified minimal
  multicore support.
 }
 \examples{
-data('mtl_network')
-future::plan(future::multiprocess(workers=2))
+\dontrun{
+#data('mtl_network')
+networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
+mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
+future::plan(future::multisession(workers=2))
 lixels <- lixelize_lines.mc(mtl_network,150,50)
 \dontshow{
  ## R CMD check: make sure any open connections are closed afterward
  if (!inherits(future::plan(), "sequential")){
  future::plan(future::sequential)
  }
+}
 }
 }

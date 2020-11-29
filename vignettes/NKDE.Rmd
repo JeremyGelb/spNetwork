@@ -294,8 +294,15 @@ library(maptools)
 library(rgeos)
 library(spNetwork)
 library(raster)
-data(mtl_network)
-data(bike_accidents)
+#data(mtl_network)
+#data(bike_accidents)
+
+networkgpkg <- system.file("extdata", "networks.gpkg",
+                           package = "spNetwork", mustWork = TRUE)
+eventsgpkg <- system.file("extdata", "events.gpkg",
+                          package = "spNetwork", mustWork = TRUE)
+mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network",verbose = FALSE)
+bike_accidents <- rgdal::readOGR(eventsgpkg,layer="bike_accidents", verbose = FALSE)
 
 # then plotting the data
 plot(mtl_network)

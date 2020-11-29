@@ -18,6 +18,10 @@ An object of class SpatialLinesDataframe (package sp)
 Generate points along the lines of a SpatialLinesDataFrame.
 }
 \examples{
-data(mtl_network)
+\dontrun{
+#data(mtl_network)
+networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
+mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
 new_pts <- lines_points_along(mtl_network,50)
+}
 }

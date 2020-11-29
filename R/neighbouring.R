@@ -284,10 +284,13 @@ prepare_elements_netlistw <- function(is,grid,snapped_points,lines,maxdistance){
 #' @importFrom graphics plot
 #' @export
 #' @examples
-#' data(mtl_network)
-# listw <- network_listw(mtl_network,mtl_network,maxdistance=500,
-#         method = "centroid", line_weight = "length",
-#         dist_func = 'squared inverse', matrice_type='B', grid_shape = c(2,2))
+#' \dontrun{
+#' networkgpkg <- system.file("extdata", "networks.gpkg",package = "spNetwork", mustWork = TRUE)
+#' mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
+#' listw <- network_listw(mtl_network,mtl_network,maxdistance=500,
+#'         method = "centroid", line_weight = "length",
+#'         dist_func = 'squared inverse', matrice_type='B', grid_shape = c(2,2))
+#' }
 network_listw <- function(origins,lines,maxdistance, method="centroid", point_dist=NULL, snap_dist=Inf, line_weight = "length", mindist=10, direction=NULL, dist_func = "inverse", matrice_type = "B", grid_shape=c(1,1), verbose = FALSE, digits = 3, tol=0.1){
 
     ## step1 adjusting the weights of the lines
@@ -464,7 +467,9 @@ network_listw <- function(origins,lines,maxdistance, method="centroid", point_di
 #' @importFrom rgeos gCentroid gLength gBuffer gIntersects gPointOnSurface
 #' @export
 #' @examples
-#' data(mtl_network)
+#' \dontrun{
+#' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
+#' mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
 #' future::plan(future::multiprocess(workers=4))
 #' listw <- network_listw.mc(mtl_network,mtl_network,maxdistance=500,
 #'         method = "centroid", line_weight = "length",
@@ -472,6 +477,7 @@ network_listw <- function(origins,lines,maxdistance, method="centroid", point_di
 #' \dontshow{
 #'    ## R CMD check: make sure any open connections are closed afterward
 #'    if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
+#'  }
 #'}
 network_listw.mc <- function(origins,lines,maxdistance, method="centroid", point_dist=NULL, snap_dist=Inf, line_weight = "length", mindist=10, direction=NULL, dist_func = "inverse", matrice_type = "B", grid_shape=c(1,1), verbose = FALSE, digits = 3, tol=0.1){
     ##adjusting the weights of the lines
