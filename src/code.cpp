@@ -257,7 +257,7 @@ arma::vec esc_kernel_rcpp_arma_sparse(fptr kernel_func, arma::vec samples_k, Lis
   samples_k.elem(test) += new_k;
   //mettre a jour d
   double d2 = line_weights[l1-1] + d;
-  if((bw>d2) & (depth < max_depth)){
+  if((bw>d2) && (depth < max_depth)){
     //on veut trouver toutes les lignes emannant de v (Lv)
     IntegerVector v_neighbours = neighbour_list[v1-1];
     int n = v_neighbours.length();
@@ -333,7 +333,7 @@ arma::vec esc_kernel_rcpp_arma(fptr kernel_func, arma::vec samples_k, List neigh
   samples_k.elem(test) += new_k;
   //mettre a jour d
   double d2 = line_weights[l1-1] + d;
-  if((bw>d2) & (depth < max_depth)){
+  if((bw>d2) && (depth < max_depth)){
     //on veut trouver toutes les lignes emannant de v (Lv)
     IntegerVector v_neighbours = neighbour_list[v1-1];
     int n = v_neighbours.length();
@@ -598,7 +598,7 @@ arma::vec esd_kernel_rcpp_arma_sparse(fptr kernel_func, arma::sp_mat edge_mat,
     }
 
     double new_alpha;
-    if((prev_node < 0)  & (cnt_n > 2)){
+    if((prev_node < 0)  && (cnt_n > 2)){
       new_alpha = 2.0/(cnt_n);
     }else{
       new_alpha = alpha * (1.0/(cnt_n-1.0));
@@ -709,7 +709,7 @@ arma::vec esd_kernel_rcpp_arma(fptr kernel_func, IntegerMatrix edge_mat,
     }
 
     double new_alpha;
-    if((prev_node < 0)  & (cnt_n > 2)){
+    if((prev_node < 0)  && (cnt_n > 2)){
       new_alpha = 2.0/(cnt_n);
     }else{
       new_alpha = alpha * (1.0/(cnt_n-1.0));
@@ -971,7 +971,7 @@ List corrfactor_discontinuous_sparse(List neighbour_list, NumericVector events, 
         new_depth = depth;
       }
       double new_alpha;
-      if((prev_node == -1) & (cnt_n > 2)){
+      if((prev_node == -1) && (cnt_n > 2)){
         new_alpha = 2.0/(cnt_n);
       }else{
         new_alpha = alpha * (1.0/(cnt_n-1.0));
@@ -1080,7 +1080,7 @@ List corrfactor_discontinuous(List neighbour_list, NumericVector events, DataFra
         new_depth = depth;
       }
       double new_alpha;
-      if((prev_node == -1) & (cnt_n > 2)){
+      if((prev_node == -1) && (cnt_n > 2)){
         new_alpha = 2.0/(cnt_n);
       }else{
         new_alpha = alpha * (1.0/(cnt_n-1.0));

@@ -84,7 +84,6 @@ Generate listw object (spdep like) based on network distances with multicore sup
 }
 \examples{
 \dontrun{
-# data(mtl_network)
 networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
 mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
 future::plan(future::multiprocess(workers=4))

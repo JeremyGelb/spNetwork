@@ -80,8 +80,6 @@ The k-function is a method to characterize the dispersion of a set
 }
 \examples{
 \dontrun{
-#data("mtl_libraries")
-#data("main_network_mtl")
 networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
 eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
 main_network_mtl <- rgdal::readOGR(networkgpkg,layer="main_network_mtl", verbose=FALSE)

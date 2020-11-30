@@ -84,7 +84,6 @@ Generate listw object (spdep like) based on network distances.
 }
 \examples{
 \dontrun{
-# data(mtl_network)
 networkgpkg <- system.file("extdata", "networks.gpkg",package = "spNetwork", mustWork = TRUE)
 mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
 listw <- network_listw(mtl_network,mtl_network,maxdistance=500,

@@ -27,7 +27,6 @@ Cut a SpatialLines object into lixels with a specified minimal
 }
 \examples{
 \dontrun{
-#data('mtl_network')
 networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
 mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
 lixels <- lixelize_lines(mtl_network,150,50)

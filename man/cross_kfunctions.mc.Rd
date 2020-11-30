@@ -70,9 +70,6 @@ Calculate the cross k and g functions for a set of points on a
 }
 \examples{
 \dontrun{
-#data("mtl_libraries")
-#data("mtl_theatres")
-#data("main_network_mtl")
 networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
 eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
 main_network_mtl <- rgdal::readOGR(networkgpkg,layer="main_network_mtl", verbose=FALSE)

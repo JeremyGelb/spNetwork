@@ -195,8 +195,6 @@ significantly increases speed, but could lead to memory issues.
 }
 \examples{
 \dontrun{
-#data(mtl_network)
-#data(bike_accidents)
 networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
 eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
 mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
