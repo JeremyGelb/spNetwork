@@ -413,7 +413,6 @@ simple_lines <- function(lines) {
 #'   points are located at center of the line based on the length of the line.
 #'
 #' @param lines The SpatialLinesDataframe to use
-#' @param verbose A Boolean indicating if a progressbar should be displayed
 #' @return An object of class SpatialPointsDataFrame (package sp)
 #' @importFrom sp coordinates SpatialPointsDataFrame SpatialPoints
 #' @importFrom rgeos gInterpolate
@@ -425,21 +424,8 @@ simple_lines <- function(lines) {
 #' mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
 #' centers <- lines_center(mtl_network)
 #' }
-lines_center <- function(lines, verbose = FALSE) {
-    if(verbose){
-        pb <- txtProgressBar(min = 0, max = nrow(lines), style = 3)
-    }
-    listpt <- sapply(1:nrow(lines), function(i) {
-        if(verbose){
-            setTxtProgressBar(pb, i)
-        }
-        line <- lines[i, ]
-        pt <- gInterpolate(line, gLength(line)/2)
-        return(coordinates(pt))
-    })
-    ptcoords <- t(listpt)
-    centerpoints <- SpatialPointsDataFrame(SpatialPoints(ptcoords), lines@data)
-    raster::crs(centerpoints) <- raster::crs(lines)
+lines_center <- function(lines) {
+    centerpoints <- maptools::SpatialLinesMidPoints(lines)
     return(centerpoints)
 }
 

@@ -86,7 +86,7 @@ Generate listw object (spdep like) based on network distances with multicore sup
 \dontrun{
 networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
 mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
-future::plan(future::multiprocess(workers=4))
+future::plan(future::multisession(workers=2))
 listw <- network_listw.mc(mtl_network,mtl_network,maxdistance=500,
         method = "centroid", line_weight = "length",
         dist_func = 'squared inverse', matrice_type='B', grid_shape = c(2,2))

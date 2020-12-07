@@ -120,6 +120,11 @@ $k(\dfrac{d_{il}}{r})= \dfrac{\pi}{4} * (cos(\dfrac{\pi}{2}*\dfrac{d_{il}}{r}))$
 
 with *r* the bandwidth, and $d_{il}$ the distance between an event and the sampling point.
 
+```{r include=FALSE}
+load(system.file("extdata", "results_vignette_nkde.rda",
+                           package = "spNetwork", mustWork = TRUE))
+```
+
 ```{r message=FALSE, warning=FALSE}
 library(ggplot2)
 library(reshape2)
@@ -294,8 +299,6 @@ library(maptools)
 library(rgeos)
 library(spNetwork)
 library(raster)
-#data(mtl_network)
-#data(bike_accidents)
 
 networkgpkg <- system.file("extdata", "networks.gpkg",
                            package = "spNetwork", mustWork = TRUE)
@@ -311,7 +314,9 @@ plot(bike_accidents,add=T,col='red',pch = 19)
 # then calculating some lixels to use as sampling points
 lixels <- lixelize_lines(mtl_network,200,mindist = 50)
 samples <- lines_center(lixels)
+```
 
+```{r message=FALSE, warning=FALSE, eval=FALSE}
 # then applying the NKDE
 densities <- nkde(mtl_network, 
                   events = bike_accidents,
@@ -320,13 +325,13 @@ densities <- nkde(mtl_network,
                   kernel_name = "quartic",
                   bw = 300, div= "bw", 
                   method = "discontinuous", digits = 1, tol = 1,
-                  grid_shape = c(1,1), max_depth = 16,
+                  grid_shape = c(1,1), max_depth = 8,
                   agg = 5, #we aggregate events within a 5m radius (faster calculation)
                   sparse = TRUE,
-                  verbose=FALSE)
+                  verbose = FALSE)
+```
 
-
-
+```{r message=FALSE, warning=FALSE}
 samples$density <- densities
 ```
 
@@ -390,7 +395,7 @@ The calculus of the NKDE for each cell could be done by several cores. To do so,
 
 
 The following code will produce the same results as before but split the work between two cores. Note that the plan used by the package **future** may vary according to your os.
-```{r message=FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE, eval = FALSE}
 
 # setting the multisession plan
 future::plan(future::multisession(workers=2))
@@ -403,15 +408,17 @@ densities_mc <- nkde.mc(mtl_network,
                   kernel_name = "quartic",
                   bw = 300, div= "bw", 
                   method = "discontinuous", digits = 1, tol = 1,
-                  grid_shape = c(2,2),
-                  max_depth = 16, # splitting the study area in 4 rectangles
+                  grid_shape = c(2,2), # splitting the study area in 4 rectangles
+                  max_depth = 16,
                   agg = 5, #we aggregate events within a 5m radius
                   sparse = TRUE,
-                  verbose=FALSE)
+                  verbose = FALSE)
 
 # let's set back the classical sequential plan
 if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
+```
 
+```{r message=FALSE, warning=FALSE}
 # we can compare the previous result and the new one
 diff <- sum(abs(densities - densities_mc))
 print(paste("overall difference between the regular and paralellized method : ",round(diff,12),sep=""))
@@ -438,8 +445,7 @@ This method is called event oriented, because the new bandwidths are evaluated f
 In **spNetwork**, when an adaptive bandwidth is used, the calculated bandwidth for each event is returned too.
 
 Let us calculate a new NKDE, but with an adaptive bandwidth.
-```{r message=FALSE, warning=FALSE}
-
+```{r message=FALSE, warning=FALSE, eval = FALSE}
 adapt_densities <- nkde(mtl_network, 
                   events = bike_accidents,
                   w = rep(1,nrow(bike_accidents)),
@@ -453,7 +459,9 @@ adapt_densities <- nkde(mtl_network,
                   agg = 5, #we aggregate events within a 5m radius (faster calculation)
                   sparse = TRUE,
                   verbose=FALSE)
+```
 
+```{r message=FALSE, warning=FALSE}
 samples$density <- adapt_densities$k
 
 ```
@@ -525,7 +533,6 @@ The correction factor $e(u)$ is calculated for each event for which a part of it
 Let us illustrate it here by using a sub part of the same data
 
 ```{r message=FALSE, warning=FALSE}
-
 # selecting the events in a subset of the data
 center_event <- bike_accidents[125,]
 study_area <- rgeos::gBuffer(center_event,width = 800)
@@ -543,7 +550,9 @@ invisible(capture.output(samples <- lines_center(lixels)))
 sp::plot(study_area,col="white")
 sp::plot(mtl_network,add=TRUE)
 sp::plot(events,add=TRUE, col="red")
+```
 
+```{r message=FALSE, warning=FALSE, eval = FALSE}
 # calculating the NKDE values, adjusted
 adjusted_densities <- nkde(lines = mtl_network,
                             events = events,
@@ -558,7 +567,9 @@ adjusted_densities <- nkde(lines = mtl_network,
                             max_depth = 15,
                             digits = 2,tol = 0.1,agg = 5,sparse = TRUE,
                             grid_shape = c(1,1),verbose = FALSE)
+```
 
+```{r message=FALSE, warning=FALSE}
 samples$density <- adjusted_densities
 ```
 

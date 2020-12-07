@@ -1213,7 +1213,7 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, tri
 #' eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
 #' mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
 #' bike_accidents <- rgdal::readOGR(eventsgpkg,layer="bike_accidents", verbose=FALSE)
-#' future::plan(future::multiprocess(workers=2))
+#' future::plan(future::multisession(workers=2))
 #' lixels <- lixelize_lines(mtl_network,200,mindist = 50)
 #' samples <- lines_center(lixels)
 #' densities <- nkde.mc(mtl_network,

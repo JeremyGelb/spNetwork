@@ -12,7 +12,7 @@
 
 * This is a new release.
 
-## Round 1 (after automatic checks)
+## Round 1 (after automatic checks) the 01/12/2020
 
 **problem**:  
 Possibly mis-spelled words in DESCRIPTION:  
@@ -95,3 +95,36 @@ checking installed package size ... NOTE
       libs      6.4Mb  
       
 (as stated above, libs directory is large because of the use of Rcpp. The directory extdata is large too because data used for examples raises warnings when included as .rda files. The datasets are SpatialDataFrames from sp package and they store their Coordinates Reference System with non-ASCII characters. They are thus stored in geopackage files, in extdata directory.)
+
+
+## Round 2 (after first comments) the 07/12/2020
+
+**Problem**:  
+please omit the redudnant "The spNetwork package provides functions to perform ". Perhaps simply replace by "Performs"
+  
+**correction**: 
+The DESCRIPTION has been modified as suggested:  
+The spNetwork package performs spatial analysis on network.
+  
+**Problem**:  
+Check: Overall checktime, Result: NOTE
+   Overall checktime 28 min > 10 min
+
+mainly from
+
+* checking re-building of vignette outputs ... [21m] OK
+
+Can this be reduced to few minuted to keep the overall check time < 10
+min? For example, use few itarations, toy data and if not possible by
+reducing the comlexity of the computations, please provide precomputed
+results for the lengthy parts.  
+
+**correction**:
+The duration of vignettes building has been reduced by precomputing the results for
+the two longest vignettes.  
+
+The new durations are :  
+KNetworkFunctions.Rmd : 18 seconds  
+SpatialWeightMatrices.Rmd : 79 seconds  
+NKDE.Rmd : 69 seconds  
+NKDEdetailed.Rmd : 8 seconds  

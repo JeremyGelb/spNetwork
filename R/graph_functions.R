@@ -332,3 +332,66 @@ graph_checking <- function(lines,digits, tol){
               "vertex_components" = graph_results$spvertices))
 
 }
+
+
+#' @title Distance matrix with dupicated
+#'
+#' @description Function to Create a distance matrix when some vertices are duplicated.
+#'
+#' @param graph The Graph to use
+#' @param start The vertices to use as starting points
+#' @param end The vertices to use as ending points
+#' @return A matrix with the distances between the vertices
+#' @keywords internal
+#' @examples
+#' #This is an internal function, no example provided
+dist_mat_dupl <- function(graph, start, end ){
+  start <- as.numeric(start)
+  end <- as.numeric(end)
+  final_cols <- lapply(start, function(i){
+    rows <- data.frame(start = rep(i,length(end)),
+                       end = end)
+    return(rows)
+  })
+  final_cols <- data.frame(do.call(rbind, final_cols))
+  final_cols$oid <- paste(final_cols$start,final_cols$end, sep="_")
+  ustart <- unique(start)
+  udend <- unique(end)
+  distmat <- igraph::distances(graph,ustart,udend, mode = "out")
+  start_names <- row.names(distmat)
+  start_codes <- as.numeric(igraph::V(graph)[start_names])
+  end_names <- colnames(distmat)
+  end_codes <- as.numeric(igraph::V(graph)[end_names])
+  all_distances <- lapply(1:nrow(distmat),function(i){
+    row <- as.numeric(distmat[i,])
+    start_name <- start_codes[[i]]
+    rows <- data.frame(start = rep(start_name,length(row)),
+                       end = end_codes,
+                       dist = row)
+    return(rows)
+  })
+  all_distances <- do.call(rbind, all_distances)
+  all_distances$oid <- paste(all_distances$start,all_distances$end, sep="_")
+  ok_distances <- merge(final_cols, all_distances[c("oid","dist")], by = "oid", all.x = TRUE, all.y = FALSE)
+  sorted_distances <- ok_distances[order(ok_distances$start, ok_distances$end),]
+  # unmelting now
+  jump <- length(end)
+  rows <- lapply(1:length(start), function(i){
+    if (i==1){
+      i1 <- (i-1) * jump
+      i2 <- i1 + 150
+    }else {
+      i1 <- ((i-1) * jump)
+      i2 <- i1 + 150
+      i1 <- i1 + 1
+    }
+    dists <- sorted_distances[i1:i2,"dist"]
+    return(dists)
+  })
+  mat <- do.call(rbind,rows)
+  row.names(mat) <- start
+  colnames(mat) <- end
+  return(mat)
+}
+
+

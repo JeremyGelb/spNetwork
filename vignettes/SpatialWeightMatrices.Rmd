@@ -49,8 +49,6 @@ library(maptools)
 library(dplyr)
 library(spdep)
 
-#data("mtl_network")
-#data("bike_accidents")
 networkgpkg <- system.file("extdata", "networks.gpkg",
                            package = "spNetwork", mustWork = TRUE)
 eventsgpkg <- system.file("extdata", "events.gpkg",
@@ -129,7 +127,7 @@ To speed up calculation, one could use a multiprocessing plan defined with the p
 
 ```{r message=FALSE, warning=FALSE, eval=FALSE}
 # setting the multiprocess plan
-future::plan(future::multiprocess(workers=4))
+future::plan(future::multisession(workers=2))
 
 netlistw3 <- network_listw.mc(lixels,lixels,
                              method = "ends",

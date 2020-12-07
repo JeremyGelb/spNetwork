@@ -170,10 +170,12 @@ randomize_distmatrix <- function(graph, edge_df, n, start_vert = NULL){
   vec_runif <- Vectorize(runif, vectorize.args = c("max"))
   ## step2 : generate the random scenario
 
+  ## prefered case where points are randomly located on edges
+
   #a. selecting the edges that will have points
   sel_edges_id <- sample(edge_df$edge_id,
-                      size = n, replace = TRUE,
-                      prob = 1/edge_df$weight * edge_df$probs)
+                         size = n, replace = TRUE,
+                         prob = 1/edge_df$weight * edge_df$probs)
 
   sel_edges <- edge_df[sel_edges_id,]
 
@@ -191,13 +193,13 @@ randomize_distmatrix <- function(graph, edge_df, n, start_vert = NULL){
   new_vert <- paste0(rep("virt_"),seq_len(length(dists)))
   #c. creating the new edges and nodes as another graph
   df <- data.frame(start = c(start_names,new_vert),
-                end = c(new_vert,end_names),
-                weight = c(dists,(sel_edges_len - dists)))
+                   end = c(new_vert,end_names),
+                   weight = c(dists,(sel_edges_len - dists)))
   new_graph <- igraph::graph_from_data_frame(df, directed = FALSE)
   tot_graph <- igraph::union(graph,new_graph, byname = TRUE)
   ws <- igraph::E(tot_graph)
   df_tmp <- data.frame("w1" = ws$weight_1,
-                      "w2" = ws$weight_2)
+                       "w2" = ws$weight_2)
 
   df_tmp[is.na(df_tmp$w1),"w1"] <- 0
   df_tmp[is.na(df_tmp$w2),"w2"] <- 0
@@ -205,15 +207,16 @@ randomize_distmatrix <- function(graph, edge_df, n, start_vert = NULL){
                                      value = df_tmp$w1 + df_tmp$w2,
                                      index = igraph::E(tot_graph))
 
-  #igraph::E(tot_graph)$weight <- df_tmp$w1 + df_tmp$w2
 
   # calculating the distances
   if (is.null(start_vert)){
     dist_mat <- igraph::distances(tot_graph,v = new_vert, to = new_vert)
+
+
   }else{
     dist_mat <- igraph::distances(tot_graph,v = start_vert, to = new_vert)
-  }
 
+  }
 
   return(dist_mat)
 
@@ -373,8 +376,8 @@ kfunctions <- function(lines, points, start, end, step, width, nsim, conf_int = 
   g_mat <- do.call(cbind,lapply(all_values,function(i){return(i[,2])}))
 
   ## step9 : calculating the summary stats
-  upper <- 1-conf_int
-  lower <- conf_int
+  upper <- 1-conf_int / 2
+  lower <- conf_int / 2
   k_stats <- apply(k_mat,MARGIN = 1, function(i){
     return(quantile(i,probs = c(lower,upper)))
   })
@@ -469,7 +472,7 @@ kfunctions <- function(lines, points, start, end, step, width, nsim, conf_int = 
 #' eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
 #' main_network_mtl <- rgdal::readOGR(networkgpkg,layer="main_network_mtl", verbose=FALSE)
 #' mtl_libraries <- rgdal::readOGR(eventsgpkg,layer="mtl_libraries", verbose=FALSE)
-#' future::plan(future::multiprocess(workers=2))
+#' future::plan(future::multisession(workers=2))
 #' result <- kfunctions.mc(main_network_mtl, mtl_libraries,
 #'      start = 0, end = 2500, step = 10,
 #'      width = 200, nsim = 50,
@@ -480,7 +483,7 @@ kfunctions <- function(lines, points, start, end, step, width, nsim, conf_int = 
 #'    if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
 #'    }
 #' }
-kfunctions.mc <- function(lines, points, start, end, step, width, nsim, conf_int = 0.95, digits = 2 ,tol = 0.1, agg = NULL, verbose = TRUE){
+kfunctions.mc <- function(lines, points, start, end, step, width, nsim, conf_int = 0.05, digits = 2 ,tol = 0.1, agg = NULL, verbose = TRUE){
 
   ## step0 : clean the points
   if(verbose){
@@ -574,8 +577,8 @@ kfunctions.mc <- function(lines, points, start, end, step, width, nsim, conf_int
   g_mat <- do.call(cbind,lapply(all_values,function(i){return(i[,2])}))
 
   ## step9 : calculating the summary stats
-  lower <- 1-conf_int
-  upper <- conf_int
+  lower <- 1-conf_int/2
+  upper <- conf_int/2
   k_stats <- apply(k_mat,MARGIN = 1, function(i){
     return(quantile(i,probs = c(lower,upper)))
   })
@@ -795,8 +798,8 @@ cross_kfunctions <- function(lines, pointsA, pointsB, start, end, step, width, n
   g_mat <- do.call(cbind,lapply(all_values,function(i){return(i[,2])}))
 
   ## step9 : calculating the summary stats
-  upper <- 1-conf_int
-  lower <- conf_int
+  upper <- 1-conf_int / 2
+  lower <- conf_int / 2
   k_stats <- apply(k_mat,MARGIN = 1, function(i){
     return(quantile(i,probs = c(lower,upper)))
   })
@@ -890,7 +893,7 @@ cross_kfunctions <- function(lines, pointsA, pointsB, start, end, step, width, n
 #' main_network_mtl <- rgdal::readOGR(networkgpkg,layer="main_network_mtl", verbose=FALSE)
 #' mtl_libraries <- rgdal::readOGR(eventsgpkg,layer="mtl_libraries", verbose=FALSE)
 #' mtl_theatres <- rgdal::readOGR(eventsgpkg,layer="mtl_theatres", verbose=FALSE)
-#' future::plan(future::multiprocess(workers=2))
+#' future::plan(future::multisession(workers=2))
 #' result <- cross_kfunctions.mc(main_network_mtl, mtl_libraries, mtl_theatres,
 #'                            start = 0, end = 2500, step = 10, width = 250,
 #'                            nsim = 50, conf_int = 0.05, digits = 2,
@@ -1002,8 +1005,8 @@ cross_kfunctions.mc <- function(lines, pointsA, pointsB, start, end, step, width
   g_mat <- do.call(cbind,lapply(all_values,function(i){return(i[,2])}))
 
   ## step9 : calculating the summary stats
-  upper <- 1-conf_int
-  lower <- conf_int
+  upper <- 1-conf_int / 2
+  lower <- conf_int / 2
   k_stats <- apply(k_mat,MARGIN = 1, function(i){
     return(quantile(i,probs = c(lower,upper)))
   })

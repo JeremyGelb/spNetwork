@@ -12,7 +12,7 @@ kfunctions.mc(
   step,
   width,
   nsim,
-  conf_int = 0.95,
+  conf_int = 0.05,
   digits = 2,
   tol = 0.1,
   agg = NULL,
@@ -73,7 +73,7 @@ networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mu
 eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
 main_network_mtl <- rgdal::readOGR(networkgpkg,layer="main_network_mtl", verbose=FALSE)
 mtl_libraries <- rgdal::readOGR(eventsgpkg,layer="mtl_libraries", verbose=FALSE)
-future::plan(future::multiprocess(workers=2))
+future::plan(future::multisession(workers=2))
 result <- kfunctions.mc(main_network_mtl, mtl_libraries,
      start = 0, end = 2500, step = 10,
      width = 200, nsim = 50,

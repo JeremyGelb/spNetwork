@@ -4,12 +4,10 @@
 \alias{lines_center}
 \title{Center points of lines}
 \usage{
-lines_center(lines, verbose = FALSE)
+lines_center(lines)
 }
 \arguments{
 \item{lines}{The SpatialLinesDataframe to use}
-
-\item{verbose}{A Boolean indicating if a progressbar should be displayed}
 }
 \value{
 An object of class SpatialPointsDataFrame (package sp)

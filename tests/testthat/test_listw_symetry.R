@@ -55,7 +55,7 @@ test_that("A listw object returned by the function network_listw must be the sam
                          mindist = 10,
                          digits = 3
   )
-  future::plan(future::multiprocess(workers = 2))
+  future::plan(future::multisession(workers = 1))
   listwmc <- network_listw.mc(small_mtl_network,small_mtl_network,
                            method="ends",
                            maxdistance = 300,
