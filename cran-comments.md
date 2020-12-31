@@ -127,4 +127,14 @@ The new durations are :
 KNetworkFunctions.Rmd : 18 seconds  
 SpatialWeightMatrices.Rmd : 79 seconds  
 NKDE.Rmd : 69 seconds  
-NKDEdetailed.Rmd : 8 seconds  
+NKDEdetailed.Rmd : 8 seconds
+
+## Round 3 (after second comments) the 31/12/2020
+
+" Size of tarball: 37777188 bytes
+
+   Overall checktime 16 min > 10 min"
+
+The size of the tarball has been reduced to 3.5 Mo (one data file was not compressed, my bad).
+The Overall checktime is only  7min on my laptop.
+

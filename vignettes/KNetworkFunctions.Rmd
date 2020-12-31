@@ -68,7 +68,6 @@ sp::plot(mtl_theatres, col = "red", add=T, pch = 20)
 As one can see, the theatres seems to be more clustered than the libraries.
 
 ```{r message=FALSE, warning=FALSE, eval=FALSE}
-# setting the multiprocess plan
 kfun_theatre <- kfunctions(main_network_mtl, mtl_theatres,
                            start = 0, end = 5000, step = 50, 
                            width = 1000, nsim = 50,
