@@ -149,6 +149,83 @@ cross_gfun <- function(dist_mat,start,end,step,width,Lt,na,nb,wa,wb){
 #### randomization functions ####
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+#' @title Points on network randomization simplified
+#'
+#' @description Randomize location of points on a network.
+#'
+#' @param graph An graph object from igraph
+#' @param edge_df A DataFrame describing the edges
+#' @param n The number of point
+#' @param resolution The maximum size of the network edges
+#' @param nsim The number of distance matrices to generate
+#' @param start_vert The vertices from which the distances will be calculated.
+#' if null, then the distances are calculated from the generated locations.
+#'
+#' @return A numeric matrix with the distances between points
+#' @keywords internal
+#' @importFrom igraph E edge_attr
+#' @importFrom stats runif
+#' @examples
+#' #This is an internal function, no example provided
+randomize_distmatrix2 <- function(graph, edge_df, n, resolution, nsim, start_vert = NULL){
+  ## step1 : generate all the candidate nodes on the graph
+  ## a : select all the edges with a length superior to resolution
+  edit_edge <- subset(edge_df, edge_df$weight > resolution)
+  all_names <- names(igraph::V(graph))
+
+  ## step2 : create the new needed vertices and edges
+  vertices_and_distances <- lapply(1:nrow(edit_edge), function(i){
+    this_edge <- edit_edge[i,]
+    start_node <- all_names[this_edge$start_oid]
+    end_node <- all_names[this_edge$end_oid]
+    dists <- rep(resolution, floor(this_edge$weight/resolution))
+    names(dists) <- paste("fict",i,1:length(dists), sep="_")
+    starts <- c(start_node, names(dists))
+    ends <- c(names(dists), end_node)
+    dists <- c(dists, this_edge$weight - sum(dists))
+    df <- data.frame(starts = starts,
+                     ends = ends,
+                     weight = dists)
+    return(df)
+  })
+
+  all_elements <- do.call(rbind, vertices_and_distances)
+
+  ## step 3 : creating a new graph with the new vertices and edges
+  new_graph <- igraph::graph_from_data_frame(all_elements, directed = FALSE)
+
+  ## then merging it with the previous graph
+  tot_graph <- igraph::union(graph,new_graph, byname = TRUE)
+
+  ## step 4 correcting the weights
+  ws <- igraph::E(tot_graph)
+  df_tmp <- data.frame("w1" = ws$weight_1,
+                       "w2" = ws$weight_2)
+
+  df_tmp[is.na(df_tmp$w1),"w1"] <- 0
+  df_tmp[is.na(df_tmp$w2),"w2"] <- 0
+  tot_graph <- igraph::set_edge_attr(tot_graph, "weight",
+                                     value = df_tmp$w1 + df_tmp$w2,
+                                     index = igraph::E(tot_graph))
+
+
+  ## and now, calculating the distance matrices
+  verts <- as.numeric(igraph::V(tot_graph))
+  dist_matrices <- lapply(1:nsim, function(i){
+    new_vert <- sample(verts,size = n, replace = F)
+    if (is.null(start_vert)){
+      dist_mat <- igraph::distances(tot_graph,v = new_vert, to = new_vert)
+
+
+    }else{
+      dist_mat <- igraph::distances(tot_graph,v = start_vert, to = new_vert)
+
+    }
+  })
+  return(dist_matrices)
+}
+
+
 #' @title Points on network randomization
 #'
 #' @description Randomize location of points on a network.
@@ -264,9 +341,14 @@ randomize_distmatrix <- function(graph, edge_df, n, start_vert = NULL){
 #' @param tol When adding the points to the network, specify the minimum
 #'   distance between these points and the lines' extremities. When points are
 #'   closer, they are added at the extremity of the lines.
+#' @param resolution When simulating random points on the network, selecting a
+#'   resolution will reduce greatly the calculation time. When resolution is null
+#'   the random points can occur everywhere on the graph. If a value is specified,
+#'   the edges are split according to this value and the random points are
+#'   selected vertices on the new network.
 #' @param agg A double indicating if the events must be aggregated within a
 #'   distance. If NULL, the events are aggregated by rounding the coordinates.
-#' @param verbose A Boolean indicating if progress messages should be displayed
+#' @param verbose A Boolean indicating if progress messages should be displayed.
 #'
 #' @return A list with the following values : \cr \itemize{ \item{plotk}{A
 #'   ggplot2 object representing the values of the k-function} \item{plotg}{A
@@ -288,7 +370,7 @@ randomize_distmatrix <- function(graph, edge_df, n, start_vert = NULL){
 #'      conf_int = 0.05, tol = 0.1, agg = NULL,
 #'      verbose = FALSE)
 #' }
-kfunctions <- function(lines, points, start, end, step, width, nsim, conf_int = 0.05, digits = 2, tol = 0.1, agg = NULL, verbose = TRUE){
+kfunctions <- function(lines, points, start, end, step, width, nsim, conf_int = 0.05, digits = 2, tol = 0.1, resolution = NULL, agg = NULL, verbose = TRUE){
 
   ## step0 : clean the points
   if (verbose){
@@ -361,15 +443,37 @@ kfunctions <- function(lines, points, start, end, step, width, nsim, conf_int = 
   if(verbose){
     pb <- txtProgressBar(min = 0, max = nsim, style = 3)
   }
-  all_values <- lapply(1:nsim,function(i){
-    dist_mat <- randomize_distmatrix(graph_result$graph,graph_result$spedges,n)
-    k_vals <- kfunc(dist_mat,start,end,step,Lt,n,w = w)
-    g_vals <- gfunc(dist_mat,start,end,step,width,Lt,n,w = w)
-    if(verbose){
-      setTxtProgressBar(pb, i)
-    }
-    return(cbind(k_vals,g_vals))
-  })
+
+  # the case where we can simplified the situation
+  if (is.null(resolution)==FALSE){
+    dist_matrices <- randomize_distmatrix2(graph = graph_result$graph,
+                                           edge_df = graph_result$spedges,
+                                           n = n,
+                                           resolution = resolution,
+                                           nsim = nsim)
+
+    all_values <- lapply(1:nsim,function(i){
+      dist_mat <- dist_matrices[[i]]
+      k_vals <- kfunc(dist_mat,start,end,step,Lt,n,w = w)
+      g_vals <- gfunc(dist_mat,start,end,step,width,Lt,n,w = w)
+      if(verbose){
+        setTxtProgressBar(pb, i)
+      }
+      return(cbind(k_vals,g_vals))
+    })
+
+  }else{
+    # the case where we can not simplified the situation
+    all_values <- lapply(1:nsim,function(i){
+      dist_mat <- randomize_distmatrix(graph_result$graph,graph_result$spedges,n)
+      k_vals <- kfunc(dist_mat,start,end,step,Lt,n,w = w)
+      g_vals <- gfunc(dist_mat,start,end,step,width,Lt,n,w = w)
+      if(verbose){
+        setTxtProgressBar(pb, i)
+      }
+      return(cbind(k_vals,g_vals))
+    })
+  }
 
   ## step8 : extract the k_vals and g_vals matrices
   k_mat <- do.call(cbind,lapply(all_values,function(i){return(i[,1])}))
@@ -451,6 +555,11 @@ kfunctions <- function(lines, points, start, end, step, width, nsim, conf_int = 
 #' @param tol When adding the points to the network, specify the minimum
 #'   distance between these points and the lines' extremities. When points are
 #'   closer, they are added at the extremity of the lines.
+#' @param resolution When simulating random points on the network, selecting a
+#'   resolution will reduce greatly the calculation time. When resolution is null
+#'   the random points can occur everywhere on the graph. If a value is specified,
+#'   the edges are split according to this value and the random points are
+#'   selected vertices on the new network.
 #' @param agg A double indicating if the events must be aggregated within a
 #'   distance. If NULL, the events are aggregated by rounding the coordinates.
 #' @param verbose A Boolean indicating if progress messages should be displayed
@@ -478,12 +587,10 @@ kfunctions <- function(lines, points, start, end, step, width, nsim, conf_int = 
 #'      width = 200, nsim = 50,
 #'      conf_int = 0.05, tol = 0.1, agg = NULL,
 #'      verbose = FALSE)
-#' \dontshow{
-#'    ## R CMD check: make sure any open connections are closed afterward
-#'    if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
-#'    }
+#' ## make sure any open connections are closed afterward
+#' if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
 #' }
-kfunctions.mc <- function(lines, points, start, end, step, width, nsim, conf_int = 0.05, digits = 2 ,tol = 0.1, agg = NULL, verbose = TRUE){
+kfunctions.mc <- function(lines, points, start, end, step, width, nsim, conf_int = 0.05, digits = 2 ,tol = 0.1, resolution = 50, agg = NULL, verbose = TRUE){
 
   ## step0 : clean the points
   if(verbose){
@@ -547,23 +654,46 @@ kfunctions.mc <- function(lines, points, start, end, step, width, nsim, conf_int
   if(verbose){
     print("Calculating the simulations ...")
   }
+
   w <- rep(1,times = n)
   sim_seq <- 1:nsim
   graph <- graph_result$graph
   edgesdf <- graph_result$spedges@data
-  if(verbose){
-    progressr::with_progress({
-      p <- progressr::progressor(along = sim_seq)
+
+  # the classical way
+  if (is.null(resolution)){
+    if(verbose){
+      progressr::with_progress({
+        p <- progressr::progressor(along = sim_seq)
+        all_values <- future.apply::future_lapply(sim_seq, function(i){
+          dist_mat <- randomize_distmatrix(graph, edgesdf, n)
+          k_vals <- kfunc(dist_mat,start,end,step,Lt,n,w = w)
+          g_vals <- gfunc(dist_mat,start,end,step,width,Lt,n,w = w)
+          return(cbind(k_vals,g_vals))
+        },future.packages = c("igraph"))
+      })
+    }else{
       all_values <- future.apply::future_lapply(sim_seq, function(i){
         dist_mat <- randomize_distmatrix(graph, edgesdf, n)
         k_vals <- kfunc(dist_mat,start,end,step,Lt,n,w = w)
         g_vals <- gfunc(dist_mat,start,end,step,width,Lt,n,w = w)
         return(cbind(k_vals,g_vals))
       },future.packages = c("igraph"))
-    })
+
+    }
   }else{
-    all_values <- future.apply::future_lapply(sim_seq, function(i){
-      dist_mat <- randomize_distmatrix(graph, edgesdf, n)
+    # the simplified way
+    ## first : generating the matrices
+    if(verbose){
+      print("generating the randomized distance matrices...")
+    }
+    dist_mats <- randomize_distmatrix2(graph, edgesdf,
+                                      n = n, nsim = nsim,
+                                      resolution = resolution)
+    if(verbose){
+      print("calculating the k and g functions for the randomized matrices..")
+    }
+    all_values <- future.apply::future_lapply(dist_mats, function(dist_mat){
       k_vals <- kfunc(dist_mat,start,end,step,Lt,n,w = w)
       g_vals <- gfunc(dist_mat,start,end,step,width,Lt,n,w = w)
       return(cbind(k_vals,g_vals))
@@ -674,6 +804,11 @@ kfunctions.mc <- function(lines, points, start, end, step, width, nsim, conf_int
 #' @param tol When adding the points to the network, specify the minimum
 #'   distance between these points and the lines' extremities. When points are
 #'   closer, they are added at the extremity of the lines.
+#' @param resolution When simulating random points on the network, selecting a
+#'   resolution will reduce greatly the calculation time. When resolution is null
+#'   the random points can occur everywhere on the graph. If a value is specified,
+#'   the edges are split according to this value and the random points are
+#'   selected vertices on the new network.
 #' @param agg A double indicating if the events must be aggregated within a
 #'   distance. if NULL, then the events are aggregated by rounding the
 #'   coordinates.
@@ -701,7 +836,7 @@ kfunctions.mc <- function(lines, points, start, end, step, width, nsim, conf_int
 #'                            nsim = 50, conf_int = 0.05, digits = 2,
 #'                            tol = 0.1, agg = NULL, verbose = FALSE)
 #' }
-cross_kfunctions <- function(lines, pointsA, pointsB, start, end, step, width, nsim, conf_int = 0.05, digits = 2, tol = 0.1, agg = NULL, verbose = TRUE){
+cross_kfunctions <- function(lines, pointsA, pointsB, start, end, step, width, nsim, conf_int = 0.05, digits = 2, tol = 0.1, resolution = NULL, agg = NULL, verbose = TRUE){
 
   ## step0 : clean the points
   if(verbose){
@@ -782,16 +917,40 @@ cross_kfunctions <- function(lines, pointsA, pointsB, start, end, step, width, n
     pb <- txtProgressBar(min = 0, max = nsim, style = 3)
   }
   w <- rep(1,times = na)
-  all_values <- lapply(1:nsim,function(i){
-    dist_mat <- randomize_distmatrix(graph_result$graph,graph_result$spedges,
-                                     na,start_vert = snappedB$vertex_id)
-    k_vals <- cross_kfunc(dist_mat,start,end,step,Lt,na,nb,w,snappedB$weight)
-    g_vals <- cross_gfun(dist_mat,start,end,step,width,Lt,na,nb,w,snappedB$weight)
-    if(verbose){
-      setTxtProgressBar(pb, i)
-    }
-    return(cbind(k_vals,g_vals))
-  })
+
+  # the case where we can simplified the situation
+  if (is.null(resolution)==FALSE){
+    dist_matrices <- randomize_distmatrix2(graph = graph_result$graph,
+                                           edge_df = graph_result$spedges,
+                                           n = na,
+                                           start_vert = snappedB$vertex_id,
+                                           resolution = resolution,
+                                           nsim = nsim)
+
+    all_values <- lapply(1:nsim,function(i){
+      dist_mat <- dist_matrices[[i]]
+      k_vals <- cross_kfunc(dist_mat,start,end,step,Lt,na,nb,w,snappedB$weight)
+      g_vals <- cross_gfun(dist_mat,start,end,step,width,Lt,na,nb,w,snappedB$weight)
+      if(verbose){
+        setTxtProgressBar(pb, i)
+      }
+      return(cbind(k_vals,g_vals))
+    })
+
+  }else{
+    # the case where we can not simplified the situation
+    all_values <- lapply(1:nsim,function(i){
+      dist_mat <- randomize_distmatrix(graph_result$graph,graph_result$spedges,
+                                       na,start_vert = snappedB$vertex_id)
+      k_vals <- cross_kfunc(dist_mat,start,end,step,Lt,na,nb,w,snappedB$weight)
+      g_vals <- cross_gfun(dist_mat,start,end,step,width,Lt,na,nb,w,snappedB$weight)
+      if(verbose){
+        setTxtProgressBar(pb, i)
+      }
+      return(cbind(k_vals,g_vals))
+    })
+  }
+
 
   ## step8 : extract the k_vals and g_vals matrices
   k_mat <- do.call(cbind,lapply(all_values,function(i){return(i[,1])}))
@@ -872,6 +1031,11 @@ cross_kfunctions <- function(lines, pointsA, pointsB, start, end, step, width, n
 #' @param tol When adding the points to the network, specify the minimum
 #'   distance between these points and the lines' extremities. When points are
 #'   closer, they are added at the extremity of the lines.
+#' @param resolution When simulating random points on the network, selecting a
+#'   resolution will reduce greatly the calculation time. When resolution is null
+#'   the random points can occur everywhere on the graph. If a value is specified,
+#'   the edges are split according to this value and the random points are
+#'   selected vertices on the new network.
 #' @param agg A double indicating if the events must be aggregated within a
 #'   distance. If NULL, the events are aggregated by rounding the coordinates.
 #' @param verbose A Boolean indicating if progress messages should be displayed
@@ -898,12 +1062,10 @@ cross_kfunctions <- function(lines, pointsA, pointsB, start, end, step, width, n
 #'                            start = 0, end = 2500, step = 10, width = 250,
 #'                            nsim = 50, conf_int = 0.05, digits = 2,
 #'                            tol = 0.1, agg = NULL, verbose = TRUE)
-#' \dontshow{
-#'    ## R CMD check: make sure any open connections are closed afterward
-#'    if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
-#'    }
+#' ## make sure any open connections are closed afterward
+#' if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
 #' }
-cross_kfunctions.mc <- function(lines, pointsA, pointsB, start, end, step, width, nsim, conf_int = 0.05, digits = 2, tol = 0.1, agg = NULL, verbose = TRUE){
+cross_kfunctions.mc <- function(lines, pointsA, pointsB, start, end, step, width, nsim, conf_int = 0.05, digits = 2, tol = 0.1, resolution = NULL, agg = NULL, verbose = TRUE){
 
   ## step0 : clean the points
   if(verbose){
@@ -986,19 +1148,45 @@ cross_kfunctions.mc <- function(lines, pointsA, pointsB, start, end, step, width
   }
   w <- rep(1,times = na)
   sim_seq <- 1:nsim
-  progressr::with_progress({
-    p <- progressr::progressor(along = sim_seq)
-    all_values <- future.apply::future_lapply(sim_seq,function(i){
-      dist_mat <- randomize_distmatrix(graph_result$graph,
-                                       graph_result$spedges,
-                                       na, start_vert = snappedB$vertex_id)
-      k_vals <- cross_kfunc(dist_mat, start, end, step, Lt, na, nb,
-                            w, snappedB$weight)
-      g_vals <- cross_gfun(dist_mat, start, end, step, width, Lt, na, nb,
-                            w,snappedB$weight)
-      return(cbind(k_vals,g_vals))
-    },future.packages = c("igraph","base"))
-  })
+
+  # classical approach
+  if (is.null(resolution)){
+    progressr::with_progress({
+      p <- progressr::progressor(along = sim_seq)
+      all_values <- future.apply::future_lapply(sim_seq,function(i){
+        dist_mat <- randomize_distmatrix(graph_result$graph,
+                                         graph_result$spedges,
+                                         na, start_vert = snappedB$vertex_id)
+        k_vals <- cross_kfunc(dist_mat, start, end, step, Lt, na, nb,
+                              w, snappedB$weight)
+        g_vals <- cross_gfun(dist_mat, start, end, step, width, Lt, na, nb,
+                             w,snappedB$weight)
+        return(cbind(k_vals,g_vals))
+      },future.packages = c("igraph","base"))
+    })
+  }else{
+    #simplified approach
+    if(verbose){
+      print("calculating the randomized distance matrices...")
+    }
+    dist_matrices <- randomize_distmatrix2(graph = graph_result$graph,
+                                           edge_df = graph_result$spedges,
+                                           n = na,
+                                           start_vert = snappedB$vertex_id,
+                                           resolution = resolution,
+                                           nsim = nsim)
+    if(verbose){
+      print("calculating the k and g functions for the randomized matrices..")
+    }
+    all_values <- future.apply::future_lapply(dist_matrices,function(dist_mat){
+        k_vals <- cross_kfunc(dist_mat, start, end, step, Lt, na, nb,
+                              w, snappedB$weight)
+        g_vals <- cross_gfun(dist_mat, start, end, step, width, Lt, na, nb,
+                             w,snappedB$weight)
+        return(cbind(k_vals,g_vals))
+      },future.packages = c("igraph","base"))
+  }
+
 
   ## step8 : extract the k_vals and g_vals matrices
   k_mat <- do.call(cbind,lapply(all_values,function(i){return(i[,1])}))

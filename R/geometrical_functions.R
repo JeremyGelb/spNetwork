@@ -327,11 +327,9 @@ lixelize_lines <- function(lines, lx_length, mindist = NULL, verbose = FALSE) {
 #' mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
 #' future::plan(future::multisession(workers=2))
 #' lixels <- lixelize_lines.mc(mtl_network,150,50)
-#' \dontshow{
-#'  ## R CMD check: make sure any open connections are closed afterward
-#'  if (!inherits(future::plan(), "sequential")){
-#'  future::plan(future::sequential)
-#'  }
+#' ## make sure any open connections are closed afterward
+#' if (!inherits(future::plan(), "sequential")){
+#' future::plan(future::sequential)
 #' }
 #'}
 lixelize_lines.mc <- function(lines, lx_length, mindist = NULL, verbose = TRUE, chunk_size = 100) {

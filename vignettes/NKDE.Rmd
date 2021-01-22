@@ -24,6 +24,8 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+backup_option <- options()
+base_wd <- getwd()
 ```
 
 This vignette is a short introduction to the **NKDE** feature of the **spNetwork** package.
@@ -235,7 +237,7 @@ The discontinuous NKDE is easily presented by a figure:
 ![Image Title](images/discontinuous.png){width=300px}
 </center>
 
-The density of the kernel function is equally divided at intersections. Note that *spNetwork* implements the modified version proposed by @sugihara2010simple, allowing for use in networks with cycles. In the case of a cycle, the multiple overlapping values of the kernel are added, as shown in the next figure.
+The density of the kernel function is equally divided at intersections. Note that **spNetwork** implements the modified version proposed by @sugihara2010simple, allowing for use in networks with cycles. In the case of a cycle, the multiple overlapping values of the kernel are added, as shown in the next figure.
 
 <center>
 ![Image Title](images/cycle_nkde.png){width=300px}
@@ -304,6 +306,7 @@ networkgpkg <- system.file("extdata", "networks.gpkg",
                            package = "spNetwork", mustWork = TRUE)
 eventsgpkg <- system.file("extdata", "events.gpkg",
                           package = "spNetwork", mustWork = TRUE)
+
 mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network",verbose = FALSE)
 bike_accidents <- rgdal::readOGR(eventsgpkg,layer="bike_accidents", verbose = FALSE)
 
@@ -329,6 +332,7 @@ densities <- nkde(mtl_network,
                   agg = 5, #we aggregate events within a 5m radius (faster calculation)
                   sparse = TRUE,
                   verbose = FALSE)
+
 ```
 
 ```{r message=FALSE, warning=FALSE}
@@ -387,14 +391,14 @@ ggplot() +
 
 As you can imagine it remains a costly process, especially for the continuous kernel that is calculated with a recursive function. The package **spNetwork** uses three approaches simultaneously to reduce calculation time: 
 
-* Rcpp: the main functions are coded with C++
-* Armadillo: the linear algebra is performed with the RcppArmadillo package
+* 'Rcpp': the main functions are coded with C++
+* 'Armadillo': the linear algebra is performed with the 'RcppArmadillo' package
 * multiprocessing: it is possible to split the calculation on multiple cores
 
-The calculus of the NKDE for each cell could be done by several cores. To do so, **spNetwork** provides a function *nkde.mc*. More specifically, it uses functions from the packages **future** and **future.apply**. The selection of the plan has to be done by the user to ensure the best compatibility on each os and computer. See the documentation of the **future** package if needed.
+The calculus of the NKDE for each cell could be done by several cores. To do so, **spNetwork** provides a function *nkde.mc*. More specifically, it uses functions from the packages 'future' and 'future.apply'. The selection of the plan has to be done by the user to ensure the best compatibility on each os and computer. See the documentation of the 'future' package if needed.
 
 
-The following code will produce the same results as before but split the work between two cores. Note that the plan used by the package **future** may vary according to your os.
+The following code will produce the same results as before but split the work between two cores. Note that the plan used by the package 'future' may vary according to your os.
 ```{r message=FALSE, warning=FALSE, eval = FALSE}
 
 # setting the multisession plan
@@ -409,7 +413,7 @@ densities_mc <- nkde.mc(mtl_network,
                   bw = 300, div= "bw", 
                   method = "discontinuous", digits = 1, tol = 1,
                   grid_shape = c(2,2), # splitting the study area in 4 rectangles
-                  max_depth = 16,
+                  max_depth = 8,
                   agg = 5, #we aggregate events within a 5m radius
                   sparse = TRUE,
                   verbose = FALSE)
@@ -459,15 +463,16 @@ adapt_densities <- nkde(mtl_network,
                   agg = 5, #we aggregate events within a 5m radius (faster calculation)
                   sparse = TRUE,
                   verbose=FALSE)
+
+samples$density <- adapt_densities$k
 ```
 
 ```{r message=FALSE, warning=FALSE}
 samples$density <- adapt_densities$k
-
 ```
 
 We can now map some of the bandwidths
-```{r message=FALSE, warning=FALSE, eval = FALSE}
+```{r message=FALSE, warning=FALSE}
 circles <- gBuffer(adapt_densities$events,byid = TRUE,width = adapt_densities$events$bw)
 
 ids <- c(1,52,20,86,14,75,126,200,177)
@@ -479,7 +484,7 @@ plot(circles[ids,],add=T,border='blue',lwd=2)
 
 And map the new densities with the same code as previous
 
-```{r echo=FALSE, message=FALSE, warning=FALSE, eval = FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 # rescaling to help the mapping
 samples$density <- samples$density*1000
 
@@ -518,7 +523,6 @@ ggplot() +
   labs(title = "bike accident density by kilometres in 2016",
           subtitle = "within a radius of 300 metres (adaptive bandiwdth)",
           caption = "using the quartic kernel")
-  
 
 ```
 
@@ -543,8 +547,8 @@ events <- subset(bike_accidents,events_sel)
 lines_sel <- as.vector(rgeos::gIntersects(mtl_network, study_area,byid=TRUE))
 lines <- subset(mtl_network,lines_sel)
 
-invisible(capture.output(lixels <- lixelize_lines(mtl_network,100,mindist = 50)))
-invisible(capture.output(samples <- lines_center(lixels)))
+lixels <- lixelize_lines(lines,200,mindist = 50)
+samples <- lines_center(lixels)
 
 
 sp::plot(study_area,col="white")
@@ -567,6 +571,8 @@ adjusted_densities <- nkde(lines = mtl_network,
                             max_depth = 15,
                             digits = 2,tol = 0.1,agg = 5,sparse = TRUE,
                             grid_shape = c(1,1),verbose = FALSE)
+
+samples$density <- adjusted_densities
 ```
 
 ```{r message=FALSE, warning=FALSE}
@@ -577,6 +583,8 @@ And again, we can map the results.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 extent <- sp::bbox(study_area)
+extent[,1] <- extent[,1]-500
+extent[,2] <- extent[,2]+500
 
 # rescaling to help the mapping
 samples$density <- samples$density*1000
@@ -628,5 +636,12 @@ To define the sampling points on the network, some complementary functions are p
 * `lixelize_lines` returns lixels obtained after dividing a *SpatialLinesDataFrame*.
 * `lines_points_along` returns points at a specified distance along each lines in a *SpatialLinesDataFrame*.
 
+```{r include = FALSE}
+# reset all the user parameters
+options(backup_option)
+setwd(base_wd)
+oldpar <- par(mfrow = c(1,2))
+par(oldpar)
+```
 
 # References

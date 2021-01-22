@@ -474,10 +474,8 @@ network_listw <- function(origins,lines,maxdistance, method="centroid", point_di
 #' listw <- network_listw.mc(mtl_network,mtl_network,maxdistance=500,
 #'         method = "centroid", line_weight = "length",
 #'         dist_func = 'squared inverse', matrice_type='B', grid_shape = c(2,2))
-#' \dontshow{
-#'    ## R CMD check: make sure any open connections are closed afterward
-#'    if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
-#'  }
+#' ## make sure any open connections are closed afterward
+#' if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
 #'}
 network_listw.mc <- function(origins,lines,maxdistance, method="centroid", point_dist=NULL, snap_dist=Inf, line_weight = "length", mindist=10, direction=NULL, dist_func = "inverse", matrice_type = "B", grid_shape=c(1,1), verbose = FALSE, digits = 3, tol=0.1){
     ##adjusting the weights of the lines

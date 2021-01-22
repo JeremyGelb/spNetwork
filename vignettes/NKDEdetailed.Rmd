@@ -24,7 +24,8 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
-
+backup_option <- options()
+base_wd <- getwd()
 ```
 
 # Introduction
@@ -72,10 +73,6 @@ event <- data.frame(x=c(5),
                     y=c(-2.5))
 coordinates(event) <- cbind(event$x,event$y)
 
-proj4string(event) <- CRS("EPSG:32633")
-proj4string(all_lines) <- CRS("EPSG:32633")
-
-
 # and map the situation
 par(mar=c(0.1,0.1,0.1,0.1))
 sp::plot(all_lines)
@@ -101,6 +98,7 @@ simple_kernel <- nkde(all_lines, event, w = 1,
                   samples = samples_pts, kernel_name = "quartic", 
                   bw = 10, method = "simple", div = "bw", 
                   digits = 3, tol = 0.001, grid_shape = c(1,1),
+                  check = FALSE,
                   verbose = FALSE)
 ```
 
@@ -184,6 +182,7 @@ discontinuous_kernel <- nkde(all_lines, event, w = 1,
                   samples = samples_pts, kernel_name = "quartic", 
                   bw = 10, method = "discontinuous", div = "bw", 
                   digits = 3, tol = 0.001, grid_shape = c(1,1),
+                  check = FALSE,
                   verbose = FALSE)
 ```
 
@@ -265,6 +264,7 @@ continuous_kernel <- nkde(all_lines, event, w = 1,
                   samples = samples_pts, kernel_name = "quartic", 
                   bw = 10, method = "continuous", div = "bw", 
                   digits = 0, tol = 0.01, grid_shape = c(1,1),
+                  check = FALSE,
                   verbose = FALSE, max_depth = 15)
 ```
 
@@ -329,6 +329,15 @@ As one can see, the values of the NKDE are continuous, and the density values cl
 |:-------------------:|:--------------------------:|
 | unbiased            | long calculation time      |
 | continuous          | smoother values            |
+
+
+```{r include = FALSE}
+# reset all the user parameters
+options(backup_option)
+setwd(base_wd)
+oldpar <- par(mfrow = c(1,2))
+par(oldpar)
+```
 
 
 # References

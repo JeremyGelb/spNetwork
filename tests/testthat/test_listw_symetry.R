@@ -1,6 +1,6 @@
 context("symetry and comparison between simple and multicore")
 
-test_that("A listw object returned by the function network_listw must be symetric", {
+test_that("A listw object returned by the function network_listw must be symetric and identic as one returned by network_listw.mc", {
   #data(small_mtl_network)
   networkgpkg <- system.file("extdata", "networks.gpkg",
                              package = "spNetwork", mustWork = TRUE)
@@ -15,56 +15,21 @@ test_that("A listw object returned by the function network_listw must be symetri
                                   mindist = 10,
                                   digits = 3
                                   )
-  Value <- spdep::is.symmetric.nb(listw$neighbours)
-  expect_true(Value)
-})
 
+  # test if symetric
+  test1 <- spdep::is.symmetric.nb(listw$neighbours)
 
-test_that("A listw object returned by the function network_listw must be symetric", {
-  #data(small_mtl_network)
-  networkgpkg <- system.file("extdata", "networks.gpkg",
-                             package = "spNetwork", mustWork = TRUE)
-  small_mtl_network <- rgdal::readOGR(networkgpkg,layer="small_mtl_network", verbose = FALSE)
-  listw <- network_listw(small_mtl_network,small_mtl_network,
-                         method="ends",
-                         maxdistance = 300,
-                         dist_func = "squared inverse",
-                         matrice_type = "B",
-                         grid_shape = c(1,1),
-                         verbose = FALSE,
-                         mindist = 10,
-                         digits = 3
-  )
-  Value <- spdep::is.symmetric.nb(listw$neighbours)
-  expect_true(Value)
-})
-
-
-test_that("A listw object returned by the function network_listw must be the same as a listw returned by network_listw.mc", {
-  #data(small_mtl_network)
-  networkgpkg <- system.file("extdata", "networks.gpkg",
-                             package = "spNetwork", mustWork = TRUE)
-  small_mtl_network <- rgdal::readOGR(networkgpkg,layer="small_mtl_network", verbose = FALSE)
-  listw <- network_listw(small_mtl_network,small_mtl_network,
-                         method="ends",
-                         maxdistance = 300,
-                         dist_func = "squared inverse",
-                         matrice_type = "W",
-                         grid_shape = c(1,1),
-                         verbose = FALSE,
-                         mindist = 10,
-                         digits = 3
-  )
+  # now test if identical
   future::plan(future::multisession(workers = 1))
   listwmc <- network_listw.mc(small_mtl_network,small_mtl_network,
-                           method="ends",
-                           maxdistance = 300,
-                           dist_func = "squared inverse",
-                           matrice_type = "W",
-                           grid_shape = c(1,1),
-                           verbose = FALSE,
-                           mindist = 10,
-                           digits = 3
+                              method="centroid",
+                              maxdistance = 300,
+                              dist_func = "squared inverse",
+                              matrice_type = "B",
+                              grid_shape = c(1,1),
+                              verbose = FALSE,
+                              mindist = 10,
+                              digits = 3
   )
   CompareNeighbours <- function(nb1, nb2){
     diff <- sapply(1:length(nb1),function(i){
@@ -81,9 +46,10 @@ test_that("A listw object returned by the function network_listw must be the sam
     Value <- round(sum(diff),8) == 0
     return(Value)
   }
-  test1 <- CompareNeighbours(listw$neighbours, listwmc$neighbours)
-  test2 <- CompareWeights(listw$weights, listwmc$weights)
-  tottest <- test1 & test2
+
+  test2 <- CompareNeighbours(listw$neighbours, listwmc$neighbours)
+  test3 <- CompareWeights(listw$weights, listwmc$weights)
+  tottest <- test1 & test2 & test3
+
   expect_true(tottest)
 })
-

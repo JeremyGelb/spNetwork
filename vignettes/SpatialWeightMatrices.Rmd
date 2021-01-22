@@ -20,6 +20,14 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+backup_option <- options()
+base_wd <- getwd()
+```
+
+```{r include=FALSE}
+load(system.file("extdata", "results_vignette_wmat.rda",
+                           package = "spNetwork", mustWork = TRUE))
+library(spdep)
 ```
 
 This vignette is a short introduction to the spatial weight matrices feature of the **spNetwork** package.
@@ -34,16 +42,17 @@ Classically one can define :
 * distance matrix (W<sub>ij</sub> = the distance between *i* and *j*, modified by a function like $\frac{1}{distance}$ or $\frac{1}{distance^2}$)
 * interaction matrix (W<sub>ij</sub> = the degree of interaction between *i* and *j*, the measure of the interaction depends on the subject of the analysis)
 
-In R, the classical package to deal with such matrices is the package **spdep** which defines objects like neighbour lists and spatial weight lists, and offers the possibility to convert these objects into regular matrices.
+In R, the classical package to deal with such matrices is the package 'spdep' which defines objects like neighbour lists and spatial weight lists, and offers the possibility to convert these objects into regular matrices.
 
 When one works with data constrained on a network, using Euclidean distance to estimate proximity between observations leads to an underestimation of the real distances between them
 
 **spNetwork** makes it possible to create `listw` objects based on network distance. Let us give an example here: calculating the Moran autocorrelation index for the number of bike accidents recorded on the Montreal road network in 2016.
 
-First, we want to split the network into lixels:
+First, we want to load data:
 
-```{r message=FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE, eval = FALSE}
 options("rgdal_show_exportToProj4_warnings"="none")
+
 library(spNetwork)
 library(maptools)
 library(dplyr)
@@ -53,16 +62,18 @@ networkgpkg <- system.file("extdata", "networks.gpkg",
                            package = "spNetwork", mustWork = TRUE)
 eventsgpkg <- system.file("extdata", "events.gpkg",
                           package = "spNetwork", mustWork = TRUE)
-mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose = FALSE)
-bike_accidents <- rgdal::readOGR(eventsgpkg,layer="bike_accidents", verbose = FALSE)
+
+mtl_network <- rgdal::readOGR(networkgpkg,layer="small_mtl_network", verbose = FALSE)
+bike_accidents <- rgdal::readOGR(eventsgpkg,layer="bike_accidents_small", verbose = FALSE)
 
 
-lixels <- lixelize_lines(mtl_network,200,mindist = 50)
 ```
 
-then we want to calculate for each lixel the number of events on that lixel.
+then we want to split lines into lixels and calculate for each lixel the number of events on that lixel.
 
-```{r message=FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE, eval = FALSE}
+lixels <- lixelize_lines(mtl_network,200,mindist = 50)
+
 # defining and oid for the lixels
 lixels$oid <- 1:nrow(lixels)
 
@@ -74,14 +85,14 @@ counts_df <- data.frame("oid" = as.numeric(as.character(names(counts))),
 
 # merging the results
 lixels$nbAccident <- left_join(lixels@data,counts_df, by="oid")$count
-lixels$nbAccident <- ifelse(is.na(lixels$nbAccident),0,lixels$nbAccident)
+nbAccident <- ifelse(is.na(lixels$nbAccident),0,lixels$nbAccident)
 ```
 
 We use here the function *network_listw* the create a `listw` object representing the spatial weight matrix. The distances can be calculated from the centroids of the lixels, from the extremities of the lixels or from evenly spaced points on the lixels. We use here the second approach and specify it with the parameter `method = "ends"`.
 
 Let us consider that above 300 meters two segments are not neighbours anymore, and convert the distances between the observations into spatial weights by using the inverse of the squared distance.
 
-```{r message=FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE, eval = FALSE}
 netlistw <- network_listw(lixels,mtl_network,
                            method = "ends",
                            mindist = 10,
@@ -91,8 +102,11 @@ netlistw <- network_listw(lixels,mtl_network,
                            matrice_type = 'W',
                            grid_shape = c(1,1),
                            verbose=FALSE)
+```
+With that matrix, we can calculate the Moran I for the number of accident on lixels.
 
-Test <- moran.test(lixels$nbAccident, netlistw, zero.policy = T)
+```{r message=FALSE, warning=FALSE}
+Test <- moran.test(nbAccident, netlistw, zero.policy = T)
 print(round(Test$estimate,4))
 ```
 
@@ -100,7 +114,7 @@ The autocorrelation is week, this is due to the large distance used and the fact
 
 One could go further and define its own function to convert distances into spatial weights
 
-```{r message=FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE, eval = FALSE}
 my_conv_func <- function(x){
   if (x>=300){
     return(0)
@@ -119,11 +133,9 @@ netlistw2 <- network_listw(lixels,mtl_network,
                              grid_shape = c(1,1),
                              verbose=FALSE)
 
-Test2 <- moran.test(lixels$nbAccident, netlistw2, zero.policy = T)
-print(round(Test2$estimate,4))
 ```
 
-To speed up calculation, one could use a multiprocessing plan defined with the package **future**. To do so, the study area is divided into rectangles (according to the parameter *grid_shape*), and each rectangle is treated separately. A buffer is applied around the rectangles to avoid edge effects.
+To speed up calculation, one could use a multiprocessing plan defined with the package 'future'. To do so, the study area is divided into rectangles (according to the parameter *grid_shape*), and each rectangle is treated separately. A buffer is applied around the rectangles to avoid edge effects.
 
 ```{r message=FALSE, warning=FALSE, eval=FALSE}
 # setting the multiprocess plan
@@ -136,7 +148,7 @@ netlistw3 <- network_listw.mc(lixels,lixels,
                              dist_func = my_conv_func,
                              line_weight = 'length',
                              matrice_type = 'W',
-                             grid_shape = c(3,3),
+                             grid_shape = c(2,2),
                              verbose=FALSE)
 
 if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
@@ -147,3 +159,11 @@ if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
 * A spatial matrix could be calculated for every type of geometries not only lines. Points can directly be used. For polygons, it is possible to use the centers of the geometries as starting points. One can also chose a distance and equally spaced starting points will be defined on the border of the polygons according to that distance.
 * The cost of traveling on a edge could be set to something else than "length".
 * It is possible to specify directions on the network.
+
+```{r include = FALSE}
+# reset all the user parameters
+options(backup_option)
+setwd(base_wd)
+oldpar <- par(mfrow = c(1,2))
+par(oldpar)
+```

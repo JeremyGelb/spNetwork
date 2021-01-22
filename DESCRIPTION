@@ -1,15 +1,16 @@
 Package: spNetwork
 Type: Package
 Title: Spatial Analysis on Network
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: c(
     person("Jeremy", "Gelb", email = "jeremy.gelb@ucs.inrs.ca",role = c("aut", "cre")),
     person("Philippe", "Apparicio", email="philippe.apparicio@ucs.inrs.ca", role=c("ctb")))
-Description: The spNetwork package performs spatial analysis on network.
-    In its actual form, it allows to calculate Network Kernel Density Estimate, and to build
-    spatial matrices ('listw' objects like in 'spdep' package) to perform any kind of traditional 
+Description: Perform spatial analysis on network.
+    Allow to calculate Network Kernel Density Estimate, and to build
+    spatial matrices ('listw' objects like in 'spdep' package) to conduct any kind of traditional 
     spatial analysis with spatial weights based on reticular distances. K functions on network
-    are also available but still experimental.
+    are also available but still experimental. References: Okabe et al (2019) <doi:10.1080/13658810802475491>;
+    Okabe et al (2012, ISBN:978-0470770818);Baddeley el al (2015, ISBN:9781482210200).
 License: GPL-2
 Encoding: UTF-8
 LazyData: true
@@ -28,8 +29,7 @@ Imports:
     progressr (>= 0.4.0),
     data.table (>= 1.12.8),
     SearchTrees (>= 0.5.2),
-    Rcpp (>= 1.0.4.6),
-    RcppProgress (>= 0.4.2)
+    Rcpp (>= 1.0.4.6)
 Depends:
     R (>= 3.6)
 Suggests:

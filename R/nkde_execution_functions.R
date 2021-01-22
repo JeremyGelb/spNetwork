@@ -1226,10 +1226,8 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, tri
 #'                   method = "discontinuous", digits = 1, tol = 1,
 #'                   grid_shape = c(3,3),
 #'                   verbose=FALSE)
-#' \dontshow{
-#'    ## R CMD check: make sure any open connections are closed afterward
-#'    if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
-#'    }
+#' ## make sure any open connections are closed afterward
+#' if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
 #' }
 nkde.mc <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, trim_bw=NULL, method, div="bw", diggle_correction = FALSE, study_area = NULL, max_depth = 15, digits=5, tol=0.1,agg=NULL, sparse=TRUE, grid_shape=c(1,1), verbose=TRUE, check=TRUE){
 

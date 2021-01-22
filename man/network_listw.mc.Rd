@@ -90,9 +90,7 @@ future::plan(future::multisession(workers=2))
 listw <- network_listw.mc(mtl_network,mtl_network,maxdistance=500,
         method = "centroid", line_weight = "length",
         dist_func = 'squared inverse', matrice_type='B', grid_shape = c(2,2))
-\dontshow{
-   ## R CMD check: make sure any open connections are closed afterward
-   if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
- }
+## make sure any open connections are closed afterward
+if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
 }
 }

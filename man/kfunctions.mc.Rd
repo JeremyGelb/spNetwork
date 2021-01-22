@@ -15,6 +15,7 @@ kfunctions.mc(
   conf_int = 0.05,
   digits = 2,
   tol = 0.1,
+  resolution = 50,
   agg = NULL,
   verbose = TRUE
 )
@@ -48,6 +49,12 @@ spatial coordinates}
 distance between these points and the lines' extremities. When points are
 closer, they are added at the extremity of the lines.}
 
+\item{resolution}{When simulating random points on the network, selecting a
+resolution will reduce greatly the calculation time. When resolution is null
+the random points can occur everywhere on the graph. If a value is specified,
+the edges are split according to this value and the random points are
+selected vertices on the new network.}
+
 \item{agg}{A double indicating if the events must be aggregated within a
 distance. If NULL, the events are aggregated by rounding the coordinates.}
 
@@ -79,9 +86,7 @@ result <- kfunctions.mc(main_network_mtl, mtl_libraries,
      width = 200, nsim = 50,
      conf_int = 0.05, tol = 0.1, agg = NULL,
      verbose = FALSE)
-\dontshow{
-   ## R CMD check: make sure any open connections are closed afterward
-   if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
-   }
+## make sure any open connections are closed afterward
+if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
 }
 }

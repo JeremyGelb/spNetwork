@@ -136,5 +136,62 @@ NKDEdetailed.Rmd : 8 seconds
    Overall checktime 16 min > 10 min"
 
 The size of the tarball has been reduced to 3.5 Mo (one data file was not compressed, my bad).
-The Overall checktime is only  7min on my laptop.
+The Overall checktime is now only  4min on my laptop.
 
+## Round 4 (after third comments, human validation) the 08/01/2021
+
+**Problem**:  
+Please omit the redundant "The spNetwork package" from your description.
+
+**correction**:
+The description has been modified as requested
+
+**Problem**:
+Please always write package names, software names and API (application
+programming interface) names in single quotes in title and description.
+e.g: --> 'spNetwork'
+
+**correction**:
+As requested, packages names and API are now written with single quotes in the description and the vignettes. The spNetwork name is still in bold in the vignettes.
+
+**Problem**:
+if there are references describing the methods in your package, please
+add these in the description field of your DESCRIPTION file in the form
+authors (year) <doi:...>
+authors (year) <arXiv:...>
+authors (year, ISBN:...)
+or if those are not available: <[https:...]https:...>
+with no space after 'doi:', 'arXiv:', 'https:' and angle brackets for
+auto-linking.
+(If you want to add a title as well please put it in quotes: "Title")
+
+**correction**:
+The main references were added in the description as suggested.
+
+**Problem**:
+Warning: Unexecutable code in man/cross_kfunctions.mc.Rd:
+Warning: Unexecutable code in man/kfunctions.mc.Rd:
+Warning: Unexecutable code in man/lixelize_lines.mc.Rd:
+Warning: Unexecutable code in man/network_listw.mc.Rd:
+Warning: Unexecutable code in man/nkde.mc.Rd:
+
+**correction**:
+The problem is caused by the use of dontshow for the multicore functions. I removed it. I think it is a good choice to show to the user how to come back to the sequential plan after multiprocessing.
+
+**Problem**:
+Please always make sure to reset to user's options(), working directory
+or par() after you changed it in examples and vignettes and demos.
+e.g.: inst/doc/NKDEdetailed.R, inst/doc/KNetworkFunctions.R
+oldpar <- par(mfrow = c(1,2))
+...
+par(oldpar)
+
+**correction**:
+As suggested, the modifications applied to the user's option, par and working directory are now reset after vignettes. These parameters are never modified in examples.
+
+# Version 0.1.1
+
+## Round 1 (after automatic checks) the 18/01/2021
+
+The package was accepted on CRAN today, but an error occured on SOLARIS.
+The error occurs when I set manually the CRS of sp objects in the test and in the vignette NKDEdetailed. I removed the lines specifying the projection (maybe an error with PROJ4 ?). Because the package has already been accepted on CRAN, I have to raise the version number.
