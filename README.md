@@ -12,7 +12,7 @@ A good start point for this package is the vignettes. They present the main feat
 ### Installing
 
 you can install this package with the following code in R.
-The packages use mainly the following packages in its internal structure :
+The packages uses mainly the following packages in its internal structure :
 
 * igraph
 * sp
