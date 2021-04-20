@@ -78,6 +78,11 @@ jobs:
           rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "warning", check_dir = "check")
         shell: Rscript {0}
 
+      - name: Install system dependencies for MACOS
+        if: runner.os == 'macOS'
+        run: |
+          brew cask install xquartz
+
       - name: Upload check results
         if: failure()
         uses: actions/upload-artifact@main

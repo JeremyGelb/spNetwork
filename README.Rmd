@@ -12,6 +12,7 @@ knitr::opts_chunk$set(
   fig.path = "man/figures/",
   out.width = "100%"
 )
+library(badger)
 ```
 
 # spNetwork <img src='man/figures/spNetwork_logo.png' align="right" height="138.5" />
@@ -20,8 +21,14 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 
 [![R-CMD-check](https://github.com/JeremyGelb/spNetwork/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/JeremyGelb/spNetwork/actions/workflows/R-CMD-check.yaml)
+```{r echo=FALSE, results='asis'}
+cat(
+  badge_github_version(color = "green"),
+  badge_cran_release(color = "blue"),
+  badge_cran_download(color = "blue", type = "grand-total")
+)
+```
 <!-- badges: end -->
-  <!-- badges: end -->
 
 ## Getting Started
 
