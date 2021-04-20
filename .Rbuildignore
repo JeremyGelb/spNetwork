@@ -4,3 +4,8 @@
 ^Meta$
 ^KNetworkFunctions_cache$
 ^cran-comments\.md$
+^README\.rmd$
+^LICENSE\.txt$
+^CONDUCT\.md$
+^CONTRIBUTING\.md$
+^\.github$

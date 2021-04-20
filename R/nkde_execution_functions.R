@@ -970,7 +970,7 @@ nkde_worker <- function(lines, events, samples, kernel_name,bw, bws, method, div
 #' then a classical matrix could be used instead of a sparse one. It
 #' significantly increases speed, but could lead to memory issues.
 #'
-#' @param lines A SpatialLinesDataFrame with the sampling points. The
+#' @param lines A SpatialLinesDataFrame representing the underlying network. The
 #' geometries must be a SpatialLinesDataFrame (may crash if some geometries
 #'  are invalid)
 #' @param events A SpatialPointsDataFrame representing the events on the
@@ -1155,7 +1155,7 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, tri
 #' @description Calculate the Network Kernel Density Estimate based on a network of lines,
 #' sampling points, and events with multicore support. For details, please see the function nkde
 #'
-#' @param lines A SpatialLinesDataFrame with the sampling points. The
+#' @param lines A SpatialLinesDataFrame representing the underlying network. The
 #' geometries must be a SpatialLinesDataFrame (may crash if some geometries
 #'  are invalid)
 #' @param events A SpatialPointsDataFrame representing the events on the

@@ -28,7 +28,7 @@ nkde(
 )
 }
 \arguments{
-\item{lines}{A SpatialLinesDataFrame with the sampling points. The
+\item{lines}{A SpatialLinesDataFrame representing the underlying network. The
 geometries must be a SpatialLinesDataFrame (may crash if some geometries
  are invalid)}
 

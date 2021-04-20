@@ -624,9 +624,32 @@ ggplot() +
   xlim(extent[1,])+
   ylim(extent[2,])+
   labs(title = "bike accident density by kilometres in 2016",
-          subtitle = "within a radius of 100 metres")
+          subtitle = "within a radius of 150 metres")
 
 ```
+
+## Bandwidth selection
+
+The bandwidth is the most important parameter when doing kernel density estimate. Many methods have been proposed to find an optimal bandwidth but all of them are either crude approximations or require large calculus time. In that context, a theory drive bandwidth is the way to go. However, **spNetwork** provides currently one function to do data driven bandwidth selection : `bw_cv_likelihood_calc`. The approach used is likelihood cross validation by leave one out. The most adapted likelihood minimize this criterion. One can uses the multicore version of the function to speed up the calculation. It is also possible to run it on a subset of the dataset (based on the spatial grid) if running time is too long.
+
+```{r eval = FALSE}
+bws_selection <- bw_cv_likelihood_calc(
+  bw_range = c(200,700),bw_step = 100,
+  lines = mtl_network, events = bike_accidents,
+  w = rep(1,nrow(bike_accidents)),
+  kernel_name = "quartic", method = "discontinuous",
+  diggle_correction = FALSE, study_area = NULL,
+  max_depth = 8,
+  digits=2, tol=0.1, agg=5, 
+  sparse=TRUE, grid_shape=c(1,1),
+  verbose=FALSE, check=TRUE)
+```
+```{r echo=FALSE}
+knitr::kable(bws_selection,digits = 2,row.names = FALSE)
+```
+
+As one can see here, the function suggests a value between 400 and 500 meters.
+
 
 ## Complementary functions
 
