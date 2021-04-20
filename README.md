@@ -5,6 +5,11 @@
 
 ## A R package to perform spatial analysis on networks.
 
+<!-- badges: start -->
+
+[![R-CMD-check](https://github.com/JeremyGelb/spNetwork/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/JeremyGelb/spNetwork/actions/workflows/R-CMD-check.yaml)
+<!-- badges: end --> <!-- badges: end -->
+
 ## Getting Started
 
 A good start point for this package is the vignettes. They present the
