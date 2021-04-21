@@ -42,6 +42,11 @@ jobs:
 
       - uses: r-lib/actions/setup-pandoc@v1
 
+      - name: Install system dependencies for MACOS
+        if: runner.os == 'macOS'
+        run: |
+          brew cask install xquartz
+
       - name: Query dependencies
         run: |
           install.packages('remotes')
@@ -77,11 +82,6 @@ jobs:
           options(crayon.enabled = TRUE)
           rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "warning", check_dir = "check")
         shell: Rscript {0}
-
-      - name: Install system dependencies for MACOS
-        if: runner.os == 'macOS'
-        run: |
-          brew cask install xquartz
 
       - name: Upload check results
         if: failure()
