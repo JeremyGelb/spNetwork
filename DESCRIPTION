@@ -29,7 +29,8 @@ Imports:
     progressr (>= 0.4.0),
     data.table (>= 1.12.8),
     SearchTrees (>= 0.5.2),
-    Rcpp (>= 1.0.4.6)
+    Rcpp (>= 1.0.4.6),
+    Rdpack (>= 2.1.1)
 Depends:
     R (>= 3.6)
 Suggests:
@@ -54,3 +55,4 @@ LinkingTo:
     RcppProgress,
     RcppArmadillo
 SystemRequirements: C++11
+RdMacros: Rdpack

@@ -892,13 +892,13 @@ nkde_worker <- function(lines, events, samples, kernel_name,bw, bws, method, div
 #' etc.). New methods were developed to adapt the methodology to networks,
 #' three of them are available in this package.
 #' \itemize{
-#'   \item{method="simple"}{This first method was presented by Xie et al.
-#'   (2008) and proposes an intuitive solution. The distances between events
+#'   \item{method="simple"}{This first method was presented by \insertCite{xie2008kernel}{spNetwork}
+#'   and proposes an intuitive solution. The distances between events
 #'   and sampling points are replaced by network distances, and the formula of
 #'   the kernel is adapted to calculate the density over a linear unit
 #'   instead of an areal unit.}
 #'   \item{method="discontinuous"}{The previous method has been criticized by
-#'   Okabe et al (2008), arguing that the estimator proposed is biased,
+#'   \insertCite{okabe2009kernel}{spNetwork}, arguing that the estimator proposed is biased,
 #'   leading to an overestimation of density in events hot-spots. More
 #'   specifically, the simple method does not conserve mass and the induced
 #'   kernel is not a probability density along the network. They thus
@@ -906,7 +906,7 @@ nkde_worker <- function(lines, events, samples, kernel_name,bw, bws, method, div
 #'   equally "divides" the mass density of an event at intersections}
 #'   \item{method="continuous"}{If the discontinuous method is unbiased, it
 #'   leads to a discontinuous kernel function which is a bit counter-intuitive.
-#'   Okabe et al (2008) proposed another version of the kernel, that divide
+#'   \insertCite{okabe2009kernel;textual}{spNetwork} proposed another version of the kernel, that divide
 #'   the mass of the density at intersection but adjusts the density before the
 #'   intersection to make the function continuous.}
 #' }
@@ -917,7 +917,7 @@ nkde_worker <- function(lines, events, samples, kernel_name,bw, bws, method, div
 #' \cr\cr
 #' **adaptive bandwidth**\cr
 #' It is possible to use adaptive bandwidth instead of fixed bandwidth.
-#' Adaptive bandwidths are calculated using the Abramson’s smoothing regimen.
+#' Adaptive bandwidths are calculated using the Abramson’s smoothing regimen \insertCite{abramson1982bandwidth}{spNetwork}.
 #' To do so, an original fixed bandwidth must be specified (bw parameter), and
 #' is used to estimate priory densities at event locations. These densities
 #' are then used to calculate local bandwidth. The maximum size of the local
@@ -969,6 +969,10 @@ nkde_worker <- function(lines, events, samples, kernel_name,bw, bws, method, div
 #' small (typically when the grid used to split the data has small rectangles)
 #' then a classical matrix could be used instead of a sparse one. It
 #' significantly increases speed, but could lead to memory issues.
+#'
+#' @references{
+#'     \insertAllCited{}
+#' }
 #'
 #' @param lines A SpatialLinesDataFrame representing the underlying network. The
 #' geometries must be a SpatialLinesDataFrame (may crash if some geometries
@@ -1024,7 +1028,7 @@ nkde_worker <- function(lines, events, samples, kernel_name,bw, bws, method, div
 #' points
 #' @export
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
 #' eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
 #' mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
@@ -1153,7 +1157,9 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, tri
 #' @title Network Kernel density estimate (multicore)
 #'
 #' @description Calculate the Network Kernel Density Estimate based on a network of lines,
-#' sampling points, and events with multicore support. For details, please see the function nkde
+#' sampling points, and events with multicore support.
+#'
+#' @details For more details, see help(nkde)
 #'
 #' @param lines A SpatialLinesDataFrame representing the underlying network. The
 #' geometries must be a SpatialLinesDataFrame (may crash if some geometries
@@ -1208,7 +1214,7 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, tri
 #' points
 #' @export
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
 #' eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
 #' mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)

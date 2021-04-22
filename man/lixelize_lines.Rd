@@ -26,7 +26,7 @@ Cut a SpatialLines object into lixels with a specified minimal
   distance may fail if the lines geometries are self intersecting.
 }
 \examples{
-\dontrun{
+\donttest{
 networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
 mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
 lixels <- lixelize_lines(mtl_network,150,50)

@@ -24,7 +24,7 @@ A list with two elements. The first is a SpatialPointsDataFrame
 A utility function to find topological errors in a network.
 }
 \examples{
-\dontrun{
+\donttest{
 networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
 mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
 topo_errors <- graph_checking(mtl_network, 2, 2)

@@ -1,7 +1,29 @@
+# NOTE : for the next method, implementing https://rdrr.io/github/spatstat/spatstat.core/man/bw.CvL.html
+# seems easy
+
+#nouvelle methodes : dbscan on network
+# plus pousse : NS-DBSCAN: A Density-Based Clustering Algorithm in Network Space
+
+
 #' @title Bandwidth selection by likelihood cross validation
 #'
 #' @description Calculate for multiple bandiwdths the cross validation likelihood to
 #' select an appropriate bandwidth in a data driven approach
+#'
+#' @details  The function calculates the likelihood cross validation score for several
+#' bandwidths in order to find the most appropriate one. The general idea is to find the
+#' bandwidth that would produce the most similar results if one event was removed from
+#' the dataset (leave one out cross validation). We use here the shortcut formula as
+#' described by the package spatstat \insertCite{spatstatpkg}{spNetwork}.
+#'
+#' LCV(h) = sum[i] log(lambda[-i](x[i]))
+#'
+#' Where the sum is taken for all events x[i] and where lambda[-i](x[i]) is the leave-one-out kernel
+#' estimate at x[i] for a bandwidth h. A lower value indicates a better bandwidth.
+#'
+#' @references{
+#'     \insertAllCited{}
+#' }
 #'
 #' @param bw_range The range of the bandwidths to consider, given as a numeric
 #' vector of two values: c(bandwidth_min, bandwidth_max)
@@ -52,7 +74,7 @@
 #' the cross validation score (the lower the better).
 #' @export
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
 #' eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
 #' mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
@@ -226,10 +248,12 @@ bw_cv_likelihood_calc <- function(bw_range,bw_step,lines, events, w, kernel_name
 #'
 #' @description Calculate for multiple bandiwdths the cross validation likelihood to
 #' select an appropriate bandwidth in a data driven approach. A future plan can be used
-#' to split the work across cores. The different quadra generated in accordance with the
+#' to split the work across cores. The different quadras generated in accordance with the
 #' argument grid_shape are used for the parallelisation. So if only one quadra is
-#' generate (grid_shape = c(1,1)), the function will still use only one core. This
-#' affect also the progress bar.
+#' generate (grid_shape = c(1,1)), the function will still use only one core. This also
+#' affect the progress bar.
+#'
+#' @details For more details, see help(bw_cv_likelihood_calc)
 #'
 #' @param bw_range The range of the bandwidths to consider, given as a numeric
 #' vector of two values: c(bandwidth_min, bandwidth_max)
@@ -280,7 +304,7 @@ bw_cv_likelihood_calc <- function(bw_range,bw_step,lines, events, w, kernel_name
 #' the cross validation score (the lower the better).
 #' @export
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
 #' eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
 #' mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
@@ -476,7 +500,48 @@ bw_cv_likelihood_calc.mc <- function(bw_range,bw_step,lines, events, w, kernel_n
 
 
 
-
+#' @title Worker function for bandwidth selection by likelihood cross validation
+#'
+#' @description The worker function for bandwidth selection by likelihood cross validation
+#'
+#' @param lines A SpatialLinesDataFrame representing the underlying network. The
+#' geometries must be a SpatialLinesDataFrame (may crash if some geometries
+#'  are invalid)
+#' @param events A SpatialPointsDataFrame representing the events on the
+#' network.
+#' @param samples A SpatialPointsDataFrame representing the samples on the
+#' network.
+#' @param kernel_name The name of the kernel to use. Must be one of triangle,
+#' gaussian, tricube, cosine ,triweight, quartic, epanechnikov or uniform.
+#' @param bws A vector with all the bandiwdths to test.
+#' @param method The method to use when calculating the NKDE, must be one of
+#' simple / discontinuous / continuous (see details for more information)
+#' @param div The divisor to use (should always be dist here).
+#' @param max_depth when using the continuous and discontinuous methods, the
+#' calculation time and memory use can go wild  if the network has many
+#' small edges (area with many of intersections and many events). To
+#' avoid it, it is possible to set here a maximum depth. Considering that the
+#' kernel is divided at intersections, a value of 10 should yield good
+#' estimates in most cases. A larger value can be used without problem for the
+#' discontinuous method. For the continuous method, a larger value will
+#' strongly impact calculation speed.
+#' @param digits The number of digits to retain in the spatial coordinates. It
+#' ensures that topology is good when building the network. Default is 3
+#' @param tol When adding the events and the sampling points to the network,
+#' the minimum distance between these points and the lines' extremities. When
+#' points are closer, they are added at the extremity of the lines.
+#' @param agg A double indicating if the events must be aggregated within a distance.
+#' If NULL, the events are aggregated by rounding the coordinates.
+#' @param sparse A Boolean indicating if sparse or regular matrix should be
+#' used by the Rcpp functions. Regular matrix are faster, but require more
+#' memory and could lead to error, in particular with multiprocessing. Sparse
+#' matrix are slower, but require much less memory (not used for the moment).
+#' @param verbose A Boolean, indicating if the function should print messages
+#' about process.
+#' @return A list of dataframes (continuous kernel) or a list of numeric vectors (other kernels).
+#' @keywords internal
+#' @examples
+#' #This is an internal function, no example provided
 nkde_worker_bw_sel <- function(lines, events, samples, kernel_name, bws, method, div, digits, tol, sparse, max_depth, verbose = FALSE){
 
   # if we do not have event in that space, just return 0 values

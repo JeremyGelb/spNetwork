@@ -21,6 +21,8 @@ utils::globalVariables(c("Xs", "Ys"))
 sp_char_index <- function(coords, digits) {
     tempdf <- data.frame(Xs = as.character(coords[, 1]),
                          Ys = as.character(coords[, 2]))
+    tempdf$Xs <- ifelse(grepl(".",tempdf$Xs,fixed = TRUE), tempdf$Xs, paste(tempdf$Xs,".0",sep=""))
+    tempdf$Ys <- ifelse(grepl(".",tempdf$Ys,fixed = TRUE), tempdf$Ys, paste(tempdf$Ys,".0",sep=""))
     tempdt <- data.table(tempdf)
 
     tempdt[,  c("xint", "xdec") := tstrsplit(Xs, ".", fixed = TRUE)]
@@ -67,6 +69,10 @@ lines_extremities <- function(lines) {
     })
     ids <- do.call("c", ids)
     types <- do.call("c", types)
+    # if lines has only one columns, we can endup with weird results
+    if(length(names(lines))==1){
+        lines$tempcol <- 1
+    }
     data <- lines@data[ids, ]
     data$X <- newpts[, 1]
     data$Y <- newpts[, 2]
@@ -232,7 +238,7 @@ add_vertices_lines <- function(lines, points, nearest_lines_idx, mindist) {
 #' @importFrom rgeos gLength gInterpolate
 #' @export
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
 #' mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
 #' lixels <- lixelize_lines(mtl_network,150,50)
@@ -322,7 +328,7 @@ lixelize_lines <- function(lines, lx_length, mindist = NULL, verbose = FALSE) {
 #'@export
 #'@importFrom utils capture.output
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
 #' mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
 #' future::plan(future::multisession(workers=2))
@@ -417,7 +423,7 @@ simple_lines <- function(lines) {
 #' @importFrom utils txtProgressBar setTxtProgressBar
 #' @export
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
 #' mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
 #' centers <- lines_center(mtl_network)
@@ -514,7 +520,7 @@ add_center_lines.mc <- function(lines, show_progress = TRUE, chunk_size = 100) {
 #' @importFrom utils capture.output
 #' @export
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
 #' mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
 #' new_pts <- lines_points_along(mtl_network,50)
@@ -720,3 +726,235 @@ snapPointsToLines2 <- function(points, lines ,idField = NA) {
 }
 
 
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#### Network Cleaning Functions ####
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+#' @title Heal edges
+#'
+#' @description Merge Lines if they form a longer linestring without external intersections
+#'
+#' @param lines A SpatialLinesDataFrame
+#' @param digits An integer indicating the number of digits to keep in coordinates
+#' @param verbose A boolean indicating if a progress bar should be displayed
+#'
+#' @return A SpatialLinesDataFrame with the eventually merged geometries. Note
+#' that if lines are merged, only the attributes of the first line are preserved
+#' @keywords internal
+#' @importFrom sp coordinates SpatialLinesDataFrame
+#' @importFrom data.table as.data.table setDT :=
+#' @importFrom utils txtProgressBar setTxtProgressBar
+#' @examples
+#' #This is an internal function, no example provided
+heal_edges <- function(lines,digits = 3, verbose = TRUE){
+    ## healing step
+
+    #first getting the coordinates of each point
+    lines$tmpOID <- 1:nrow(lines)
+    coords <- lines_extremities(lines)
+    coords$spindex <- sp_char_index(sp::coordinates(coords),digits)
+
+    #then counting for each point how many times it appears
+    counts <- table(coords$spindex)
+    countdf <- data.frame(
+        count = as.vector(counts),
+        spindex = names(counts)
+    )
+
+    #if a point appears exactly twice, it might require a healing
+    cases <- subset(countdf, countdf$count==2)
+    consid_points <- subset(coords, coords$spindex %in% cases$spindex)
+    consid_lines <- subset(lines, lines$tmpOID %in% consid_points$tmpOID)
+    keeped_lines <- subset(lines, (lines$tmpOID %in% consid_points$tmpOID) == FALSE)
+
+    #adding the start and end sp index to each line
+    startpts <- subset(coords, coords$pttype=="start")
+    endpts <- subset(coords, coords$pttype=="end")
+
+    tempDT <- as.data.table(consid_lines@data)
+    consid_lines$startidx <- setDT(tempDT)[startpts@data, on = "tmpOID", "startidx" := startpts$spindex][]$startidx
+    consid_lines$endidx <- setDT(tempDT)[endpts@data, on = "tmpOID", "endidx" := endpts$spindex][]$endidx
+
+    consid_lines$tmpOID <- as.character(consid_lines$tmpOID)
+    # generating a neighbouring list from the extremies
+    neighbouring <- lapply(1:nrow(consid_lines), function(i){
+        line <- consid_lines[i,]
+        val1 <- line$startidx
+        val2 <- line$endidx
+        neighbours <- subset(consid_lines,
+                                 (consid_lines$startidx == val1 | consid_lines$endidx == val2 |
+                                  consid_lines$startidx == val2 | consid_lines$endidx == val1) &
+                                 ((consid_lines$startidx == val1 & consid_lines$endidx == val2)==FALSE)
+                             )
+        codes <- neighbours$tmpOID
+        return(codes)
+    })
+    names(neighbouring) <- consid_lines$tmpOID
+
+    ## ok now we must find the routes that we should merge
+    merged <- c()
+    if(verbose){
+        pb <- txtProgressBar(min = 0, max = nrow(consid_lines), style = 3)
+    }
+    merge_with <- lapply(1:nrow(consid_lines), function(i){
+        line <- consid_lines[i,]
+        if(verbose){
+            setTxtProgressBar(pb, i)
+        }
+        all_neighbours <- c()
+        next_check <- line$tmpOID
+        while (length(next_check) > 0){
+            neighbours <- do.call(c,lapply(next_check, function(x){
+                neighbouring[[x]]
+            }))
+            neighbours <- neighbours[(neighbours %in% merged) == FALSE]
+            next_check <- neighbours
+            merged <<- c(merged,neighbours)
+            all_neighbours <- c(all_neighbours,neighbours)
+        }
+        return(all_neighbours)
+    })
+    merge_with <- Filter(function(x) length(x) > 0, merge_with)
+    merged_lines <- do.call(rbind,lapply(merge_with, function(x){
+        sub <- subset(consid_lines, consid_lines$tmpOID %in% x)
+        return(rgeos::gLineMerge(sub))
+    }))
+    df <- do.call(rbind,lapply(merge_with, function(x){
+        sub <- subset(consid_lines, consid_lines$tmpOID %in% x)
+        return(sub@data[1,])
+    }))
+
+    new_sp <- SpatialLinesDataFrame(merged_lines, df, match.ID = F)
+    new_sp$startidx <- NULL
+    new_sp$endidx <- NULL
+    new_lines <- rbind(keeped_lines, new_sp)
+    new_lines$tmpOID <- NULL
+    return(new_lines)
+}
+
+#' @title Remove mirror edges
+#'
+#' @description Keep unique edges based on start and end point
+#'
+#' @param lines A SpatialLinesDataFrame
+#' @param keep_sortest A boolean, if TRUE, then the shortest line is keeped if
+#' several lines have the same starting point and ending point. if FALSE, then the
+#' longest line is keeped.
+#' @param digits An integer indicating the number of digits to keep in coordinates
+#'
+#' @return A SpatialLinesDataFrame with the mirror edges removed
+#' @keywords internal
+#' @importFrom sp coordinates
+#' @importFrom data.table as.data.table setDT :=
+#' @importFrom utils txtProgressBar setTxtProgressBar
+#' @examples
+#' #This is an internal function, no example provided
+remove_mirror_edges <- function(lines, keep_shortest = TRUE, digits = 3, verbose = TRUE){
+    # step1 : get start and end coordinates of each line
+    lines$tmpOID <- 1:nrow(lines)
+    coords <- lines_extremities(lines)
+    coords$spindex <- sp_char_index(sp::coordinates(coords),digits)
+    starts <- subset(coords, coords$pttype == "start")
+    ends <- subset(coords, coords$pttype == "end")
+    # merging with data.table
+    tempDT <- data.table::as.data.table(lines@data)
+    lines$startidx <- setDT(tempDT)[starts@data, on = "tmpOID", "startidx" := starts$spindex][]$startidx
+    lines$endidx <- setDT(tempDT)[ends@data, on = "tmpOID", "endidx" := ends$spindex][]$endidx
+
+    # create two sp_index (one start->end and end->start)
+    lines$idx1 <- paste(lines$startidx,lines$endidx,sep=" - ")
+    lines$idx2 <- paste(lines$endidx,lines$startidx,sep=" - ")
+
+    # step2 : for each line, find if another has the same paire of points (or reversed)
+    # if it is the case, flag the longest or shortest for a removal after
+    if(verbose){
+        pb <- txtProgressBar(min = 0, max = nrow(lines), style = 3)
+    }
+    to_remove <- sapply(1:nrow(lines), function(i){
+        line <- lines[i,]
+        idx1 <- line$idx1
+        if(verbose){
+            setTxtProgressBar(pb, i)
+        }
+        test <- (lines$idx1 == idx1 | lines$idx2 == idx1)
+        if (sum(test)>1){
+            sub <- subset(lines, test)
+            lengths <- rgeos::gLength(sub,byid = T)
+            # if all the lengths are equal
+            if(length(unique(lengths))==1){
+                if(sum(line$tmpOID > sub$tmpOID)==0){
+                    return(TRUE)
+                }else{
+                    return(FALSE)
+                }
+            }
+            # if some lengths are longer
+            l <- rgeos::gLength(line)
+            longest <- max(lengths)
+            if(keep_shortest){
+                if(longest > l){
+                    return(FALSE)
+                }else{
+                    return(TRUE)
+                }
+            }else{
+                if(longest < l){
+                    return(FALSE)
+                }else{
+                    return(TRUE)
+                }
+            }
+        }else{
+            return(FALSE)
+        }
+    })
+    keeped <- subset(lines, to_remove == FALSE)
+    return(keeped)
+}
+
+
+#' @title Simplify a network
+#'
+#' @description Simplify a network by applying two corrections: Healing edges and
+#' Removing mirror edges
+#'
+#' @details Healing is the operation to merge two connected linestring if the are
+#' intersecting at one extremity and do not intersect any other linestring. It helps
+#' to reduce the complexity of the network and thus can reduce calculation time.
+#' Removing mirror edges is the operation to remove edges that have the same
+#' extremities. If two edges start at the same point and end at the same point,
+#' they do not add information in the network and one can be removed to simplify
+#' the network. One can decide to keep the longest of the two edges or the shortest.
+#'
+#' @param lines A SpatialLinesDataFrame
+#' @param digits An integer indicating the number of digits to keep in coordinates
+#' @param heal A boolean indicating if the healing operation must be performed
+#' @param mirror A booleans indicating if the mirror edges must be removed
+#' @param keep_shortest A boolean, if TRUE, then the shortest line is keeped from
+#' mirror edges. if FALSE, then the longest line is keeped.
+#' @param verbose A boolean indicating if messages and progressbar should be displayed
+#' @return A SpatialLinesDataFrame
+#' @export
+#' @examples
+#' library(spNetwork)
+#' networkgpkg <- system.file("extdata", "networks.gpkg",package = "spNetwork", mustWork = TRUE)
+#' lines <- mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network",verbose = FALSE)
+#' edited_lines <- simplify_network(lines, digits = 3, verbose = FALSE)
+simplify_network <- function(lines, digits = 3, heal = TRUE, mirror = TRUE, keep_shortest = TRUE, verbose = TRUE){
+
+    if(heal){
+        if(verbose){
+            print("healing the connected edges...")
+        }
+        lines <- heal_edges(lines, digits, verbose)
+    }
+
+    if(mirror){
+        if(verbose){
+            print("removing mirror edges")
+        }
+        lines <- remove_mirror_edges(lines, keep_shortest, digits, verbose)
+    }
+
+    return(lines)
+}

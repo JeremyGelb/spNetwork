@@ -284,7 +284,7 @@ prepare_elements_netlistw <- function(is,grid,snapped_points,lines,maxdistance){
 #' @importFrom graphics plot
 #' @export
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' networkgpkg <- system.file("extdata", "networks.gpkg",package = "spNetwork", mustWork = TRUE)
 #' mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
 #' listw <- network_listw(mtl_network,mtl_network,maxdistance=500,
@@ -467,7 +467,7 @@ network_listw <- function(origins,lines,maxdistance, method="centroid", point_di
 #' @importFrom rgeos gCentroid gLength gBuffer gIntersects gPointOnSurface
 #' @export
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
 #' mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
 #' future::plan(future::multisession(workers=2))

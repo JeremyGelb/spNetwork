@@ -13,18 +13,15 @@
 [![](http://cranlogs.r-pkg.org/badges/grand-total/spNetwork?color=blue)](https://cran.r-project.org/package=spNetwork)
 <!-- badges: end -->
 
+## Getting Started
+
+A good start point for this package is the vignettes. They present the
+main features of the package
+
 ### Installing
 
-spNetwork is available directly on CRAN, you can install it with the following command:
-``` r
-install.packages("spNetwork")
-```
-You can also install the current dev version which has more features.
-``` r
-devtools::install_github("JeremyGelb/spNetwork")
-```
-
-spNetwork uses mainly the following packages in its internal structure :
+you can install this package with the following code in R. The packages
+use mainly the following packages in its internal structure :
 
 -   igraph
 -   sp
@@ -33,25 +30,13 @@ spNetwork uses mainly the following packages in its internal structure :
 -   raster
 -   future
 -   future.apply
+-   dplyr
+-   tidyR
 -   Rcpp
 -   RcppArmadillo
 
-## About the package
-
-Perform spatial analysis on network. Allow to calculate Network Kernel Density Estimate, and to build spatial matrices (`listw` objects like in `spdep` package) to conduct any kind of traditional spatial analysis with spatial weights based on reticular distances. K functions on network are also available but still experimental. References: [Okabe et al (2019)](https://doi.org/10.1080/13658810802475491); [Okabe et al (2017)](https://doi.org/10.1007/978-3-319-23519-6_1648-1); [Baddeley el al (2015)](https://www.routledge.com/Spatial-Point-Patterns-Methodology-and-Applications-with-R/Baddeley-Rubak-Turner/p/book/9781482210200).
-
-**spNetwork** is still under development, but the main features are available and have already been tested on large scale dataset.
-
-## Getting Started
-
-A good start point for this package is the vignettes. They present the
-main features of the package.
-
-```r{eval = FALSE}
-vignette("NKDE","spNetwork")
-vignette("NKDEdetailed","spNetwork")
-vignette("SpatialWeightMatrices","spNetwork")
-vignette("KNetworkFunctions","spNetwork")
+``` r
+devtools::install_github("JeremyGelb/spNetwork")
 ```
 
 ### Examples
@@ -103,7 +88,7 @@ moran.test(mtl_network$nbAccident,listw, zero.policy = T)
 
 Note that you can use this in every spatial analysis you would like to
 perform. With the converter function of spdep (like listw2mat), you can
-convert the listw object into regular matrix if needed.
+convert the listw object into regular matrix if needed
 
 ### Work in progress
 
@@ -111,7 +96,7 @@ Currently, functions to calculate K-function and cross-K-function for
 sets of points are available but still experimental.
 
 We also added functions for bandwidth selection by likelihood
-cross-validation.
+cross-validation
 
 ## Authors
 

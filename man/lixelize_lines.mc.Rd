@@ -35,7 +35,7 @@ Cut a SpatialLines object into lixels with a specified minimal
  multicore support.
 }
 \examples{
-\dontrun{
+\donttest{
 networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
 mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
 future::plan(future::multisession(workers=2))

@@ -115,13 +115,13 @@ space but on a network (like car crashes, outdoor crimes, leaks in pipelines,
 etc.). New methods were developed to adapt the methodology to networks,
 three of them are available in this package.
 \itemize{
-  \item{method="simple"}{This first method was presented by Xie et al.
-  (2008) and proposes an intuitive solution. The distances between events
+  \item{method="simple"}{This first method was presented by \insertCite{xie2008kernel}{spNetwork}
+  and proposes an intuitive solution. The distances between events
   and sampling points are replaced by network distances, and the formula of
   the kernel is adapted to calculate the density over a linear unit
   instead of an areal unit.}
   \item{method="discontinuous"}{The previous method has been criticized by
-  Okabe et al (2008), arguing that the estimator proposed is biased,
+  \insertCite{okabe2009kernel}{spNetwork}, arguing that the estimator proposed is biased,
   leading to an overestimation of density in events hot-spots. More
   specifically, the simple method does not conserve mass and the induced
   kernel is not a probability density along the network. They thus
@@ -129,7 +129,7 @@ three of them are available in this package.
   equally "divides" the mass density of an event at intersections}
   \item{method="continuous"}{If the discontinuous method is unbiased, it
   leads to a discontinuous kernel function which is a bit counter-intuitive.
-  Okabe et al (2008) proposed another version of the kernel, that divide
+  \insertCite{okabe2009kernel;textual}{spNetwork} proposed another version of the kernel, that divide
   the mass of the density at intersection but adjusts the density before the
   intersection to make the function continuous.}
 }
@@ -140,7 +140,7 @@ function as used in Geographically Weighted Regression.\cr
 \cr\cr
 **adaptive bandwidth**\cr
 It is possible to use adaptive bandwidth instead of fixed bandwidth.
-Adaptive bandwidths are calculated using the Abramson’s smoothing regimen.
+Adaptive bandwidths are calculated using the Abramson’s smoothing regimen \insertCite{abramson1982bandwidth}{spNetwork}.
 To do so, an original fixed bandwidth must be specified (bw parameter), and
 is used to estimate priory densities at event locations. These densities
 are then used to calculate local bandwidth. The maximum size of the local
@@ -194,7 +194,7 @@ then a classical matrix could be used instead of a sparse one. It
 significantly increases speed, but could lead to memory issues.
 }
 \examples{
-\dontrun{
+\donttest{
 networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
 eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
 mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
@@ -212,5 +212,10 @@ densities <- nkde(mtl_network,
                   agg = 15,
                   grid_shape = c(1,1),
                   verbose=FALSE)
+}
+}
+\references{
+{
+    \insertAllCited{}
 }
 }

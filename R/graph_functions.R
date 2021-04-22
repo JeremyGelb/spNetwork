@@ -290,7 +290,7 @@ plot_graph <- function(graph) {
 #' @importFrom sp coordinates
 #' @export
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
 #' mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
 #' topo_errors <- graph_checking(mtl_network, 2, 2)

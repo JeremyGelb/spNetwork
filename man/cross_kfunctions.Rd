@@ -96,7 +96,7 @@ The cross k-function is a method to characterize the dispersion of a
   points B around A.
 }
 \examples{
-\dontrun{
+\donttest{
 networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
 eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
 main_network_mtl <- rgdal::readOGR(networkgpkg,layer="main_network_mtl", verbose=FALSE)
