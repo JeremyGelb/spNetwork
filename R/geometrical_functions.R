@@ -537,8 +537,11 @@ lines_points_along <- function(lines,dist){
     oids <- lapply(1:length(list_pts),function(i){rep(i,length(list_pts[[i]]))})
     oids <- do.call("c",oids)
     all_pts <- do.call(rbind,list_pts)
+    # adding a useless column to avoid a bug when lines has only one column
+    lines$tmpOID <- 1:nrow(lines)
     data <- lines@data[oids,]
     all_pts <- sp::SpatialPointsDataFrame(all_pts,data)
+    all_pts$tmpOID <- NULL
     return(all_pts)
 }
 
