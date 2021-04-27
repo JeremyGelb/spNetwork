@@ -208,7 +208,7 @@ prepare_elements_netlistw <- function(is,grid,snapped_points,lines,maxdistance){
         if(nrow(start_pts)==0){
             return(NULL)
         }else{
-            start_pts <- snapped_points[snapped_points$fid %in% start_pts$fid,]
+            #start_pts <- snapped_points[snapped_points$fid %in% start_pts$fid,]
             start_pts$pttype <- "start"
             #selecting the endpoints
             ext <- raster::extent(start_pts)
@@ -367,6 +367,7 @@ network_listw <- function(origins,lines,maxdistance, method="centroid", point_di
 
     ## step7 iterating over the grid
     listvalues <- lapply(1:length(grid),function(i){
+        print(i)
         quadra <- grid[i,]
         if(verbose){
             print(paste("working on quadra : ",i,"/",length(grid),sep=""))
