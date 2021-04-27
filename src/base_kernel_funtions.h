@@ -1,6 +1,8 @@
 #ifndef base_kernel_functions
 #define base_kernel_functions
 
+int get_first_index(Rcpp::NumericVector v1, double x);
+
 arma::vec quartic_kernel(arma::vec d, double bw);
 double quartic_kernelos(double d, double bw);
 

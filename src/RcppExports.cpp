@@ -214,6 +214,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// easytest
+void easytest(DataFrame linesdf, DataFrame verticesdf, int v);
+RcppExport SEXP _spNetwork_easytest(SEXP linesdfSEXP, SEXP verticesdfSEXP, SEXP vSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< DataFrame >::type linesdf(linesdfSEXP);
+    Rcpp::traits::input_parameter< DataFrame >::type verticesdf(verticesdfSEXP);
+    Rcpp::traits::input_parameter< int >::type v(vSEXP);
+    easytest(linesdf, verticesdf, v);
+    return R_NilValue;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_spNetwork_get_loo_values_continuous", (DL_FUNC) &_spNetwork_get_loo_values_continuous, 9},
@@ -228,6 +240,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_spNetwork_corrfactor_discontinuous", (DL_FUNC) &_spNetwork_corrfactor_discontinuous, 5},
     {"_spNetwork_corrfactor_continuous_sparse", (DL_FUNC) &_spNetwork_corrfactor_continuous_sparse, 5},
     {"_spNetwork_corrfactor_continuous", (DL_FUNC) &_spNetwork_corrfactor_continuous, 5},
+    {"_spNetwork_easytest", (DL_FUNC) &_spNetwork_easytest, 3},
     {NULL, NULL, 0}
 };
 

@@ -30,7 +30,8 @@ Imports:
     data.table (>= 1.12.8),
     SearchTrees (>= 0.5.2),
     Rcpp (>= 1.0.4.6),
-    Rdpack (>= 2.1.1)
+    Rdpack (>= 2.1.1),
+    BH (>= 1.75.0-0)
 Depends:
     R (>= 3.6)
 Suggests:
@@ -53,6 +54,7 @@ BugReports: https://github.com/JeremyGelb/spNetwork/issues
 LinkingTo: 
     Rcpp,
     RcppProgress,
-    RcppArmadillo
+    RcppArmadillo,
+    BH
 SystemRequirements: C++11
 RdMacros: Rdpack

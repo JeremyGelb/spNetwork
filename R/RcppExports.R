@@ -346,3 +346,7 @@ corrfactor_continuous <- function(neighbour_list, events, line_list, bws, max_de
     .Call('_spNetwork_corrfactor_continuous', PACKAGE = 'spNetwork', neighbour_list, events, line_list, bws, max_depth)
 }
 
+easytest <- function(linesdf, verticesdf, v) {
+    invisible(.Call('_spNetwork_easytest', PACKAGE = 'spNetwork', linesdf, verticesdf, v))
+}
+
