@@ -367,7 +367,6 @@ network_listw <- function(origins,lines,maxdistance, method="centroid", point_di
 
     ## step7 iterating over the grid
     listvalues <- lapply(1:length(grid),function(i){
-        print(i)
         quadra <- grid[i,]
         if(verbose){
             print(paste("working on quadra : ",i,"/",length(grid),sep=""))
