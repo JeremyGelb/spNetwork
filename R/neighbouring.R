@@ -355,7 +355,7 @@ network_listw <- function(origins,lines,maxdistance, method="centroid", point_di
     }
     #snapped_points <- maptools::snapPointsToLines(centers,lines,maxDist = snap_dist, idField="tmpid")
     snapped_points <- snapPointsToLines2(centers,lines, idField="tmpid")
-    snapped_points <- cbind(snapped_points, centers)
+    #snapped_points <- cbind(snapped_points, centers)
 
     ## step 6 building grid
     grid <- build_grid(grid_shape,list(origins,lines))
@@ -542,7 +542,7 @@ network_listw.mc <- function(origins,lines,maxdistance, method="centroid", point
     }
     #snapped_points <- maptools::snapPointsToLines(centers,lines,maxDist = snap_dist, idField="tmpid")
     snapped_points <- snapPointsToLines2(centers,lines, idField="tmpid")
-    snapped_points <- cbind(snapped_points, centers)
+    #snapped_points <- cbind(snapped_points, centers)
 
     ##building grid
     grid <- build_grid(grid_shape,list(origins,lines))
