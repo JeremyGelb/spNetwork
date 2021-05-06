@@ -429,8 +429,31 @@ simple_lines <- function(lines) {
 #' centers <- lines_center(mtl_network)
 #' }
 lines_center <- function(lines) {
-    centerpoints <- maptools::SpatialLinesMidPoints(lines)
-    return(centerpoints)
+
+    lines$baseorder <- 1:nrow(lines)
+    all_lengths <- rgeos::gLength(lines, byid = TRUE)
+    no_length <- subset(lines, all_lengths == 0)
+    with_length <- subset(lines, all_lengths>0)
+
+    pts1 <- maptools::SpatialLinesMidPoints(with_length)
+    pts1$Ind <- NULL
+    coords1 <- sp::coordinates(pts1)
+    data1 <- pts1@data
+
+    coords <- sp::coordinates(no_length)
+    coords2 <- do.call(rbind,lapply(coords, function(i){
+        return(i[[1]][1,])
+    }))
+    data2 <- no_length@data
+
+    alldata <- rbind(data1,data2)
+    allcoords <- rbind(coords1,coords2)
+    sp::coordinates(alldata) <- allcoords
+    raster::crs(alldata) <- raster::crs(lines)
+    alldata <- alldata[order(alldata$baseorder),]
+    alldata$baseorder <- NULL
+
+    return(alldata)
 }
 
 #' @title Add center vertex to lines
