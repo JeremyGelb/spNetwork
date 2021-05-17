@@ -9,6 +9,11 @@
 
 * issue 1 fixed by changing the function maptools::snapPointsToLines for a home made function. There is room for improvement here because it requires a conversion to sf and then back to sp which can be unsafe.
 * issue 2 fixed by handling the special case of lines of length 0.
+* an error was raised when using *listw_network* with polygons and the method = "pointsalong". This was caused by a minor error in the code and works now as expected.
+
+## performance
+
+* Performance was improved for function *listw_network* and *listw_network.mc*, by reducing the complexity of the network built from the SpatialLinesDataFrame with no loss of accuracy.
 
 # spNetwork 0.1.1
 
