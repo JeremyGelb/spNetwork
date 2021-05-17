@@ -4,7 +4,7 @@
 \alias{split_by_grid.mc}
 \title{Split data with a grid (multicore)}
 \usage{
-split_by_grid.mc(grid, samples, events, lines, bw, tol, digits)
+split_by_grid.mc(grid, samples, events, lines, bw, tol, digits, split_all = T)
 }
 \arguments{
 \item{grid}{A spatial grid to split the data within}
@@ -21,6 +21,9 @@ split_by_grid.mc(grid, samples, events, lines, bw, tol, digits)
 lines}
 
 \item{digits}{The number of digits to keep}
+
+\item{split_all}{A boolean indicating if we must split the lines at each vertex
+(TRUE) or only at event vertices (FALSE)}
 }
 \value{
 A list with the split dataset

@@ -591,7 +591,7 @@ surrounding_points <- function(polygons,dist){
     boundaries <- gBoundary(polygons, byid = TRUE)
     df <- sp::SpatialLinesDataFrame(boundaries,polygons@data)
     all_pts <- lines_points_along(df,dist)
-    return(df)
+    return(all_pts)
 }
 
 
@@ -983,4 +983,106 @@ simplify_network <- function(lines, digits = 3, heal = TRUE, mirror = TRUE, keep
     }
 
     return(lines)
+}
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#### Development ####
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+#' @title Split a line at vertices in a SpatialLinesDataFrame
+#'
+#' @description Split a line (SpatialLine) at their nearest vertices
+#' (SpatialPoints), may fail if the lines geometries are self intersecting.
+#'
+#' @param line The SpatialLine to split
+#' @param points The SpatialPoints to add to as vertex to the lines
+#' @param nearest_lines_idx For each point, the index of the nearest line
+#' @param mindist The minimum distance between one point and the extremity of
+#'   the line to add the point as a vertex.
+#' @return An object of class SpatialLinesDataFrame (package sp)
+#' @importFrom sp coordinates SpatialPoints SpatialLinesDataFrame Line
+#'   SpatialLines
+#' @importFrom utils txtProgressBar setTxtProgressBar
+#' @keywords internal
+#' @examples
+#' #This is an internal function, no example provided
+split_at_vertices <- function(line, points, i, mindist) {
+    # extract coordinates
+    line_coords <- coordinates(line)[[1]][[1]]
+    original_distances <- sapply(1:nrow(line_coords),function(i){
+        if (i==0){
+            return(0)
+        }else{
+            return(sqrt(sum((line_coords[i,]-line_coords[i-1,])**2)))
+        }
+    })
+    line_coords <- cbind(line_coords, cumsum(original_distances),0)
+    tot_lengths <- max(line_coords[,3])
+    # calculate lengths
+    pt_coords <- coordinates(points)
+    lengths <- gProject(line, points)
+    pt_coords <- cbind(pt_coords, lengths)
+    pt_coords <- pt_coords[(lengths>mindist & lengths<(tot_lengths-mindist)),]
+    if(is.null(nrow(pt_coords))){
+        pt_coords <- c(pt_coords,1)
+    }else{
+        pt_coords <- cbind(pt_coords,1)
+    }
+
+    all_coords <- rbind(line_coords,pt_coords)
+    # reorder the coordinate matrix
+    ord_coords <- all_coords[order(all_coords[,3]), ]
+
+    #split on new coordinates
+    ruptidx <- unique(c(1,(1:nrow(ord_coords))[ord_coords[,4] == 1],nrow(ord_coords)))
+    final_coords <- lapply(1:(length(ruptidx)-1), function(j){
+        els <- ord_coords[ruptidx[[j]]:ruptidx[[j+1]],1:2]
+    })
+
+    return(final_coords)
+}
+
+#' @title Split lines at vertices in a SpatialLinesDataFrame
+#'
+#' @description Split lines (SpatialLines) at their nearest vertices
+#' (SpatialPoints), may fail if the lines geometries are self intersecting.
+#'
+#' @param lines The SpatialLinesDataframe to split
+#' @param points The SpatialPoints to add to as vertex to the lines
+#' @param nearest_lines_idx For each point, the index of the nearest line
+#' @param mindist The minimum distance between one point and the extremity of
+#'   the line to add the point as a vertex.
+#' @return An object of class SpatialLinesDataFrame (package sp)
+#' @importFrom sp coordinates SpatialPoints SpatialLinesDataFrame Line
+#'   SpatialLines
+#' @importFrom utils txtProgressBar setTxtProgressBar
+#' @keywords internal
+#' @examples
+#' #This is an internal function, no example provided
+split_lines_at_vertex <- function(lines, points, nearest_lines_idx, mindist) {
+    new_lines_list <- lapply(1:nrow(lines), function(i) {
+        line <- lines[i, ]
+        testpts <- nearest_lines_idx == i
+        if (any(testpts)) {
+            okpts <- subset(points,testpts)
+            newline <- split_at_vertices(line, okpts, i, mindist)
+            return(newline)
+        } else {
+            sline <- list(coordinates(line)[[1]][[1]])
+            return(sline)
+        }
+    })
+    final_lines <- do.call(raster::spLines,unlist(new_lines_list, recursive = FALSE))
+    idxs <- do.call(c,lapply(1:length(new_lines_list), function(j){
+        el <- new_lines_list[[j]]
+        if (class(el) == "list"){
+            return(rep(j,times = length(el)))
+        }else{
+            return(j)
+        }
+    }))
+    final_lines <- SpatialLinesDataFrame(final_lines,
+                                         lines@data[idxs,],match.ID = FALSE)
+    raster::crs(final_lines) <- raster::crs(lines)
+    return(final_lines)
 }

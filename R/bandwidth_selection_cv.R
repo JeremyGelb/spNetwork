@@ -157,7 +157,7 @@ bw_cv_likelihood_calc <- function(bw_range,bw_step,lines, events, w, kernel_name
   max_bw <- max(bw_range)
 
   ## step3 splitting the dataset with each rectangle
-  selections <- split_by_grid(grid,samples,events,lines,max_bw, tol, digits)
+  selections <- split_by_grid(grid,samples,events,lines,max_bw, tol, digits, split_all = FALSE)
 
   ## sub sampling the quadra if required
   if (sub_sample < 1){
@@ -391,7 +391,7 @@ bw_cv_likelihood_calc.mc <- function(bw_range,bw_step,lines, events, w, kernel_n
   max_bw <- max(bw_range)
 
   ## step3 splitting the dataset with each rectangle
-  selections <- split_by_grid.mc(grid,samples,events,lines,max_bw, tol, digits)
+  selections <- split_by_grid.mc(grid,samples,events,lines,max_bw, tol, digits, split_all = FALSE)
 
   ## sub sampling the quadra if required
   if (sub_sample < 1){

@@ -159,6 +159,7 @@ if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
 * A spatial matrix could be calculated for every type of geometries not only lines. Points can directly be used. For polygons, it is possible to use the centers of the geometries as starting points. One can also chose a distance and equally spaced starting points will be defined on the border of the polygons according to that distance.
 * The cost of traveling on a edge could be set to something else than "length".
 * It is possible to specify directions on the network.
+* With a little bit of work, it is possible to use the functions presented above to find the nearest feature of observations on a network as described [here](https://github.com/JeremyGelb/spNetwork/issues/3)
 
 ```{r include = FALSE}
 # reset all the user parameters

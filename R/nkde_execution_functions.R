@@ -211,12 +211,14 @@ prepare_data <- function(samples,lines,events, w ,digits,tol, agg){
 #' @param digits The number of digits to keep
 #' @param tol A float indicating the spatial tolerance when snapping events on
 #' lines
+#' @param split_all A boolean indicating if we must split the lines at each vertex
+#' (TRUE) or only at event vertices (FALSE)
 #' @return A list with the split dataset
 #' @importFrom rgeos gBuffer
 #' @keywords internal
 #' @examples
 #' #This is an internal function, no example provided
-split_by_grid <- function(grid,samples,events,lines,bw,tol, digits){
+split_by_grid <- function(grid,samples,events,lines,bw,tol, digits, split_all = TRUE){
 
   ## step1 : creating the spatial trees
   tree_samples <- build_quadtree(samples)
@@ -256,11 +258,18 @@ split_by_grid <- function(grid,samples,events,lines,bw,tol, digits){
       }
       snapped_events <- snapPointsToLines(sel_events,sel_lines,idField = "oid")
       sel_events <- cbind(snapped_events,sel_events)
-      new_lines <- add_vertices_lines(sel_lines,sel_events,sel_events$nearest_line_id,tol)
+      if(split_all){
+        new_lines <- add_vertices_lines(sel_lines,sel_events,sel_events$nearest_line_id,tol)
+      }else{
+        new_lines <- split_lines_at_vertex(sel_lines,sel_events,sel_events$nearest_line_id,tol)
+      }
+
     }
 
     # split lines at events
-    new_lines <- simple_lines(new_lines)
+    if(split_all){
+      new_lines <- simple_lines(new_lines)
+    }
     new_lines$length <- gLength(new_lines,byid = TRUE)
     new_lines <- subset(new_lines,new_lines$length>0)
 
@@ -385,12 +394,14 @@ split_by_grid_abw <- function(grid,events,lines,bw,tol,digits){
 #' @param digits The number of digits to keep
 #' @param tol A float indicating the spatial tolerance when snapping events on
 #' lines
+#' @param split_all A boolean indicating if we must split the lines at each vertex
+#' (TRUE) or only at event vertices (FALSE)
 #' @return A list with the split dataset
 #' @importFrom rgeos gBuffer
 #' @keywords internal
 #' @examples
 #' #This is an internal function, no example provided
-split_by_grid.mc <- function(grid,samples,events,lines,bw,tol,digits){
+split_by_grid.mc <- function(grid,samples,events,lines,bw,tol,digits, split_all = T){
 
   ## step1 creating the spatial trees
   tree_samples <- build_quadtree(samples)
@@ -445,11 +456,18 @@ split_by_grid.mc <- function(grid,samples,events,lines,bw,tol,digits){
       }
       snapped_events <- snapPointsToLines(sel_events,sel_lines,idField = "oid")
       sel_events <- cbind(snapped_events,sel_events)
-      invisible(capture.output(new_lines <- add_vertices_lines(sel_lines,sel_events,sel_events$nearest_line_id,tol)))
+      if(split_all){
+        new_lines <- add_vertices_lines(sel_lines,sel_events,sel_events$nearest_line_id,tol)
+      }else{
+        new_lines <- split_lines_at_vertex(sel_lines,sel_events,sel_events$nearest_line_id,tol)
+      }
+
     }
 
     #split lines at events
-    new_lines <- simple_lines(new_lines)
+    if(split_all){
+      new_lines <- simple_lines(new_lines)
+    }
     new_lines$length <- gLength(new_lines,byid = TRUE)
     new_lines <- subset(new_lines,new_lines$length>0)
 

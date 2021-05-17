@@ -78,18 +78,18 @@ network_listw_worker<-function(points,lines,maxdistance,dist_func, direction=NUL
 
     if(verbose){
         print("adding the points as vertices to nearest lines")
-        new_lines <- add_vertices_lines(lines, points, joined$worker_id, 1)
-    }else{
-        invisible(capture.output(
-            new_lines <- add_vertices_lines(lines, points,joined$worker_id, tol)
-            ))
     }
+    # in the previous version, we split all the lines at their vertex
+    # however, this is not required here, we could just split them
+    # at points added in the network
+    # new_lines <- add_vertices_lines(lines, points, joined$worker_id, 1)
+    graph_lines <- split_lines_at_vertex(lines, points, joined$worker_id, 1)
 
     ## step2 : splitting the lines on vertices and adjusting weights
     if(verbose){
         print("splitting the lines for the network")
     }
-    graph_lines <- simple_lines(new_lines)
+    #graph_lines <- simple_lines(new_lines)
     graph_lines$lx_length <- gLength(graph_lines,byid = TRUE)
     graph_lines$lx_weight <- (graph_lines$lx_length / graph_lines$line_length) * graph_lines$line_weight
 
