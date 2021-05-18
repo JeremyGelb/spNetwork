@@ -13,7 +13,7 @@
 
 ## performance
 
-* Performance was improved for function *listw_network* and *listw_network.mc*, by reducing the complexity of the network built from the SpatialLinesDataFrame with no loss of accuracy.
+* Performance was improved for function *listw_network*, *listw_network.mc*, *kfunctions*, *kfunctions.mc*, *cross_kfunctions* and *cross_kfunctions.mc*, by reducing the complexity of the network built from the SpatialLinesDataFrame with no loss of accuracy.
 
 # spNetwork 0.1.1
 
