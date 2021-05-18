@@ -400,14 +400,16 @@ kfunctions <- function(lines, points, start, end, step, width, nsim, conf_int = 
     print("Snapping points on lines ...")
   }
   snapped_events <- snapPointsToLines2(points,lines,idField = "oid")
-  new_lines <- add_vertices_lines(lines,snapped_events,
+  new_lines <- split_lines_at_vertex(lines,snapped_events,
                                   snapped_events$nearest_line_id, tol)
+  # new_lines <- add_vertices_lines(lines,snapped_events,
+  #                                 snapped_events$nearest_line_id, tol)
 
   ## step3 : splitting the lines
   if (verbose){
     print("Building graph ...")
   }
-  new_lines <- simple_lines(new_lines)
+  #new_lines <- simple_lines(new_lines)
   new_lines$length <- gLength(new_lines,byid = TRUE)
   new_lines <- subset(new_lines,new_lines$length>0)
   new_lines <- remove_loop_lines(new_lines,digits)
@@ -618,13 +620,15 @@ kfunctions.mc <- function(lines, points, start, end, step, width, nsim, conf_int
     print("Snapping points on lines ...")
   }
   snapped_events <- snapPointsToLines2(points,lines,idField = "oid")
-  new_lines <- add_vertices_lines(lines,snapped_events,snapped_events$nearest_line_id,tol)
+  new_lines <- split_lines_at_vertex(lines, snapped_events,
+                                     snapped_events$nearest_line_id, tol)
+  #new_lines <- add_vertices_lines(lines,snapped_events,snapped_events$nearest_line_id,tol)
 
   ## step3 : splitting the lines
   if(verbose){
     print("Building graph ...")
   }
-  new_lines <- simple_lines(new_lines)
+  #new_lines <- simple_lines(new_lines)
   new_lines$length <- gLength(new_lines,byid = TRUE)
   new_lines <- subset(new_lines,new_lines$length>0)
   new_lines <- remove_loop_lines(new_lines,digits)
@@ -875,14 +879,16 @@ cross_kfunctions <- function(lines, pointsA, pointsB, start, end, step, width, n
                       pointsB[c("type","goid","weight")])
 
   snapped_events <- snapPointsToLines2(all_events, lines, idField = "oid")
-  new_lines <- add_vertices_lines(lines, snapped_events,
+  new_lines <- split_lines_at_vertex(lines, snapped_events,
                                   snapped_events$nearest_line_id, tol)
+  # new_lines <- add_vertices_lines(lines, snapped_events,
+  #                                 snapped_events$nearest_line_id, tol)
 
   ## step3 : splitting the lines
   if(verbose){
     print("Building graph ...")
   }
-  new_lines <- simple_lines(new_lines)
+  #new_lines <- simple_lines(new_lines)
   new_lines$length <- gLength(new_lines ,byid = TRUE)
   new_lines <- subset(new_lines, new_lines$length>0)
   new_lines <- remove_loop_lines(new_lines, digits)
@@ -1104,14 +1110,16 @@ cross_kfunctions.mc <- function(lines, pointsA, pointsB, start, end, step, width
                       pointsB[c("type","goid","weight")])
 
   snapped_events <- snapPointsToLines2(all_events, lines, idField = "oid")
-  new_lines <- add_vertices_lines(lines, snapped_events,
+  new_lines <- split_lines_at_vertex(lines, snapped_events,
                                   snapped_events$nearest_line_id, tol)
+  # new_lines <- add_vertices_lines(lines, snapped_events,
+  #                                 snapped_events$nearest_line_id, tol)
 
   ## step3 : splitting the lines
   if(verbose){
     print("Building graph ...")
   }
-  new_lines <- simple_lines(new_lines)
+  #new_lines <- simple_lines(new_lines)
   new_lines$length <- gLength(new_lines,byid = TRUE)
   new_lines <- subset(new_lines,new_lines$length>0)
   new_lines <- remove_loop_lines(new_lines,digits)
