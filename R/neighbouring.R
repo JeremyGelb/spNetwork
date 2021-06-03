@@ -103,7 +103,7 @@ network_listw_worker<-function(points,lines,maxdistance,dist_func, direction=NUL
     }else{
         dir <- ifelse(graph_lines[[direction]]=="Both",0,1)
         result_graph <- build_graph_directed(graph_lines, digits = digits,
-                                    attrs = TRUE, line_weight='line_weight',
+                                    attrs = TRUE, line_weight='lx_weight',
                                     direction = dir)
     }
     ## step4 finding for each point its corresponding vertex
@@ -291,7 +291,7 @@ prepare_elements_netlistw <- function(is,grid,snapped_points,lines,maxdistance){
 #'         method = "centroid", line_weight = "length",
 #'         dist_func = 'squared inverse', matrice_type='B', grid_shape = c(2,2))
 #' }
-network_listw <- function(origins,lines,maxdistance, method="centroid", point_dist=NULL, snap_dist=Inf, line_weight = "length", mindist=10, direction=NULL, dist_func = "inverse", matrice_type = "B", grid_shape=c(1,1), verbose = FALSE, digits = 3, tol=0.1){
+network_listw <- function(origins,lines, maxdistance, method="centroid", point_dist=NULL, snap_dist=Inf, line_weight = "length", mindist=10, direction=NULL, dist_func = "inverse", matrice_type = "B", grid_shape=c(1,1), verbose = FALSE, digits = 3, tol=0.1){
 
     ## step1 adjusting the weights of the lines
     lines$line_length <- gLength(lines,byid = TRUE)
@@ -551,7 +551,6 @@ network_listw.mc <- function(origins,lines,maxdistance, method="centroid", point
         print("starting the network part")
     }
 
-    #
     all_is <- 1:length(grid)
     iseq <- list()
     cnt <- 0

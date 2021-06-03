@@ -92,8 +92,9 @@ convert the listw object into regular matrix if needed
 
 ### Work in progress
 
-Currently, functions to calculate K-function and cross-K-function for
-sets of points are available but still experimental.
+Currently, functions to calculate K-function and cross-K-function and
+k-nearest neighbours for sets of points are available but still
+experimental.
 
 We also added functions for bandwidth selection by likelihood
 cross-validation

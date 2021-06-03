@@ -4,6 +4,7 @@
 
 * Added two function for datadriven bandwidth selectionn (see vignette NKDE)
 * Added a function to simplify network before processing (*simplify_network*), reducing network complexity by removing useless edges or merge continuous edge can improve performance.
+* Added two functions to calculate k nearest neighbours: *network_knn* and *network_knn.mc*
 
 ## corrected bugs
 
