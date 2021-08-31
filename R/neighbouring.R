@@ -101,10 +101,10 @@ network_listw_worker<-function(points,lines,maxdistance,dist_func, direction=NUL
         result_graph <- build_graph(graph_lines, digits = digits,
                                     attrs = TRUE, line_weight = "lx_weight")
     }else{
-        dir <- ifelse(graph_lines[[direction]]=="Both",0,1)
+        #dir <- ifelse(graph_lines[[direction]]=="Both",0,1)
         result_graph <- build_graph_directed(graph_lines, digits = digits,
                                     attrs = TRUE, line_weight='lx_weight',
-                                    direction = dir)
+                                    direction = direction)
     }
     ## step4 finding for each point its corresponding vertex
     points$vertex <- closest_points(points,result_graph$spvertices)
@@ -304,10 +304,10 @@ network_listw <- function(origins,lines, maxdistance, method="centroid", point_d
         stop("the weights of the lines must be superior to 0")
     }
 
-    ## step2 adjusting the directions of the lines
-    if(is.null(direction) == FALSE){
-        lines <- lines_direction(lines,direction)
-    }
+    ## step2 adjusting the directions of the lines (done now by the graph function)
+    #if(is.null(direction) == FALSE){
+    #    lines <- lines_direction(lines,direction)
+    #}
 
     ## step3  checking the matrix type
     if (matrice_type %in% c("B", "W") == FALSE) {

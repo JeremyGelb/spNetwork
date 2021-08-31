@@ -19,9 +19,12 @@
 #' }
 #' @importFrom sp coordinates SpatialPoints
 #' @importFrom utils strcapture
-#' @keywords internal
+#' @export
 #' @examples
-#' #This is an internal function, no example provided
+#' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
+#' mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
+#' mtl_network$length <- rgeos::gLength(mtl_network, byid = TRUE)
+#' graph_result <- build_graph(mtl_network, 2, "length", attrs = TRUE)
 build_graph <- function(lines, digits, line_weight, attrs = FALSE) {
     # extracting lines coordinates lines_coords
     extremites <- lines_extremities(lines)
@@ -91,8 +94,10 @@ build_graph <- function(lines, digits, line_weight, attrs = FALSE) {
 #' @param digits The number of digits to keep from the coordinates
 #' @param line_weight The name of a field that represent the cost to use a line
 #' @param attrs A boolean indicating if the original lines attributes
-#' @param direction A vector of integers. 0 indicates a bidirectional line and 1
-#'   an unidirectional line must be added to the graph lines
+#' @param direction Indicate a field giving informations about authorized
+#' traveling direction on lines. if NULL, then all lines can be used in both
+#' directions. Must be the name of a column otherwise. The values of the
+#' column must be "FT" (From - To), "TF" (To - From) or "Both".
 #' @return A list containing the following elements:
 #' \itemize{
 #'         \item graph: an igraph object that preserves the original lines
@@ -105,12 +110,26 @@ build_graph <- function(lines, digits, line_weight, attrs = FALSE) {
 #' }
 #' @importFrom sp coordinates SpatialPoints SpatialPointsDataFrame
 #' @importFrom utils strcapture
-#' @keywords internal
+#' @export
 #' @examples
-#' #This is an internal function, no example provided
+#' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
+#' mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
+#' mtl_network$length <- rgeos::gLength(mtl_network, byid = TRUE)
+#' mtl_network$direction <- "Both"
+#' mtl_network[6, "direction"] <- "TF"
+#' mtl_network_directed <- lines_direction(mtl_network, "direction")
+#' graph_result <- build_graph_directed(lines = mtl_network_directed,
+#'         digits = 2,
+#'         line_weight = "length",
+#'         direction = "direction",
+#'         attrs = TRUE)
 build_graph_directed <- function(lines, digits, line_weight, direction, attrs = FALSE) {
+
   # doubling the lines if needed
-  all_lines <- direct_lines(lines,direction)
+  all_lines <- lines_direction(lines, direction)
+  dir <- ifelse(all_lines[[direction]] =="Both", 0,1)
+  all_lines <- direct_lines(lines, dir)
+
   # extracting lines coordinates
   extremites <- lines_extremities(all_lines)
   start_coords <- extremites@data[extremites$pttype == "start", c("X","Y")]
@@ -122,7 +141,10 @@ build_graph_directed <- function(lines, digits, line_weight, direction, attrs = 
   weights <- all_lines[[line_weight]]
 
   # building the line list
-  linelist <- data.frame(start = start, end = end, weight = weights,
+  linelist <- data.frame(start = start,
+                         end = end,
+                         weight = weights,
+                         wkt= rgeos::writeWKT(all_lines,byid = TRUE),
                          graph_id = 1:nrow(all_lines))
   if (attrs) {
     linelist <- cbind(linelist, all_lines@data)
@@ -137,8 +159,35 @@ build_graph_directed <- function(lines, digits, line_weight, direction, attrs = 
   points <- SpatialPoints(dfvertices[c("x", "y")])
   points <- SpatialPointsDataFrame(points, dfvertices)
   raster::crs(points) <- raster::crs(lines)
+
+  ##building a spatial object for the lines
+  edge_attrs <- igraph::get.edge.attribute(graph)
+  edge_df <- data.frame(
+    "edge_id" = as.numeric(igraph::E(graph)),
+    "weight" = edge_attrs[[line_weight]],
+    "direction" = edge_attrs[[direction]]
+  )
+  edge_df$wkt <- edge_attrs$wkt
+
+  geoms <- do.call(rbind,lapply(1:nrow(edge_df),function(i){
+    wkt <- edge_df[i,"wkt"]
+    geom <- rgeos::readWKT(wkt,id=i)
+    return(geom)
+  }))
+
+  spedges <- SpatialLinesDataFrame(geoms, edge_df,match.ID = FALSE)
+  raster::crs(spedges) <- raster::crs(lines)
+  vertex_df <- igraph::ends(graph,spedges$edge_id,names = FALSE)
+  spedges$start_oid <- vertex_df[,1]
+  spedges$end_oid <- vertex_df[,2]
+
+  vertex_df <- igraph::ends(graph,linelist$graph_id,names = FALSE)
+  linelist$start_oid <- vertex_df[,1]
+  linelist$end_oid <- vertex_df[,2]
+
+
   return(list(graph = graph, linelist = linelist, lines = all_lines,
-              spvertices = points, digits = digits))
+              spvertices = points, digits = digits, spedges = spedges))
 }
 
 

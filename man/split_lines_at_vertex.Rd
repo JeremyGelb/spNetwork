@@ -24,6 +24,21 @@ Split lines (SpatialLines) at their nearest vertices
 (SpatialPoints), may fail if the lines geometries are self intersecting.
 }
 \examples{
-#This is an internal function, no example provided
+# reading the data
+networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
+mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
+eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
+bike_accidents <- rgdal::readOGR(eventsgpkg,layer="bike_accidents", verbose=FALSE)
+# aggregating points within a 5 metres radius
+bike_accidents$weight <- 1
+agg_points <- aggregate_points(bike_accidents, 5)
+mtl_network$LineID <- 1:nrow(mtl_network)
+# snapping point to lines
+snapped_points <- snapPointsToLines2(agg_points,
+    mtl_network,
+    "LineID"
+)
+# splitting lines
+new_lines <- split_lines_at_vertex(mtl_network, snapped_points,
+    snapped_points$nearest_line_id, 1)
 }
-\keyword{internal}

@@ -346,3 +346,7 @@ corrfactor_continuous <- function(neighbour_list, events, line_list, bws, max_de
     .Call('_spNetwork_corrfactor_continuous', PACKAGE = 'spNetwork', neighbour_list, events, line_list, bws, max_depth)
 }
 
+cut_lines_at_distances_cpp <- function(lines, dists) {
+    .Call('_spNetwork_cut_lines_at_distances_cpp', PACKAGE = 'spNetwork', lines, dists)
+}
+

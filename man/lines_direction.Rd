@@ -18,9 +18,14 @@ column must be "FT" (From - To), "TF" (To - From) or "Both".}
 A SpatialLinesDataFrame
 }
 \description{
-A function to deal with the directions of lines.
+A function to deal with the directions of lines. It ensures
+that only From-To situation are present by reverting To-From lines.
 }
 \examples{
-#This is an internal function, no example provided
+networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
+mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
+mtl_network$length <- rgeos::gLength(mtl_network, byid = TRUE)
+mtl_network$direction <- "Both"
+mtl_network[6, "direction"] <- "TF"
+mtl_network_directed <- lines_direction(mtl_network, "direction")
 }
-\keyword{internal}

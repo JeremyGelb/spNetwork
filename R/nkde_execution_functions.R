@@ -1,3 +1,5 @@
+#' @importFrom Rdpack reprompt
+
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #### helper functions ####
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -110,12 +112,19 @@ clean_events <- function(events,digits=5,agg=NULL){
 #'
 #' @param points The SpatialPointsDataFrame to contract (must have a weight column)
 #' @param maxdist The distance to use
+#' @param weight The name of the column to use as weight (default is "weight").
+#' The values of the aggregated points for this column will be summed. For all
+#' the other columns, only the first value is retained.
 #' @return A new SpatialPointsDataFrame
 #' @importFrom rgeos gBuffer
-#' @keywords internal
+#' @export
 #' @examples
 #' #This is an internal function, no example provided
-aggregate_points <- function(points, maxdist){
+#' eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
+#' bike_accidents <- rgdal::readOGR(eventsgpkg,layer="bike_accidents", verbose=FALSE)
+#' bike_accidents$weight <- 1
+#' agg_points <- aggregate_points(bike_accidents, 5)
+aggregate_points <- function(points, maxdist, weight = "weight"){
   Continue <- TRUE
   while(Continue){
     #generer l'arbre
@@ -132,7 +141,7 @@ aggregate_points <- function(points, maxdist){
       if(nrow(ok_cand)>0){
         coords <- sp::coordinates(ok_cand)
         points[ok_cand$oid,"aggregated"] <<- 1
-        new_row <- c(sum(ok_cand$weight),mean(coords[,1]), mean(coords[,2]))
+        new_row <- c(sum(ok_cand[[weight]]),mean(coords[,1]), mean(coords[,2]))
         return(new_row)
       }else{
         return(NULL)
@@ -141,7 +150,7 @@ aggregate_points <- function(points, maxdist){
     #let us remove all the empty quadra
     new_features <- new_features[lengths(new_features) != 0]
     new_points <- data.frame(do.call(rbind,new_features))
-    names(new_points) <- c("weight","x","y")
+    names(new_points) <- c(weight,"x","y")
     sp::coordinates(new_points) <- cbind(new_points$x,new_points$y)
     raster::crs(new_points) <- raster::crs(points)
     if(nrow(new_points) == nrow(points)){

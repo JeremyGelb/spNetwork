@@ -6,6 +6,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // get_loo_values_continuous
 DataFrame get_loo_values_continuous(List neighbour_list, NumericVector samples, NumericVector sweights, NumericVector events, NumericVector weights, NumericVector bws, std::string kernel_name, DataFrame line_list, int max_depth);
 RcppExport SEXP _spNetwork_get_loo_values_continuous(SEXP neighbour_listSEXP, SEXP samplesSEXP, SEXP sweightsSEXP, SEXP eventsSEXP, SEXP weightsSEXP, SEXP bwsSEXP, SEXP kernel_nameSEXP, SEXP line_listSEXP, SEXP max_depthSEXP) {
@@ -214,6 +219,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// cut_lines_at_distances_cpp
+List cut_lines_at_distances_cpp(List lines, NumericVector dists);
+RcppExport SEXP _spNetwork_cut_lines_at_distances_cpp(SEXP linesSEXP, SEXP distsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type lines(linesSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type dists(distsSEXP);
+    rcpp_result_gen = Rcpp::wrap(cut_lines_at_distances_cpp(lines, dists));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_spNetwork_get_loo_values_continuous", (DL_FUNC) &_spNetwork_get_loo_values_continuous, 9},
@@ -228,6 +245,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_spNetwork_corrfactor_discontinuous", (DL_FUNC) &_spNetwork_corrfactor_discontinuous, 5},
     {"_spNetwork_corrfactor_continuous_sparse", (DL_FUNC) &_spNetwork_corrfactor_continuous_sparse, 5},
     {"_spNetwork_corrfactor_continuous", (DL_FUNC) &_spNetwork_corrfactor_continuous, 5},
+    {"_spNetwork_cut_lines_at_distances_cpp", (DL_FUNC) &_spNetwork_cut_lines_at_distances_cpp, 2},
     {NULL, NULL, 0}
 };
 

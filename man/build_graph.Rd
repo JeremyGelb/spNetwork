@@ -32,6 +32,8 @@ A list containing the following elements:
 Generate an igraph object from a SpatialLinesDataFrame.
 }
 \examples{
-#This is an internal function, no example provided
+networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
+mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
+mtl_network$length <- rgeos::gLength(mtl_network, byid = TRUE)
+graph_result <- build_graph(mtl_network, 2, "length", attrs = TRUE)
 }
-\keyword{internal}

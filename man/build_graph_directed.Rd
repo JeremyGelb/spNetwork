@@ -13,8 +13,10 @@ build_graph_directed(lines, digits, line_weight, direction, attrs = FALSE)
 
 \item{line_weight}{The name of a field that represent the cost to use a line}
 
-\item{direction}{A vector of integers. 0 indicates a bidirectional line and 1
-an unidirectional line must be added to the graph lines}
+\item{direction}{Indicate a field giving informations about authorized
+traveling direction on lines. if NULL, then all lines can be used in both
+directions. Must be the name of a column otherwise. The values of the
+column must be "FT" (From - To), "TF" (To - From) or "Both".}
 
 \item{attrs}{A boolean indicating if the original lines attributes}
 }
@@ -34,6 +36,15 @@ A list containing the following elements:
 Generate a directed igraph object from a SpatialLinesDataFrame.
 }
 \examples{
-#This is an internal function, no example provided
+networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
+mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
+mtl_network$length <- rgeos::gLength(mtl_network, byid = TRUE)
+mtl_network$direction <- "Both"
+mtl_network[6, "direction"] <- "TF"
+mtl_network_directed <- lines_direction(mtl_network, "direction")
+graph_result <- build_graph_directed(lines = mtl_network_directed,
+        digits = 2,
+        line_weight = "length",
+        direction = "direction",
+        attrs = TRUE)
 }
-\keyword{internal}

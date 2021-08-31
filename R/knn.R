@@ -51,10 +51,12 @@ network_knn_worker <- function(points, lines, k, direction = NULL, use_dest = FA
     result_graph <- build_graph(graph_lines, digits = digits,
                                 attrs = TRUE, line_weight = "lx_weight")
   }else{
-    dir <- ifelse(graph_lines[[direction]]=="Both",0,1)
+    #dir <- ifelse(graph_lines[[direction]]=="Both",0,1)
+    #graph_lines$direction <- graph_lines[[direction]]
+
     result_graph <- build_graph_directed(graph_lines, digits = digits,
                                          attrs = TRUE, line_weight='lx_weight',
-                                         direction = dir)
+                                         direction = direction)
   }
 
   points$vertex <- closest_points(points,result_graph$spvertices)

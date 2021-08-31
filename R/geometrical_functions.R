@@ -106,7 +106,8 @@ remove_loop_lines <- function(lines, digits){
 
 #' @title Unify lines direction
 #'
-#' @description A function to deal with the directions of lines.
+#' @description A function to deal with the directions of lines. It ensures
+#' that only From-To situation are present by reverting To-From lines.
 #'
 #' @param lines A SpatialLinesDataFrame
 #' @param field Indicate a field giving informations about authorized
@@ -115,9 +116,14 @@ remove_loop_lines <- function(lines, digits){
 #' column must be "FT" (From - To), "TF" (To - From) or "Both".
 #' @return A SpatialLinesDataFrame
 #' @importFrom sp coordinates Line Lines SpatialLines SpatialLinesDataFrame
-#' @keywords internal
+#' @export
 #' @examples
-#' #This is an internal function, no example provided
+#' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
+#' mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
+#' mtl_network$length <- rgeos::gLength(mtl_network, byid = TRUE)
+#' mtl_network$direction <- "Both"
+#' mtl_network[6, "direction"] <- "TF"
+#' mtl_network_directed <- lines_direction(mtl_network, "direction")
 lines_direction <- function(lines,field){
     listlines <- lapply(1:nrow(lines),function(i){
         line <- lines[i,]
@@ -134,6 +140,31 @@ lines_direction <- function(lines,field){
     df <- SpatialLinesDataFrame(spLines,lines@data,match.ID = FALSE)
     raster::crs(df) <- raster::crs(lines)
     return(df)
+}
+
+
+#' @title Reverse lines
+#'
+#' @description A function to reverse the order of the vertices of lines
+#'
+#' @param lines A SpatialLinesDataFrame
+#' @return A SpatialLinesDataFrame
+#' @importFrom sp coordinates Line Lines SpatialLines SpatialLinesDataFrame
+#' @keywords internal
+#' @examples
+#' #This is an internal function, no example provided
+reverse_lines <- function(lines){
+    new_coords <- lapply(1:nrow(lines), function(i){
+        l <- lines[i,]
+        coords <- unlist(sp::coordinates(l),recursive = TRUE)
+        coords <- matrix(coords, nrow = length(coords)/2, ncol = 2)
+        return(coords[nrow(coords):1,])
+    })
+    final_lines <- do.call(raster::spLines,new_coords)
+    final_lines <- SpatialLinesDataFrame(final_lines,
+                                         lines@data,match.ID = FALSE)
+    raster::crs(final_lines) <- raster::crs(lines)
+    return(final_lines)
 }
 
 
@@ -721,8 +752,19 @@ nearest <- function(x,y){
 #' @return A SpatialPointsDataFrame with the projected geometries
 #' @keywords internal
 #' @importFrom methods slot
+#' @export
 #' @examples
-#' #This is an internal function, no example provided
+#' # reading the data
+#' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
+#' mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
+#' eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
+#' bike_accidents <- rgdal::readOGR(eventsgpkg,layer="bike_accidents", verbose=FALSE)
+#' mtl_network$LineID <- 1:nrow(mtl_network)
+#' # snapping point to lines
+#' snapped_points <- snapPointsToLines2(bike_accidents,
+#'     mtl_network,
+#'     "LineID"
+#' )
 snapPointsToLines2 <- function(points, lines ,idField = NA) {
 
     nearest_line_index <- nearest(points,lines)
@@ -1056,9 +1098,25 @@ split_at_vertices <- function(line, points, i, mindist) {
 #' @importFrom sp coordinates SpatialPoints SpatialLinesDataFrame Line
 #'   SpatialLines
 #' @importFrom utils txtProgressBar setTxtProgressBar
-#' @keywords internal
+#' @export
 #' @examples
-#' #This is an internal function, no example provided
+#' # reading the data
+#' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
+#' mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
+#' eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
+#' bike_accidents <- rgdal::readOGR(eventsgpkg,layer="bike_accidents", verbose=FALSE)
+#' # aggregating points within a 5 metres radius
+#' bike_accidents$weight <- 1
+#' agg_points <- aggregate_points(bike_accidents, 5)
+#' mtl_network$LineID <- 1:nrow(mtl_network)
+#' # snapping point to lines
+#' snapped_points <- snapPointsToLines2(agg_points,
+#'     mtl_network,
+#'     "LineID"
+#' )
+#' # splitting lines
+#' new_lines <- split_lines_at_vertex(mtl_network, snapped_points,
+#'     snapped_points$nearest_line_id, 1)
 split_lines_at_vertex <- function(lines, points, nearest_lines_idx, mindist) {
     new_lines_list <- lapply(1:nrow(lines), function(i) {
         line <- lines[i, ]
@@ -1086,3 +1144,40 @@ split_lines_at_vertex <- function(lines, points, nearest_lines_idx, mindist) {
     raster::crs(final_lines) <- raster::crs(lines)
     return(final_lines)
 }
+
+
+#' @title Cut lines at a specified distance
+#'
+#' @description Cut lines (SpatialLines) at a specified distance from the
+#' begining of the lines.
+#'
+#' @param lines The SpatialLinesDataframe to cut
+#' @param dists A vector of distances, if only one value is given,
+#' each line will be cut at that distance.
+#' @return An object of class SpatialLinesDataFrame (package sp)
+#' @importFrom sp coordinates SpatialPoints SpatialLinesDataFrame Line
+#'   SpatialLines
+#' @keywords internal
+#' @examples
+#' # This is an interal function, no example provided
+cut_lines_at_distance <- function(lines, dists){
+
+    # step 1 : create a list of coordinates
+    coord_lists <- lapply(1:nrow(lines), function(i){
+        l <- lines[i,]
+        coords <- unlist(sp::coordinates(l),recursive = TRUE)
+        coords <- matrix(coords, nrow = length(coords)/2, ncol = 2)
+        return(coords)
+    })
+
+    new_coords <- cut_lines_at_distances_cpp(coord_lists, dists)
+    final_lines <- do.call(raster::spLines,new_coords)
+    final_lines <- SpatialLinesDataFrame(final_lines,
+                                         lines@data,match.ID = FALSE)
+    raster::crs(final_lines) <- raster::crs(lines)
+    return(final_lines)
+}
+
+
+
+

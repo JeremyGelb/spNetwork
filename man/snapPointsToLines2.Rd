@@ -20,6 +20,16 @@ A SpatialPointsDataFrame with the projected geometries
 Snap points to their nearest lines (edited from maptools)
 }
 \examples{
-#This is an internal function, no example provided
+# reading the data
+networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
+mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
+eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
+bike_accidents <- rgdal::readOGR(eventsgpkg,layer="bike_accidents", verbose=FALSE)
+mtl_network$LineID <- 1:nrow(mtl_network)
+# snapping point to lines
+snapped_points <- snapPointsToLines2(bike_accidents,
+    mtl_network,
+    "LineID"
+)
 }
 \keyword{internal}

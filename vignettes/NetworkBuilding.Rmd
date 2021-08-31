@@ -1,0 +1,184 @@
+---
+title: "Building networks"
+author: "Jeremy Gelb"
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_vignette:
+    fig_width: 5
+    fig_height: 5
+    toc: true
+    toc_depth: 2
+    df_print: "tibble"
+vignette: >
+  %\VignetteIndexEntry{Building networks}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: spnetwork_bilbio.bibtex
+link-citations: yes
+colorlinks: yes
+---
+
+# Introduction
+
+The goal of this vignette is to present how several functions in **spNetwork** can be used to build graphs and to analyze them. 
+
+To illustrate it, we give a full example with the calculation of the correlation between the centrality of bike accidents in the Montreal network and the NKDE density calculated at each accident point. Here are the steps we will follow to perform this analysis: 
+
+1. Calculating the NKDE density of accidents at each accident point
+2. Snapping the accidents to the network
+3. Cutting the lines of the network at the snapped accidents' locations
+4. Building a graph with the cutted lines
+5. Calculating for each node of the graph its centrality (betweeness)
+6. Calculating the correlation between the NKDE density and the centrality measure.
+
+Here are the data used for this analysis
+
+```{r message=FALSE, warning=FALSE}
+# first load data and packages
+library(sp)
+library(maptools)
+library(rgeos)
+library(spNetwork)
+library(raster)
+library(tmap)
+library(FNN)
+
+networkgpkg <- system.file("extdata", "networks.gpkg",
+                           package = "spNetwork", mustWork = TRUE)
+eventsgpkg <- system.file("extdata", "events.gpkg",
+                          package = "spNetwork", mustWork = TRUE)
+
+mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network",verbose = FALSE)
+bike_accidents <- rgdal::readOGR(eventsgpkg,layer="bike_accidents", verbose = FALSE)
+
+# then plotting the data
+plot(mtl_network)
+plot(bike_accidents,add=T,col='red',pch = 19)
+```
+
+# Calculating the NKDE density
+
+This step is easy to perform with the basic functions of **spNetwork**. For the sake of simplicty, we select an arbitrary bandwidth of 300m and use the discontinuous kernel.
+
+```{r message=FALSE, warning=FALSE}
+# calculating the density values
+densities <- nkde(mtl_network, 
+                  events = bike_accidents,
+                  w = rep(1,nrow(bike_accidents)),
+                  samples = bike_accidents,
+                  kernel_name = "quartic",
+                  bw = 300, div= "bw", 
+                  method = "discontinuous", digits = 2, tol = 0.5,
+                  grid_shape = c(1,1), max_depth = 8,
+                  agg = 5,
+                  sparse = TRUE,
+                  verbose = FALSE)
+
+bike_accidents$density <- densities * 1000
+
+# mapping the density values
+tm_shape(mtl_network) + 
+  tm_lines(col = "black") +
+  tm_shape(bike_accidents) + 
+  tm_dots(col = "density", style = "kmeans",
+          n = 6, size = 0.1, palette = "-RdYlBu")+
+  tm_layout(legend.outside = TRUE) 
+```
+
+# Snapping the accidents to the network
+
+For this step, we will use the function `snapPointsToLines2`. It is mainly based on the function `snapPointsToLines` from **maptools** but can be used for bigger datasets. Note that we create two index columns: `OID` for the accidents' location and `LineID` for the network lines.
+
+We will aslo start by aggregating the points that are too close to each other. We will aggregate all the points that are within a 5 meters radius.
+
+```{r message=FALSE, warning=FALSE}
+bike_accidents$weight <- 1
+agg_points <- aggregate_points(bike_accidents, maxdist = 5)
+
+agg_points$OID <- 1:nrow(agg_points)
+mtl_network$LineID <- 1:nrow(mtl_network)
+
+snapped_accidents <- snapPointsToLines2(agg_points, 
+                                        mtl_network,
+                                        "LineID"
+                                        )
+```
+
+# Cutting the lines of the network
+
+The next step is to use the new points to cut the lines of the network.
+
+```{r message=FALSE, warning=FALSE}
+new_lines <- split_lines_at_vertex(mtl_network, 
+                                   snapped_accidents,
+                                   snapped_accidents$nearest_line_id,
+                                   mindist = 0.1 
+                                   )
+```
+
+# Building a graph with the cutted lines
+
+We can now build the graph from the cut lines.
+
+```{r message=FALSE, warning=FALSE}
+new_lines$OID <- 1:nrow(new_lines)
+new_lines$length <- gLength(new_lines, byid = TRUE)
+
+graph_result <- build_graph(new_lines, 2, "length", attrs = TRUE)
+```
+
+# Calculating for each node of the graph its centrality
+
+The graph can be used with the library **igraph**. We will calculate here the betweeness centrality of each node in the graph.
+
+```{r message=FALSE, warning=FALSE}
+btws <- igraph::betweenness(graph_result$graph, directed = FALSE,
+                            normalized = TRUE)
+vertices <- graph_result$spvertices
+vertices$btws <- btws
+
+# mapping the betweeness
+tm_shape(vertices) + 
+  tm_dots(col = "btws", style = "kmeans",
+          n = 6, size = 0.1, palette = "-RdYlBu")+
+  tm_layout(legend.outside = TRUE) 
+
+```
+
+The last step is to find for each of the original points its corresponding node. We will do it by using the k nearest neighbours approach with the package **FNN**.
+
+```{r message=FALSE, warning=FALSE}
+
+# first: nn merging between snapped points and nodes
+xy1 <- coordinates(snapped_accidents)
+xy2 <- coordinates(vertices)
+corr_nodes <- get.knnx(xy2, xy1, k=1)
+
+snapped_accidents$btws <- vertices$btws[corr_nodes[[1]]]
+
+# second: nn mergining between original points and snapped points
+xy1 <- coordinates(bike_accidents)
+xy2 <- coordinates(snapped_accidents)
+
+corr_nodes <- get.knnx(xy2, xy1, k=1)
+bike_accidents$btws <- snapped_accidents$btws[corr_nodes[[1]]]
+
+# mapping the results
+tm_shape(bike_accidents) + 
+  tm_dots(col = "btws", style = "kmeans",
+          n = 6, size = 0.1, palette = "-RdYlBu")+
+  tm_layout(legend.outside = TRUE)
+
+tm_shape(bike_accidents) + 
+  tm_dots(col = "density", style = "kmeans",
+          n = 6, size = 0.1, palette = "-RdYlBu")+
+  tm_layout(legend.outside = TRUE) 
+```
+
+And finally, we can calculate the correlation between the two variables !
+
+```{r message=FALSE, warning=FALSE}
+cor.test(bike_accidents$density, bike_accidents$btws)
+```
+
+We can see that their is no correlation between the two variables. There is no association between the degree of centrality of an accident location in the network and the density of accidents in a radius of 300m at that location.
