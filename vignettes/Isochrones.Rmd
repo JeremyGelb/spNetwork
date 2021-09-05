@@ -1,0 +1,174 @@
+---
+title: "Calculating isochrones"
+author: "Jeremy Gelb"
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_vignette:
+    fig_width: 5
+    fig_height: 5
+    toc: true
+    toc_depth: 2
+    df_print: "tibble"
+vignette: >
+  %\VignetteIndexEntry{Calculating isochrones}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: spnetwork_bilbio.bibtex
+link-citations: yes
+colorlinks: yes
+---
+
+# Introduction
+
+An isochrone is a geometrical representation of the area that can be reached for a starting on a network within a given distance (in time or space units).
+
+There is already several libraries to build isochrones with R (`opentripplanner`, `osrm` `rmapzen`, etc.), but they are all based on OpenStreetMap data or on external API. We propose here a simple implementation that can be used on a geographical network read as *SpatialLinesDataFrame*.
+
+We give here a simple exemple with the Montreal network dataset and calculate several isochrones from the center of the dataset.
+
+# calculating the isochrones
+
+The first step is to load (or create) a geographical network and to have some starting points.
+
+```{r message=FALSE, warning=FALSE}
+# first load data and packages
+library(sp)
+library(maptools)
+library(rgeos)
+library(spNetwork)
+library(tmap)
+library(raster)
+
+networkgpkg <- system.file("extdata", "networks.gpkg",
+                           package = "spNetwork", mustWork = TRUE)
+
+mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network",verbose = FALSE)
+
+# calculating the length of each segment
+mtl_network$length <- gLength(mtl_network, byid = TRUE)
+
+# extracting the coordinates in one matrix
+coords <- do.call(rbind, unlist(sp::coordinates(mtl_network), recursive = FALSE))
+center <- matrix(apply(coords, 2, mean), nrow = 1)
+df_center <- data.frame("OID" = 1)
+sp::coordinates(df_center) <- center
+raster::crs(df_center) <- raster::crs(mtl_network)
+
+# then plotting the data
+plot(mtl_network)
+plot(df_center, add = TRUE, col = "red")
+```
+
+The second step is to calculate the isochrones with the function `calc_isochrones`. In this example, we use the length of a segment as the weight but other values could be used. We also consider that all the roads can be used in both way (see parameter `direction`)
+
+```{r message=FALSE, warning=FALSE}
+iso_results <- calc_isochrones(lines = mtl_network,
+                               start_points = df_center,
+                               dists = c(500,1000,2000),
+                               weight = "length"
+                               )
+
+```
+
+The results are reported as lines, which can be mapped.
+
+```{r message=FALSE, warning=FALSE}
+# creating a factor and changing order for better visualisation
+iso_results$fac_dist <- as.factor(iso_results$distance)
+iso_results <- iso_results[order(-1*iso_results$distance),]
+
+tm_shape(mtl_network) + 
+  tm_lines(col = "grey") +
+  tm_shape(iso_results) + 
+  tm_lines(col = "fac_dist",title.col = "distance (m)",
+           palette = c("500"="#005f73", "1000"="#ca6702", "2000"="#9b2226"))+
+  tm_layout(legend.outside = TRUE) + 
+  tm_shape(df_center) + 
+  tm_dots(col = "black", size = 0.1)
+
+```
+
+
+# From lines to polygons
+
+The lines are the most exact form of an isochrone because they depict exactly what parts of the network can be reached. However, isochrones are represented as polygons most of the time. We propose here some approaches to build some meaningful polygons for isochrones.
+
+The best starting point is probably to calculate for each set of points a concave hull. This is different from the traditional convex hull and is more adapted to the irregular geometry of an isochrone. To do so, we use the library `concaveman`
+
+```{r message=FALSE, warning=FALSE}
+library(concaveman)
+
+# identidying each isochrone
+iso_results$iso_oid <- paste(iso_results$point_id,
+                             iso_results$distance,
+                             sep = "_")
+
+# creating the polygons for each isochrone
+polygons <- lapply(unique(iso_results$iso_oid), function(oid){
+  
+  # subsetting the required lines
+  lines <- subset(iso_results, iso_results$iso_oid == oid)
+  
+  # extracting the coordinates of the lines
+  coords <- do.call(rbind, unlist(sp::coordinates(lines),
+                                  recursive = FALSE))
+  poly_coords <- concaveman(points = coords, concavity = 3)
+  poly <- sp::Polygons(list(sp::Polygon(poly_coords)), ID = oid)
+  return(poly)
+})
+
+# creating a SpatialPolygonsDataFrame
+df <- data.frame(
+  iso_oid = unique(iso_results$iso_oid),
+  distance = unique(iso_results$distance)
+)
+
+iso_sp <- sp::SpatialPolygonsDataFrame(sp::SpatialPolygons(polygons),
+                                       df, match.ID = FALSE)
+raster::crs(iso_sp) <- raster::crs(mtl_network)
+```
+
+We can now map the obtained polygons.
+
+```{r message=FALSE, warning=FALSE}
+# creating a factor and changing order for better visualisation
+iso_sp$fac_dist <- as.factor(iso_sp$distance)
+iso_sp <- iso_sp[order(-1*iso_sp$distance),]
+
+tm_shape(iso_results) + 
+  tm_lines(col = "black")+
+  tm_shape(iso_sp) + 
+  tm_polygons(col = "fac_dist",title.col = "distance (m)",
+           palette = c("500"="#005f73", "1000"="#ca6702", "2000"="#9b2226"),
+           alpha = 0.6, border.col = "white") +
+  tm_shape(df_center) + 
+  tm_dots(col = "black", size = 0.1)
+
+```
+
+This is more similar to classical isochrone maps. Another possible enhancement would be to simplify and smooth the limits of the polygons. To do so, we will use the functions `gSimplify` from **rgeos** and `smooth` from `smoothr`.
+
+```{r message=FALSE, warning=FALSE}
+library(smoothr)
+
+simple_polygons <- gSimplify(iso_sp, tol = 50)
+smoothed_polygons <- smooth(simple_polygons, method = "chaikin", 
+                            refinements = 5)
+
+smooth_iso <- sp::SpatialPolygonsDataFrame(smoothed_polygons,
+                                           iso_sp@data,
+                                           match.ID = FALSE)
+tm_shape(iso_results) + 
+  tm_lines(col = "black")+
+  tm_shape(smooth_iso) +
+  tm_polygons(col = "fac_dist",
+           title.col = "distance (m)",
+           palette = c("500"="#005f73", "1000"="#ca6702", "2000"="#9b2226"),
+           border.col = "white",
+           alpha = 0.6) +
+  tm_shape(df_center) + 
+  tm_dots(col = "black", size = 0.1) + 
+  tm_layout(legend.outside = TRUE)
+```
+
+The shapes are cleaner for mapping but the results are not exact anymore.

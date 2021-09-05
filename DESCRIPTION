@@ -47,7 +47,9 @@ Suggests:
     rgdal (>= 1.5-18),
     plot3D (>= 1.3),
     tmap (>= 3.3-1),
-    FNN (>= 1.1.3)
+    FNN (>= 1.1.3),
+    smoothr (>= 0.2.2),
+    concaveman (>= 1.1.0)
 RoxygenNote: 7.1.1
 VignetteBuilder: knitr
 URL: https://github.com/JeremyGelb/spNetwork
