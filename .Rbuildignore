@@ -9,3 +9,6 @@
 ^CONDUCT\.md$
 ^CONTRIBUTING\.md$
 ^\.github$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$

@@ -5,6 +5,12 @@
 * Added two function for datadriven bandwidth selectionn (see vignette NKDE)
 * Added a function to simplify network before processing (*simplify_network*), reducing network complexity by removing useless edges or merge continuous edge can improve performance.
 * Added two functions to calculate k nearest neighbours: *network_knn* and *network_knn.mc*
+* Added a function to calculate isochrones on a geographical network: *calc_isochrones* and a Vignette (*Calculating isochrones*) to give an example.
+* Making some internal functions visible for the user to allow graph analysis on networks, see the new vignette *Building networks*.
+
+## documentation
+
+Several vignettes were added to present the new features. A pkgdown website was aslo built to give a more attractive way to browse the documentation.
 
 ## corrected bugs
 

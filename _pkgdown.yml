@@ -1,0 +1,71 @@
+reference:
+- title: "Network Kernel Density"
+  desc: >
+    Functions to perform Network Kernel Density estimation.
+- contents:
+  - nkde
+  - nkde.mc
+  - bw_cvl_calc
+  - w_cvl_calc.mc
+  - bw_cv_likelihood_calc
+  - bw_cv_likelihood_calc.mc
+  - tricube_kernel
+  - triweight_kernel
+  - uniform_kernel
+  - cosine_kernel
+  - epanechnikov_kernel
+  - gaussian_kernel
+  - gaussian_kernel_scaled
+  - quartic_kernel
+  - triangle_kernel
+- title: "Spatial weight matrices on networks"
+  desc: >
+    Functions to calculate spatial weight matrices on networks.
+- contents:
+  - network_listw
+  - network_listw.mc
+- title: "K functions on networks"
+  desc: >
+    Functions to calculate K and G functions on networks.
+- contents:
+  - kfunctions
+  - kfunctions.mc
+  - cross_kfunctions
+  - cross_kfunctions.mc
+- title: "Knn functions on networks"
+  desc: >
+    Functions to calculate K nearest neighbours on networks.
+- contents:
+  - network_knn
+  - network_knn.mc
+- title: "Network building"
+  desc: >
+    Functions to build graphs.
+- contents:
+  - build_graph
+  - build_graph_directed
+  - graph_checking
+  - simplify_network
+- title: "Isochrones"
+  desc: >
+    Functions to calculate isochrones.
+- contents:
+  - calc_isochrones
+- title: "Geometrical functions"
+  desc: >
+    Functions to perform geometric operations.
+- contents:
+  - build_quadtree
+  - spatial_request
+  - closest_points
+  - lines_center
+  - lines_direction
+  - lines_points_along
+  - lixelize_lines
+  - lixelize_lines.mc
+  - split_lines_at_vertex
+- title: "Spatial data cleaning"
+  desc: >
+    Functions to clean data before spatial analysis
+- contents:
+  - aggregate_points

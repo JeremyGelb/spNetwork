@@ -1,5 +1,5 @@
 ---
-title: "Building networks"
+title: "Building graphs"
 author: "Jeremy Gelb"
 date: "`r Sys.Date()`"
 output:
@@ -10,7 +10,7 @@ output:
     toc_depth: 2
     df_print: "tibble"
 vignette: >
-  %\VignetteIndexEntry{Building networks}
+  %\VignetteIndexEntry{Building graphs}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 bibliography: spnetwork_bilbio.bibtex

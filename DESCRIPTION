@@ -3,8 +3,8 @@ Type: Package
 Title: Spatial Analysis on Network
 Version: 0.1.2.9000
 Authors@R: c(
-    person("Jeremy", "Gelb", email = "jeremy.gelb@ucs.inrs.ca",role = c("aut", "cre")),
-    person("Philippe", "Apparicio", email="philippe.apparicio@ucs.inrs.ca", role=c("ctb")))
+    person("Jeremy", "Gelb", email = "jeremy.gelb@ucs.inrs.ca",role = c("aut", "cre"), comment = c(ORCID = "0000-0002-7114-2714")),
+    person("Philippe", "Apparicio", email="philippe.apparicio@ucs.inrs.ca", role=c("ctb"), comment = c(ORCID = "0000-0001-6466-9342")))
 Description: Perform spatial analysis on network.
     Allow to calculate Network Kernel Density Estimate, and to build
     spatial matrices ('listw' objects like in 'spdep' package) to conduct any kind of traditional 
