@@ -52,7 +52,7 @@ Suggests:
     concaveman (>= 1.1.0)
 RoxygenNote: 7.1.1
 VignetteBuilder: knitr
-URL: https://github.com/JeremyGelb/spNetwork
+URL: https://jeremygelb.github.io/spNetwork/
 BugReports: https://github.com/JeremyGelb/spNetwork/issues
 LinkingTo: 
     Rcpp,

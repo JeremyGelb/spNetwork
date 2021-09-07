@@ -30,6 +30,8 @@ cat(
 ```
 <!-- badges: end -->
 
+The package's website is available [here](https://jeremygelb.github.io/spNetwork/)
+
 ## What is this package ?
 
 This package can be used to perform several types of analysis on geographical networks. This type of network have spatial coordinates associated with their nodes. They can be directed or undirected. In the actual development version the implemented methods are: 
