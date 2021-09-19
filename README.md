@@ -13,7 +13,7 @@
 [![](http://cranlogs.r-pkg.org/badges/grand-total/spNetwork?color=blue)](https://cran.r-project.org/package=spNetwork)
 <!-- badges: end -->
 
-The package's website is available
+The package’s website is available
 [here](https://jeremygelb.github.io/spNetwork/)
 
 ## What is this package ?

@@ -36,7 +36,7 @@ The package's website is available [here](https://jeremygelb.github.io/spNetwork
 
 This package can be used to perform several types of analysis on geographical networks. This type of network have spatial coordinates associated with their nodes. They can be directed or undirected. In the actual development version the implemented methods are: 
 
-* Network Kernel Density Estimate, a method estimating density of a point pattern constrained on a network (see the vignettes *Network Kernel Density Estimate* and* *Details about NKDE*).
+* Network Kernel Density Estimate, a method estimating density of a point pattern constrained on a network (see the vignettes *Network Kernel Density Estimate* and *Details about NKDE*).
 * Network based spatial weight matrices, which can be used in a great number of traditional methods in spatial analysis (see the vignette *Spatial Weight Matrices*).
 * Network k Functions, used to investigate the spatial distribution of a set of points on a network at several scales (see the vignette *Network k Functions*).
 * K nearest neighbours, to calculate for each point localised on a network its K nearest neighbour (see the function `network_knn`).

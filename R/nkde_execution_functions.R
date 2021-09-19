@@ -27,7 +27,8 @@ check_geometries <- function(lines,samples,events, study_area){
     obj <- objs[[i]]
     obj_name <- obj_names[[i]]
     if(any(gIsSimple(obj,byid = TRUE)==FALSE)){
-      stop(paste("the ",obj_name," must be simple geometries",sep=""))
+      stop(paste("the ",obj_name," must be simple geometries,
+                 considere using the function sp::disaggregate",sep=""))
     }
     if(any(gIsValid(obj,byid = TRUE)==FALSE)){
       stop(paste("the ",obj_name," must be valid geometries",sep=""))

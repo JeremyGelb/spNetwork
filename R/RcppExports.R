@@ -346,7 +346,19 @@ corrfactor_continuous <- function(neighbour_list, events, line_list, bws, max_de
     .Call('_spNetwork_corrfactor_continuous', PACKAGE = 'spNetwork', neighbour_list, events, line_list, bws, max_depth)
 }
 
+find_nearest_object_in_line_rtree <- function(pts, lines, min_dist, max_iter) {
+    .Call('_spNetwork_find_nearest_object_in_line_rtree', PACKAGE = 'spNetwork', pts, lines, min_dist, max_iter)
+}
+
 cut_lines_at_distances_cpp <- function(lines, dists) {
     .Call('_spNetwork_cut_lines_at_distances_cpp', PACKAGE = 'spNetwork', lines, dists)
+}
+
+add_vertices_lines_cpp <- function(points, lines, nearest_lines_idx, mindist) {
+    .Call('_spNetwork_add_vertices_lines_cpp', PACKAGE = 'spNetwork', points, lines, nearest_lines_idx, mindist)
+}
+
+split_lines_at_points_cpp <- function(Xmat, lines, nearest_lines_idx, mindist) {
+    .Call('_spNetwork_split_lines_at_points_cpp', PACKAGE = 'spNetwork', Xmat, lines, nearest_lines_idx, mindist)
 }
 

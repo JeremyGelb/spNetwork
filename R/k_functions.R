@@ -400,8 +400,8 @@ kfunctions <- function(lines, points, start, end, step, width, nsim, conf_int = 
     print("Snapping points on lines ...")
   }
   snapped_events <- snapPointsToLines2(points,lines,idField = "oid")
-  new_lines <- split_lines_at_vertex(lines,snapped_events,
-                                  snapped_events$nearest_line_id, tol)
+  new_lines <- split_lines_at_vertex(lines, snapped_events,
+                                     snapped_events$nearest_line_id, tol)
   # new_lines <- add_vertices_lines(lines,snapped_events,
   #                                 snapped_events$nearest_line_id, tol)
 

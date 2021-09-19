@@ -6,6 +6,7 @@
 #defining some global variables to prevent check error (weird flex but ok)
 utils::globalVariables(c("Xs", "Ys"))
 
+
 #' @title Coordinates to unique character vector
 #'
 #' @description Generate a character vector based on a coordinates matrix and
@@ -209,6 +210,32 @@ add_vertices <- function(line, points, i, mindist) {
 
 
 
+# This is the previous version of the function
+# it is kept here in case of bugs with the new one using c++
+# add_vertices_lines <- function(lines, points, nearest_lines_idx, mindist) {
+#     #pb <- txtProgressBar(min = 0, max = nrow(lines), style = 3)
+#     new_lines_list <- lapply(1:nrow(lines), function(i) {
+#         #setTxtProgressBar(pb, i)
+#         line <- lines[i, ]
+#         testpts <- nearest_lines_idx == i
+#         if (any(testpts)) {
+#             okpts <- subset(points,testpts)
+#             newline <- add_vertices(line, okpts, i, mindist)
+#             return(newline)
+#         } else {
+#             sline <- coordinates(line)[[1]][[1]]
+#             return(sline)
+#         }
+#
+#     })
+#     final_lines <- do.call(raster::spLines,new_lines_list)
+#     final_lines <- SpatialLinesDataFrame(final_lines,
+#                                          lines@data,match.ID = FALSE)
+#     raster::crs(final_lines) <- raster::crs(lines)
+#     return(final_lines)
+# }
+
+
 #' @title Add vertices to a SpatialLinesDataFrame
 #'
 #' @description Add vertices (SpatialPoints) to their nearest lines
@@ -227,21 +254,13 @@ add_vertices <- function(line, points, i, mindist) {
 #' @examples
 #' #This is an internal function, no example provided
 add_vertices_lines <- function(lines, points, nearest_lines_idx, mindist) {
-    #pb <- txtProgressBar(min = 0, max = nrow(lines), style = 3)
-    new_lines_list <- lapply(1:nrow(lines), function(i) {
-        #setTxtProgressBar(pb, i)
-        line <- lines[i, ]
-        testpts <- nearest_lines_idx == i
-        if (any(testpts)) {
-            okpts <- subset(points,testpts)
-            newline <- add_vertices(line, okpts, i, mindist)
-            return(newline)
-        } else {
-            sline <- coordinates(line)[[1]][[1]]
-            return(sline)
-        }
 
-    })
+    line_coords <- unlist(sp::coordinates(lines),recursive = FALSE)
+    pt_coords <- sp::coordinates(points)
+
+    new_lines_list <- add_vertices_lines_cpp(pt_coords, line_coords, nearest_lines_idx, mindist)
+
+
     final_lines <- do.call(raster::spLines,new_lines_list)
     final_lines <- SpatialLinesDataFrame(final_lines,
                                          lines@data,match.ID = FALSE)
@@ -720,24 +739,55 @@ nearestPointOnLine <- function(coordsLine, coordsPoint){
 
 }
 
+# NOTE: this code is kept if bugs are encountered in the new version using
+# BH instead of sf.
+# @title Nearest feature
+#
+# @description Find the nearest feature from set X in set Y
+#
+# @param x A SpatialDataFrame
+# @param y A SpatialDataFrame
+#
+# @return A numeric vector with the index of the nearest features
+# @keywords internal
+# @examples
+# #This is an internal function, no example provided
+# nearest <- function(x,y){
+#     sf1 <- sf::st_as_sf(x)
+#     sf2 <- sf::st_as_sf(y)
+#     sf::st_crs(sf1) <- sf::st_crs(sf2)
+#     best <- sf::st_nearest_feature(sf1,sf2)
+#     return(best)
+# }
 
-#' @title Nearest feature
-#'
-#' @description Find the nearest feature from set X in set Y
-#'
-#' @param x A SpatialDataFrame
-#' @param y A SpatialDataFrame
-#'
-#' @return A numeric vector with the index of the nearest features
+#' @title Nearest line for points
+#' @description Find for each point its nearest LineString
+#' @param points A SpatialPointsDataFrame
+#' @param lines A SpatialLinesDataFrame
+#' @param snap_dist A distance (float) given to find for each point its
+#' nearest line in a spatial index. A too big value will produce
+#' unnecessary distance calculations and a too short value will lead to
+#' more iterations to find neighbours. In extrem cases, a too short value
+#' could lead to points not associated with lines (index = -1).
+#' @param max_iter An integer indicating how many iteration the search
+#' algorithm must perform in the spatial index to find lines close to a
+#' point. At each iteration, the snap_dist is doubled to find candidates.
 #' @keywords internal
 #' @examples
-#' #This is an internal function, no example provided
-nearest <- function(x,y){
-    sf1 <- sf::st_as_sf(x)
-    sf2 <- sf::st_as_sf(y)
-    sf::st_crs(sf1) <- sf::st_crs(sf2)
-    best <- sf::st_nearest_feature(sf1,sf2)
-    return(best)
+#' # this is an internal function, no example provided
+nearest_lines <- function(points, lines, snap_dist = 300, max_iter = 10){
+
+    # getting the coordinates of the lines
+    list_lines <- unlist(sp::coordinates(lines), recursive = FALSE)
+
+    # getting the coordinates of the points
+    coords <- sp::coordinates(points)
+
+    # getting the indexes
+    idx <- find_nearest_object_in_line_rtree(coords, list_lines, snap_dist, max_iter)
+
+    # adding 1 to match with c++ indexing
+    return(idx+1)
 }
 
 
@@ -748,6 +798,14 @@ nearest <- function(x,y){
 #' @param points A SpatialPointsDataFrame
 #' @param lines A SpatialLinesDataFrame
 #' @param idField The name of the column to use as index for the lines
+#' @param snap_dist A distance (float) given to find for each point its
+#' nearest line in a spatial index. A too big value will produce
+#' unnecessary distance calculations and a too short value will lead to
+#' more iterations to find neighbours. In extrem cases, a too short value
+#' could lead to points not associated with lines (index = -1).
+#' @param max_iter An integer indicating how many iteration the search
+#' algorithm must perform in the spatial index to find lines close to a
+#' point. At each iteration, the snap_dist is doubled to find candidates.
 #'
 #' @return A SpatialPointsDataFrame with the projected geometries
 #' @keywords internal
@@ -765,12 +823,12 @@ nearest <- function(x,y){
 #'     mtl_network,
 #'     "LineID"
 #' )
-snapPointsToLines2 <- function(points, lines ,idField = NA) {
+snapPointsToLines2 <- function(points, lines ,idField = NA, snap_dist = 300, max_iter = 10) {
 
-    nearest_line_index <- nearest(points,lines)
+    #nearest_line_index <- nearest(points,lines)
+    nearest_line_index <- nearest_lines(points,lines, snap_dist, max_iter)
     coordsLines <- sp::coordinates(lines)
     coordsPoints <- sp::coordinates(points)
-
 
     # Get coordinates of nearest points lying on nearest lines
     mNewCoords <- vapply(1:length(points),function(x){
@@ -792,7 +850,6 @@ snapPointsToLines2 <- function(points, lines ,idField = NA) {
                            proj4string=raster::crs(points)))
 
 }
-
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #### Network Cleaning Functions ####
@@ -1031,23 +1088,7 @@ simplify_network <- function(lines, digits = 3, heal = TRUE, mirror = TRUE, keep
 #### Development ####
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-#' @title Split a line at vertices in a SpatialLinesDataFrame
-#'
-#' @description Split a line (SpatialLine) at their nearest vertices
-#' (SpatialPoints), may fail if the lines geometries are self intersecting.
-#'
-#' @param line The SpatialLine to split
-#' @param points The SpatialPoints to add to as vertex to the lines
-#' @param nearest_lines_idx For each point, the index of the nearest line
-#' @param mindist The minimum distance between one point and the extremity of
-#'   the line to add the point as a vertex.
-#' @return An object of class SpatialLinesDataFrame (package sp)
-#' @importFrom sp coordinates SpatialPoints SpatialLinesDataFrame Line
-#'   SpatialLines
-#' @importFrom utils txtProgressBar setTxtProgressBar
-#' @keywords internal
-#' @examples
-#' #This is an internal function, no example provided
+# # this is the old function kept if bugs are found
 split_at_vertices <- function(line, points, i, mindist) {
     # extract coordinates
     line_coords <- coordinates(line)[[1]][[1]]
@@ -1084,6 +1125,36 @@ split_at_vertices <- function(line, points, i, mindist) {
     return(final_coords)
 }
 
+# # this is the previous function, kept for debug
+split_lines_at_vertex2 <- function(lines, points, nearest_lines_idx, mindist) {
+    new_lines_list <- lapply(1:nrow(lines), function(i) {
+        line <- lines[i, ]
+        testpts <- nearest_lines_idx == i
+        if (any(testpts)) {
+            okpts <- subset(points,testpts)
+            newline <- split_at_vertices(line, okpts, i, mindist)
+            return(newline)
+        } else {
+            sline <- list(coordinates(line)[[1]][[1]])
+            return(sline)
+        }
+    })
+    final_lines <- do.call(raster::spLines,unlist(new_lines_list, recursive = FALSE))
+    idxs <- do.call(c,lapply(1:length(new_lines_list), function(j){
+        el <- new_lines_list[[j]]
+        if (class(el) == "list"){
+            return(rep(j,times = length(el)))
+        }else{
+            return(j)
+        }
+    }))
+    final_lines <- SpatialLinesDataFrame(final_lines,
+                                         lines@data[idxs,],match.ID = FALSE)
+    raster::crs(final_lines) <- raster::crs(lines)
+    return(final_lines)
+}
+
+
 #' @title Split lines at vertices in a SpatialLinesDataFrame
 #'
 #' @description Split lines (SpatialLines) at their nearest vertices
@@ -1118,32 +1189,22 @@ split_at_vertices <- function(line, points, i, mindist) {
 #' new_lines <- split_lines_at_vertex(mtl_network, snapped_points,
 #'     snapped_points$nearest_line_id, 1)
 split_lines_at_vertex <- function(lines, points, nearest_lines_idx, mindist) {
-    new_lines_list <- lapply(1:nrow(lines), function(i) {
-        line <- lines[i, ]
-        testpts <- nearest_lines_idx == i
-        if (any(testpts)) {
-            okpts <- subset(points,testpts)
-            newline <- split_at_vertices(line, okpts, i, mindist)
-            return(newline)
-        } else {
-            sline <- list(coordinates(line)[[1]][[1]])
-            return(sline)
-        }
-    })
-    final_lines <- do.call(raster::spLines,unlist(new_lines_list, recursive = FALSE))
-    idxs <- do.call(c,lapply(1:length(new_lines_list), function(j){
-        el <- new_lines_list[[j]]
-        if (class(el) == "list"){
-            return(rep(j,times = length(el)))
-        }else{
-            return(j)
-        }
-    }))
+
+    coords <- sp::coordinates(points)
+    lines_coords <- unlist(sp::coordinates(lines), recursive = FALSE)
+    elements <- split_lines_at_points_cpp(coords, lines_coords, nearest_lines_idx, mindist)
+    new_lines_list <- elements[[1]]
+    idxs <- elements[[2]]
+
+    final_lines <- do.call(raster::spLines,new_lines_list)
+
     final_lines <- SpatialLinesDataFrame(final_lines,
                                          lines@data[idxs,],match.ID = FALSE)
     raster::crs(final_lines) <- raster::crs(lines)
     return(final_lines)
 }
+
+
 
 
 #' @title Cut lines at a specified distance
@@ -1163,12 +1224,13 @@ split_lines_at_vertex <- function(lines, points, nearest_lines_idx, mindist) {
 cut_lines_at_distance <- function(lines, dists){
 
     # step 1 : create a list of coordinates
-    coord_lists <- lapply(1:nrow(lines), function(i){
-        l <- lines[i,]
-        coords <- unlist(sp::coordinates(l),recursive = TRUE)
-        coords <- matrix(coords, nrow = length(coords)/2, ncol = 2)
-        return(coords)
-    })
+    # coord_lists <- lapply(1:nrow(lines), function(i){
+    #     l <- lines[i,]
+    #     coords <- unlist(sp::coordinates(l),recursive = TRUE)
+    #     coords <- matrix(coords, nrow = length(coords)/2, ncol = 2)
+    #     return(coords)
+    # })
+    coord_lists <- unlist(sp::coordinates(lines), recursive = FALSE)
 
     new_coords <- cut_lines_at_distances_cpp(coord_lists, dists)
     final_lines <- do.call(raster::spLines,new_coords)
@@ -1177,7 +1239,3 @@ cut_lines_at_distance <- function(lines, dists){
     raster::crs(final_lines) <- raster::crs(lines)
     return(final_lines)
 }
-
-
-
-

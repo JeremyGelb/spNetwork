@@ -219,6 +219,20 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// find_nearest_object_in_line_rtree
+IntegerVector find_nearest_object_in_line_rtree(NumericMatrix pts, List lines, double min_dist, int max_iter);
+RcppExport SEXP _spNetwork_find_nearest_object_in_line_rtree(SEXP ptsSEXP, SEXP linesSEXP, SEXP min_distSEXP, SEXP max_iterSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type pts(ptsSEXP);
+    Rcpp::traits::input_parameter< List >::type lines(linesSEXP);
+    Rcpp::traits::input_parameter< double >::type min_dist(min_distSEXP);
+    Rcpp::traits::input_parameter< int >::type max_iter(max_iterSEXP);
+    rcpp_result_gen = Rcpp::wrap(find_nearest_object_in_line_rtree(pts, lines, min_dist, max_iter));
+    return rcpp_result_gen;
+END_RCPP
+}
 // cut_lines_at_distances_cpp
 List cut_lines_at_distances_cpp(List lines, NumericVector dists);
 RcppExport SEXP _spNetwork_cut_lines_at_distances_cpp(SEXP linesSEXP, SEXP distsSEXP) {
@@ -228,6 +242,34 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< List >::type lines(linesSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type dists(distsSEXP);
     rcpp_result_gen = Rcpp::wrap(cut_lines_at_distances_cpp(lines, dists));
+    return rcpp_result_gen;
+END_RCPP
+}
+// add_vertices_lines_cpp
+List add_vertices_lines_cpp(NumericMatrix points, List lines, arma::colvec nearest_lines_idx, float mindist);
+RcppExport SEXP _spNetwork_add_vertices_lines_cpp(SEXP pointsSEXP, SEXP linesSEXP, SEXP nearest_lines_idxSEXP, SEXP mindistSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type points(pointsSEXP);
+    Rcpp::traits::input_parameter< List >::type lines(linesSEXP);
+    Rcpp::traits::input_parameter< arma::colvec >::type nearest_lines_idx(nearest_lines_idxSEXP);
+    Rcpp::traits::input_parameter< float >::type mindist(mindistSEXP);
+    rcpp_result_gen = Rcpp::wrap(add_vertices_lines_cpp(points, lines, nearest_lines_idx, mindist));
+    return rcpp_result_gen;
+END_RCPP
+}
+// split_lines_at_points_cpp
+List split_lines_at_points_cpp(arma::mat Xmat, List lines, arma::colvec nearest_lines_idx, float mindist);
+RcppExport SEXP _spNetwork_split_lines_at_points_cpp(SEXP XmatSEXP, SEXP linesSEXP, SEXP nearest_lines_idxSEXP, SEXP mindistSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type Xmat(XmatSEXP);
+    Rcpp::traits::input_parameter< List >::type lines(linesSEXP);
+    Rcpp::traits::input_parameter< arma::colvec >::type nearest_lines_idx(nearest_lines_idxSEXP);
+    Rcpp::traits::input_parameter< float >::type mindist(mindistSEXP);
+    rcpp_result_gen = Rcpp::wrap(split_lines_at_points_cpp(Xmat, lines, nearest_lines_idx, mindist));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -245,7 +287,10 @@ static const R_CallMethodDef CallEntries[] = {
     {"_spNetwork_corrfactor_discontinuous", (DL_FUNC) &_spNetwork_corrfactor_discontinuous, 5},
     {"_spNetwork_corrfactor_continuous_sparse", (DL_FUNC) &_spNetwork_corrfactor_continuous_sparse, 5},
     {"_spNetwork_corrfactor_continuous", (DL_FUNC) &_spNetwork_corrfactor_continuous, 5},
+    {"_spNetwork_find_nearest_object_in_line_rtree", (DL_FUNC) &_spNetwork_find_nearest_object_in_line_rtree, 4},
     {"_spNetwork_cut_lines_at_distances_cpp", (DL_FUNC) &_spNetwork_cut_lines_at_distances_cpp, 2},
+    {"_spNetwork_add_vertices_lines_cpp", (DL_FUNC) &_spNetwork_add_vertices_lines_cpp, 4},
+    {"_spNetwork_split_lines_at_points_cpp", (DL_FUNC) &_spNetwork_split_lines_at_points_cpp, 4},
     {NULL, NULL, 0}
 };
 

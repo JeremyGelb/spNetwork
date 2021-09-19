@@ -166,7 +166,7 @@
 <h2 class="hasAnchor">
 <a href="#corrected-bugs" class="anchor"></a>corrected bugs</h2>
 <ul>
-<li>issue 1 fixed by changing the function maptools::snapPointsToLines for a home made function. There is room for improvement here because it requires a conversion to sf and then back to sp which can be unsafe.</li>
+<li>issue 1 fixed by changing the function maptools::snapPointsToLines for a home made function. The package BH including the c++ boost library is used to realize fast spatial query.</li>
 <li>issue 2 fixed by handling the special case of lines of length 0.</li>
 <li>an error was raised when using <em>listw_network</em> with polygons and the method = “pointsalong”. This was caused by a minor error in the code and works now as expected.</li>
 </ul>
@@ -176,6 +176,8 @@
 <a href="#performance" class="anchor"></a>performance</h2>
 <ul>
 <li>Performance was improved for function <em>listw_network</em>, <em>listw_network.mc</em>, <em>kfunctions</em>, <em>kfunctions.mc</em>, <em>cross_kfunctions</em> and <em>cross_kfunctions.mc</em>, by reducing the complexity of the network built from the SpatialLinesDataFrame with no loss of accuracy.</li>
+<li>Several geometrical functions have been accelerated by c++ code using the boost library</li>
+<li>upgraded c++ compilation requirement to c++17</li>
 </ul>
 </div>
 </div>

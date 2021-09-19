@@ -100,7 +100,7 @@
       <h1 data-toc-skip>Network Kernel Density Estimate</h1>
                         <h4 class="author">Jeremy Gelb</h4>
             
-            <h4 class="date">2021-09-07</h4>
+            <h4 class="date">2021-09-19</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/JeremyGelb/spNetwork/blob/master/vignettes/NKDE.Rmd"><code>vignettes/NKDE.Rmd</code></a></small>
       <div class="hidden name"><code>NKDE.Rmd</code></div>
@@ -166,7 +166,7 @@ A picture is worth a thousand of words, so let us consider this situation:
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/hadley/reshape">reshape2</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://haozhu233.github.io/kableExtra/">kableExtra</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/JeremyGelb/spNetwork">spNetwork</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://jeremygelb.github.io/spNetwork/">spNetwork</a></span><span class="op">)</span>
 
 <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="op">-</span><span class="fl">15.01</span>,<span class="fl">15.01</span>,by <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span>
 <span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>
@@ -427,7 +427,7 @@ cosine
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/edzer/sp/">sp</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://maptools.r-forge.r-project.org/">maptools</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-forge.r-project.org/projects/rgeos/">rgeos</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/JeremyGelb/spNetwork">spNetwork</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://jeremygelb.github.io/spNetwork/">spNetwork</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://rspatial.org/raster">raster</a></span><span class="op">)</span>
 
 <span class="va">networkgpkg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"networks.gpkg"</span>,
@@ -487,12 +487,12 @@ cosine
 <span class="co"># and finally map with ggplot</span>
 <span class="va">labels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/raster/man/names.html">names</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">breaks</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt; style: jenks</span>
-<span class="co">#&gt;           [0,0.001632707] (0.001632707,0.004335161] (0.004335161,0.007797132] </span>
-<span class="co">#&gt;                      1537                       662                       475 </span>
-<span class="co">#&gt;   (0.007797132,0.0123777]    (0.0123777,0.01880141]   (0.01880141,0.02859257] </span>
-<span class="co">#&gt;                       268                       144                        57 </span>
-<span class="co">#&gt;   (0.02859257,0.04626886] </span>
-<span class="co">#&gt;                        19</span>
+<span class="co">#&gt;          [0,0.001662401] (0.001662401,0.00435006] (0.00435006,0.007797132] </span>
+<span class="co">#&gt;                     1554                      656                      462 </span>
+<span class="co">#&gt; (0.007797132,0.01237768]  (0.01237768,0.01880149]  (0.01880149,0.02859259] </span>
+<span class="co">#&gt;                      269                      145                       57 </span>
+<span class="co">#&gt;  (0.02859259,0.04626886] </span>
+<span class="co">#&gt;                       19</span>
 <span class="va">mtl_network</span><span class="op">$</span><span class="va">line_id</span> <span class="op">&lt;-</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/pkg/raster/man/ncell.html">nrow</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span>
 <span class="va">Mapnetwork</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/fortify.html">fortify</a></span><span class="op">(</span><span class="va">mtl_network</span>,id<span class="op">=</span><span class="st">"line_id"</span><span class="op">)</span>
 
@@ -597,11 +597,11 @@ h(e_{i}) = h_{0} * \frac{1}{\sqrt{\tilde{f}h_{0}(e_{i})}} * \frac{1}{\gamma_{f}}
 <p><img src="NKDE_files/figure-html/unnamed-chunk-13-1.png" width="700"></p>
 <p>And map the new densities with the same code as previous</p>
 <pre><code>#&gt; style: jenks
-#&gt;           [0,0.002101282] (0.002101282,0.005218093] (0.005218093,0.009280748] 
-#&gt;                      1748                       732                       338 
-#&gt;  (0.009280748,0.01521784]   (0.01521784,0.02415174]   (0.02415174,0.03991449] 
-#&gt;                       188                       110                        32 
-#&gt;   (0.03991449,0.07544582] 
+#&gt;           [0,0.002095183] (0.002095183,0.005201577] (0.005201577,0.009244756] 
+#&gt;                      1744                       737                       334 
+#&gt;  (0.009244756,0.01517734]   (0.01517734,0.02449562]   (0.02449562,0.03983479] 
+#&gt;                       189                       114                        30 
+#&gt;   (0.03983479,0.07519626] 
 #&gt;                        14</code></pre>
 <p><img src="NKDE_files/figure-html/unnamed-chunk-14-1.png" width="700"></p>
 <div id="applying-a-correction-factor-to-avoid-edge-effects" class="section level2">
@@ -650,11 +650,11 @@ h(e_{i}) = h_{0} * \frac{1}{\sqrt{\tilde{f}h_{0}(e_{i})}} * \frac{1}{\gamma_{f}}
 <code class="sourceCode R"><span class="va">samples</span><span class="op">$</span><span class="va">density</span> <span class="op">&lt;-</span> <span class="va">adjusted_densities</span></code></pre></div>
 <p>And again, we can map the results.</p>
 <pre><code>#&gt; style: jenks
-#&gt;          [0,0.003255139] (0.003255139,0.01136786]  (0.01136786,0.02146374] 
-#&gt;                      276                       57                       47 
-#&gt;  (0.02146374,0.03214029]  (0.03214029,0.05156756]  (0.05156756,0.08333333] 
-#&gt;                       28                       18                       15 
-#&gt;    (0.08333333,0.151566] 
+#&gt;          [0,0.005012002] (0.005012002,0.01542759]  (0.01542759,0.02911514] 
+#&gt;                      296                       56                       53 
+#&gt;   (0.02911514,0.0439638]   (0.0439638,0.06249475]  (0.06249475,0.08333333] 
+#&gt;                       16                       17                        3 
+#&gt;   (0.08333333,0.1515667] 
 #&gt;                        3</code></pre>
 <p><img src="NKDE_files/figure-html/unnamed-chunk-18-1.png" width="700"></p>
 </div>
@@ -715,10 +715,10 @@ cvl_crit
 200
 </td>
 <td style="text-align:right;">
--30284.50
+NaN
 </td>
 <td style="text-align:right;">
-6.211485e+13
+NaN
 </td>
 </tr>
 <tr>
@@ -726,10 +726,10 @@ cvl_crit
 250
 </td>
 <td style="text-align:right;">
--19212.43
+NaN
 </td>
 <td style="text-align:right;">
-1.328650e+14
+NaN
 </td>
 </tr>
 <tr>
@@ -737,10 +737,10 @@ cvl_crit
 300
 </td>
 <td style="text-align:right;">
--11621.71
+NaN
 </td>
 <td style="text-align:right;">
-2.454351e+14
+NaN
 </td>
 </tr>
 <tr>
@@ -748,10 +748,10 @@ cvl_crit
 350
 </td>
 <td style="text-align:right;">
--7467.16
+NaN
 </td>
 <td style="text-align:right;">
-4.078682e+14
+NaN
 </td>
 </tr>
 <tr>
@@ -759,10 +759,10 @@ cvl_crit
 400
 </td>
 <td style="text-align:right;">
--4717.61
+NaN
 </td>
 <td style="text-align:right;">
-6.282167e+14
+NaN
 </td>
 </tr>
 <tr>
@@ -770,10 +770,10 @@ cvl_crit
 450
 </td>
 <td style="text-align:right;">
--4724.32
+NaN
 </td>
 <td style="text-align:right;">
-9.113143e+14
+NaN
 </td>
 </tr>
 <tr>
@@ -781,10 +781,10 @@ cvl_crit
 500
 </td>
 <td style="text-align:right;">
--4052.75
+NaN
 </td>
 <td style="text-align:right;">
-1.261133e+15
+NaN
 </td>
 </tr>
 <tr>
@@ -792,10 +792,10 @@ cvl_crit
 550
 </td>
 <td style="text-align:right;">
--4066.23
+NaN
 </td>
 <td style="text-align:right;">
-1.683122e+15
+NaN
 </td>
 </tr>
 <tr>
@@ -803,10 +803,10 @@ cvl_crit
 600
 </td>
 <td style="text-align:right;">
--4082.08
+NaN
 </td>
 <td style="text-align:right;">
-2.181540e+15
+NaN
 </td>
 </tr>
 <tr>
@@ -814,10 +814,10 @@ cvl_crit
 650
 </td>
 <td style="text-align:right;">
--4097.80
+NaN
 </td>
 <td style="text-align:right;">
-2.760198e+15
+NaN
 </td>
 </tr>
 <tr>
@@ -825,10 +825,10 @@ cvl_crit
 700
 </td>
 <td style="text-align:right;">
--4113.43
+NaN
 </td>
 <td style="text-align:right;">
-3.424996e+15
+NaN
 </td>
 </tr>
 </tbody>
