@@ -258,7 +258,8 @@ List cut_lines_at_distances_cpp(List lines, NumericVector dists){
   int i;
   int j;
   double x2,y2,x1,y1,x3,y3;
-  List newList;
+  //List newList;
+  std::vector<NumericMatrix> newList;
 
   // on commencer par iterer sur chacune des lignes
   for(i=0; i < lines.length(); ++i){
@@ -301,7 +302,7 @@ List cut_lines_at_distances_cpp(List lines, NumericVector dists){
     outmat(_,1) = okY;
     newList.push_back(clone(outmat));
   }
-  return newList;
+  return wrap(newList);
 };
 
 
@@ -435,7 +436,8 @@ point_t project_point_on_Linestring_point(point_t p, linestring_t line){
 List add_vertices_lines_cpp(NumericMatrix points, List lines, arma::colvec nearest_lines_idx, float mindist){
 
   // creating the output line list
-  List new_lines;
+  //List new_lines;
+  std::vector<NumericMatrix> new_lines;
   // creating an arma matrix and an arma colvec for subsetting
   mat Xmat(points.begin(), points.nrow(), points.ncol(), false);
 
@@ -494,7 +496,7 @@ List add_vertices_lines_cpp(NumericMatrix points, List lines, arma::colvec neare
 
 
   }
-  return new_lines;
+  return wrap(new_lines);
 
 }
 

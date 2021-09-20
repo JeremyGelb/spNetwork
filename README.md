@@ -25,7 +25,7 @@ actual development version the implemented methods are:
 
 -   Network Kernel Density Estimate, a method estimating density of a
     point pattern constrained on a network (see the vignettes *Network
-    Kernel Density Estimate* and\* *Details about NKDE*).
+    Kernel Density Estimate* and *Details about NKDE*).
 -   Network based spatial weight matrices, which can be used in a great
     number of traditional methods in spatial analysis (see the vignette
     *Spatial Weight Matrices*).
