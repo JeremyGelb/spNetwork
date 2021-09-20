@@ -2,7 +2,8 @@
 // **** We define here some functions to perform specific geometrical
 // **** operations which need C++ acceleration
 // ******************************************************************
-
+// boost assertion disabled (see here : https://github.com/airoldilab/sgd/issues/44)
+#define BOOST_DISABLE_ASSERTS
 #include <RcppArmadillo.h>
 // [[Rcpp::depends(RcppArmadillo)]]
 
