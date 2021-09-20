@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Changelog • spNetwork</title>
+<title>Nearest line for points — nearest_lines • spNetwork</title>
 
 
 <!-- jquery -->
@@ -39,7 +39,8 @@
 
 
 
-<meta property="og:title" content="Changelog" />
+<meta property="og:title" content="Nearest line for points — nearest_lines" />
+<meta property="og:description" content="Find for each point its nearest LineString" />
 
 
 
@@ -58,7 +59,7 @@
   </head>
 
   <body data-spy="scroll" data-target="#toc">
-    <div class="container template-news">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -137,74 +138,54 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-      <h1 data-toc-skip>Changelog <small></small></h1>
-      <small>Source: <a href='https://github.com/JeremyGelb/spNetwork/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
+    <h1>Nearest line for points</h1>
+    <small class="dont-index">Source: <a href='https://github.com/JeremyGelb/spNetwork/blob/master/R/geometrical_functions.R'><code>R/geometrical_functions.R</code></a></small>
+    <div class="hidden name"><code>nearest_lines.Rd</code></div>
     </div>
 
-    <div id="spnetwork-0129000" class="section level1">
-<h1 class="page-header" data-toc-text="0.1.2.9000">
-<a href="#spnetwork-0129000" class="anchor"></a>spNetwork 0.1.2.9000<small> Unreleased </small>
-</h1>
-<div id="new-features" class="section level2">
-<h2 class="hasAnchor">
-<a href="#new-features" class="anchor"></a>New Features</h2>
-<ul>
-<li>Added two function for datadriven bandwidth selectionn (see vignette NKDE)</li>
-<li>Added a function to simplify network before processing (<em>simplify_network</em>), reducing network complexity by removing useless edges or merge continuous edge can improve performance.</li>
-<li>Added two functions to calculate k nearest neighbours: <em>network_knn</em> and <em>network_knn.mc</em>
-</li>
-<li>Added a function to calculate isochrones on a geographical network: <em>calc_isochrones</em> and a Vignette (<em>Calculating isochrones</em>) to give an example.</li>
-<li>Making some internal functions visible for the user to allow graph analysis on networks, see the new vignette <em>Building networks</em>.</li>
-</ul>
-</div>
-<div id="documentation" class="section level2">
-<h2 class="hasAnchor">
-<a href="#documentation" class="anchor"></a>documentation</h2>
-<p>Several vignettes were added to present the new features. A pkgdown website was aslo built to give a more attractive way to browse the documentation.</p>
-</div>
-<div id="corrected-bugs" class="section level2">
-<h2 class="hasAnchor">
-<a href="#corrected-bugs" class="anchor"></a>corrected bugs</h2>
-<ul>
-<li>issue 1 fixed by changing the function maptools::snapPointsToLines for a home made function. The package BH including the c++ boost library is used to realize fast spatial query.</li>
-<li>issue 2 fixed by handling the special case of lines of length 0.</li>
-<li>an error was raised when using <em>listw_network</em> with polygons and the method = “pointsalong”. This was caused by a minor error in the code and works now as expected.</li>
-</ul>
-</div>
-<div id="performance" class="section level2">
-<h2 class="hasAnchor">
-<a href="#performance" class="anchor"></a>performance</h2>
-<ul>
-<li>Performance was improved for function <em>listw_network</em>, <em>listw_network.mc</em>, <em>kfunctions</em>, <em>kfunctions.mc</em>, <em>cross_kfunctions</em> and <em>cross_kfunctions.mc</em>, by reducing the complexity of the network built from the SpatialLinesDataFrame with no loss of accuracy.</li>
-<li>Several geometrical functions have been accelerated by c++ code using the boost library</li>
-<li>upgraded c++ compilation requirement to c++17</li>
-</ul>
-</div>
-</div>
-    <div id="spnetwork-011" class="section level1">
-<h1 class="page-header" data-toc-text="0.1.1">
-<a href="#spnetwork-011" class="anchor"></a>spNetwork 0.1.1<small> 2021-01-21 </small>
-</h1>
-<ul>
-<li>Accepted CRAN version (minor changes)</li>
-</ul>
-</div>
-    <div id="spnetwork-010" class="section level1">
-<h1 class="page-header" data-toc-text="0.1.0">
-<a href="#spnetwork-010" class="anchor"></a>spNetwork 0.1.0<small> 2021-01-18 </small>
-</h1>
-<ul>
-<li>Initial release version</li>
-</ul>
-</div>
-  </div>
+    <div class="ref-description">
+    <p>Find for each point its nearest LineString</p>
+    </div>
 
+    <pre class="usage"><span class='fu'>nearest_lines</span><span class='op'>(</span><span class='va'>points</span>, <span class='va'>lines</span>, snap_dist <span class='op'>=</span> <span class='fl'>300</span>, max_iter <span class='op'>=</span> <span class='fl'>10</span><span class='op'>)</span></pre>
+
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>points</th>
+      <td><p>A SpatialPointsDataFrame</p></td>
+    </tr>
+    <tr>
+      <th>lines</th>
+      <td><p>A SpatialLinesDataFrame</p></td>
+    </tr>
+    <tr>
+      <th>snap_dist</th>
+      <td><p>A distance (float) given to find for each point its
+nearest line in a spatial index. A too big value will produce
+unnecessary distance calculations and a too short value will lead to
+more iterations to find neighbours. In extrem cases, a too short value
+could lead to points not associated with lines (index = -1).</p></td>
+    </tr>
+    <tr>
+      <th>max_iter</th>
+      <td><p>An integer indicating how many iteration the search
+algorithm must perform in the spatial index to find lines close to a
+point. At each iteration, the snap_dist is doubled to find candidates.</p></td>
+    </tr>
+    </table>
+
+
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='co'># this is an internal function, no example provided</span>
+</div></pre>
+  </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
       <h2 data-toc-skip>Contents</h2>
     </nav>
   </div>
-
 </div>
 
 

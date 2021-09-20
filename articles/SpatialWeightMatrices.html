@@ -100,7 +100,7 @@
       <h1 data-toc-skip>Spatial Weight Matrices</h1>
                         <h4 class="author">Jeremy Gelb</h4>
             
-            <h4 class="date">2021-09-07</h4>
+            <h4 class="date">2021-09-20</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/JeremyGelb/spNetwork/blob/master/vignettes/SpatialWeightMatrices.Rmd"><code>vignettes/SpatialWeightMatrices.Rmd</code></a></small>
       <div class="hidden name"><code>SpatialWeightMatrices.Rmd</code></div>
@@ -172,7 +172,7 @@
 <code class="sourceCode R"><span class="va">Test</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/spdep/man/moran.test.html">moran.test</a></span><span class="op">(</span><span class="va">nbAccident</span>, <span class="va">netlistw</span>, zero.policy <span class="op">=</span> <span class="cn">T</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">Test</span><span class="op">$</span><span class="va">estimate</span>,<span class="fl">4</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt; Moran I statistic       Expectation          Variance </span>
-<span class="co">#&gt;            0.0051           -0.0008            0.0003</span></code></pre></div>
+<span class="co">#&gt;             5e-03            -8e-04             3e-04</span></code></pre></div>
 <p>The autocorrelation is week, this is due to the large distance used and the fact that the analyzed variable is a counting variable (number of accidents). Indeed, the Moran I is supposed to be used on continuous variables.</p>
 <p>One could go further and define its own function to convert distances into spatial weights</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">

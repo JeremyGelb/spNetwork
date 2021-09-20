@@ -147,7 +147,7 @@
     <p>Snap points to their nearest lines (edited from maptools)</p>
     </div>
 
-    <pre class="usage"><span class='fu'>snapPointsToLines2</span><span class='op'>(</span><span class='va'>points</span>, <span class='va'>lines</span>, idField <span class='op'>=</span> <span class='cn'>NA</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>snapPointsToLines2</span><span class='op'>(</span><span class='va'>points</span>, <span class='va'>lines</span>, idField <span class='op'>=</span> <span class='cn'>NA</span>, snap_dist <span class='op'>=</span> <span class='fl'>300</span>, max_iter <span class='op'>=</span> <span class='fl'>10</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -163,6 +163,20 @@
     <tr>
       <th>idField</th>
       <td><p>The name of the column to use as index for the lines</p></td>
+    </tr>
+    <tr>
+      <th>snap_dist</th>
+      <td><p>A distance (float) given to find for each point its
+nearest line in a spatial index. A too big value will produce
+unnecessary distance calculations and a too short value will lead to
+more iterations to find neighbours. In extrem cases, a too short value
+could lead to points not associated with lines (index = -1).</p></td>
+    </tr>
+    <tr>
+      <th>max_iter</th>
+      <td><p>An integer indicating how many iteration the search
+algorithm must perform in the spatial index to find lines close to a
+point. At each iteration, the snap_dist is doubled to find candidates.</p></td>
     </tr>
     </table>
 
