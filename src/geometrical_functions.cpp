@@ -156,7 +156,8 @@ vector_rtree_element find_close_lines_in_index(lines_rtree index, lines_vector l
 
   while(ok == false){
     actual_dist = actual_dist*2.0;
-    returned_values.empty();
+    //returned_values.empty();
+    returned_values.clear();
     // calculating the box
     width = actual_dist/2.0;
     point_t mypt1(point.x()-width, point.y()-width);
@@ -354,7 +355,8 @@ std::pair<double, point_t> project_point_on_Linestring_distance(point_t p, lines
   double dist;
   linestring_t seg;
   for(i = 0; i < nb_seg; i++){
-    seg.empty();
+    //seg.empty();
+    seg.clear();
     seg.push_back(line[i]);
     seg.push_back(line[i+1]);
     dist = bg::distance(p,seg);
@@ -401,7 +403,8 @@ point_t project_point_on_Linestring_point(point_t p, linestring_t line){
   double dist;
   linestring_t seg;
   for(i = 0; i < nb_seg; i++){
-    seg.empty();
+    //seg.empty();
+    seg.clear();
     seg.push_back(line[i]);
     seg.push_back(line[i+1]);
     dist = bg::distance(p,seg);
