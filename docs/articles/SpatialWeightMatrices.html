@@ -94,13 +94,13 @@
 
       
 
-      </header><script src="SpatialWeightMatrices_files/header-attrs-2.8/header-attrs.js"></script><div class="row">
+      </header><script src="SpatialWeightMatrices_files/header-attrs-2.11/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Spatial Weight Matrices</h1>
                         <h4 class="author">Jeremy Gelb</h4>
             
-            <h4 class="date">2021-09-19</h4>
+            <h4 class="date">2021-09-25</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/JeremyGelb/spNetwork/blob/master/vignettes/SpatialWeightMatrices.Rmd"><code>vignettes/SpatialWeightMatrices.Rmd</code></a></small>
       <div class="hidden name"><code>SpatialWeightMatrices.Rmd</code></div>
@@ -172,7 +172,7 @@
 <code class="sourceCode R"><span class="va">Test</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/spdep/man/moran.test.html">moran.test</a></span><span class="op">(</span><span class="va">nbAccident</span>, <span class="va">netlistw</span>, zero.policy <span class="op">=</span> <span class="cn">T</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">Test</span><span class="op">$</span><span class="va">estimate</span>,<span class="fl">4</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt; Moran I statistic       Expectation          Variance </span>
-<span class="co">#&gt;            0.0051           -0.0008            0.0003</span></code></pre></div>
+<span class="co">#&gt;             5e-03            -8e-04             3e-04</span></code></pre></div>
 <p>The autocorrelation is week, this is due to the large distance used and the fact that the analyzed variable is a counting variable (number of accidents). Indeed, the Moran I is supposed to be used on continuous variables.</p>
 <p>One could go further and define its own function to convert distances into spatial weights</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
@@ -196,7 +196,7 @@
 <p>To speed up calculation, one could use a multiprocessing plan defined with the package ‘future’. To do so, the study area is divided into rectangles (according to the parameter <em>grid_shape</em>), and each rectangle is treated separately. A buffer is applied around the rectangles to avoid edge effects.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># setting the multiprocess plan</span>
-<span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/future/man/plan.html">plan</a></span><span class="op">(</span><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/future/man/multisession.html">multisession</a></span><span class="op">(</span>workers<span class="op">=</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span>
+<span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html">plan</a></span><span class="op">(</span><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/multisession.html">multisession</a></span><span class="op">(</span>workers<span class="op">=</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span>
 
 <span class="va">netlistw3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/network_listw.mc.html">network_listw.mc</a></span><span class="op">(</span><span class="va">lixels</span>,<span class="va">lixels</span>,
                              method <span class="op">=</span> <span class="st">"ends"</span>,
@@ -208,7 +208,7 @@
                              grid_shape <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span>,
                              verbose<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span>
 
-<span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/class.html">inherits</a></span><span class="op">(</span><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/future/man/plan.html">plan</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"sequential"</span><span class="op">)</span><span class="op">)</span> <span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/future/man/plan.html">plan</a></span><span class="op">(</span><span class="fu">future</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/future/man/sequential.html">sequential</a></span><span class="op">)</span></code></pre></div>
+<span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/class.html">inherits</a></span><span class="op">(</span><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html">plan</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"sequential"</span><span class="op">)</span><span class="op">)</span> <span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html">plan</a></span><span class="op">(</span><span class="fu">future</span><span class="fu">::</span><span class="va"><a href="https://future.futureverse.org/reference/sequential.html">sequential</a></span><span class="op">)</span></code></pre></div>
 </div>
 <div id="other-features" class="section level1">
 <h1 class="hasAnchor">

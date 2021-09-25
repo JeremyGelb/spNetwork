@@ -71,8 +71,8 @@
 #'                              direction = "direction")
 calc_isochrones <- function(lines, dists, start_points, mindist = 1, weight = NULL, direction = NULL){
 
-  # step1 : verifier que certains points ne sont pas a une distance
-  # inferieure a mindist de d'autres points
+  # step1 : Check that some points are not too close to each other
+  # before snapping
   if(nrow(start_points) >1){
     xy <- sp::coordinates(start_points)
     min_dists <- FNN::get.knn(xy, k = 1)
@@ -81,12 +81,11 @@ calc_isochrones <- function(lines, dists, start_points, mindist = 1, weight = NU
     }
   }
 
-
-  # step2 : snapper les points sur les lignes
+  # step2 : snapping hte points on the lines
   lines$OID <- 1:nrow(lines)
   snapped_points <- snapPointsToLines2(start_points, lines, "OID")
 
-  # step3 : reverifier la proximite
+  # step3 : check the points closeness again
   if(nrow(start_points) >1){
     xy <- sp::coordinates(snapped_points)
     min_dists <- FNN::get.knn(xy, k = 1)
@@ -116,14 +115,12 @@ calc_isochrones <- function(lines, dists, start_points, mindist = 1, weight = NU
     if(length(u) > 3){
       stop("when indicating line direction, accepted values are TF, FT and Both")
     }
-    #new_lines <- lines_direction(new_lines, direction)
-    #new_lines$b_direction <- ifelse(new_lines[[direction]] == "Both", 0,1)
     graph_result <- build_graph_directed(new_lines, digits = 2, line_weight = weight,
                                          direction = direction, attrs = TRUE)
   }
 
 
-  # trouver pour chaque point de depart le noeud correspondant
+  # finding for each start points its corresponding node in the graph
   maxdist <- max(dists)
   xynodes <- sp::coordinates(graph_result$spvertices)
   xy_points <- sp::coordinates(snapped_points)
@@ -136,17 +133,17 @@ calc_isochrones <- function(lines, dists, start_points, mindist = 1, weight = NU
     "node_name" = graph_result$spvertices$name[start_nodes[[1]]]
   )
 
-  # creer les isochrones, soit des ensembles de multilignes
+  # creating the isochrones: sets of linestrings
   all_multi_lignes <- lapply(1:nrow(df_start), function(i){
     row <- df_start[i,]
 
     # pour chaque point de depart calculer les distances a tous les autres points
     all_dists <- t(igraph::distances(graph_result$graph,
-                                   v = row$node_idx,
-                                   to = graph_result$spvertices$id,
+                                   to = row$node_idx,
+                                   v = graph_result$spvertices$id,
                                    mode = "out"))
     dist_df <- data.frame(
-      "node_id" = 1:nrow(all_dists),
+      "node_id" = 1:length(all_dists),
       "dist" = as.vector(all_dists)
     )
 
@@ -179,17 +176,17 @@ calc_isochrones <- function(lines, dists, start_points, mindist = 1, weight = NU
       df1$end_dist <- df1$dist
       df1$dist <- NULL
 
-      # si on est en mode directed, il faut degager certaines edges
+      # If we are in a directed graph, some edges need to be removed here
       if(is.null(direction) == FALSE){
-        df1 <- subset(df1, (is.na(df1$start_dist) & df1$direction == "TF") == FALSE)
-        df1 <- subset(df1, (is.na(df1$end_dist) & df1$direction == "FT") == FALSE)
+        df1 <- subset(df1, (is.na(df1$end_dist) & df1$direction == "TF") == FALSE)
+        df1 <- subset(df1, (is.na(df1$start_dist) & df1$direction == "FT") == FALSE)
       }
 
-      # il reste encore a decouper les edges en question si necessaire
+      # we now have to cut the remaining edges
       test <- is.na(df1$start_dist)==FALSE & is.na(df1$end_dist)==FALSE
       no_cut <- subset(df1, test)
 
-      # decoupage des lignes par le debut
+      # cutting the lines by the start
       to_cut <- subset(df1, !test)
       to_cut$node_okid <- ifelse(is.na(to_cut$start_dist), to_cut$end_oid,
                                  to_cut$start_oid
@@ -198,7 +195,7 @@ calc_isochrones <- function(lines, dists, start_points, mindist = 1, weight = NU
                                to_cut$start_dist
       )
 
-      # remise dans l'ordre des lignes si necessaire
+      # reordering line if required
       ext <- lines_extremities(to_cut)
       ok_nodes <- graph_result$spvertices[to_cut$node_okid,]
       test1 <- subset(ext, ext$pttype == "start")
@@ -209,12 +206,17 @@ calc_isochrones <- function(lines, dists, start_points, mindist = 1, weight = NU
       to_keep <- subset(to_cut, d1 < d2)
       to_reverse <- subset(to_cut, d1 >= d2)
 
-      # et decoupage final
+      # and final cut
       all_dists <- d - c(to_keep$ok_dist, to_reverse$ok_dist)
-      all_cuts <- rbind(to_keep, reverse_lines(to_reverse))
+      if(nrow(to_reverse) > 0){
+        all_cuts <- rbind(to_keep, reverse_lines(to_reverse))
+      }else{
+        all_cuts <- to_keep
+      }
+
       cut_lines <- cut_lines_at_distance(all_cuts, all_dists)
 
-      # enregistrement
+      # saving
       ok_lines <- rbind(no_cut[c("end_oid","start_oid","edge_id","weight" )],
                         cut_lines[c("end_oid","start_oid","edge_id","weight" )])
       ok_lines$distance <- d

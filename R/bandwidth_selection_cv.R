@@ -1,6 +1,3 @@
-# NOTE : for the next method, implementing https://rdrr.io/github/spatstat/spatstat.core/man/bw.CvL.html
-# seems easy
-
 #nouvelle methodes : dbscan on network
 # plus pousse : NS-DBSCAN: A Density-Based Clustering Algorithm in Network Space
 

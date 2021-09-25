@@ -6,7 +6,7 @@ reference:
   - nkde
   - nkde.mc
   - bw_cvl_calc
-  - w_cvl_calc.mc
+  - bw_cvl_calc.mc
   - bw_cv_likelihood_calc
   - bw_cv_likelihood_calc.mc
   - tricube_kernel

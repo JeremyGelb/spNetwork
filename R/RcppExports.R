@@ -113,10 +113,6 @@ get_loo_values_simple <- function(neighbour_list, samples, sweights, events, wei
     .Call('_spNetwork_get_loo_values_simple', PACKAGE = 'spNetwork', neighbour_list, samples, sweights, events, weights, bws, kernel_name, line_list, max_depth)
 }
 
-timesTwo <- function(x) {
-    .Call('_spNetwork_timesTwo', PACKAGE = 'spNetwork', x)
-}
-
 #' @title The worker function to calculate continuous NKDE (with ARMADILLO and sparse matrix)
 #' @name continuousWorker_sparse
 #' @param kernel_func a cpp pointer function (selected with the kernel name)
@@ -358,7 +354,15 @@ add_vertices_lines_cpp <- function(points, lines, nearest_lines_idx, mindist) {
     .Call('_spNetwork_add_vertices_lines_cpp', PACKAGE = 'spNetwork', points, lines, nearest_lines_idx, mindist)
 }
 
+add_center_lines_cpp <- function(lines) {
+    .Call('_spNetwork_add_center_lines_cpp', PACKAGE = 'spNetwork', lines)
+}
+
 split_lines_at_points_cpp <- function(Xmat, lines, nearest_lines_idx, mindist) {
     .Call('_spNetwork_split_lines_at_points_cpp', PACKAGE = 'spNetwork', Xmat, lines, nearest_lines_idx, mindist)
+}
+
+lixelize_lines_cpp <- function(lines, lx_length, mindist) {
+    .Call('_spNetwork_lixelize_lines_cpp', PACKAGE = 'spNetwork', lines, lx_length, mindist)
 }
 

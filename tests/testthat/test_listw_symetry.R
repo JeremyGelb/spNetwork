@@ -15,7 +15,6 @@ test_that("A listw object returned by the function network_listw must be symetri
                                   mindist = 10,
                                   digits = 3
                                   )
-
   # test if symetric
   test1 <- spdep::is.symmetric.nb(listw$neighbours)
 

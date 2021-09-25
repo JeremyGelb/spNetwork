@@ -149,7 +149,7 @@
   distance may fail if the lines geometries are self intersecting.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>lixelize_lines</span><span class='op'>(</span><span class='va'>lines</span>, <span class='va'>lx_length</span>, mindist <span class='op'>=</span> <span class='cn'>NULL</span>, verbose <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>lixelize_lines</span><span class='op'>(</span><span class='va'>lines</span>, <span class='va'>lx_length</span>, mindist <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -168,10 +168,6 @@
 final lixel is shorter than the minimum distance, then it is added to the
 previous lixel. if NULL, then mindist = maxdist/10. Note that the segments
 that are already shorter than the minimum distance are not modified.</p></td>
-    </tr>
-    <tr>
-      <th>verbose</th>
-      <td><p>A Boolean indicating if a progress bar should be displayed</p></td>
     </tr>
     </table>
 

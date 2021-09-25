@@ -11,6 +11,9 @@
 [![](https://img.shields.io/badge/devel%20version-0.1.2.9000-green.svg)](https://github.com/https://jeremygelb.github.io/spNetwork/)
 [![](https://www.r-pkg.org/badges/version/spNetwork?color=blue)](https://cran.r-project.org/package=spNetwork)
 [![](http://cranlogs.r-pkg.org/badges/grand-total/spNetwork?color=blue)](https://cran.r-project.org/package=spNetwork)
+[![](http://cranlogs.r-pkg.org/badges/last-month/spNetwork?color=green)](https://cran.r-project.org/package=spNetwork)
+[![Codecov test
+coverage](https://codecov.io/gh/JeremyGelb/spNetwork/branch/master/graph/badge.svg)](https://codecov.io/gh/JeremyGelb/spNetwork?branch=master)
 <!-- badges: end -->
 
 The package’s website is available

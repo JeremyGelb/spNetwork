@@ -173,8 +173,7 @@ the other columns, only the first value is retained.</p></td>
     <p>A new SpatialPointsDataFrame</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><span class='co'>#This is an internal function, no example provided</span>
-<span class='va'>eventsgpkg</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>, <span class='st'>"events.gpkg"</span>, package <span class='op'>=</span> <span class='st'>"spNetwork"</span>, mustWork <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+    <pre class="examples"><span class='va'>eventsgpkg</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>, <span class='st'>"events.gpkg"</span>, package <span class='op'>=</span> <span class='st'>"spNetwork"</span>, mustWork <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
 <span class='va'>bike_accidents</span> <span class='op'>&lt;-</span> <span class='fu'>rgdal</span><span class='fu'>::</span><span class='fu'><a href='http://rgdal.r-forge.r-project.org/reference/readOGR.html'>readOGR</a></span><span class='op'>(</span><span class='va'>eventsgpkg</span>,layer<span class='op'>=</span><span class='st'>"bike_accidents"</span>, verbose<span class='op'>=</span><span class='cn'>FALSE</span><span class='op'>)</span>
 <span class='va'>bike_accidents</span><span class='op'>$</span><span class='va'>weight</span> <span class='op'>&lt;-</span> <span class='fl'>1</span>
 <span class='va'>agg_points</span> <span class='op'>&lt;-</span> <span class='fu'>aggregate_points</span><span class='op'>(</span><span class='va'>bike_accidents</span>, <span class='fl'>5</span><span class='op'>)</span>

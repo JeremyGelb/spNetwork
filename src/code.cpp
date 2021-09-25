@@ -991,6 +991,7 @@ List corrfactor_continuous_sparse(List neighbour_list, NumericVector events, Dat
 
       //step1 : find all the neighbours
       IntegerVector neighbours = neighbour_list[v-1];
+
       int cnt_n = neighbours.length();
 
       int new_depth;
@@ -1033,9 +1034,10 @@ List corrfactor_continuous_sparse(List neighbour_list, NumericVector events, Dat
           else{
             //on ne peut faire un backfire qu'a une vraie intersection
             if(cnt_n>2){
-              IntegerVector l_neighbours = neighbour_list[v2-1];
-              int n2 = l_neighbours.length();
-              double p2 = (n2-2.0)/n2;
+              //IntegerVector l_neighbours = neighbour_list[v2-1];
+              //int n2 = l_neighbours.length();
+              //double p2 = (n2-2.0)/n2;
+              double p2 = (cnt_n-2.0)/cnt_n;
               new_alpha = -1.0 * alpha * p2;
               //adding the values in the vectors !
               edge_ids.push_back(edge_id);
@@ -1161,9 +1163,10 @@ List corrfactor_continuous(List neighbour_list, NumericVector events, DataFrame 
           else{
             //on ne peut faire un backfire qu'a une vraie intersection
             if(cnt_n>2){
-              IntegerVector l_neighbours = neighbour_list[v2-1];
-              int n2 = l_neighbours.length();
-              double p2 = (n2-2.0)/n2;
+              //IntegerVector l_neighbours = neighbour_list[v2-1];
+              //int n2 = l_neighbours.length();
+              //double p2 = (n2-2.0)/n2;
+              double p2 = (cnt_n-2.0)/cnt_n;
               new_alpha = -1.0 * alpha * p2;
               //adding the values in the vectors !
               edge_ids.push_back(edge_id);

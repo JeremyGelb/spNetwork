@@ -25,9 +25,11 @@ library(badger)
 cat(
   badge_github_version(color = "green"),
   badge_cran_release(color = "blue"),
-  badge_cran_download(color = "blue", type = "grand-total")
+  badge_cran_download(color = "blue", type = "grand-total"),
+  badge_cran_download("spNetwork", "last-month", "green")
 )
 ```
+[![Codecov test coverage](https://codecov.io/gh/JeremyGelb/spNetwork/branch/master/graph/badge.svg)](https://codecov.io/gh/JeremyGelb/spNetwork?branch=master)
 <!-- badges: end -->
 
 The package's website is available [here](https://jeremygelb.github.io/spNetwork/)

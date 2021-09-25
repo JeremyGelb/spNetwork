@@ -130,6 +130,7 @@ correction_factor <- function(study_area,events,lines,method, bws, kernel_name, 
   kernel_func <- select_kernel(kernel_name)
   events$goid <- 1:nrow(events)
   bw <- max(bws)
+
   # step 0 calculate the distances between the points and the border
   boundaries <- gBoundary(study_area, byid = TRUE)
   dists <- as.numeric(gDistance(events,boundaries, byid = TRUE))
@@ -179,7 +180,7 @@ correction_factor <- function(study_area,events,lines,method, bws, kernel_name, 
                 "sel_events" = sel_events))
   })
   selections <- selections[lengths(selections) != 0]
-  # step 3 iterate over the selections and caclulate the corrections factor
+  # step 3 iterate over the selections and calculate the corrections factor
   values <- lapply(selections,function(sel){
     sel_lines <- sel$sel_lines
     sel_events <- sel$sel_events
@@ -199,12 +200,12 @@ correction_factor <- function(study_area,events,lines,method, bws, kernel_name, 
     # lets obtain the potential values of each line
     if(method=="continuous"){
       if(sparse){
-        dfs <- spNetwork::corrfactor_continuous_sparse(neighbour_list,
+        dfs <- corrfactor_continuous_sparse(neighbour_list,
                                                           sel_events$vertex_id,
                                                           graph_result$linelist,
                                                           bws, max_depth)
       }else{
-        dfs <- spNetwork::corrfactor_continuous(neighbour_list,
+        dfs <- corrfactor_continuous(neighbour_list,
                                                    sel_events$vertex_id,
                                                    graph_result$linelist,
                                                    bws, max_depth)
@@ -212,12 +213,12 @@ correction_factor <- function(study_area,events,lines,method, bws, kernel_name, 
     }
     if(method=="discontinuous"){
       if(sparse){
-        dfs <- spNetwork::corrfactor_discontinuous_sparse(neighbour_list,
+        dfs <- corrfactor_discontinuous_sparse(neighbour_list,
                                                              sel_events$vertex_id,
                                                              graph_result$linelist,
                                                              bws, max_depth)
       }else{
-        dfs <- spNetwork::corrfactor_discontinuous(neighbour_list,
+        dfs <- corrfactor_discontinuous(neighbour_list,
                                                       sel_events$vertex_id,
                                                       graph_result$linelist,
                                                       bws, max_depth)
@@ -245,11 +246,11 @@ correction_factor <- function(study_area,events,lines,method, bws, kernel_name, 
       })
       df$contribs <- contribs
       df <- merge(df,edges@data[c("edge_id","is_inside")],by="edge_id")
-      outside <- subset(df,df$is_inside)
+      outside <- subset(df,df$is_inside == FALSE)
       return(sum(outside$contribs))
     })
-    corrfactor <- ifelse(corrfactor==0,1,corrfactor)
-    corrfactor <- 1/corrfactor
+    #corrfactor <- ifelse(corrfactor==0,1,corrfactor)
+    corrfactor <- 1/(1-corrfactor)
     df <- data.frame("corrfactor" = corrfactor,
                      "goid" = sel_events$goid)
     return(df)

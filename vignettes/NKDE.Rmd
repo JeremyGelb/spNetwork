@@ -16,6 +16,18 @@ vignette: >
 bibliography: spnetwork_bilbio.bibtex
 link-citations: yes
 colorlinks: yes
+resource_files:
+  - images/continuous.png
+  - images/continuous_nkde_ex.png
+  - images/cycle_nkde.png           
+  - images/discontinuous.png
+  - images/discontinuous_nkde_ex.png
+  - images/example_pixels.png       
+  - images/simple_nkde_ex.png
+  - images/step0.png                
+  - images/step1.png
+  - images/step2.png
+  - images/step3.png  
 ---
 
 
@@ -237,17 +249,20 @@ The discontinuous NKDE is easily presented by a figure:
 ![Image Title](images/discontinuous.png){width=300px}
 </center>
 
+
 The density of the kernel function is equally divided at intersections. Note that **spNetwork** implements the modified version proposed by @sugihara2010simple, allowing for use in networks with cycles. In the case of a cycle, the multiple overlapping values of the kernel are added, as shown in the next figure.
 
 <center>
 ![Image Title](images/cycle_nkde.png){width=300px}
 </center>
 
+
 With the case presented before, we obtain the following result.
 
 <center>
 ![Image Title](images/discontinuous_nkde_ex.png){width=150px}
 </center>
+
 
 As one can see, the values of the NKDE are split at intersections to avoid the multiplication of the mass observed in the simple version. However, this creates a discontinuous NKDE, which is counter-intuitive. It leads to sharp differences between density values in the network, and could be problematic in networks with many intersections.
 
@@ -269,6 +284,7 @@ If the previous method is an ubiased estimator and quite easy to calculate, its 
 <center>
 ![Image Title](images/continuous.png){width=300px}
 </center>
+
 
 There are three different equations to calculate the kernel density depending on the situation (here, q1, q2, q3).
 

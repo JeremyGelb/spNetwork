@@ -2,28 +2,8 @@
 // **** We define here some functions to perform specific geometrical
 // **** operations which need C++ acceleration
 // ******************************************************************
-// boost assertion disabled (see here : https://github.com/airoldilab/sgd/issues/44)
-#define BOOST_DISABLE_ASSERTS
-#include <RcppArmadillo.h>
-// [[Rcpp::depends(RcppArmadillo)]]
+#include "spNetwork.h"
 
-
-//[[Rcpp::plugins(cpp17)]]
-// [[Rcpp::depends(BH)]]
-
-#include <iostream>
-#include <sstream>
-#include <progress.hpp>
-#include <progress_bar.hpp>
-#include <queue>
-#include <functional>
-
-#define _USE_MATH_DEFINES
-#include <math.h>
-
-using namespace Rcpp;
-using namespace arma;
-using namespace std;
 
 // some boost libraries used to building an rtree
 #include <boost/geometry.hpp>
@@ -79,7 +59,7 @@ linestring_t line_from_coords(NumericMatrix coords){
 // Note: the case of multilinestring is not supported
 // If needed, I could make it work by using WKT instead of coordinates
 lines_vector lines_vector_from_coordinates(List lines){
-  int i,j;
+  int i;
   lines_vector my_lines;
   // iterating on the list of coordinates
   for(i=0 ; i<lines.length() ; i++){
@@ -115,6 +95,7 @@ lines_rtree build_rtree_for_lines(lines_vector lines){
   }
 
   // **** If I use a range adaptor, the packing algo can be used and is supposed to be faster ****//
+  // but is causes problem with the c++ compiler on ubuntu...
   // std::vector<rtree_element> boxes;
   //
   // size_t id_gen = 0;
@@ -150,7 +131,6 @@ vector_rtree_element find_close_lines_in_index(lines_rtree index, lines_vector l
   bool ok = false;
   double actual_dist = min_dist/2.0;
   double width;
-  int valid_geoms;
   vector_rtree_element returned_values;
   int iter = 0;
 
@@ -207,7 +187,6 @@ IntegerVector find_nearest_object_in_line_rtree(NumericMatrix pts, List lines, d
 
   // step3: querying the spatial index for each point
   IntegerVector final_indexes;
-  typedef boost::geometry::model::box<point_t> box;
 
   int i;
   for(i = 0; i<pts.nrow(); i++){
@@ -504,6 +483,58 @@ List add_vertices_lines_cpp(NumericMatrix points, List lines, arma::colvec neare
 
 }
 
+/*
+ *
+ * A function to add the center of lines as a vertex on these lines
+ *
+ */
+
+// [[Rcpp::export]]
+List add_center_lines_cpp(List lines){
+
+  // creating the final container
+  std::vector<NumericMatrix> new_lines;
+  point_t p(0,0);
+
+  // start the iterations
+  int i,j;
+  for (i = 0; i < lines.length(); i++){
+    NumericMatrix line = lines(i);
+
+    // determining the location of the new point
+    linestring_t line_geom = line_from_coords(line);
+    double middle = bg::length(line_geom)/2.0;
+    bg::line_interpolate(line_geom, middle, p);
+
+    // inserting the new point in new coords
+    double cum_dist = 0;
+    double prevX = line(0,0);
+    double prevY = line(0,1);
+    NumericMatrix new_line(line.nrow()+1,2);
+    int ad = 0;
+
+    for(j=0; j < line.nrow(); j++){
+      double X = line(j,0);
+      double Y = line(j,1);
+      cum_dist += sqrt(pow(X-prevX,2) + pow(Y-prevY,2));
+      if((cum_dist>middle) & (ad == 0)){
+        new_line(j,0) = p.x();
+        new_line(j,1) = p.y();
+        ad = 1;
+      }
+      new_line(j+ad,0) = X;
+      new_line(j+ad,1) = Y;
+    }
+
+    // saving this new matrix
+    new_lines.push_back(new_line);
+  }
+
+  List final_list = wrap(new_lines);
+  return(final_list);
+
+}
+
 
 // *********************************************************************
 // Split lines at points
@@ -597,3 +628,105 @@ List split_lines_at_points_cpp(arma::mat Xmat, List lines, arma::colvec nearest_
 }
 
 
+// *********************************************************************
+// Lixelize lines
+// *********************************************************************
+
+/*
+ *
+ * A function to split some lines to obtain lixels of equal lengths (but the extremity)
+ *
+ */
+// [[Rcpp::export]]
+List lixelize_lines_cpp(List lines, double lx_length, double mindist){
+
+  //creating the containers (a list for the lines and a vector for the new indices)
+  std::vector<NumericMatrix> new_lines;
+  std::vector<int> new_index;
+
+  // starting the iterations
+  int i,j;
+  for(i=0; i<lines.length(); i++){
+    NumericMatrix line = lines(i);
+    linestring_t line_geom = line_from_coords(line);
+    double line_length = bg::length(line_geom);
+
+    // if the length is to short
+    if(line_length <= lx_length + mindist){
+      new_lines.push_back(line);
+      new_index.push_back(i);
+    }else{
+    // otherwise, we have things to do
+
+      // fist, generating the points to add
+      std::vector<double> break_lengths;
+      std::vector<int> breaker;
+      std::vector<double> new_x;
+      std::vector<double> new_y;
+      point_t p;
+      bool continue_loop = true;
+      double actual_dist = 0;
+      while(continue_loop){
+        if((line_length - actual_dist-lx_length) > mindist){
+          actual_dist += lx_length;
+          bg::line_interpolate(line_geom,actual_dist,p);
+          new_x.push_back(p.x());
+          new_y.push_back(p.y());
+          break_lengths.push_back(actual_dist);
+          breaker.push_back(1);
+        }else{
+          continue_loop = false;
+        }
+      }
+      // now adding the real line vertices
+      double prevX = line(0,0);
+      double prevY = line(0,1);
+      double X, Y;
+      double tot_dist = 0;
+      for (j = 0; j<line.nrow();j++){
+        X = line(j,0);
+        Y = line(j,1);
+        new_x.push_back(X);
+        new_y.push_back(Y);
+        breaker.push_back(0);
+        tot_dist += sqrt(pow(X - prevX,2) + pow(Y - prevY,2));
+        break_lengths.push_back(tot_dist);
+        prevX = X;
+        prevY = Y;
+      }
+
+      // creating a nice arma table to sort it after
+      mat coords(new_x.size(), 4);
+      coords.col(0) = conv_to<colvec>::from(new_x);
+      coords.col(1) = conv_to<colvec>::from(new_y);
+      coords.col(2) = conv_to<colvec>::from(break_lengths);
+      coords.col(3) = conv_to<colvec>::from(breaker);
+      // sorting the matrix
+      uvec order = sort_index(coords.col(2));
+      coords = coords.rows(order);
+
+      // finding the points on which we must do the cut
+      std::vector<int> break_idx;
+      break_idx.push_back(0);
+      int nrs = coords.n_rows;
+      for(j=0; j<nrs;j++){
+        if(coords(j,3) == 1){
+          break_idx.push_back(j);
+        }
+      }
+
+      break_idx.push_back(coords.n_rows-1);
+
+      // and FINALLY doing the cut
+      nrs = (break_idx.size()-1);
+      for(j=0; j<nrs; j++){
+        new_lines.push_back(wrap(coords.submat(break_idx.at(j), 0, break_idx.at(j+1), 1 )));
+        new_index.push_back(i);
+      }
+    }
+
+  }
+  List final = List::create(wrap(new_lines),wrap(new_index));
+  return final;
+
+}

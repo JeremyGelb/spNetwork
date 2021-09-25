@@ -22,7 +22,6 @@ A new SpatialPointsDataFrame
 Function to aggregate points within a radius.
 }
 \examples{
-#This is an internal function, no example provided
 eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
 bike_accidents <- rgdal::readOGR(eventsgpkg,layer="bike_accidents", verbose=FALSE)
 bike_accidents$weight <- 1

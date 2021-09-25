@@ -68,17 +68,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// timesTwo
-NumericVector timesTwo(NumericVector x);
-RcppExport SEXP _spNetwork_timesTwo(SEXP xSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(timesTwo(x));
-    return rcpp_result_gen;
-END_RCPP
-}
 // continuous_nkde_cpp_arma_sparse
 DataFrame continuous_nkde_cpp_arma_sparse(List neighbour_list, NumericVector events, NumericVector weights, DataFrame samples, NumericVector bws, std::string kernel_name, DataFrame nodes, DataFrame line_list, int max_depth, bool verbose);
 RcppExport SEXP _spNetwork_continuous_nkde_cpp_arma_sparse(SEXP neighbour_listSEXP, SEXP eventsSEXP, SEXP weightsSEXP, SEXP samplesSEXP, SEXP bwsSEXP, SEXP kernel_nameSEXP, SEXP nodesSEXP, SEXP line_listSEXP, SEXP max_depthSEXP, SEXP verboseSEXP) {
@@ -259,6 +248,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// add_center_lines_cpp
+List add_center_lines_cpp(List lines);
+RcppExport SEXP _spNetwork_add_center_lines_cpp(SEXP linesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type lines(linesSEXP);
+    rcpp_result_gen = Rcpp::wrap(add_center_lines_cpp(lines));
+    return rcpp_result_gen;
+END_RCPP
+}
 // split_lines_at_points_cpp
 List split_lines_at_points_cpp(arma::mat Xmat, List lines, arma::colvec nearest_lines_idx, float mindist);
 RcppExport SEXP _spNetwork_split_lines_at_points_cpp(SEXP XmatSEXP, SEXP linesSEXP, SEXP nearest_lines_idxSEXP, SEXP mindistSEXP) {
@@ -273,12 +273,24 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// lixelize_lines_cpp
+List lixelize_lines_cpp(List lines, double lx_length, double mindist);
+RcppExport SEXP _spNetwork_lixelize_lines_cpp(SEXP linesSEXP, SEXP lx_lengthSEXP, SEXP mindistSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type lines(linesSEXP);
+    Rcpp::traits::input_parameter< double >::type lx_length(lx_lengthSEXP);
+    Rcpp::traits::input_parameter< double >::type mindist(mindistSEXP);
+    rcpp_result_gen = Rcpp::wrap(lixelize_lines_cpp(lines, lx_length, mindist));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_spNetwork_get_loo_values_continuous", (DL_FUNC) &_spNetwork_get_loo_values_continuous, 9},
     {"_spNetwork_get_loo_values_discontinuous", (DL_FUNC) &_spNetwork_get_loo_values_discontinuous, 9},
     {"_spNetwork_get_loo_values_simple", (DL_FUNC) &_spNetwork_get_loo_values_simple, 9},
-    {"_spNetwork_timesTwo", (DL_FUNC) &_spNetwork_timesTwo, 1},
     {"_spNetwork_continuous_nkde_cpp_arma_sparse", (DL_FUNC) &_spNetwork_continuous_nkde_cpp_arma_sparse, 10},
     {"_spNetwork_continuous_nkde_cpp_arma", (DL_FUNC) &_spNetwork_continuous_nkde_cpp_arma, 10},
     {"_spNetwork_discontinuous_nkde_cpp_arma_sparse", (DL_FUNC) &_spNetwork_discontinuous_nkde_cpp_arma_sparse, 10},
@@ -290,7 +302,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_spNetwork_find_nearest_object_in_line_rtree", (DL_FUNC) &_spNetwork_find_nearest_object_in_line_rtree, 4},
     {"_spNetwork_cut_lines_at_distances_cpp", (DL_FUNC) &_spNetwork_cut_lines_at_distances_cpp, 2},
     {"_spNetwork_add_vertices_lines_cpp", (DL_FUNC) &_spNetwork_add_vertices_lines_cpp, 4},
+    {"_spNetwork_add_center_lines_cpp", (DL_FUNC) &_spNetwork_add_center_lines_cpp, 1},
     {"_spNetwork_split_lines_at_points_cpp", (DL_FUNC) &_spNetwork_split_lines_at_points_cpp, 4},
+    {"_spNetwork_lixelize_lines_cpp", (DL_FUNC) &_spNetwork_lixelize_lines_cpp, 3},
     {NULL, NULL, 0}
 };
 

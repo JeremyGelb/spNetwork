@@ -120,7 +120,6 @@ clean_events <- function(events,digits=5,agg=NULL){
 #' @importFrom rgeos gBuffer
 #' @export
 #' @examples
-#' #This is an internal function, no example provided
 #' eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
 #' bike_accidents <- rgdal::readOGR(eventsgpkg,layer="bike_accidents", verbose=FALSE)
 #' bike_accidents$weight <- 1

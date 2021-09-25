@@ -17,6 +17,7 @@ Several vignettes were added to present the new features. A pkgdown website was 
 * issue 1 fixed by changing the function maptools::snapPointsToLines for a home made function. The package BH including the c++ boost library is used to realize fast spatial query.
 * issue 2 fixed by handling the special case of lines of length 0.
 * an error was raised when using *listw_network* with polygons and the method = "pointsalong". This was caused by a minor error in the code and works now as expected.
+* an error was present in the Diggle correction factor, leading to overestimation of the correction. This error has been corrected.
 
 ## performance
 

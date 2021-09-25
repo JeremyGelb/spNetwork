@@ -264,9 +264,11 @@ find_vertices <- function(spvertices, points, digits, tol = 0.1) {
 direct_lines<-function(lines,direction){
   ##producing all the lines
   cnt <- 1
-  allcoordinates <- coordinates(lines)
+  #allcoordinates <- coordinates(lines)
+  allcoordinates <- unlist(coordinates(lines), recursive = FALSE)
   listlines <- lapply(1:nrow(lines),function(i){
-    coords <- allcoordinates[[i]][[1]]
+    #coords <- allcoordinates[[i]][[1]]
+    coords <- allcoordinates[[i]]
     if(direction[[i]]==0){
       c1 <- coords
       c2 <- coords[nrow(coords):1,]
