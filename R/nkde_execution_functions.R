@@ -18,7 +18,7 @@
 #' @keywords internal
 #' @examples
 #' #This is an internal function, no example provided
-check_geometries <- function(lines,samples,events, study_area){
+check_geometries <- function(lines,samples,events, study_area){ # nocov start
 
   # checking if geometries are all valid, simple and planar
   obj_names <- c("lines","samples","events")
@@ -69,7 +69,7 @@ check_geometries <- function(lines,samples,events, study_area){
 }
 
 #defining some global variables (weird felx but ok)
-utils::globalVariables(c("spid", "weight", "."))
+utils::globalVariables(c("spid", "weight", ".")) # nocov end
 
 
 #' @title Clean events geometries

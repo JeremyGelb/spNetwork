@@ -1048,42 +1048,42 @@ simplify_network <- function(lines, digits = 3, heal = TRUE, mirror = TRUE, keep
 #### Development ####
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-# # this is the old function kept if bugs are found
-split_at_vertices <- function(line, points, i, mindist) {
-    # extract coordinates
-    line_coords <- coordinates(line)[[1]][[1]]
-    original_distances <- sapply(1:nrow(line_coords),function(i){
-        if (i==0){
-            return(0)
-        }else{
-            return(sqrt(sum((line_coords[i,]-line_coords[i-1,])**2)))
-        }
-    })
-    line_coords <- cbind(line_coords, cumsum(original_distances),0)
-    tot_lengths <- max(line_coords[,3])
-    # calculate lengths
-    pt_coords <- coordinates(points)
-    lengths <- gProject(line, points)
-    pt_coords <- cbind(pt_coords, lengths)
-    pt_coords <- pt_coords[(lengths>mindist & lengths<(tot_lengths-mindist)),]
-    if(is.null(nrow(pt_coords))){
-        pt_coords <- c(pt_coords,1)
-    }else{
-        pt_coords <- cbind(pt_coords,1)
-    }
-
-    all_coords <- rbind(line_coords,pt_coords)
-    # reorder the coordinate matrix
-    ord_coords <- all_coords[order(all_coords[,3]), ]
-
-    #split on new coordinates
-    ruptidx <- unique(c(1,(1:nrow(ord_coords))[ord_coords[,4] == 1],nrow(ord_coords)))
-    final_coords <- lapply(1:(length(ruptidx)-1), function(j){
-        els <- ord_coords[ruptidx[[j]]:ruptidx[[j+1]],1:2]
-    })
-
-    return(final_coords)
-}
+# # # this is the old function kept if bugs are found
+# split_at_vertices <- function(line, points, i, mindist) {
+#     # extract coordinates
+#     line_coords <- coordinates(line)[[1]][[1]]
+#     original_distances <- sapply(1:nrow(line_coords),function(i){
+#         if (i==0){
+#             return(0)
+#         }else{
+#             return(sqrt(sum((line_coords[i,]-line_coords[i-1,])**2)))
+#         }
+#     })
+#     line_coords <- cbind(line_coords, cumsum(original_distances),0)
+#     tot_lengths <- max(line_coords[,3])
+#     # calculate lengths
+#     pt_coords <- coordinates(points)
+#     lengths <- gProject(line, points)
+#     pt_coords <- cbind(pt_coords, lengths)
+#     pt_coords <- pt_coords[(lengths>mindist & lengths<(tot_lengths-mindist)),]
+#     if(is.null(nrow(pt_coords))){
+#         pt_coords <- c(pt_coords,1)
+#     }else{
+#         pt_coords <- cbind(pt_coords,1)
+#     }
+#
+#     all_coords <- rbind(line_coords,pt_coords)
+#     # reorder the coordinate matrix
+#     ord_coords <- all_coords[order(all_coords[,3]), ]
+#
+#     #split on new coordinates
+#     ruptidx <- unique(c(1,(1:nrow(ord_coords))[ord_coords[,4] == 1],nrow(ord_coords)))
+#     final_coords <- lapply(1:(length(ruptidx)-1), function(j){
+#         els <- ord_coords[ruptidx[[j]]:ruptidx[[j+1]],1:2]
+#     })
+#
+#     return(final_coords)
+# }
 
 # # this is the previous function, kept for debug
 # split_lines_at_vertex2 <- function(lines, points, nearest_lines_idx, mindist) {

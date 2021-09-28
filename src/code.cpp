@@ -220,7 +220,7 @@ DataFrame continuous_nkde_cpp_arma_sparse(List neighbour_list, NumericVector eve
 
   //calculer le dictionnaire des lignes
   //IntegerMatrix edge_mat = make_matrix(line_list,neighbour_list);
-  arma::sp_mat edge_mat = make_matrix_sparse(line_list,neighbour_list);
+  arma::sp_mat edge_mat = make_matrix_sparse(line_list, neighbour_list);
   //step2 : iterer sur chaque event
   int cnt_e = events.length()-1;
   Progress p(cnt_e, verbose);

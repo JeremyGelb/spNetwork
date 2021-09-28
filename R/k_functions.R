@@ -20,7 +20,8 @@
 #' #This is an internal function, no example provided
 kfunc <- function(dist_mat,start,end,step,Lt,n,w){
   breaks <- seq(start,end,step)
-  t1 <- Lt/(n*(n-1))
+  #t1 <- Lt/(n*(n-1))
+  t1 <- (n-1)/Lt
   k_values <- sapply(breaks,function(dist){
     int_mat <- t(t(dist_mat<=dist) * w)
     diag(int_mat) <- 0
@@ -52,7 +53,8 @@ kfunc <- function(dist_mat,start,end,step,Lt,n,w){
 gfunc <- function(dist_mat,start,end,step,width,Lt,n,w){
   breaks <- seq(start,end,step)
   width <- width/2
-  t1 <- Lt/(n*(n-1))
+  #t1 <- Lt/(n*(n-1))
+  t1 <- (n-1)/Lt
   k_values <- sapply(breaks,function(dist){
     int_mat <- t(t(dist_mat<=dist+width & dist_mat>=dist-width) * w)
     diag(int_mat) <- 0
@@ -89,7 +91,8 @@ gfunc <- function(dist_mat,start,end,step,width,Lt,n,w){
 #' #This is an internal function, no example provided
 cross_kfunc <- function(dist_mat,start,end,step,Lt,na,nb,wa,wb){
   breaks <- seq(start,end,step)
-  t1 <- Lt/(na*nb)
+  #t1 <- Lt/(na*nb)
+  t1 <- (na/Lt)
 
   # note : in the matrix, the rows are the b points
   # and the columns are the a points
@@ -129,7 +132,8 @@ cross_kfunc <- function(dist_mat,start,end,step,Lt,na,nb,wa,wb){
 cross_gfun <- function(dist_mat,start,end,step,width,Lt,na,nb,wa,wb){
   breaks <- base::seq(from = start,to = end, by = step)
   width <- width/2
-  t1 <- Lt/(na*nb)
+  #t1 <- Lt/(na*nb)
+  t1 <- (na/Lt)
   g_values <- sapply(breaks,function(dist){
     d1 <- dist + width
     d2 <- dist - width
@@ -179,17 +183,17 @@ randomize_distmatrix2 <- function(graph, edge_df, n, resolution, nsim, start_ver
     start_node <- all_names[this_edge$start_oid]
     end_node <- all_names[this_edge$end_oid]
     dists <- rep(resolution, floor(this_edge$weight/resolution))
+    if(sum(dists) == this_edge$weight){
+      dists <- dists[1:(length(dists)-1)]
+    }
     names(dists) <- paste("fict",i,1:length(dists), sep="_")
-    starts <- c(start_node, names(dists))
-    ends <- c(names(dists), end_node)
-    dists <- c(dists, this_edge$weight - sum(dists))
-    df <- data.frame(starts = starts,
-                     ends = ends,
-                     weight = dists)
-    return(df)
+    return(data.frame(starts = c(start_node, names(dists)),
+                      ends = c(names(dists), end_node),
+                      weight = c(dists, this_edge$weight - sum(dists))))
   })
 
   all_elements <- do.call(rbind, vertices_and_distances)
+  all_elements <- subset(all_elements,all_elements$weight>0)
 
   ## step 3 : creating a new graph with the new vertices and edges
   new_graph <- igraph::graph_from_data_frame(all_elements, directed = FALSE)
@@ -215,8 +219,6 @@ randomize_distmatrix2 <- function(graph, edge_df, n, resolution, nsim, start_ver
     new_vert <- sample(verts,size = n, replace = F)
     if (is.null(start_vert)){
       dist_mat <- igraph::distances(tot_graph,v = new_vert, to = new_vert)
-
-
     }else{
       dist_mat <- igraph::distances(tot_graph,v = start_vert, to = new_vert)
 
@@ -245,7 +247,6 @@ randomize_distmatrix2 <- function(graph, edge_df, n, resolution, nsim, start_ver
 randomize_distmatrix <- function(graph, edge_df, n, start_vert = NULL){
 
   vec_runif <- Vectorize(runif, vectorize.args = c("max"))
-  ## step2 : generate the random scenario
 
   ## prefered case where points are randomly located on edges
 
@@ -255,25 +256,33 @@ randomize_distmatrix <- function(graph, edge_df, n, start_vert = NULL){
                          prob = 1/edge_df$weight * edge_df$probs)
 
   sel_edges <- edge_df[sel_edges_id,]
-
   sel_edges_len <- sel_edges$weight
 
+  # preparing some variables for later
   start_oids <- sel_edges$start_oid
   end_oids <- sel_edges$end_oid
   all_names <- names(igraph::V(graph))
 
+  # finding the start nodes and end nodes of the selected edges
   start_names <- all_names[start_oids]
   end_names <- all_names[end_oids]
 
-  #b. calculating the position of the point on the edge
+  #b. calculating the position of the point on the edges
+  # each edge will receive one point
   dists <- vec_runif(n=1,min = 0, max = sel_edges_len)
+  # creating virtual names for the new vertices
   new_vert <- paste0(rep("virt_"),seq_len(length(dists)))
+
   #c. creating the new edges and nodes as another graph
   df <- data.frame(start = c(start_names,new_vert),
                    end = c(new_vert,end_names),
                    weight = c(dists,(sel_edges_len - dists)))
+
+  #d. and then merging the graphs
   new_graph <- igraph::graph_from_data_frame(df, directed = FALSE)
   tot_graph <- igraph::union(graph,new_graph, byname = TRUE)
+
+  # We just need to merge the weights of the graphs
   ws <- igraph::E(tot_graph)
   df_tmp <- data.frame("w1" = ws$weight_1,
                        "w2" = ws$weight_2)
@@ -417,9 +426,11 @@ kfunctions <- function(lines, points, start, end, step, width, nsim, conf_int = 
   new_lines <- new_lines[c("length","oid","probs")]
   Lt <- gLength(new_lines)
 
+  new_lines$weight <- gLength(new_lines, byid = TRUE)
+
   ## step4 : building the graph for the real case
   graph_result <- build_graph(new_lines,digits = digits,
-                              line_weight = "length",
+                              line_weight = "weight",
                               attrs = TRUE)
   graph <- graph_result$graph
   nodes <- graph_result$spvertices
@@ -909,7 +920,7 @@ cross_kfunctions <- function(lines, pointsA, pointsB, start, end, step, width, n
 
   ## step5 : calculating the distance matrix
   dist_mat <- igraph::distances(graph,v = snappedB$vertex_id,
-                                to = snappedA$vertex_id)
+                                to = snappedA$vertex_id, mode = "out")
   ## step6 : calcualte the kfunction and the g function
   if(verbose){
     print("Calculating k and g functions ...")

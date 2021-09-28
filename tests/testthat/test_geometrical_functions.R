@@ -342,3 +342,58 @@ test_that("formal testing of the lixelize_lines function", {
   expect_false(any(!test))
 
 })
+
+
+test_that("formal testing of the lixelize_lines.mc function", {
+
+  # creating some line
+  wkt_lines <- c(
+    "LINESTRING (0 5, 0 0)",
+    "LINESTRING (-5 0, 0 0)",
+    "LINESTRING (0 -5, 0 0)",
+    "LINESTRING (5 0, 0 0)")
+
+  linesdf <- data.frame(wkt = wkt_lines,
+                        id = paste("l",1:length(wkt_lines),sep=""))
+
+  geoms <- do.call(rbind,lapply(1:nrow(linesdf),function(i){
+    txt <- as.character(linesdf[i,]$wkt)
+    geom <- rgeos::readWKT(txt,id=i)
+    return(geom)
+  }))
+
+  all_lines <- sp::SpatialLinesDataFrame(geoms, linesdf,match.ID = F)
+
+  # calculating the observed result
+  future::plan(future::multisession(workers=1))
+  lixels <- lixelize_lines.mc(all_lines, 1, 0.5)
+  observed <- rgeos::writeWKT(lixels, byid = TRUE)
+  observed <- gsub("00","",observed, fixed = TRUE)
+  observed <- gsub(".","",observed, fixed = TRUE)
+
+  # noting the expected results
+  expected <- c("LINESTRING (0 5, 0 4)",
+                "LINESTRING (0 4, 0 3)",
+                "LINESTRING (0 3, 0 2)",
+                "LINESTRING (0 2, 0 1)",
+                "LINESTRING (0 1, 0 0)",
+                "LINESTRING (-5 0, -4 0)",
+                "LINESTRING (-4 0, -3 0)",
+                "LINESTRING (-3 0, -2 0)",
+                "LINESTRING (-2 0, -1 0)",
+                "LINESTRING (-1 0, 0 0)" ,
+                "LINESTRING (0 -5, 0 -4)",
+                "LINESTRING (0 -4, 0 -3)",
+                "LINESTRING (0 -3, 0 -2)",
+                "LINESTRING (0 -2, 0 -1)",
+                "LINESTRING (0 -1, 0 0)",
+                "LINESTRING (5 0, 4 0)",
+                "LINESTRING (4 0, 3 0)",
+                "LINESTRING (3 0, 2 0)",
+                "LINESTRING (2 0, 1 0)",
+                "LINESTRING (1 0, 0 0)")
+
+  test <- c(expected %in% observed, observed %in% expected)
+  expect_false(any(!test))
+
+})

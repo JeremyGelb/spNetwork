@@ -100,7 +100,7 @@
       <h1 data-toc-skip>Network k Functions</h1>
                         <h4 class="author">Jeremy Gelb</h4>
             
-            <h4 class="date">2021-09-25</h4>
+            <h4 class="date">2021-09-28</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/JeremyGelb/spNetwork/blob/master/vignettes/KNetworkFunctions.Rmd"><code>vignettes/KNetworkFunctions.Rmd</code></a></small>
       <div class="hidden name"><code>KNetworkFunctions.Rmd</code></div>
@@ -119,7 +119,9 @@
 <center>
 <img src="images/k-g-functions.png" title="fig:" style="width:45.0%" alt="Image Title">
 </center>
-<p>When the points are located on a network, the use of the Euclidean distance systematically underestimates the real distance between points These two functions can be extended for network spaces by using the network distance instead of the Euclidean distance.</p>
+<p>When the points are located on a network, the use of the Euclidean distance systematically underestimates the real distance between points These two functions can be extended for network spaces by using the network distance instead of the Euclidean distance. The value of the empirical k function on a network is calculated with the following formula:</p>
+<p><span class="math display">\[\hat{K}(r)=\frac{1}{(n-1)/Lt} \sum_{i=1}^{n} \sum_{j=1 \atop j \neq i}^{n} \mathbf{1}\left\{d_{i j} \leq r\right\}\]</span></p>
+<p>With <span class="math inline">\(Lt\)</span> the total length of the network and <span class="math inline">\(n\)</span> the number of events.</p>
 </div>
 <div id="the-network-k-function-in-spnetwork" class="section level1">
 <h1 class="hasAnchor">
@@ -173,7 +175,9 @@
 <a href="#the-network-cross-k-function-in-spnetwork" class="anchor"></a>The network cross-K-function in spNetwork</h1>
 <p>The cross-K-function is used to determine if two set of points A and B tend to be close or far away one from each other. For a radius <em>r</em>, the empirical cross-K-function is calculated with the following formula :</p>
 <p><span class="math display">\[\hat{K}(r)=\frac{1}{n_a n_b)} \sum_{i=1}^{n_a} \sum_{j=1}^{n_b} \mathbf{1}\left\{d_{i j} \leq r\right\}\]</span></p>
-<p>with <span class="math inline">\(n_a\)</span> the number of points in A and <span class="math inline">\(n_b\)</span> the number of points in B.</p>
+<p>On a network, the formula is adapted:</p>
+<p><span class="math display">\[\hat{K}(r)=\frac{1}{n_a/Lt)} \sum_{i=1}^{n_a} \sum_{j=1}^{n_b} \mathbf{1}\left\{d_{i j} \leq r\right\}\]</span></p>
+<p>with <span class="math inline">\(n_a\)</span> the number of points in A and <span class="math inline">\(n_b\)</span> the number of points in B, and <span class="math inline">\(Lt\)</span> the total length of the network.</p>
 <p>Note that the cross-K-function A to B is not necessarily the same results as the cross-K-function B to A. Again, in <strong>spNetwork</strong>, the inference is based on Monte Carlo Simulations. The locations of the reference set of points are randomized to estimate if the current situation is more or less clustered that what we could expect at random.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">cross_biblio_theatre</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cross_kfunctions.html">cross_kfunctions</a></span><span class="op">(</span><span class="va">main_network_mtl</span>, <span class="va">mtl_libraries</span>,

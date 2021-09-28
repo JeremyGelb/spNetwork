@@ -46,7 +46,7 @@ test_that("Testing the correction_factor function for a simple NKDE", {
   # in this case, the BW is 2, thus, a total length of 1 is
   # out of the area
   # let us calculate how much weight it represents
-  out_density <- cubintegrate(quartic_kernel,lower=1,upper=2,
+  out_density <- cubintegrate(triangle_kernel,lower=1,upper=2,
                               bw=2, relTol = 1e-15)$integral
 
   expected_val <- corr_factor <- 1/(1-out_density)
@@ -54,7 +54,7 @@ test_that("Testing the correction_factor function for a simple NKDE", {
   expected_vals <- c(1,1,expected_val)
   # let us calculate the observed value
   observed <- correction_factor(polygons,event,all_lines,
-                    "simple", 2, "quartic", 0.1, 2, 8, sparse=TRUE)
+                    "simple", 2, "triangle", 0.1, 2, 8, sparse=TRUE)
 
   expect_equal(sum(expected_vals - observed),0)
 
@@ -111,10 +111,10 @@ test_that("Testing the correction_factor function for a discontinuous NKDE", {
   # so we have a firts part outside on one line
   # and two other parts separated (correction factor)
   # we can calculate the density of the three parts
-  dens1 <- cubintegrate(quartic_kernel,lower=1,upper=2,
+  dens1 <- cubintegrate(uniform_kernel,lower=1,upper=2,
                               bw=3, relTol = 1e-15)$integral
 
-  dens2 <- cubintegrate(quartic_kernel,lower=2,upper=3,
+  dens2 <- cubintegrate(uniform_kernel,lower=2,upper=3,
                         bw=3, relTol = 1e-15)$integral * 0.5
 
   out_density <- dens1 + (2*dens2)
@@ -124,7 +124,7 @@ test_that("Testing the correction_factor function for a discontinuous NKDE", {
   expected_vals <- c(1,1,expected_val)
   # let us calculate the observed value
   observed <- correction_factor(polygons,event,all_lines,
-                                "discontinuous", c(3,3,3), "quartic", 0.1, 2, 8, sparse=TRUE)
+                                "discontinuous", c(3,3,3), "uniform", 0.1, 2, 8, sparse=TRUE)
 
   # observed2 <- correction_factor(polygons,event,all_lines,
   #                               "discontinuous", c(3,3,3), "quartic", 0.1, 2, 8, sparse=FALSE)
@@ -190,13 +190,13 @@ test_that("Testing the correction_factor function for a continuous NKDE", {
 
   n <- 3
 
-  dens1 <- cubintegrate(quartic_kernel,lower=1,upper=2,
+  dens1 <- cubintegrate(cosine_kernel,lower=1,upper=2,
                         bw=3, relTol = 1e-15)$integral
 
-  corr_dens <- cubintegrate(quartic_kernel,lower=2,upper=3,
+  corr_dens <- cubintegrate(cosine_kernel,lower=2,upper=3,
                             bw=3, relTol = 1e-15)$integral * ((2.0-n)/n)
 
-  dens2 <- cubintegrate(quartic_kernel,lower=2,upper=3,
+  dens2 <- cubintegrate(cosine_kernel,lower=2,upper=3,
                         bw=3, relTol = 1e-15)$integral * (2.0/n)
 
   out_density <- (dens1+corr_dens) + (2*dens2)
@@ -206,7 +206,7 @@ test_that("Testing the correction_factor function for a continuous NKDE", {
   expected_vals <- c(1,1,expected_val)
   # let us calculate the observed value
   observed <- correction_factor(polygons,event,all_lines,
-                                "continuous", c(3,3,3), "quartic", 0.1, 2, 8, sparse=TRUE)
+                                "continuous", c(3,3,3), "cosine", 0.1, 2, 8, sparse=TRUE)
 
   # observed2 <- correction_factor(polygons,event,all_lines,
   #                               "continuous", c(3,3,3), "quartic", 0.1, 2, 8, sparse=FALSE)

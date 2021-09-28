@@ -37,7 +37,11 @@ A modified version of the K-function is the G-function (Pair Correlation Functio
 ![Image Title](images/k-g-functions.png){width=45%}
 </center>
 
-When the points are located on a network, the use of the Euclidean distance systematically underestimates the real distance between points These two functions can be extended for network spaces by using the network distance instead of the Euclidean distance.
+When the points are located on a network, the use of the Euclidean distance systematically underestimates the real distance between points These two functions can be extended for network spaces by using the network distance instead of the Euclidean distance. The value of the empirical k function on a network is calculated with the following formula: 
+
+$$\hat{K}(r)=\frac{1}{(n-1)/Lt} \sum_{i=1}^{n} \sum_{j=1 \atop j \neq i}^{n} \mathbf{1}\left\{d_{i j} \leq r\right\}$$
+
+With $Lt$ the total length of the network and $n$ the number of events. 
 
 # The network K-function in spNetwork
 
@@ -161,7 +165,11 @@ The cross-K-function is used to determine if two set of points A and B tend to b
 
 $$\hat{K}(r)=\frac{1}{n_a n_b)} \sum_{i=1}^{n_a} \sum_{j=1}^{n_b} \mathbf{1}\left\{d_{i j} \leq r\right\}$$
 
-with $n_a$ the number of points in A and $n_b$ the number of points in B.
+On a network, the formula is adapted: 
+
+$$\hat{K}(r)=\frac{1}{n_a/Lt)} \sum_{i=1}^{n_a} \sum_{j=1}^{n_b} \mathbf{1}\left\{d_{i j} \leq r\right\}$$
+
+with $n_a$ the number of points in A and $n_b$ the number of points in B, and $Lt$ the total length of the network.
 
 Note that the cross-K-function A to B is not necessarily the same results as the cross-K-function B to A. Again, in **spNetwork**, the inference is based on Monte Carlo Simulations. The locations of the reference set of points are randomized to estimate if the current situation is more or less clustered that what we could expect at random.
 
