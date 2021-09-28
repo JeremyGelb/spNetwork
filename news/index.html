@@ -161,6 +161,7 @@
 <h2 class="hasAnchor">
 <a href="#documentation" class="anchor"></a>documentation</h2>
 <p>Several vignettes were added to present the new features. A pkgdown website was aslo built to give a more attractive way to browse the documentation.</p>
+<p>We follow now the code coverage. We aim a 70% coverage before the next CRAN release.</p>
 </div>
 <div id="corrected-bugs" class="section level2">
 <h2 class="hasAnchor">
@@ -170,6 +171,7 @@
 <li>issue 2 fixed by handling the special case of lines of length 0.</li>
 <li>an error was raised when using <em>listw_network</em> with polygons and the method = “pointsalong”. This was caused by a minor error in the code and works now as expected.</li>
 <li>an error was present in the Diggle correction factor, leading to overestimation of the correction. This error has been corrected.</li>
+<li>for the k functions, a minor error in the calculus was corrected, affecting only the absolute scale of the result. These functions are now formally tested.</li>
 </ul>
 </div>
 <div id="performance" class="section level2">

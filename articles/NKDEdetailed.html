@@ -100,7 +100,7 @@
       <h1 data-toc-skip>Details about NKDE</h1>
                         <h4 class="author">Jeremy Gelb</h4>
             
-            <h4 class="date">2021-09-25</h4>
+            <h4 class="date">2021-09-28</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/JeremyGelb/spNetwork/blob/master/vignettes/NKDEdetailed.Rmd"><code>vignettes/NKDEdetailed.Rmd</code></a></small>
       <div class="hidden name"><code>NKDEdetailed.Rmd</code></div>
@@ -260,7 +260,8 @@
 <a href="#the-discontinuous-method" class="anchor"></a>The discontinuous method</h1>
 <p>To overcome the limits of the previous method, <span class="citation">Okabe and Sugihara (<a href="#ref-okabe2012spatial" role="doc-biblioref">2012</a>)</span> have proposed the discontinuous NKDE, which has been extended by <span class="citation">Sugihara, Satoh, and Okabe (<a href="#ref-sugihara2010simple" role="doc-biblioref">2010</a>)</span> for cases where the network has cycles shorter than the bandwidth.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">discontinuous_kernel</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nkde.html">nkde</a></span><span class="op">(</span><span class="va">all_lines</span>, <span class="va">event</span>, w <span class="op">=</span> <span class="fl">1</span>,
+<code class="sourceCode R">
+<span class="va">discontinuous_kernel</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nkde.html">nkde</a></span><span class="op">(</span><span class="va">all_lines</span>, <span class="va">event</span>, w <span class="op">=</span> <span class="fl">1</span>,
                   samples <span class="op">=</span> <span class="va">samples_pts</span>, kernel_name <span class="op">=</span> <span class="st">"quartic"</span>, 
                   bw <span class="op">=</span> <span class="fl">10</span>, method <span class="op">=</span> <span class="st">"discontinuous"</span>, div <span class="op">=</span> <span class="st">"bw"</span>, 
                   digits <span class="op">=</span> <span class="fl">3</span>, tol <span class="op">=</span> <span class="fl">0.001</span>, grid_shape <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span>,
