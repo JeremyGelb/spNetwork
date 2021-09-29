@@ -11,6 +11,222 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// quartic_kernel_cpp
+arma::vec quartic_kernel_cpp(arma::vec d, double bw);
+RcppExport SEXP _spNetwork_quartic_kernel_cpp(SEXP dSEXP, SEXP bwSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type d(dSEXP);
+    Rcpp::traits::input_parameter< double >::type bw(bwSEXP);
+    rcpp_result_gen = Rcpp::wrap(quartic_kernel_cpp(d, bw));
+    return rcpp_result_gen;
+END_RCPP
+}
+// quartic_kernelos
+double quartic_kernelos(double d, double bw);
+RcppExport SEXP _spNetwork_quartic_kernelos(SEXP dSEXP, SEXP bwSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type d(dSEXP);
+    Rcpp::traits::input_parameter< double >::type bw(bwSEXP);
+    rcpp_result_gen = Rcpp::wrap(quartic_kernelos(d, bw));
+    return rcpp_result_gen;
+END_RCPP
+}
+// triangle_kernel_cpp
+arma::vec triangle_kernel_cpp(arma::vec d, double bw);
+RcppExport SEXP _spNetwork_triangle_kernel_cpp(SEXP dSEXP, SEXP bwSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type d(dSEXP);
+    Rcpp::traits::input_parameter< double >::type bw(bwSEXP);
+    rcpp_result_gen = Rcpp::wrap(triangle_kernel_cpp(d, bw));
+    return rcpp_result_gen;
+END_RCPP
+}
+// triangle_kernelos
+double triangle_kernelos(double d, double bw);
+RcppExport SEXP _spNetwork_triangle_kernelos(SEXP dSEXP, SEXP bwSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type d(dSEXP);
+    Rcpp::traits::input_parameter< double >::type bw(bwSEXP);
+    rcpp_result_gen = Rcpp::wrap(triangle_kernelos(d, bw));
+    return rcpp_result_gen;
+END_RCPP
+}
+// uniform_kernel_cpp
+arma::vec uniform_kernel_cpp(arma::vec d, double bw);
+RcppExport SEXP _spNetwork_uniform_kernel_cpp(SEXP dSEXP, SEXP bwSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type d(dSEXP);
+    Rcpp::traits::input_parameter< double >::type bw(bwSEXP);
+    rcpp_result_gen = Rcpp::wrap(uniform_kernel_cpp(d, bw));
+    return rcpp_result_gen;
+END_RCPP
+}
+// uniform_kernelos
+double uniform_kernelos(double d, double bw);
+RcppExport SEXP _spNetwork_uniform_kernelos(SEXP dSEXP, SEXP bwSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type d(dSEXP);
+    Rcpp::traits::input_parameter< double >::type bw(bwSEXP);
+    rcpp_result_gen = Rcpp::wrap(uniform_kernelos(d, bw));
+    return rcpp_result_gen;
+END_RCPP
+}
+// epanechnikov_kernel_cpp
+arma::vec epanechnikov_kernel_cpp(arma::vec d, double bw);
+RcppExport SEXP _spNetwork_epanechnikov_kernel_cpp(SEXP dSEXP, SEXP bwSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type d(dSEXP);
+    Rcpp::traits::input_parameter< double >::type bw(bwSEXP);
+    rcpp_result_gen = Rcpp::wrap(epanechnikov_kernel_cpp(d, bw));
+    return rcpp_result_gen;
+END_RCPP
+}
+// epanechnikov_kernelos
+double epanechnikov_kernelos(double d, double bw);
+RcppExport SEXP _spNetwork_epanechnikov_kernelos(SEXP dSEXP, SEXP bwSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type d(dSEXP);
+    Rcpp::traits::input_parameter< double >::type bw(bwSEXP);
+    rcpp_result_gen = Rcpp::wrap(epanechnikov_kernelos(d, bw));
+    return rcpp_result_gen;
+END_RCPP
+}
+// triweight_kernel_cpp
+arma::vec triweight_kernel_cpp(arma::vec d, double bw);
+RcppExport SEXP _spNetwork_triweight_kernel_cpp(SEXP dSEXP, SEXP bwSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type d(dSEXP);
+    Rcpp::traits::input_parameter< double >::type bw(bwSEXP);
+    rcpp_result_gen = Rcpp::wrap(triweight_kernel_cpp(d, bw));
+    return rcpp_result_gen;
+END_RCPP
+}
+// triweight_kernelos
+double triweight_kernelos(double d, double bw);
+RcppExport SEXP _spNetwork_triweight_kernelos(SEXP dSEXP, SEXP bwSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type d(dSEXP);
+    Rcpp::traits::input_parameter< double >::type bw(bwSEXP);
+    rcpp_result_gen = Rcpp::wrap(triweight_kernelos(d, bw));
+    return rcpp_result_gen;
+END_RCPP
+}
+// tricube_kernel_cpp
+arma::vec tricube_kernel_cpp(arma::vec d, double bw);
+RcppExport SEXP _spNetwork_tricube_kernel_cpp(SEXP dSEXP, SEXP bwSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type d(dSEXP);
+    Rcpp::traits::input_parameter< double >::type bw(bwSEXP);
+    rcpp_result_gen = Rcpp::wrap(tricube_kernel_cpp(d, bw));
+    return rcpp_result_gen;
+END_RCPP
+}
+// tricube_kernelos
+double tricube_kernelos(double d, double bw);
+RcppExport SEXP _spNetwork_tricube_kernelos(SEXP dSEXP, SEXP bwSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type d(dSEXP);
+    Rcpp::traits::input_parameter< double >::type bw(bwSEXP);
+    rcpp_result_gen = Rcpp::wrap(tricube_kernelos(d, bw));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cosine_kernel_cpp
+arma::vec cosine_kernel_cpp(arma::vec d, double bw);
+RcppExport SEXP _spNetwork_cosine_kernel_cpp(SEXP dSEXP, SEXP bwSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type d(dSEXP);
+    Rcpp::traits::input_parameter< double >::type bw(bwSEXP);
+    rcpp_result_gen = Rcpp::wrap(cosine_kernel_cpp(d, bw));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cosine_kernelos
+double cosine_kernelos(double d, double bw);
+RcppExport SEXP _spNetwork_cosine_kernelos(SEXP dSEXP, SEXP bwSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type d(dSEXP);
+    Rcpp::traits::input_parameter< double >::type bw(bwSEXP);
+    rcpp_result_gen = Rcpp::wrap(cosine_kernelos(d, bw));
+    return rcpp_result_gen;
+END_RCPP
+}
+// gaussian_kernel_cpp
+arma::vec gaussian_kernel_cpp(arma::vec d, double bw);
+RcppExport SEXP _spNetwork_gaussian_kernel_cpp(SEXP dSEXP, SEXP bwSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type d(dSEXP);
+    Rcpp::traits::input_parameter< double >::type bw(bwSEXP);
+    rcpp_result_gen = Rcpp::wrap(gaussian_kernel_cpp(d, bw));
+    return rcpp_result_gen;
+END_RCPP
+}
+// gaussian_kernelos
+double gaussian_kernelos(double d, double bw);
+RcppExport SEXP _spNetwork_gaussian_kernelos(SEXP dSEXP, SEXP bwSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type d(dSEXP);
+    Rcpp::traits::input_parameter< double >::type bw(bwSEXP);
+    rcpp_result_gen = Rcpp::wrap(gaussian_kernelos(d, bw));
+    return rcpp_result_gen;
+END_RCPP
+}
+// gaussian_kernel_scaled_cpp
+arma::vec gaussian_kernel_scaled_cpp(arma::vec d, double bw);
+RcppExport SEXP _spNetwork_gaussian_kernel_scaled_cpp(SEXP dSEXP, SEXP bwSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type d(dSEXP);
+    Rcpp::traits::input_parameter< double >::type bw(bwSEXP);
+    rcpp_result_gen = Rcpp::wrap(gaussian_kernel_scaled_cpp(d, bw));
+    return rcpp_result_gen;
+END_RCPP
+}
+// gaussian_kernel_scaledos
+double gaussian_kernel_scaledos(double d, double bw);
+RcppExport SEXP _spNetwork_gaussian_kernel_scaledos(SEXP dSEXP, SEXP bwSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type d(dSEXP);
+    Rcpp::traits::input_parameter< double >::type bw(bwSEXP);
+    rcpp_result_gen = Rcpp::wrap(gaussian_kernel_scaledos(d, bw));
+    return rcpp_result_gen;
+END_RCPP
+}
 // get_loo_values_continuous
 DataFrame get_loo_values_continuous(List neighbour_list, NumericVector samples, NumericVector sweights, NumericVector events, NumericVector weights, NumericVector bws, std::string kernel_name, DataFrame line_list, int max_depth);
 RcppExport SEXP _spNetwork_get_loo_values_continuous(SEXP neighbour_listSEXP, SEXP samplesSEXP, SEXP sweightsSEXP, SEXP eventsSEXP, SEXP weightsSEXP, SEXP bwsSEXP, SEXP kernel_nameSEXP, SEXP line_listSEXP, SEXP max_depthSEXP) {
@@ -288,6 +504,24 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_spNetwork_quartic_kernel_cpp", (DL_FUNC) &_spNetwork_quartic_kernel_cpp, 2},
+    {"_spNetwork_quartic_kernelos", (DL_FUNC) &_spNetwork_quartic_kernelos, 2},
+    {"_spNetwork_triangle_kernel_cpp", (DL_FUNC) &_spNetwork_triangle_kernel_cpp, 2},
+    {"_spNetwork_triangle_kernelos", (DL_FUNC) &_spNetwork_triangle_kernelos, 2},
+    {"_spNetwork_uniform_kernel_cpp", (DL_FUNC) &_spNetwork_uniform_kernel_cpp, 2},
+    {"_spNetwork_uniform_kernelos", (DL_FUNC) &_spNetwork_uniform_kernelos, 2},
+    {"_spNetwork_epanechnikov_kernel_cpp", (DL_FUNC) &_spNetwork_epanechnikov_kernel_cpp, 2},
+    {"_spNetwork_epanechnikov_kernelos", (DL_FUNC) &_spNetwork_epanechnikov_kernelos, 2},
+    {"_spNetwork_triweight_kernel_cpp", (DL_FUNC) &_spNetwork_triweight_kernel_cpp, 2},
+    {"_spNetwork_triweight_kernelos", (DL_FUNC) &_spNetwork_triweight_kernelos, 2},
+    {"_spNetwork_tricube_kernel_cpp", (DL_FUNC) &_spNetwork_tricube_kernel_cpp, 2},
+    {"_spNetwork_tricube_kernelos", (DL_FUNC) &_spNetwork_tricube_kernelos, 2},
+    {"_spNetwork_cosine_kernel_cpp", (DL_FUNC) &_spNetwork_cosine_kernel_cpp, 2},
+    {"_spNetwork_cosine_kernelos", (DL_FUNC) &_spNetwork_cosine_kernelos, 2},
+    {"_spNetwork_gaussian_kernel_cpp", (DL_FUNC) &_spNetwork_gaussian_kernel_cpp, 2},
+    {"_spNetwork_gaussian_kernelos", (DL_FUNC) &_spNetwork_gaussian_kernelos, 2},
+    {"_spNetwork_gaussian_kernel_scaled_cpp", (DL_FUNC) &_spNetwork_gaussian_kernel_scaled_cpp, 2},
+    {"_spNetwork_gaussian_kernel_scaledos", (DL_FUNC) &_spNetwork_gaussian_kernel_scaledos, 2},
     {"_spNetwork_get_loo_values_continuous", (DL_FUNC) &_spNetwork_get_loo_values_continuous, 9},
     {"_spNetwork_get_loo_values_discontinuous", (DL_FUNC) &_spNetwork_get_loo_values_discontinuous, 9},
     {"_spNetwork_get_loo_values_simple", (DL_FUNC) &_spNetwork_get_loo_values_simple, 9},

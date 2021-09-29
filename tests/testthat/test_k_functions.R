@@ -299,3 +299,87 @@ test_that("Testing the second randomization function", {
 })
 
 
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#### TEST FOR THE MULTICORE FUNCTIONS ####
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+test_that("Testing the multicore simple k function", {
+
+  # defining a simple situation
+  wkt_lines <- c(
+    "LINESTRING (0 5, 0 0)",
+    "LINESTRING (-5 0, 0 0)",
+    "LINESTRING (0 -5, 0 0)",
+    "LINESTRING (5 0, 0 0)")
+
+  linesdf <- data.frame(wkt = wkt_lines,
+                        id = paste("l",1:length(wkt_lines),sep=""))
+
+  geoms <- do.call(rbind,lapply(1:nrow(linesdf),function(i){
+    txt <- as.character(linesdf[i,]$wkt)
+    geom <- rgeos::readWKT(txt,id=i)
+    return(geom)
+  }))
+
+  all_lines <- sp::SpatialLinesDataFrame(geoms, linesdf,match.ID = F)
+
+  # definition of three events
+  event <- data.frame(x=c(0,3,1,0),
+                      y=c(3,0,0,1))
+  sp::coordinates(event) <- cbind(event$x,event$y)
+
+  # calculating the observed values
+  future::plan(future::multisession(workers=1))
+  observed <- kfunctions.mc(all_lines, event, 0, 6, 0.5, 2, 50, conf_int = 0.05, digits = 2, tol = 0.1, resolution = NULL, agg = NULL, verbose = TRUE)
+
+  # after checking on a paper with a pen, the observed k and g values at distance 3 must be :
+  expected_vals <- c(0.9, 1.5)
+  diff <- observed$values[7,c("obs_k","obs_g")] - expected_vals
+  diff <- round(sum(abs(diff)),10)
+
+  expect_equal(diff, 0)
+
+})
+
+
+test_that("Testing the multicore cross k function", {
+
+  # defining a simple situation
+  wkt_lines <- c(
+    "LINESTRING (0 5, 0 0)",
+    "LINESTRING (-5 0, 0 0)",
+    "LINESTRING (0 -5, 0 0)",
+    "LINESTRING (5 0, 0 0)")
+
+  linesdf <- data.frame(wkt = wkt_lines,
+                        id = paste("l",1:length(wkt_lines),sep=""))
+
+  geoms <- do.call(rbind,lapply(1:nrow(linesdf),function(i){
+    txt <- as.character(linesdf[i,]$wkt)
+    geom <- rgeos::readWKT(txt,id=i)
+    return(geom)
+  }))
+
+  all_lines <- sp::SpatialLinesDataFrame(geoms, linesdf,match.ID = F)
+
+  # definition of three events
+  event <- data.frame(x=c(0,3,1,0),
+                      y=c(3,0,0,1))
+  sp::coordinates(event) <- cbind(event$x,event$y)
+
+  As <- event[c(1,2),]
+  Bs <- event[c(3,4),]
+
+  # calculating the observed values
+  future::plan(future::multisession(workers=1))
+  observed <- cross_kfunctions.mc(all_lines, As, Bs, 0, 6, 0.5, 2, 5, conf_int = 0.05, digits = 2, tol = 0.1, resolution = NULL, agg = NULL, verbose = TRUE)
+
+  # after checking on a paper with a pen, the observed k and g values at distance 3 must be :
+  expected_vals <- c(0.2, 0.4)
+  diff <- observed$values[7,c("obs_k","obs_g")] - expected_vals
+  diff <- round(sum(abs(diff)),10)
+  expect_equal(diff, 0)
+
+})
+
+

@@ -4,16 +4,13 @@
 \alias{graph_checking}
 \title{Topological error}
 \usage{
-graph_checking(lines, digits, tol)
+graph_checking(lines, digits)
 }
 \arguments{
 \item{lines}{A SpatialLinesDataFrame representing the network}
 
 \item{digits}{An integer indicating the number of digits to retain for
 coordinates}
-
-\item{tol}{A float indicating the tolerance distance to identify a dangle
-node}
 }
 \value{
 A list with two elements. The first is a SpatialPointsDataFrame

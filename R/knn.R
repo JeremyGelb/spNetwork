@@ -321,7 +321,7 @@ network_knn <- function(origins, lines, k, destinations = NULL, maxdistance = 0,
 #' ## make sure any open connections are closed afterward
 #' if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
 #' }
-network_knn.mc <- function(origins, lines, k, destinations = NULL, maxdistance = 0, snap_dist=Inf, line_weight = "length", direction=NULL, grid_shape=c(1,1), verbose = FALSE, digits = 3, tol=0.1){
+network_knn.mc <- function(origins, lines, k, destinations = NULL, maxdistance = 0, snap_dist = Inf, line_weight = "length", direction=NULL, grid_shape=c(1,1), verbose = FALSE, digits = 3, tol=0.1){
 
   ## quick sanity check before starting
   sanity_check_knn(origins, destinations,
@@ -396,7 +396,8 @@ network_knn.mc <- function(origins, lines, k, destinations = NULL, maxdistance =
       all_pts <- elements[[1]]
       selected_lines <- elements[[2]]
       #calculating the elements
-      values <- network_knn_worker(all_pts, selected_lines, k, use_dest = use_dest,
+      values <- network_knn_worker(all_pts, selected_lines, k, direction = direction,
+                                   use_dest = use_dest,
                                    verbose = verbose, digits = digits, tol=tol)
       return(values)
     }
@@ -469,7 +470,7 @@ network_knn.mc <- function(origins, lines, k, destinations = NULL, maxdistance =
 #' @importFrom rgeos gLength gBuffer gIntersects gPointOnSurface
 #' @examples
 #' #no example provided, this is an internal function
-sanity_check_knn <- function(origins, destinations, lines, k, maxdistance, snap_dist, line_weight, direction, grid_shape, verbose , digits, tol){
+sanity_check_knn <- function(origins, destinations, lines, k, maxdistance, snap_dist, line_weight, direction, grid_shape, verbose , digits, tol){ # nocov start
 
   ## check des types destinations, lines et origins
   if(class(origins)[[1]] != "SpatialPointsDataFrame"){
@@ -540,5 +541,4 @@ sanity_check_knn <- function(origins, destinations, lines, k, maxdistance, snap_
     stop("tol must be a numeric")
   }
 
-
-}
+} # nocov end

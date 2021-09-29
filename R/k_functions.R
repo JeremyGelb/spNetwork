@@ -733,11 +733,11 @@ kfunctions.mc <- function(lines, points, start, end, step, width, nsim, conf_int
 
   plot_df <- data.frame(
     "obs_k" = k_vals,
-    "lower_k" = k_stats[1,],
-    "upper_k" = k_stats[2,],
+    "upper_k" = k_stats[1,],
+    "lower_k" = k_stats[2,],
     "obs_g" = g_vals,
-    "lower_g" = g_stats[1,],
-    "upper_g" = g_stats[2,],
+    "upper_g" = g_stats[1,],
+    "lower_g" = g_stats[2,],
     "distances" = seq(start,end,step)
   )
 

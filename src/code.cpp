@@ -2,21 +2,6 @@
 #include "base_kernel_funtions.h"
 #include "matrices_functions.h"
 
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// #### General helper functions ####
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-void rcpp_rcout_num(NumericVector v){
-  // printing value of vector
-  Rcout << "" << v << "\n";
-}
-
-void rcpp_rcout_int(IntegerVector v){
-  // printing value of vector
-  Rcout << "The value of v : " << v << "\n";
-}
-
-
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // #### NKDE continuous functions ####

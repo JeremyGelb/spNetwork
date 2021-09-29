@@ -191,60 +191,7 @@ build_graph_directed <- function(lines, digits, line_weight, direction, attrs = 
 }
 
 
-#'@title Match nodes and points
-#'
-#'@description Function to match some points (SpatialPointsDataFrame) to the
-#'  vertices of a graph.
-#'
-#'@param spvertices The spatial vertices of a graph (produced with build_graph)
-#'@param points the SpatialPointsDataFrame to match
-#'@param digits The number of digits to keep from the coordinates
-#'@param tol the maximum distance between a point and a vertex
-#'@return A vector of the corresponding vertices id, multiple points may belong
-#'  to the same vertex
-#'@importFrom sp coordinates SpatialPoints SpatialPointsDataFrame
-#'@importFrom utils txtProgressBar setTxtProgressBar
-#'@importFrom rgeos gIntersects gBuffer
-#'@keywords internal
-#' @examples
-#' #This is an internal function, no example provided
-find_vertices <- function(spvertices, points, digits, tol = 0.1) {
-    # step1 : calculate the spatialnameindex
-    coords <- coordinates(points)
-    points$tempoid <- 1:nrow(points)
-    points$spIndex <- sp_char_index(coords, digits)
-    # step2 : check which points are already well matched
-    matching <- data.table(points@data)
-    B <- data.table(spvertices@data)
-    matching[B, on = c("spIndex"="name"), names(B) := mget(paste0("i.", names(B)))]
-    matching <- matching[, .SD[1], "tempoid"]
 
-    if (any(is.na(matching$id)) == FALSE) {
-        return(matching$id)
-    } else {
-        # so we have some points that need to be matched
-        pb <- txtProgressBar(min = 0, max = nrow(matching), style = 3)
-        matching <- SpatialPointsDataFrame(coords, matching)
-        raster::crs(matching) <- raster::crs(points)
-        # si on a des cas manquant, allons les chercher !
-        values <- sapply(1:nrow(matching), function(i) {
-            setTxtProgressBar(pb, i)
-            pt <- matching[i, ]
-            if (is.na(pt$id)) {
-                test <- as.vector(gIntersects(spvertices, gBuffer(pt, width = tol),
-                  prepared = TRUE, byid = TRUE))
-                if (any(test) == FALSE) {
-                  stop(paste("no node find at the demanded distance here ",
-                    pt$spIndex, sep = ""))
-                } else {
-                  return(subset(spvertices, test)[["id"]][[1]])
-                }
-            } else {
-                return(pt$id)
-            }
-        })
-    }
-}
 
 
 #' @title Make a network directed
@@ -332,8 +279,6 @@ plot_graph <- function(graph) {
 #' @param lines A SpatialLinesDataFrame representing the network
 #' @param digits An integer indicating the number of digits to retain for
 #'   coordinates
-#' @param tol A float indicating the tolerance distance to identify a dangle
-#'   node
 #' @return A list with two elements. The first is a SpatialPointsDataFrame
 #'   indicating for each node of the network to which component it belongs. The
 #'   second is a SpatialPointsDataFrame with the dangle nodes of the network.
@@ -346,7 +291,7 @@ plot_graph <- function(graph) {
 #' mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
 #' topo_errors <- graph_checking(mtl_network, 2, 2)
 #' }
-graph_checking <- function(lines,digits, tol){
+graph_checking <- function(lines,digits){
 
   ##step1 : adjusting the lines
   lines$length <- gLength(lines,byid = TRUE)
@@ -365,20 +310,9 @@ graph_checking <- function(lines,digits, tol){
 
   ##step4 : identify dangle nodes
   graph_results$spvertices$degree <- igraph::degree(graph_results$graph)
-  potential_error <- subset(graph_results$spvertices,
+  dangle_nodes <- subset(graph_results$spvertices,
                             graph_results$spvertices$degree==1)
 
-  node_tree <- build_quadtree(graph_results$spvertices)
-  close_nodes_idx <- sapply(1:nrow(potential_error),function(i){
-    row <- potential_error[i,]
-    knn2 <- SearchTrees::knnLookup(node_tree,newdat = coordinates(row))
-    return(knn2[[2]])
-  })
-  close_nodes <- graph_results$spvertices[close_nodes_idx,]
-  XY1 <- coordinates(potential_error)
-  XY2 <- coordinates(close_nodes)
-  dist <- sqrt(rowSums((XY1 - XY2)**2))
-  dangle_nodes <- subset(potential_error,dist<tol)
   return(list("dangle_nodes" = dangle_nodes,
               "vertex_components" = graph_results$spvertices))
 
@@ -445,4 +379,59 @@ dist_mat_dupl <- function(graph, start, end ){
   return(mat)
 }
 
-
+# it looks like I never use this function
+# I will keep it here just in case
+#@title Match nodes and points
+#
+#@description Function to match some points (SpatialPointsDataFrame) to the
+#  vertices of a graph.
+#
+#@param spvertices The spatial vertices of a graph (produced with build_graph)
+#@param points the SpatialPointsDataFrame to match
+#@param digits The number of digits to keep from the coordinates
+#@param tol the maximum distance between a point and a vertex
+#@return A vector of the corresponding vertices id, multiple points may belong
+#  to the same vertex
+#@importFrom sp coordinates SpatialPoints SpatialPointsDataFrame
+#@importFrom utils txtProgressBar setTxtProgressBar
+#@importFrom rgeos gIntersects gBuffer
+#@keywords internal
+# @examples
+# #This is an internal function, no example provided
+# find_vertices <- function(spvertices, points, digits, tol = 0.1) {
+#     # step1 : calculate the spatialnameindex
+#     coords <- coordinates(points)
+#     points$tempoid <- 1:nrow(points)
+#     points$spIndex <- sp_char_index(coords, digits)
+#     # step2 : check which points are already well matched
+#     matching <- data.table(points@data)
+#     B <- data.table(spvertices@data)
+#     matching[B, on = c("spIndex"="name"), names(B) := mget(paste0("i.", names(B)))]
+#     matching <- matching[, .SD[1], "tempoid"]
+#
+#     if (any(is.na(matching$id)) == FALSE) {
+#         return(matching$id)
+#     } else {
+#         # so we have some points that need to be matched
+#         pb <- txtProgressBar(min = 0, max = nrow(matching), style = 3)
+#         matching <- SpatialPointsDataFrame(coords, matching)
+#         raster::crs(matching) <- raster::crs(points)
+#         # si on a des cas manquant, allons les chercher !
+#         values <- sapply(1:nrow(matching), function(i) {
+#             setTxtProgressBar(pb, i)
+#             pt <- matching[i, ]
+#             if (is.na(pt$id)) {
+#                 test <- as.vector(gIntersects(spvertices, gBuffer(pt, width = tol),
+#                   prepared = TRUE, byid = TRUE))
+#                 if (any(test) == FALSE) {
+#                   stop(paste("no node find at the demanded distance here ",
+#                     pt$spIndex, sep = ""))
+#                 } else {
+#                   return(subset(spvertices, test)[["id"]][[1]])
+#                 }
+#             } else {
+#                 return(pt$id)
+#             }
+#         })
+#     }
+# }
