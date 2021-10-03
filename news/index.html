@@ -160,7 +160,7 @@
 <div id="documentation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#documentation" class="anchor"></a>documentation</h2>
-<p>Several vignettes were added to present the new features. A pkgdown website was aslo built to give a more attractive way to browse the documentation.</p>
+<p>Several vignettes were added to present the new features. A pkgdown website was also built to give a more attractive way to browse the documentation.</p>
 <p>We follow now the code coverage. We aim a 70% coverage before the next CRAN release.</p>
 </div>
 <div id="corrected-bugs" class="section level2">
@@ -172,6 +172,7 @@
 <li>an error was raised when using <em>listw_network</em> with polygons and the method = “pointsalong”. This was caused by a minor error in the code and works now as expected.</li>
 <li>an error was present in the Diggle correction factor, leading to overestimation of the correction. This error has been corrected.</li>
 <li>for the k functions, a minor error in the calculus was corrected, affecting only the absolute scale of the result. These functions are now formally tested.</li>
+<li>When not using the spare matrix, an error was crashing the R session in some case. This has been corrected.</li>
 </ul>
 </div>
 <div id="performance" class="section level2">
@@ -181,6 +182,7 @@
 <li>Performance was improved for function <em>listw_network</em>, <em>listw_network.mc</em>, <em>kfunctions</em>, <em>kfunctions.mc</em>, <em>cross_kfunctions</em> and <em>cross_kfunctions.mc</em>, by reducing the complexity of the network built from the SpatialLinesDataFrame with no loss of accuracy.</li>
 <li>Several geometrical functions have been accelerated by c++ code using the boost library</li>
 <li>upgraded c++ compilation requirement to c++17</li>
+<li>the functions used for the nkde calculation were reworked. Sensible speed gain can be observed.</li>
 </ul>
 </div>
 </div>

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>The main function to calculate continuous NKDE (with ARMADILO and sparse matrix) — continuousfunction • spNetwork</title>
+<title>The worker function to calculate continuous NKDE (with ARMADILLO and integer matrix) — continuousWorker • spNetwork</title>
 
 
 <!-- jquery -->
@@ -39,9 +39,8 @@
 
 
 
-<meta property="og:title" content="The main function to calculate continuous NKDE (with ARMADILO and sparse matrix) — continuousfunction" />
-<meta property="og:description" content="The main function to calculate continuous NKDE (with ARMADILO and sparse matrix)
-The main function to calculate continuous NKDE (with ARMADILO and integer matrix)" />
+<meta property="og:title" content="The worker function to calculate continuous NKDE (with ARMADILLO and integer matrix) — continuousWorker" />
+<meta property="og:description" content="The worker function to calculate continuous NKDE (with ARMADILLO and integer matrix)" />
 
 
 
@@ -139,91 +138,83 @@ The main function to calculate continuous NKDE (with ARMADILO and integer matrix
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>The main function to calculate continuous NKDE (with ARMADILO and sparse matrix)</h1>
+    <h1>The worker function to calculate continuous NKDE (with ARMADILLO and integer matrix)</h1>
     <small class="dont-index">Source: <a href='https://github.com/JeremyGelb/spNetwork/blob/master/R/RcppExports.R'><code>R/RcppExports.R</code></a></small>
-    <div class="hidden name"><code>continuousfunction.Rd</code></div>
+    <div class="hidden name"><code>continuousWorker.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>The main function to calculate continuous NKDE (with ARMADILO and sparse matrix)</p>
-<p>The main function to calculate continuous NKDE (with ARMADILO and integer matrix)</p>
+    <p>The worker function to calculate continuous NKDE (with ARMADILLO and integer matrix)</p>
     </div>
 
-    <pre class="usage"><span class='fu'>continuous_nkde_cpp_arma_sparse</span><span class='op'>(</span>
-  <span class='va'>neighbour_list</span>,
-  <span class='va'>events</span>,
-  <span class='va'>weights</span>,
-  <span class='va'>samples</span>,
-  <span class='va'>bws</span>,
-  <span class='va'>kernel_name</span>,
-  <span class='va'>nodes</span>,
-  <span class='va'>line_list</span>,
-  <span class='va'>max_depth</span>,
-  <span class='va'>verbose</span>
-<span class='op'>)</span>
-
-<span class='fu'>continuous_nkde_cpp_arma</span><span class='op'>(</span>
-  <span class='va'>neighbour_list</span>,
-  <span class='va'>events</span>,
-  <span class='va'>weights</span>,
-  <span class='va'>samples</span>,
-  <span class='va'>bws</span>,
-  <span class='va'>kernel_name</span>,
-  <span class='va'>nodes</span>,
-  <span class='va'>line_list</span>,
-  <span class='va'>max_depth</span>,
-  <span class='va'>verbose</span>
-<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
+      <th>kernel_func</th>
+      <td><p>a cpp pointer function (selected with the kernel name)</p></td>
+    </tr>
+    <tr>
+      <th>samples_k</th>
+      <td><p>a numeric vector of the actual kernel values, updates at
+each recursion</p></td>
+    </tr>
+    <tr>
       <th>neighbour_list</th>
-      <td><p>a list of the neighbours of each node</p></td>
+      <td><p>a List, giving for each node an IntegerVector with
+its neighbours</p></td>
     </tr>
     <tr>
-      <th>events</th>
-      <td><p>a numeric vector of the node id of each event</p></td>
+      <th>edge_mat</th>
+      <td><p>matrix, to find the id of each edge given two neighbours.</p></td>
     </tr>
     <tr>
-      <th>weights</th>
-      <td><p>a numeric vector of the weight of each event</p></td>
+      <th>v</th>
+      <td><p>the actual node to consider for the recursion (int)</p></td>
     </tr>
     <tr>
-      <th>samples</th>
-      <td><p>a DataFrame of the samples (with spatial coordinates and belonging edge)</p></td>
+      <th>bw</th>
+      <td><p>the kernel bandwidth</p></td>
     </tr>
     <tr>
-      <th>bws</th>
-      <td><p>the kernel bandwidths for each event</p></td>
+      <th>line_weights</th>
+      <td><p>a vector with the length of the edges</p></td>
     </tr>
     <tr>
-      <th>kernel_name</th>
-      <td><p>the name of the kernel to use</p></td>
+      <th>samples_edgeid</th>
+      <td><p>a vector associating each sample to an edge</p></td>
     </tr>
     <tr>
-      <th>nodes</th>
-      <td><p>a DataFrame representing the nodes of the graph (with spatial coordinates)</p></td>
+      <th>samples_x</th>
+      <td><p>a vector with x coordinates of each sample</p></td>
     </tr>
     <tr>
-      <th>line_list</th>
-      <td><p>a DataFrame representing the lines of the graph</p></td>
+      <th>samples_y</th>
+      <td><p>a vector with y coordinates of each sample</p></td>
+    </tr>
+    <tr>
+      <th>nodes_x</th>
+      <td><p>a vector with x coordinates of each node</p></td>
+    </tr>
+    <tr>
+      <th>nodes_y</th>
+      <td><p>a vector with y coordinates of each node</p></td>
+    </tr>
+    <tr>
+      <th>depth</th>
+      <td><p>the actual recursion depth</p></td>
     </tr>
     <tr>
       <th>max_depth</th>
-      <td><p>the maximum recursion depth (after which recursion is stopped)</p></td>
-    </tr>
-    <tr>
-      <th>verbose</th>
-      <td><p>a boolean indicating if the function must print its progress</p></td>
+      <td><p>the maximum recursion depth</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>a DataFrame with two columns : the kernel values (sum_k) and the number of events for each sample (n)</p>
-<p>a DataFrame with two columns : the kernel values (sum_k) and the number of events for each sample (n)</p>
+    <p>a vector with the kernel values calculated for each samples from
+the first node given</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
