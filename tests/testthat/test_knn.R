@@ -124,9 +124,9 @@ test_that("Testing the knn function with a simple case and a directed network", 
                       y=c(0, 2, 3))
   sp::coordinates(event) <- cbind(event$x,event$y)
 
-  sp::plot(all_lines)
-  sp::plot(event, add = T, pch = 21)
-  sp::plot(subset(all_lines, all_lines$dir != "Both"), c = "red", add = T)
+  # sp::plot(all_lines)
+  # sp::plot(event, add = T, pch = 21)
+  # sp::plot(subset(all_lines, all_lines$dir != "Both"), c = "red", add = T)
 
   ## expected matrices
   exp_dist <- rbind(
@@ -203,9 +203,9 @@ test_that("Testing the knn function with a simple case and specific destinations
                       y=c(3, 0))
   sp::coordinates(destinations) <- cbind(destinations$x,destinations$y)
 
-  sp::plot(all_lines)
-  sp::plot(event, add = T, pch = 21)
-  sp::plot(destinations, add = T, pch = 20)
+  # sp::plot(all_lines)
+  # sp::plot(event, add = T, pch = 21)
+  # sp::plot(destinations, add = T, pch = 20)
 
   ## expected matrices
   exp_dist <- rbind(
@@ -287,10 +287,10 @@ test_that("Testing the knn function with a simple case, specific destinations an
                              y=c(3, 0))
   sp::coordinates(destinations) <- cbind(destinations$x,destinations$y)
 
-  sp::plot(all_lines)
-  sp::plot(subset(all_lines, all_lines$dir != "Both"), c = "red", add = T)
-  sp::plot(event, add = T, pch = 21)
-  sp::plot(destinations, add = T, pch = 20)
+  # sp::plot(all_lines)
+  # sp::plot(subset(all_lines, all_lines$dir != "Both"), c = "red", add = T)
+  # sp::plot(event, add = T, pch = 21)
+  # sp::plot(destinations, add = T, pch = 20)
 
   ## expected matrices
   exp_dist <- rbind(
@@ -373,10 +373,10 @@ test_that("Testing the knn function with a simple case, specific destinations an
                              y=c(3, 0))
   sp::coordinates(destinations) <- cbind(destinations$x,destinations$y)
 
-  sp::plot(all_lines)
-  sp::plot(subset(all_lines, all_lines$dir != "Both"), c = "red", add = T)
-  sp::plot(event, add = T, pch = 21)
-  sp::plot(destinations, add = T, pch = 20)
+  # sp::plot(all_lines)
+  # sp::plot(subset(all_lines, all_lines$dir != "Both"), c = "red", add = T)
+  # sp::plot(event, add = T, pch = 21)
+  # sp::plot(destinations, add = T, pch = 20)
 
   ## expected matrices
   exp_dist <- rbind(

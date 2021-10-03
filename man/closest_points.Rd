@@ -15,8 +15,8 @@ closest_points(origins, targets)
 for each origin point, the index of the nearest target point
 }
 \description{
-build a quadtree index and solve the nearest neighbour problem for two
-SpatialPointsDataFrame.
+Solve the nearest neighbour problem for two SpatialPointsDataFrame.
+This is a simple wrapup of the FNN::knnx.index function
 }
 \examples{
 #This is an internal function, no example provided

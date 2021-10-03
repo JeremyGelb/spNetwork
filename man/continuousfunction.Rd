@@ -61,5 +61,5 @@ a DataFrame with two columns : the kernel values (sum_k) and the number of event
 \description{
 The main function to calculate continuous NKDE (with ARMADILO and sparse matrix)
 
-The main function to calculate continuous NKDE (with ARMADILO and Integer matrix)
+The main function to calculate continuous NKDE (with ARMADILO and integer matrix)
 }

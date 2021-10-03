@@ -1,33 +1,33 @@
 #ifndef base_kernel_functions
 #define base_kernel_functions
 
-arma::vec quartic_kernel(arma::vec d, double bw);
+arma::vec quartic_kernel_cpp(arma::vec d, double bw);
 double quartic_kernelos(double d, double bw);
 
 
-arma::vec triangle_kernel(arma::vec d, double bw);
+arma::vec triangle_kernel_cpp(arma::vec d, double bw);
 double triangle_kernelos(double d, double bw);
 
-arma::vec uniform_kernel(arma::vec d, double bw);
+arma::vec uniform_kernel_cpp(arma::vec d, double bw);
 double uniform_kernelos(double d, double bw);
 
-arma::vec epanechnikov_kernel(arma::vec d, double bw);
+arma::vec epanechnikov_kernel_cpp(arma::vec d, double bw);
 double epanechnikov_kernelos(double d, double bw);
 
 
-arma::vec triweight_kernel(arma::vec d, double bw);
+arma::vec triweight_kernel_cpp(arma::vec d, double bw);
 double triweight_kernelos(double d, double bw);
 
-arma::vec tricube_kernel(arma::vec d, double bw);
+arma::vec tricube_kernel_cpp(arma::vec d, double bw);
 double tricube_kernelos(double d, double bw);
 
-arma::vec cosine_kernel(arma::vec d, double bw);
+arma::vec cosine_kernel_cpp(arma::vec d, double bw);
 double cosine_kernelos(double d, double bw);
 
-arma::vec gaussian_kernel(arma::vec d, double bw);
+arma::vec gaussian_kernel_cpp(arma::vec d, double bw);
 double gaussian_kernelos(double d, double bw);
 
-arma::vec gaussian_kernel_scaled(arma::vec d, double bw);
+arma::vec gaussian_kernel_scaled_cpp(arma::vec d, double bw);
 double gaussian_kernel_scaledos(double d, double bw);
 
 

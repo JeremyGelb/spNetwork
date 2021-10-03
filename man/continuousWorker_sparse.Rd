@@ -16,14 +16,6 @@ its neighbours}
 
 \item{v}{the actual node to consider for the recursion (int)}
 
-\item{v1}{the connected node to consider for the recursion (int)}
-
-\item{l1}{the edge connecting v and v1 (int)}
-
-\item{d}{the actual distance traveled before the recursion}
-
-\item{alpha}{the actual alpha value before the recursion}
-
 \item{bw}{the kernel bandwidth}
 
 \item{line_weights}{a vector with the length of the edges}

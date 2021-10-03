@@ -10,7 +10,7 @@
 
 ## documentation
 
-Several vignettes were added to present the new features. A pkgdown website was aslo built to give a more attractive way to browse the documentation.
+Several vignettes were added to present the new features. A pkgdown website was also built to give a more attractive way to browse the documentation.
 
 We follow now the code coverage. We aim a 70% coverage before the next CRAN release.
 
@@ -21,12 +21,14 @@ We follow now the code coverage. We aim a 70% coverage before the next CRAN rele
 * an error was raised when using *listw_network* with polygons and the method = "pointsalong". This was caused by a minor error in the code and works now as expected.
 * an error was present in the Diggle correction factor, leading to overestimation of the correction. This error has been corrected.
 * for the k functions, a minor error in the calculus was corrected, affecting only the absolute scale of the result. These functions are now formally tested.
+* When not using the spare matrix, an error was crashing the R session in some case. This has been corrected.
 
 ## performance
 
 * Performance was improved for function *listw_network*, *listw_network.mc*, *kfunctions*, *kfunctions.mc*, *cross_kfunctions* and *cross_kfunctions.mc*, by reducing the complexity of the network built from the SpatialLinesDataFrame with no loss of accuracy.
 * Several geometrical functions have been accelerated by c++ code using the boost library
 * upgraded c++ compilation requirement to c++17
+* the functions used for the nkde calculation were reworked. Sensible speed gain can be observed.
 
 # spNetwork 0.1.1
 

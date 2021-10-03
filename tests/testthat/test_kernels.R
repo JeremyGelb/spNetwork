@@ -1,5 +1,9 @@
 context("testing the kernel functions")
 
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#### Testing the kernels with a SPARSE matrix ####
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 test_that("Testing the simple kernel with a simple case", {
   ## creating the simple situation
   # start with de definition of some lines
@@ -142,5 +146,168 @@ test_that("Testing the continuous kernel with a simple case", {
                     agg = 0.01, verbose = F,tol = 0.01,digits = 3,sparse = T,
   )
   expect_equal(obs_value, real_value)
+})
+
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#### comparing results between sparse and integer matrix ####
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+test_that("comparing the simple kernel obtained for a sparse and integer matrix", {
+
+  ## creating the simple situation
+  # start with de definition of some lines
+  wkt_lines <- c(
+    "LINESTRING (0.1 5.1, 0.1 0.1)",
+    "LINESTRING (-5.1 0.1, 0.1 0.1)",
+    "LINESTRING (0.1 -5.1, 0.1 0.1)",
+    "LINESTRING (5.1 0.1, 0.1 0.1)")
+
+  linesdf <- data.frame(wkt = wkt_lines,
+                        id = paste("l",1:length(wkt_lines),sep=""))
+
+  geoms <- do.call(rbind,lapply(1:nrow(linesdf),function(i){
+    txt <- as.character(linesdf[i,]$wkt)
+    geom <- rgeos::readWKT(txt,id=i)
+    return(geom)
+  }))
+
+  all_lines <- sp::SpatialLinesDataFrame(geoms, linesdf,match.ID = F)
+
+  # definition of one event
+  event <- data.frame(x=c(0.1),
+                      y=c(3.1))
+  sp::coordinates(event) <- cbind(event$x,event$y)
+
+  # definition of one sampling point
+  sp_point <- data.frame(x=c(3.1),
+                         y=c(0.1))
+  sp::coordinates(sp_point) <- cbind(sp_point$x,sp_point$y)
+
+
+  #let us calculate the value with our function
+  sparse_value <- nkde(all_lines,events = event, w = c(1),
+                    samples = sp_point, check = F,
+                    kernel_name = "quartic",
+                    bw = 10, adaptive = F, method = "simple", div = "bw",
+                    sparse = TRUE,
+                    agg = 0.01, verbose = F,tol = 0.0001
+  )
+
+  integer_value <- nkde(all_lines,events = event, w = c(1),
+                       samples = sp_point, check = F,
+                       kernel_name = "quartic",
+                       bw = 10, adaptive = F, method = "simple", div = "bw",
+                       sparse = FALSE,
+                       agg = 0.01, verbose = F,tol = 0.0001
+  )
+
+  expect_equal(sparse_value, integer_value)
+})
+
+
+test_that("comparing the discontinuous kernel obtained for a sparse and integer matrix", {
+
+  ## creating the simple situation
+  # start with de definition of some lines
+  wkt_lines <- c(
+    "LINESTRING (0.1 5.1, 0.1 0.1)",
+    "LINESTRING (-5.1 0.1, 0.1 0.1)",
+    "LINESTRING (0.1 -5.1, 0.1 0.1)",
+    "LINESTRING (5.1 0.1, 0.1 0.1)")
+
+  linesdf <- data.frame(wkt = wkt_lines,
+                        id = paste("l",1:length(wkt_lines),sep=""))
+
+  geoms <- do.call(rbind,lapply(1:nrow(linesdf),function(i){
+    txt <- as.character(linesdf[i,]$wkt)
+    geom <- rgeos::readWKT(txt,id=i)
+    return(geom)
+  }))
+
+  all_lines <- sp::SpatialLinesDataFrame(geoms, linesdf,match.ID = F)
+
+  # definition of one event
+  event <- data.frame(x=c(0.1),
+                      y=c(3.1))
+  sp::coordinates(event) <- cbind(event$x,event$y)
+
+  # definition of one sampling point
+  sp_point <- data.frame(x=c(3.1),
+                         y=c(0.1))
+  sp::coordinates(sp_point) <- cbind(sp_point$x,sp_point$y)
+
+
+  #let us calculate the value with our function
+  sparse_value <- nkde(all_lines,events = event, w = c(1),
+                       samples = sp_point, check = F,
+                       kernel_name = "quartic",
+                       bw = 10, adaptive = F, method = "discontinuous", div = "bw",
+                       sparse = TRUE,
+                       agg = 0.01, verbose = F,tol = 0.0001
+  )
+
+  integer_value <- nkde(all_lines,events = event, w = c(1),
+                        samples = sp_point, check = F,
+                        kernel_name = "quartic",
+                        bw = 10, adaptive = F, method = "discontinuous", div = "bw",
+                        sparse = FALSE,
+                        agg = 0.01, verbose = F,tol = 0.0001
+  )
+
+  expect_equal(sparse_value, integer_value)
+})
+
+
+test_that("comparing the continuous kernel obtained for a sparse and integer matrix", {
+
+  ## creating the simple situation
+  # start with de definition of some lines
+  wkt_lines <- c(
+    "LINESTRING (0.1 5.1, 0.1 0.1)",
+    "LINESTRING (-5.1 0.1, 0.1 0.1)",
+    "LINESTRING (0.1 -5.1, 0.1 0.1)",
+    "LINESTRING (5.1 0.1, 0.1 0.1)")
+
+  linesdf <- data.frame(wkt = wkt_lines,
+                        id = paste("l",1:length(wkt_lines),sep=""))
+
+  geoms <- do.call(rbind,lapply(1:nrow(linesdf),function(i){
+    txt <- as.character(linesdf[i,]$wkt)
+    geom <- rgeos::readWKT(txt,id=i)
+    return(geom)
+  }))
+
+  all_lines <- sp::SpatialLinesDataFrame(geoms, linesdf,match.ID = F)
+
+  # definition of one event
+  event <- data.frame(x=c(0.1),
+                      y=c(3.1))
+  sp::coordinates(event) <- cbind(event$x,event$y)
+
+  # definition of one sampling point
+  sp_point <- data.frame(x=c(3.1),
+                         y=c(0.1))
+  sp::coordinates(sp_point) <- cbind(sp_point$x,sp_point$y)
+
+
+  #let us calculate the value with our function
+  sparse_value <- nkde(all_lines,events = event, w = c(1),
+                       samples = sp_point, check = F,
+                       kernel_name = "quartic",
+                       bw = 7, adaptive = F, method = "continuous", div = "none",
+                       sparse = TRUE,
+                       agg = 0.01, verbose = F,tol = 0.0001
+  )
+
+  integer_value <- nkde(all_lines,events = event, w = c(1),
+                        samples = sp_point, check = F,
+                        kernel_name = "quartic",
+                        bw = 7, adaptive = F, method = "continuous", div = "none",
+                        sparse = FALSE,
+                        agg = 0.01, verbose = F,tol = 0.0001
+  )
+
+  expect_equal(sparse_value, integer_value)
 })
 

@@ -817,7 +817,8 @@ nkde_worker <- function(lines, events, samples, kernel_name,bw, bws, method, div
   if(x >= 2*10^9){
     stop(paste("The matrix size will be exceeded (",a," x ",b,"), please consider using a finer grid to split the study area",sep=""))
   }
-  snapped_samples <- maptools::snapPointsToLines(samples,edges,idField = "edge_id")
+  #snapped_samples <- maptools::snapPointsToLines(samples,edges,idField = "edge_id")
+  snapped_samples <- snapPointsToLines2(samples,edges, snap_dist = bw, idField = "edge_id")
   samples$edge_id <- snapped_samples$nearest_line_id
 
   ## step3 finding for each event, its corresponding node

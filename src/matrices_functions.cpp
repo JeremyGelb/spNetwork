@@ -10,7 +10,7 @@ IntegerMatrix make_matrix(DataFrame df, List neighbour_list){
 
   //making all the elements empty
   int cnt1 = neighbour_list.length();
-  IntegerMatrix edge_mat(cnt1,cnt1);
+  IntegerMatrix edge_mat(cnt1+1,cnt1+1);
 
   //then filling it !
   int cnt = starts.length();
@@ -20,6 +20,8 @@ IntegerMatrix make_matrix(DataFrame df, List neighbour_list){
   }
   return edge_mat;
 }
+
+
 
 arma::sp_mat make_matrix_sparse(DataFrame df, List neighbour_list){
   List edge_list;

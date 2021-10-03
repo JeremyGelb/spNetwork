@@ -163,6 +163,67 @@ gaussian_kernel_scaledos <- function(d, bw) {
     .Call('_spNetwork_gaussian_kernel_scaledos', PACKAGE = 'spNetwork', d, bw)
 }
 
+#' @title A function to calculate the necessary informations to apply the
+#' Diggle correction factor with a discontinuous method
+#' @name corrfactor_discontinuous
+#' @param neighbour_list a list of the neighbours of each node
+#' @param events a numeric vector of the node id of each event
+#' @param line_list a DataFrame representing the lines of the graph
+#' @param bws the kernel bandwidth for each event
+#' @param max_depth the maximum recursion depth (after which recursion is stopped)
+#' @return a list of dataframes, used to calculate the Diggel correction factor
+#' @export
+NULL
+
+#' @title A function to calculate the necessary information to apply the
+#' Diggle correction factor with a discontinuous method (sparse)
+#' @name corrfactor_discontinuous_sparse
+#' @param neighbour_list a list of the neighbours of each node
+#' @param events a numeric vector of the node id of each event
+#' @param line_list a DataFrame representing the lines of the graph
+#' @param bws the kernel bandwidth for each event
+#' @param max_depth the maximum recursion depth (after which recursion is stopped)
+#' @return a list of dataframes, used to calculate the Diggel correction factor
+#' @export
+#'
+corrfactor_discontinuous_sparse <- function(neighbour_list, events, line_list, bws, max_depth) {
+    .Call('_spNetwork_corrfactor_discontinuous_sparse', PACKAGE = 'spNetwork', neighbour_list, events, line_list, bws, max_depth)
+}
+
+corrfactor_discontinuous <- function(neighbour_list, events, line_list, bws, max_depth) {
+    .Call('_spNetwork_corrfactor_discontinuous', PACKAGE = 'spNetwork', neighbour_list, events, line_list, bws, max_depth)
+}
+
+#' @title A function to calculate the necessary information to apply the
+#' Diggle correction factor with a continuous method (sparse)
+#' @name corrfactor_continuous_sparse
+#' @param neighbour_list a list of the neighbours of each node
+#' @param events a numeric vector of the node id of each event
+#' @param line_list a DataFrame representing the lines of the graph
+#' @param bws the kernel bandwidth for each event
+#' @param max_depth the maximum recursion depth (after which recursion is stopped)
+#' @return a list of dataframes, used to calculate the Diggel correction factor
+#' @export
+#'
+corrfactor_continuous_sparse <- function(neighbour_list, events, line_list, bws, max_depth) {
+    .Call('_spNetwork_corrfactor_continuous_sparse', PACKAGE = 'spNetwork', neighbour_list, events, line_list, bws, max_depth)
+}
+
+#' @title A function to calculate the necessary information to apply the
+#' Diggle correction factor with a continuous method
+#' @name corrfactor_continuous
+#' @param neighbour_list a list of the neighbours of each node
+#' @param events a numeric vector of the node id of each event
+#' @param line_list a DataFrame representing the lines of the graph
+#' @param bws the kernel bandwidth for each event
+#' @param max_depth the maximum recursion depth (after which recursion is stopped)
+#' @return a list of dataframes, used to calculate the Diggel correction factor
+#' @export
+#'
+corrfactor_continuous <- function(neighbour_list, events, line_list, bws, max_depth) {
+    .Call('_spNetwork_corrfactor_continuous', PACKAGE = 'spNetwork', neighbour_list, events, line_list, bws, max_depth)
+}
+
 #' @title The recursive function to calculate continuous NKDE likelihood cv
 #' @name esc_kernel_loo
 #' @param kernel_func a cpp pointer function (selected with the kernel name)
@@ -275,6 +336,30 @@ get_loo_values_simple <- function(neighbour_list, samples, sweights, events, wei
     .Call('_spNetwork_get_loo_values_simple', PACKAGE = 'spNetwork', neighbour_list, samples, sweights, events, weights, bws, kernel_name, line_list, max_depth)
 }
 
+find_nearest_object_in_line_rtree <- function(pts, lines, min_dist, max_iter) {
+    .Call('_spNetwork_find_nearest_object_in_line_rtree', PACKAGE = 'spNetwork', pts, lines, min_dist, max_iter)
+}
+
+cut_lines_at_distances_cpp <- function(lines, dists) {
+    .Call('_spNetwork_cut_lines_at_distances_cpp', PACKAGE = 'spNetwork', lines, dists)
+}
+
+add_vertices_lines_cpp <- function(points, lines, nearest_lines_idx, mindist) {
+    .Call('_spNetwork_add_vertices_lines_cpp', PACKAGE = 'spNetwork', points, lines, nearest_lines_idx, mindist)
+}
+
+add_center_lines_cpp <- function(lines) {
+    .Call('_spNetwork_add_center_lines_cpp', PACKAGE = 'spNetwork', lines)
+}
+
+split_lines_at_points_cpp <- function(Xmat, lines, nearest_lines_idx, mindist) {
+    .Call('_spNetwork_split_lines_at_points_cpp', PACKAGE = 'spNetwork', Xmat, lines, nearest_lines_idx, mindist)
+}
+
+lixelize_lines_cpp <- function(lines, lx_length, mindist) {
+    .Call('_spNetwork_lixelize_lines_cpp', PACKAGE = 'spNetwork', lines, lx_length, mindist)
+}
+
 #' @title The worker function to calculate continuous NKDE (with ARMADILLO and sparse matrix)
 #' @name continuousWorker_sparse
 #' @param kernel_func a cpp pointer function (selected with the kernel name)
@@ -284,10 +369,6 @@ get_loo_values_simple <- function(neighbour_list, samples, sweights, events, wei
 #' its neighbours
 #' @param edge_mat matrix, to find the id of each edge given two neighbours.
 #' @param v the actual node to consider for the recursion (int)
-#' @param v1 the connected node to consider for the recursion (int)
-#' @param l1 the edge connecting v and v1 (int)
-#' @param d the actual distance traveled before the recursion
-#' @param alpha the actual alpha value before the recursion
 #' @param bw the kernel bandwidth
 #' @param line_weights a vector with the length of the edges
 #' @param samples_edgeid a vector associating each sample to an edge
@@ -301,19 +382,15 @@ get_loo_values_simple <- function(neighbour_list, samples, sweights, events, wei
 #' the first node given
 NULL
 
-#' @title The worker function to calculate continuous NKDE (with ARMADILLO and Integer matrix)
-#' @name continuousWorker_int
+#' @title The worker function to calculate continuous NKDE (with ARMADILLO and integer matrix)
+#' @name continuousWorker
 #' @param kernel_func a cpp pointer function (selected with the kernel name)
 #' @param samples_k a numeric vector of the actual kernel values, updates at
 #' each recursion
-#' @param neighbour_list a List, providing an IntegerVector for each node with
+#' @param neighbour_list a List, giving for each node an IntegerVector with
 #' its neighbours
 #' @param edge_mat matrix, to find the id of each edge given two neighbours.
 #' @param v the actual node to consider for the recursion (int)
-#' @param v1 the connected node to consider for the recursion (int)
-#' @param l1 the edge connecting v and v1 (int)
-#' @param d the actual distance traveled before the recursion
-#' @param alpha the actual alpha value before the recursion
 #' @param bw the kernel bandwidth
 #' @param line_weights a vector with the length of the edges
 #' @param samples_edgeid a vector associating each sample to an edge
@@ -326,6 +403,44 @@ NULL
 #' @return a vector with the kernel values calculated for each samples from
 #' the first node given
 NULL
+
+#' @title The main function to calculate continuous NKDE (with ARMADILO and sparse matrix)
+#' @name continuousfunction
+#' @param neighbour_list a list of the neighbours of each node
+#' @param events a numeric vector of the node id of each event
+#' @param weights a numeric vector of the weight of each event
+#' @param samples a DataFrame of the samples (with spatial coordinates and belonging edge)
+#' @param bws the kernel bandwidths for each event
+#' @param kernel_name the name of the kernel to use
+#' @param nodes a DataFrame representing the nodes of the graph (with spatial coordinates)
+#' @param line_list a DataFrame representing the lines of the graph
+#' @param max_depth the maximum recursion depth (after which recursion is stopped)
+#' @param verbose a boolean indicating if the function must print its progress
+#' @return a DataFrame with two columns : the kernel values (sum_k) and the number of events for each sample (n)
+#' @export
+#'
+continuous_nkde_cpp_arma_sparse <- function(neighbour_list, events, weights, samples, bws, kernel_name, nodes, line_list, max_depth, verbose) {
+    .Call('_spNetwork_continuous_nkde_cpp_arma_sparse', PACKAGE = 'spNetwork', neighbour_list, events, weights, samples, bws, kernel_name, nodes, line_list, max_depth, verbose)
+}
+
+#' @title The main function to calculate continuous NKDE (with ARMADILO and integer matrix)
+#' @name continuousfunction
+#' @param neighbour_list a list of the neighbours of each node
+#' @param events a numeric vector of the node id of each event
+#' @param weights a numeric vector of the weight of each event
+#' @param samples a DataFrame of the samples (with spatial coordinates and belonging edge)
+#' @param bws the kernel bandwidths for each event
+#' @param kernel_name the name of the kernel to use
+#' @param nodes a DataFrame representing the nodes of the graph (with spatial coordinates)
+#' @param line_list a DataFrame representing the lines of the graph
+#' @param max_depth the maximum recursion depth (after which recursion is stopped)
+#' @param verbose a boolean indicating if the function must print its progress
+#' @return a DataFrame with two columns : the kernel values (sum_k) and the number of events for each sample (n)
+#' @export
+#'
+continuous_nkde_cpp_arma <- function(neighbour_list, events, weights, samples, bws, kernel_name, nodes, line_list, max_depth, verbose) {
+    .Call('_spNetwork_continuous_nkde_cpp_arma', PACKAGE = 'spNetwork', neighbour_list, events, weights, samples, bws, kernel_name, nodes, line_list, max_depth, verbose)
+}
 
 #' @title The worker function to calculate discontinuous NKDE (with ARMADILLO and sparse matrix)
 #' @name discontinuousWorker_sparse
@@ -367,56 +482,6 @@ NULL
 #' the first node given
 NULL
 
-#' @title A function to calculate the necessary informations to apply the
-#' Diggle correction factor with a discontinuous method
-#' @name corrfactor_discontinuous
-#' @param neighbour_list a list of the neighbours of each node
-#' @param events a numeric vector of the node id of each event
-#' @param line_list a DataFrame representing the lines of the graph
-#' @param bws the kernel bandwidth for each event
-#' @param max_depth the maximum recursion depth (after which recursion is stopped)
-#' @return a list of dataframes, used to calculate the Diggel correction factor
-#' @export
-NULL
-
-#' @title The main function to calculate continuous NKDE (with ARMADILO and sparse matrix)
-#' @name continuousfunction
-#' @param neighbour_list a list of the neighbours of each node
-#' @param events a numeric vector of the node id of each event
-#' @param weights a numeric vector of the weight of each event
-#' @param samples a DataFrame of the samples (with spatial coordinates and belonging edge)
-#' @param bws the kernel bandwidths for each event
-#' @param kernel_name the name of the kernel to use
-#' @param nodes a DataFrame representing the nodes of the graph (with spatial coordinates)
-#' @param line_list a DataFrame representing the lines of the graph
-#' @param max_depth the maximum recursion depth (after which recursion is stopped)
-#' @param verbose a boolean indicating if the function must print its progress
-#' @return a DataFrame with two columns : the kernel values (sum_k) and the number of events for each sample (n)
-#' @export
-#'
-continuous_nkde_cpp_arma_sparse <- function(neighbour_list, events, weights, samples, bws, kernel_name, nodes, line_list, max_depth, verbose) {
-    .Call('_spNetwork_continuous_nkde_cpp_arma_sparse', PACKAGE = 'spNetwork', neighbour_list, events, weights, samples, bws, kernel_name, nodes, line_list, max_depth, verbose)
-}
-
-#' @title The main function to calculate continuous NKDE (with ARMADILO and Integer matrix)
-#' @name continuousfunction
-#' @param neighbour_list a list of the neighbours of each node
-#' @param events a numeric vector of the node id of each event
-#' @param weights a numeric vector of the weight of each event
-#' @param samples a DataFrame of the samples (with spatial coordinates and belonging edge)
-#' @param bws the kernel bandwidths for each event
-#' @param kernel_name the name of the kernel to use
-#' @param nodes a DataFrame representing the nodes of the graph (with spatial coordinates)
-#' @param line_list a DataFrame representing the lines of the graph
-#' @param max_depth the maximum recursion depth (after which recursion is stopped)
-#' @param verbose a boolean indicating if the function must print its progress
-#' @return a DataFrame with two columns : the kernel values (sum_k) and the number of events for each sample (n)
-#' @export
-#'
-continuous_nkde_cpp_arma <- function(neighbour_list, events, weights, samples, bws, kernel_name, nodes, line_list, max_depth, verbose) {
-    .Call('_spNetwork_continuous_nkde_cpp_arma', PACKAGE = 'spNetwork', neighbour_list, events, weights, samples, bws, kernel_name, nodes, line_list, max_depth, verbose)
-}
-
 #' @title The main function to calculate discontinuous NKDE (ARMA and sparse matrix)
 #' @name discontinuousfunction
 #' @param neighbour_list a list of the neighbours of each node
@@ -453,78 +518,5 @@ discontinuous_nkde_cpp_arma_sparse <- function(neighbour_list, events, weights, 
 #'
 discontinuous_nkde_cpp_arma <- function(neighbour_list, events, weights, samples, bws, kernel_name, nodes, line_list, max_depth, verbose) {
     .Call('_spNetwork_discontinuous_nkde_cpp_arma', PACKAGE = 'spNetwork', neighbour_list, events, weights, samples, bws, kernel_name, nodes, line_list, max_depth, verbose)
-}
-
-#' @title A function to calculate the necessary information to apply the
-#' Diggle correction factor with a discontinuous method (sparse)
-#' @name corrfactor_discontinuous_sparse
-#' @param neighbour_list a list of the neighbours of each node
-#' @param events a numeric vector of the node id of each event
-#' @param line_list a DataFrame representing the lines of the graph
-#' @param bws the kernel bandwidth for each event
-#' @param max_depth the maximum recursion depth (after which recursion is stopped)
-#' @return a list of dataframes, used to calculate the Diggel correction factor
-#' @export
-#'
-corrfactor_discontinuous_sparse <- function(neighbour_list, events, line_list, bws, max_depth) {
-    .Call('_spNetwork_corrfactor_discontinuous_sparse', PACKAGE = 'spNetwork', neighbour_list, events, line_list, bws, max_depth)
-}
-
-corrfactor_discontinuous <- function(neighbour_list, events, line_list, bws, max_depth) {
-    .Call('_spNetwork_corrfactor_discontinuous', PACKAGE = 'spNetwork', neighbour_list, events, line_list, bws, max_depth)
-}
-
-#' @title A function to calculate the necessary information to apply the
-#' Diggle correction factor with a continuous method (sparse)
-#' @name corrfactor_continuous_sparse
-#' @param neighbour_list a list of the neighbours of each node
-#' @param events a numeric vector of the node id of each event
-#' @param line_list a DataFrame representing the lines of the graph
-#' @param bws the kernel bandwidth for each event
-#' @param max_depth the maximum recursion depth (after which recursion is stopped)
-#' @return a list of dataframes, used to calculate the Diggel correction factor
-#' @export
-#'
-corrfactor_continuous_sparse <- function(neighbour_list, events, line_list, bws, max_depth) {
-    .Call('_spNetwork_corrfactor_continuous_sparse', PACKAGE = 'spNetwork', neighbour_list, events, line_list, bws, max_depth)
-}
-
-#' @title A function to calculate the necessary information to apply the
-#' Diggle correction factor with a continuous method
-#' @name corrfactor_continuous
-#' @param neighbour_list a list of the neighbours of each node
-#' @param events a numeric vector of the node id of each event
-#' @param line_list a DataFrame representing the lines of the graph
-#' @param bws the kernel bandwidth for each event
-#' @param max_depth the maximum recursion depth (after which recursion is stopped)
-#' @return a list of dataframes, used to calculate the Diggel correction factor
-#' @export
-#'
-corrfactor_continuous <- function(neighbour_list, events, line_list, bws, max_depth) {
-    .Call('_spNetwork_corrfactor_continuous', PACKAGE = 'spNetwork', neighbour_list, events, line_list, bws, max_depth)
-}
-
-find_nearest_object_in_line_rtree <- function(pts, lines, min_dist, max_iter) {
-    .Call('_spNetwork_find_nearest_object_in_line_rtree', PACKAGE = 'spNetwork', pts, lines, min_dist, max_iter)
-}
-
-cut_lines_at_distances_cpp <- function(lines, dists) {
-    .Call('_spNetwork_cut_lines_at_distances_cpp', PACKAGE = 'spNetwork', lines, dists)
-}
-
-add_vertices_lines_cpp <- function(points, lines, nearest_lines_idx, mindist) {
-    .Call('_spNetwork_add_vertices_lines_cpp', PACKAGE = 'spNetwork', points, lines, nearest_lines_idx, mindist)
-}
-
-add_center_lines_cpp <- function(lines) {
-    .Call('_spNetwork_add_center_lines_cpp', PACKAGE = 'spNetwork', lines)
-}
-
-split_lines_at_points_cpp <- function(Xmat, lines, nearest_lines_idx, mindist) {
-    .Call('_spNetwork_split_lines_at_points_cpp', PACKAGE = 'spNetwork', Xmat, lines, nearest_lines_idx, mindist)
-}
-
-lixelize_lines_cpp <- function(lines, lx_length, mindist) {
-    .Call('_spNetwork_lixelize_lines_cpp', PACKAGE = 'spNetwork', lines, lx_length, mindist)
 }
 

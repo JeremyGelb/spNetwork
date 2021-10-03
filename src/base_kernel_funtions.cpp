@@ -11,10 +11,8 @@
 //' @keywords internal
 // [[Rcpp::export]]
 arma::vec quartic_kernel_cpp(arma::vec d, double bw){
-  arma::vec u = d/bw ;
-  arma::vec k = ((15.0/16.0)*arma::pow((1-arma::pow(u,2)),2)) / bw;
-  arma::uvec test = arma::find(d>=bw);
-  k.elem(test).fill(0.0);
+  arma::vec k = ((15.0/16.0)*arma::pow((1-arma::pow((d/bw),2)),2)) / bw;
+  k.elem((arma::find(d>=bw))).fill(0.0);
   return k;
 }
 
@@ -44,10 +42,8 @@ double quartic_kernelos(double d, double bw){
 //' @keywords internal
 // [[Rcpp::export]]
 arma::vec triangle_kernel_cpp(arma::vec d, double bw){
-  arma::vec u = d/bw ;
-  arma::vec k = (1.0 - arma::abs(u)) / bw;
-  arma::uvec test = arma::find(d>=bw);
-  k.elem(test).fill(0.0);
+  arma::vec k = (1.0 - arma::abs((d/bw))) / bw;
+  k.elem((arma::find(d>=bw))).fill(0.0);
   return k;
 }
 
@@ -77,8 +73,7 @@ double triangle_kernelos(double d, double bw){
 arma::vec uniform_kernel_cpp(arma::vec d, double bw){
   arma::vec k = d;
   k.fill(1.0/(bw*2.0));
-  arma::uvec test = arma::find(d>=bw);
-  k.elem(test).fill(0.0);
+  k.elem((arma::find(d>=bw))).fill(0.0);
   return k;
 }
 
@@ -105,10 +100,8 @@ double uniform_kernelos(double d, double bw){
 //' @keywords internal
 // [[Rcpp::export]]
 arma::vec epanechnikov_kernel_cpp(arma::vec d, double bw){
-  arma::vec u = d/bw ;
-  arma::vec k = ((3.0/4.0) * (1.0-arma::pow(u,2))) / bw;
-  arma::uvec test = arma::find(d>=bw);
-  k.elem(test).fill(0.0);
+  arma::vec k = ((3.0/4.0) * (1.0-arma::pow((d/bw),2))) / bw;
+  k.elem((arma::find(d>=bw))).fill(0.0);
   return k;
 }
 
@@ -136,10 +129,8 @@ double epanechnikov_kernelos(double d, double bw){
 //' @keywords internal
 // [[Rcpp::export]]
 arma::vec triweight_kernel_cpp(arma::vec d, double bw){
-  arma::vec u = d/bw ;
-  arma::vec k = ((35.0/32.0) * arma::pow((1.0-arma::pow(u,2)),3)) / bw ;
-  arma::uvec test = arma::find(d>=bw);
-  k.elem(test).fill(0.0);
+  arma::vec k = ((35.0/32.0) * arma::pow((1.0-arma::pow((d/bw),2)),3)) / bw ;
+  k.elem((arma::find(d>=bw))).fill(0.0);
   return k;
 }
 
@@ -169,10 +160,8 @@ double triweight_kernelos(double d, double bw){
 //' @keywords internal
 // [[Rcpp::export]]
 arma::vec tricube_kernel_cpp(arma::vec d, double bw){
-  arma::vec u = d/bw ;
-  arma::vec k = ((70.0/81.0) * arma::pow((1.0-pow(arma::abs(u),3)),3)) / bw;
-  arma::uvec test = arma::find(d>=bw);
-  k.elem(test).fill(0.0);
+  arma::vec k = ((70.0/81.0) * arma::pow((1.0-pow(arma::abs((d/bw)),3)),3)) / bw;
+  k.elem((arma::find(d>=bw))).fill(0.0);
   return k;
 }
 
@@ -201,10 +190,8 @@ double tricube_kernelos(double d, double bw){
 //' @keywords internal
 // [[Rcpp::export]]
 arma::vec cosine_kernel_cpp(arma::vec d, double bw){
-  arma::vec u = d/bw ;
-  arma::vec k = ((M_PI/4.0) * arma::cos((M_PI/2.0)*u)) / bw;
-  arma::uvec test = arma::find(d>=bw);
-  k.elem(test).fill(0.0);
+  arma::vec k = ((M_PI/4.0) * arma::cos((M_PI/2.0)*(d/bw))) / bw;
+  k.elem((arma::find(d>=bw))).fill(0.0);
   return k;
 }
 

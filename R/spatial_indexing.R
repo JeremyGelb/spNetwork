@@ -62,8 +62,8 @@ spatial_request <- function(geometry,tree,data){
 
 #' @title Find closest points
 #'
-#' @description build a quadtree index and solve the nearest neighbour problem for two
-#' SpatialPointsDataFrame.
+#' @description Solve the nearest neighbour problem for two SpatialPointsDataFrame.
+#' This is a simple wrapup of the FNN::knnx.index function
 #'
 #' @param origins a SpatialPointsDataFrame
 #' @param targets a SpatialPointsDataFrame
@@ -71,20 +71,17 @@ spatial_request <- function(geometry,tree,data){
 #' @examples
 #' #This is an internal function, no example provided
 closest_points <- function(origins, targets){
-  ## step1 : create the spatial index for the target points
-  original_coords <- sp::coordinates(targets)
-  original_coords <- cbind(original_coords,1:nrow(targets))
-  tree <- SearchTrees::createTree(original_coords[,1:2],dataType = "point")
-  ## step2 : performe the spatial request
-  pts <- sp::coordinates(origins)
-  k1 <- SearchTrees::knnLookup(tree,newdat=pts,k = 1)
-  extract <- original_coords[k1,]
-  if(nrow(origins)==1){
-    idx <- extract[3]
-  }else{
-    idx <- extract[,3]
-  }
 
-  return(idx)
+  xy_origins <- sp::coordinates(origins)
+  xy_targets <- sp::coordinates(targets)
+
+  idx <- FNN::knnx.index(data = xy_targets,
+                         query = xy_origins,
+                         k = 1)
+
+  return(idx[,1])
 }
+
+
+
 
