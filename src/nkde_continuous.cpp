@@ -32,7 +32,7 @@ arma::vec esc_kernel_rcpp_arma_sparse(fptr kernel_func, List neighbour_list, arm
 
   // let me create the vector of kernel values
   arma::vec samples_k(samples_edgeid.n_elem);
-  samples_k.fill(0.0);
+  //samples_k.fill(0.0);
 
   // instead of a recursion, we will iterate over cases stored in a queue
   // a case will be an edge for which we want to recalculate the density
