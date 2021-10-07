@@ -8,7 +8,7 @@
 //########################################################################
 
 // a simple function to find the index of the first occurence of value in a numeric vector
-int get_first_index(NumericVector v1, double x){
+int get_first_index(NumericVector& v1, double x){
   int i;
   for( i = 0; i < v1.size(); ++i) {
     if(v1[i] == x){
@@ -42,7 +42,7 @@ int get_first_index(NumericVector v1, double x){
 //' @return a vector with the kernel values calculated for each samples from
 //' the first node given
 //' @keywords interal
-NumericVector esc_kernel_loo(fptros kernel_func, NumericVector samples_k, List neighbour_list, arma::sp_mat edge_mat, int v, int v1, int l1, double d,double alpha, double bw, NumericVector line_weights, NumericVector events, int depth, int max_depth){
+NumericVector esc_kernel_loo(fptros kernel_func, NumericVector samples_k, List& neighbour_list, arma::sp_mat& edge_mat, int v, int v1, int l1, double d,double alpha, double bw, NumericVector& line_weights, NumericVector& events, int depth, int max_depth){
 
   //mettre a jour d
   double d2 = line_weights[l1-1] + d;
@@ -182,9 +182,9 @@ DataFrame get_loo_values_continuous(List neighbour_list,
 //' @return a vector with the kernel values calculated for each samples from
 //' the first node given
 //' @keywords interal
-NumericVector esd_kernel_loo(fptros kernel_func, arma::sp_mat edge_mat, NumericVector events,
-                             List neighbour_list ,int v, double bw,
-                             NumericVector line_weights, int depth, int max_depth){
+NumericVector esd_kernel_loo(fptros kernel_func, arma::sp_mat& edge_mat, NumericVector& events,
+                             List& neighbour_list ,int v, double bw,
+                             NumericVector& line_weights, int depth, int max_depth){
   //step0 : generate the queue
   queue <List> data_holder;
   NumericVector kvalues(events.length());
@@ -339,9 +339,9 @@ NumericVector get_loo_values_discontinuous(List neighbour_list, NumericVector sa
 //' @return a vector with the kernel values calculated for each samples from
 //' the first node given
 //' @keywords interal
-NumericVector ess_kernel_loo(fptros kernel_func, arma::sp_mat edge_mat, NumericVector events,
-                             List neighbour_list ,int v, double bw,
-                             NumericVector line_weights, int depth, int max_depth){
+NumericVector ess_kernel_loo(fptros kernel_func, arma::sp_mat& edge_mat, NumericVector& events,
+                             List& neighbour_list ,int v, double bw,
+                             NumericVector& line_weights, int depth, int max_depth){
   //step0 : generate the queue
   queue <List> data_holder;
   NumericVector kvalues(events.length());

@@ -100,7 +100,7 @@
       <h1 data-toc-skip>Building graphs</h1>
                         <h4 class="author">Jeremy Gelb</h4>
             
-            <h4 class="date">2021-10-06</h4>
+            <h4 class="date">2021-10-07</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/JeremyGelb/spNetwork/blob/master/vignettes/NetworkBuilding.Rmd"><code>vignettes/NetworkBuilding.Rmd</code></a></small>
       <div class="hidden name"><code>NetworkBuilding.Rmd</code></div>
@@ -112,17 +112,17 @@
 <div id="introduction" class="section level1">
 <h1 class="hasAnchor">
 <a href="#introduction" class="anchor"></a>Introduction</h1>
-<p>The goal of this vignette is to present how several functions in <strong>spNetwork</strong> can be used to build graphs and to analyze them.</p>
-<p>To illustrate it, we give a full example with the calculation of the correlation between the centrality of bike accidents in the Montreal network and the NKDE density calculated at each accident point. Here are the steps we will follow to perform this analysis:</p>
+<p>The goal of this vignette is to present how several functions in <strong>spNetwork</strong> can be used to build graphs and to analyze it.</p>
+<p>To illustrate the process, we give a full example with the calculation of the correlation between the centrality of bike accidents in the Montreal network and the NKDE density calculated at each accident point. Here are the steps we will follow to perform this analysis:</p>
 <ol style="list-style-type: decimal">
 <li>Calculating the NKDE density of accidents at each accident point</li>
 <li>Snapping the accidents to the network</li>
 <li>Cutting the lines of the network at the snapped accidents’ locations</li>
-<li>Building a graph with the cutted lines</li>
+<li>Building a graph with the cut lines</li>
 <li>Calculating for each node of the graph its centrality (betweeness)</li>
 <li>Calculating the correlation between the NKDE density and the centrality measure.</li>
 </ol>
-<p>Here are the data used for this analysis</p>
+<p>Let us start by loading some data.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># first load data and packages</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/edzer/sp/">sp</a></span><span class="op">)</span>
@@ -149,7 +149,7 @@
 <div id="calculating-the-nkde-density" class="section level1">
 <h1 class="hasAnchor">
 <a href="#calculating-the-nkde-density" class="anchor"></a>Calculating the NKDE density</h1>
-<p>This step is easy to perform with the basic functions of <strong>spNetwork</strong>. For the sake of simplicty, we select an arbitrary bandwidth of 300m and use the discontinuous kernel.</p>
+<p>This step is easy to perform with the basic functions of <strong>spNetwork</strong>. For the sake of simplicity, we select an arbitrary bandwidth of 300m and use the discontinuous kernel.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># calculating the density values</span>
 <span class="va">densities</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nkde.html">nkde</a></span><span class="op">(</span><span class="va">mtl_network</span>, 
@@ -179,7 +179,7 @@
 <h1 class="hasAnchor">
 <a href="#snapping-the-accidents-to-the-network" class="anchor"></a>Snapping the accidents to the network</h1>
 <p>For this step, we will use the function <code>snapPointsToLines2</code>. It is mainly based on the function <code>snapPointsToLines</code> from <strong>maptools</strong> but can be used for bigger datasets. Note that we create two index columns: <code>OID</code> for the accidents’ location and <code>LineID</code> for the network lines.</p>
-<p>We will aslo start by aggregating the points that are too close to each other. We will aggregate all the points that are within a 5 meters radius.</p>
+<p>We will also start by aggregating the points that are too close to each other. We will aggregate all the points that are within a 5 meters radius.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">bike_accidents</span><span class="op">$</span><span class="va">weight</span> <span class="op">&lt;-</span> <span class="fl">1</span>
 <span class="va">agg_points</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_points.html">aggregate_points</a></span><span class="op">(</span><span class="va">bike_accidents</span>, maxdist <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>
@@ -189,8 +189,7 @@
 
 <span class="va">snapped_accidents</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/snapPointsToLines2.html">snapPointsToLines2</a></span><span class="op">(</span><span class="va">agg_points</span>, 
                                         <span class="va">mtl_network</span>,
-                                        <span class="st">"LineID"</span>
-                                        <span class="op">)</span></code></pre></div>
+                                        <span class="st">"LineID"</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="cutting-the-lines-of-the-network" class="section level1">
 <h1 class="hasAnchor">
@@ -200,8 +199,7 @@
 <code class="sourceCode R"><span class="va">new_lines</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/split_lines_at_vertex.html">split_lines_at_vertex</a></span><span class="op">(</span><span class="va">mtl_network</span>, 
                                    <span class="va">snapped_accidents</span>,
                                    <span class="va">snapped_accidents</span><span class="op">$</span><span class="va">nearest_line_id</span>,
-                                   mindist <span class="op">=</span> <span class="fl">0.1</span> 
-                                   <span class="op">)</span></code></pre></div>
+                                   mindist <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="building-a-graph-with-the-cutted-lines" class="section level1">
 <h1 class="hasAnchor">
@@ -216,7 +214,7 @@
 <div id="calculating-for-each-node-of-the-graph-its-centrality" class="section level1">
 <h1 class="hasAnchor">
 <a href="#calculating-for-each-node-of-the-graph-its-centrality" class="anchor"></a>Calculating for each node of the graph its centrality</h1>
-<p>The graph can be used with the library <strong>igraph</strong>. We will calculate here the betweeness centrality of each node in the graph.</p>
+<p>The graph can be used with the library <strong>igraph</strong>. We will calculate here the betweenness centrality of each node in the graph.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">btws</span> <span class="op">&lt;-</span> <span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/igraph/man/betweenness.html">betweenness</a></span><span class="op">(</span><span class="va">graph_result</span><span class="op">$</span><span class="va">graph</span>, directed <span class="op">=</span> <span class="cn">FALSE</span>,
                             normalized <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
@@ -238,7 +236,7 @@
 
 <span class="va">snapped_accidents</span><span class="op">$</span><span class="va">btws</span> <span class="op">&lt;-</span> <span class="va">vertices</span><span class="op">$</span><span class="va">btws</span><span class="op">[</span><span class="va">corr_nodes</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">]</span>
 
-<span class="co"># second: nn mergining between original points and snapped points</span>
+<span class="co"># second: nn mergning between original points and snapped points</span>
 <span class="va">xy1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/sp/man/coordinates.html">coordinates</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">)</span>
 <span class="va">xy2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/sp/man/coordinates.html">coordinates</a></span><span class="op">(</span><span class="va">snapped_accidents</span><span class="op">)</span>
 

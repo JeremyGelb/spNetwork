@@ -205,7 +205,6 @@ build_graph_directed <- function(lines, digits, line_weight, direction, attrs = 
 
 
 
-
 #' @title Make a network directed
 #'
 #' @description Function to create complementary lines for a directed network.
@@ -414,59 +413,59 @@ dist_mat_dupl <- function(graph, start, end ){
   return(mat)
 }
 
-# it looks like I never use this function
-# I will keep it here just in case
-#@title Match nodes and points
-#
-#@description Function to match some points (SpatialPointsDataFrame) to the
-#  vertices of a graph.
-#
-#@param spvertices The spatial vertices of a graph (produced with build_graph)
-#@param points the SpatialPointsDataFrame to match
-#@param digits The number of digits to keep from the coordinates
-#@param tol the maximum distance between a point and a vertex
-#@return A vector of the corresponding vertices id, multiple points may belong
-#  to the same vertex
-#@importFrom sp coordinates SpatialPoints SpatialPointsDataFrame
-#@importFrom utils txtProgressBar setTxtProgressBar
-#@importFrom rgeos gIntersects gBuffer
-#@keywords internal
-# @examples
-# #This is an internal function, no example provided
-# find_vertices <- function(spvertices, points, digits, tol = 0.1) {
-#     # step1 : calculate the spatialnameindex
-#     coords <- coordinates(points)
-#     points$tempoid <- 1:nrow(points)
-#     points$spIndex <- sp_char_index(coords, digits)
-#     # step2 : check which points are already well matched
-#     matching <- data.table(points@data)
-#     B <- data.table(spvertices@data)
-#     matching[B, on = c("spIndex"="name"), names(B) := mget(paste0("i.", names(B)))]
-#     matching <- matching[, .SD[1], "tempoid"]
-#
-#     if (any(is.na(matching$id)) == FALSE) {
-#         return(matching$id)
-#     } else {
-#         # so we have some points that need to be matched
-#         pb <- txtProgressBar(min = 0, max = nrow(matching), style = 3)
-#         matching <- SpatialPointsDataFrame(coords, matching)
-#         raster::crs(matching) <- raster::crs(points)
-#         # si on a des cas manquant, allons les chercher !
-#         values <- sapply(1:nrow(matching), function(i) {
-#             setTxtProgressBar(pb, i)
-#             pt <- matching[i, ]
-#             if (is.na(pt$id)) {
-#                 test <- as.vector(gIntersects(spvertices, gBuffer(pt, width = tol),
-#                   prepared = TRUE, byid = TRUE))
-#                 if (any(test) == FALSE) {
-#                   stop(paste("no node find at the demanded distance here ",
-#                     pt$spIndex, sep = ""))
-#                 } else {
-#                   return(subset(spvertices, test)[["id"]][[1]])
-#                 }
-#             } else {
-#                 return(pt$id)
-#             }
-#         })
-#     }
-# }
+
+#' @title Split graph components
+#'
+#' @description Function to split the results of build_graph and build_graph_directed
+#' into their sub components
+#'
+#' @param graph_result A list typically obtained from the function build_graph or build_graph_directed
+#' @return A list of lists, the graph_result splitted for each graph component
+#' @export
+#' @examples
+#' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
+#' mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
+#' mtl_network$length <- rgeos::gLength(mtl_network, byid = TRUE)
+#' graph_result <- build_graph(mtl_network, 2, "length", attrs = TRUE)
+#' sub_elements <- split_graph_components(graph_result)
+split_graph_components <- function(graph_result){ # nocov start
+
+  # identifying the components of the graph
+  comps <- igraph::components(graph_result$graph)
+
+  # if we have only one component, we return it
+  if(comps$no == 1){
+    return(graph_result)
+  }
+
+  vals <- unique(comps$membership)
+  graph_result$spvertices$comp <- comps$membership
+
+  elements <- lapply(vals, function(val){
+
+    # finding the elements in spvertices
+    spvertices <- subset(graph_result$spvertices, graph_result$spvertices$comp == val)
+
+    # finding the elements in spedges
+    spedges <- subset(graph_result$spedges, graph_result$spedges$start_oid %in% spvertices$id |
+                        graph_result$spedges$end_oid %in% spvertices$id)
+
+    # and their corresponding elements in linelist
+    linelist <- subset(graph_result$linelist, graph_result$linelist$graph_id %in% spedges$edge_id)
+
+    #finding the subgraph
+    graph <- igraph::induced_subgraph (graph_result$graph,
+                              igraph::V(graph_result$graph)[comps$membership==val])
+    #merging everything
+    element <- list(
+      "graph" = graph,
+      "spvertices" = spvertices,
+      "spedges" = spedges,
+      "linelist" = linelist,
+      "digits" = graph_result$digits
+    )
+
+  })
+
+  return(elements)
+}# nocov end

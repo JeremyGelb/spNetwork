@@ -27,11 +27,11 @@
 //' @return a vector with the kernel values calculated for each samples from
 //' the first node given
 //' @keywords internal
-arma::vec esd_kernel_rcpp_arma_sparse(fptr kernel_func, arma::sp_mat edge_mat,
-                                      List neighbour_list ,int v, double bw,
-                                      arma::vec line_weights, arma::vec samples_edgeid,
-                                      arma::vec samples_x, arma::vec samples_y,
-                                      arma::vec nodes_x, arma::vec nodes_y, int depth, int max_depth){
+arma::vec esd_kernel_rcpp_arma_sparse(fptr kernel_func, arma::sp_mat& edge_mat,
+                                      List& neighbour_list ,int v, double bw,
+                                      arma::vec& line_weights, arma::vec& samples_edgeid,
+                                      arma::vec& samples_x, arma::vec& samples_y,
+                                      arma::vec& nodes_x, arma::vec& nodes_y, int depth, int max_depth){
   //step0 : generate the queue
   //queue <List> data_holder;
 
@@ -50,19 +50,10 @@ arma::vec esd_kernel_rcpp_arma_sparse(fptr kernel_func, arma::sp_mat edge_mat,
   //step1 : generate the first case
   acase cas1 = {0.0,1.0,v,-999,0};
 
-  // List cas1 = List::create(Named("d")=0.0,
-  //                          Named("alpha")=1.0,
-  //                          Named("v") = v,
-  //                          Named("prev_node") = -999,
-  //                          Named("depth") = 0
-  // );
-  //data_holder.push(cas1);
   data_holder.push_back(cas1);
   //lancement des iterations
   while(data_holder.empty()==FALSE){
     //unpacking (imagine some loop unrolling here with a function to deal with.)
-    // List cas = data_holder.front();
-    // data_holder.pop();
     acase cas = data_holder.back();
     data_holder.pop_back();
 
@@ -164,11 +155,11 @@ arma::vec esd_kernel_rcpp_arma_sparse(fptr kernel_func, arma::sp_mat edge_mat,
 //' @return a vector with the kernel values calculated for each samples from
 //' the first node given
 //' @keywords internal
-arma::vec esd_kernel_rcpp_arma(fptr kernel_func, IntegerMatrix edge_mat,
-                               List neighbour_list ,int v, double bw,
-                               arma::vec line_weights, arma::vec samples_edgeid,
-                               arma::vec samples_x, arma::vec samples_y,
-                               arma::vec nodes_x, arma::vec nodes_y, int depth, int max_depth){
+arma::vec esd_kernel_rcpp_arma(fptr kernel_func, IntegerMatrix& edge_mat,
+                               List& neighbour_list ,int v, double bw,
+                               arma::vec& line_weights, arma::vec& samples_edgeid,
+                               arma::vec& samples_x, arma::vec& samples_y,
+                               arma::vec& nodes_x, arma::vec& nodes_y, int depth, int max_depth){
   //step0 : generate the queue
   //queue <List> data_holder;
   std::vector <List> data_holder;

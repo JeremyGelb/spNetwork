@@ -44,7 +44,7 @@ arma::sp_mat make_matrix_sparse(DataFrame df, List neighbour_list){
 
 
 
-arma::sp_mat make_edge_weight_sparse(DataFrame df, List neighbour_list){
+arma::sp_mat make_edge_weight_sparse(DataFrame& df, List& neighbour_list){
   List edge_list;
   IntegerVector starts = df["start_oid"];
   IntegerVector ends = df["end_oid"];

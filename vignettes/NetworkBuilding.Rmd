@@ -20,18 +20,18 @@ colorlinks: yes
 
 # Introduction
 
-The goal of this vignette is to present how several functions in **spNetwork** can be used to build graphs and to analyze them. 
+The goal of this vignette is to present how several functions in **spNetwork** can be used to build graphs and to analyze it. 
 
-To illustrate it, we give a full example with the calculation of the correlation between the centrality of bike accidents in the Montreal network and the NKDE density calculated at each accident point. Here are the steps we will follow to perform this analysis: 
+To illustrate the process, we give a full example with the calculation of the correlation between the centrality of bike accidents in the Montreal network and the NKDE density calculated at each accident point. Here are the steps we will follow to perform this analysis: 
 
 1. Calculating the NKDE density of accidents at each accident point
 2. Snapping the accidents to the network
 3. Cutting the lines of the network at the snapped accidents' locations
-4. Building a graph with the cutted lines
+4. Building a graph with the cut lines
 5. Calculating for each node of the graph its centrality (betweeness)
 6. Calculating the correlation between the NKDE density and the centrality measure.
 
-Here are the data used for this analysis
+Let us start by loading some data.
 
 ```{r message=FALSE, warning=FALSE}
 # first load data and packages
@@ -58,7 +58,7 @@ plot(bike_accidents,add=T,col='red',pch = 19)
 
 # Calculating the NKDE density
 
-This step is easy to perform with the basic functions of **spNetwork**. For the sake of simplicty, we select an arbitrary bandwidth of 300m and use the discontinuous kernel.
+This step is easy to perform with the basic functions of **spNetwork**. For the sake of simplicity, we select an arbitrary bandwidth of 300m and use the discontinuous kernel.
 
 ```{r message=FALSE, warning=FALSE}
 # calculating the density values
@@ -89,7 +89,7 @@ tm_shape(mtl_network) +
 
 For this step, we will use the function `snapPointsToLines2`. It is mainly based on the function `snapPointsToLines` from **maptools** but can be used for bigger datasets. Note that we create two index columns: `OID` for the accidents' location and `LineID` for the network lines.
 
-We will aslo start by aggregating the points that are too close to each other. We will aggregate all the points that are within a 5 meters radius.
+We will also start by aggregating the points that are too close to each other. We will aggregate all the points that are within a 5 meters radius.
 
 ```{r message=FALSE, warning=FALSE}
 bike_accidents$weight <- 1
@@ -100,8 +100,7 @@ mtl_network$LineID <- 1:nrow(mtl_network)
 
 snapped_accidents <- snapPointsToLines2(agg_points, 
                                         mtl_network,
-                                        "LineID"
-                                        )
+                                        "LineID")
 ```
 
 # Cutting the lines of the network
@@ -112,8 +111,7 @@ The next step is to use the new points to cut the lines of the network.
 new_lines <- split_lines_at_vertex(mtl_network, 
                                    snapped_accidents,
                                    snapped_accidents$nearest_line_id,
-                                   mindist = 0.1 
-                                   )
+                                   mindist = 0.1)
 ```
 
 # Building a graph with the cutted lines
@@ -129,7 +127,7 @@ graph_result <- build_graph(new_lines, 2, "length", attrs = TRUE)
 
 # Calculating for each node of the graph its centrality
 
-The graph can be used with the library **igraph**. We will calculate here the betweeness centrality of each node in the graph.
+The graph can be used with the library **igraph**. We will calculate here the betweenness centrality of each node in the graph.
 
 ```{r message=FALSE, warning=FALSE}
 btws <- igraph::betweenness(graph_result$graph, directed = FALSE,
@@ -156,7 +154,7 @@ corr_nodes <- get.knnx(xy2, xy1, k=1)
 
 snapped_accidents$btws <- vertices$btws[corr_nodes[[1]]]
 
-# second: nn mergining between original points and snapped points
+# second: nn mergning between original points and snapped points
 xy1 <- coordinates(bike_accidents)
 xy2 <- coordinates(snapped_accidents)
 
