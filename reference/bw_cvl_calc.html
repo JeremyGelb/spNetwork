@@ -186,12 +186,12 @@ vector of two values: c(bandwidth_min, bandwidth_max)</p></td>
       <th>lines</th>
       <td><p>A SpatialLinesDataFrame representing the underlying network. The
 geometries must be a SpatialLinesDataFrame (may crash if some geometries
- are invalid)</p></td>
+ are invalid) without MultiLineSring.</p></td>
     </tr>
     <tr>
       <th>events</th>
       <td><p>events A SpatialPointsDataFrame representing the events on the
-network. The points will be snapped on the network.</p></td>
+network. The points will be snapped on the network to their closest line.</p></td>
     </tr>
     <tr>
       <th>w</th>
@@ -205,7 +205,7 @@ gaussian, tricube, cosine ,triweight, quartic, epanechnikov or uniform.</p></td>
     <tr>
       <th>method</th>
       <td><p>The method to use when calculating the NKDE, must be one of
-simple / discontinuous / continuous (see details for more information)</p></td>
+simple / discontinuous / continuous (see nkde details for more information)</p></td>
     </tr>
     <tr>
       <th>diggle_correction</th>
@@ -230,31 +230,36 @@ strongly impact calculation speed.</p></td>
     </tr>
     <tr>
       <th>digits</th>
-      <td><p>The number of digits to retain in the spatial coordinates. It
-ensures that topology is good when building the network. Default is 3</p></td>
+      <td><p>The number of digits to retain from the spatial coordinates. It
+ensures that topology is good when building the network. Default is 3. A
+too high precision (high number of digits) might break some connections</p></td>
     </tr>
     <tr>
       <th>tol</th>
-      <td><p>When adding the events and the sampling points to the network,
-the minimum distance between these points and the lines' extremities. When
-points are closer, they are added at the extremity of the lines.</p></td>
+      <td><p>A float indicating the minimum distance between the events and the
+lines' extremities when adding the point to the network. When points are
+closer, they are added at the extremity of the lines.</p></td>
     </tr>
     <tr>
       <th>agg</th>
-      <td><p>A double indicating if the events must be aggregated within a distance.
-If NULL, the events are aggregated by rounding the coordinates.</p></td>
+      <td><p>A double indicating if the events must be aggregated within a
+distance. If NULL, the events are aggregated only by rounding the
+coordinates.</p></td>
     </tr>
     <tr>
       <th>sparse</th>
-      <td><p>A Boolean indicating if sparse or regular matrix should be
-used by the Rcpp functions. Regular matrix are faster, but require more
-memory and could lead to error, in particular with multiprocessing. Sparse
-matrix are slower, but require much less memory (not used for the moment).</p></td>
+      <td><p>A Boolean indicating if sparse or regular matrices should be
+used by the Rcpp functions. These matrices are used to store edge indices
+between two nodes in a graph. Regular matrices are faster, but require more
+memory, in particular with multiprocessing. Sparse matrices are slower (a
+bit), but require much less memory.</p></td>
     </tr>
     <tr>
       <th>grid_shape</th>
       <td><p>A vector of two values indicating how the study area
-must be split when performing the calculus (see details). Default is c(1,1).</p></td>
+must be split when performing the calculus. Default is c(1,1) (no split). A finer grid could
+reduce memory usage ans increase speed when a large dataset is used. When using
+multiprocessing, the work in each grid is dispatched between the workers.</p></td>
     </tr>
     <tr>
       <th>sub_sample</th>
@@ -270,7 +275,8 @@ about process.</p></td>
     <tr>
       <th>check</th>
       <td><p>A Boolean indicating if the geometry checks must be run before
-calculating the density.</p></td>
+the operation. This might take some times, but it will ensure that the CRS
+of the provided objects are valid and identical, and that geometries are valid.</p></td>
     </tr>
     </table>
 

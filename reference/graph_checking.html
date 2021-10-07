@@ -147,7 +147,7 @@
     <p>A utility function to find topological errors in a network.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>graph_checking</span><span class='op'>(</span><span class='va'>lines</span>, <span class='va'>digits</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>graph_checking</span><span class='op'>(</span><span class='va'>lines</span>, <span class='va'>digits</span>, max_search <span class='op'>=</span> <span class='fl'>5</span>, tol <span class='op'>=</span> <span class='fl'>0.1</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -161,13 +161,35 @@
       <td><p>An integer indicating the number of digits to retain for
 coordinates</p></td>
     </tr>
+    <tr>
+      <th>max_search</th>
+      <td><p>The maximum number of nearest neighbour to search to find
+close_nodes</p></td>
+    </tr>
+    <tr>
+      <th>tol</th>
+      <td><p>The minimum distance expected between two nodes. Under that values
+nodes are considered as too close and are returned in the results.</p></td>
+    </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A list with two elements. The first is a SpatialPointsDataFrame
+    <p>A list with three elements. The first is a SpatialPointsDataFrame
   indicating for each node of the network to which component it belongs. The
-  second is a SpatialPointsDataFrame with the dangle nodes of the network.</p>
+  second is a SpatialPointsDataFrame with nodes that are too close one of
+  each other. The second is a SpatialPointsDataFrame with the dangle nodes of
+  the network.</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>This function can be used to check for three common problems in networks:
+disconnected components, dangle nodes and close nodes. When a network has disconnected
+components, this means that several unconnected graphs are composing the
+overall network. This can be caused by topological errors in the dataset. Dangle
+nodes are nodes connected to only one other node. This type of node can be normal
+at the border of a network, but can also be caused by topological errors. Close
+nodes are nodes that are not coincident, but so close that they probably should
+be coincident.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># \donttest{</span>

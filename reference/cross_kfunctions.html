@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Network cross k and g functions (experimental) — cross_kfunctions • spNetwork</title>
+<title>Network cross k and g functions (maturing) — cross_kfunctions • spNetwork</title>
 
 
 <!-- jquery -->
@@ -39,9 +39,9 @@
 
 
 
-<meta property="og:title" content="Network cross k and g functions (experimental) — cross_kfunctions" />
+<meta property="og:title" content="Network cross k and g functions (maturing) — cross_kfunctions" />
 <meta property="og:description" content="Calculate the cross k and g functions for a set of points on a
-  network. (experimental)" />
+  network. (maturing)" />
 
 
 
@@ -139,14 +139,14 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Network cross k and g functions (experimental)</h1>
+    <h1>Network cross k and g functions (maturing)</h1>
     <small class="dont-index">Source: <a href='https://github.com/JeremyGelb/spNetwork/blob/master/R/k_functions.R'><code>R/k_functions.R</code></a></small>
     <div class="hidden name"><code>cross_kfunctions.Rd</code></div>
     </div>
 
     <div class="ref-description">
     <p>Calculate the cross k and g functions for a set of points on a
-  network. (experimental)</p>
+  network. (maturing)</p>
     </div>
 
     <pre class="usage"><span class='fu'>cross_kfunctions</span><span class='op'>(</span>
@@ -171,8 +171,9 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>lines</th>
-      <td><p>A SpatialLinesDataFrame with the sampling points. The geometries
-must be a SpatialLinesDataFrame (may crash if some geometries are invalid)</p></td>
+      <td><p>A SpatialLinesDataFrame representing the underlying network. The
+geometries must be a SpatialLinesDataFrame (may crash if some geometries
+ are invalid) without MultiLineSring</p></td>
     </tr>
     <tr>
       <th>pointsA</th>
@@ -186,55 +187,55 @@ the distances are calculated.</p></td>
     </tr>
     <tr>
       <th>start</th>
-      <td><p>A double, the start value for evaluating the k and g functions</p></td>
+      <td><p>A double, the lowest distance used to evaluate the k and g functions</p></td>
     </tr>
     <tr>
       <th>end</th>
-      <td><p>A double, the last value for evaluating the k and g functions</p></td>
+      <td><p>A double, the highest distance used to evaluate  the k and g functions</p></td>
     </tr>
     <tr>
       <th>step</th>
-      <td><p>A double, the jump between two evaluations of the k and g
-function</p></td>
+      <td><p>A double, the step between two evaluations of the k and g
+function. start, end and step are used to create a vector of distances with the function seq</p></td>
     </tr>
     <tr>
       <th>width</th>
-      <td><p>The width of each donut for the g-function</p></td>
+      <td><p>The width of each donut for the g-function. Half of the width is applied on
+both sides of the considered distance</p></td>
     </tr>
     <tr>
       <th>nsim</th>
       <td><p>An integer indicating the number of Monte Carlo simulations
-required</p></td>
+to perform for inference</p></td>
     </tr>
     <tr>
       <th>conf_int</th>
       <td><p>A double indicating the width confidence interval (default =
-0.05)</p></td>
+0.05) calculated on the Monte Carlo simulations</p></td>
     </tr>
     <tr>
       <th>digits</th>
-      <td><p>An integer indicating the number of digits to retain for the
+      <td><p>An integer indicating the number of digits to retain from the
 spatial coordinates</p></td>
     </tr>
     <tr>
       <th>tol</th>
       <td><p>When adding the points to the network, specify the minimum
 distance between these points and the lines' extremities. When points are
-closer, they are added at the extremity of the lines.</p></td>
+closer, they are added at the extremity of the lines</p></td>
     </tr>
     <tr>
       <th>resolution</th>
       <td><p>When simulating random points on the network, selecting a
 resolution will reduce greatly the calculation time. When resolution is null
 the random points can occur everywhere on the graph. If a value is specified,
-the edges are split according to this value and the random points are
-selected vertices on the new network.</p></td>
+the edges are split according to this value and the random points can only be
+vertices on the new network</p></td>
     </tr>
     <tr>
       <th>agg</th>
-      <td><p>A double indicating if the events must be aggregated within a
-distance. if NULL, then the events are aggregated by rounding the
-coordinates.</p></td>
+      <td><p>A double indicating if the events must be aggregated within a distance.
+If NULL, the events are aggregated only by rounding the coordinates</p></td>
     </tr>
     <tr>
       <th>verbose</th>
@@ -245,11 +246,11 @@ coordinates.</p></td>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>A list with the folowing values : <br /></p><ul>
-<li><p>plotkA
+<li><p>plotk A
   ggplot2 object representing the values of the cross k-function</p></li>
-<li><p>plotgA ggplot2 object representing the values of the cross
+<li><p>plotg A ggplot2 object representing the values of the cross
   g-function</p></li>
-<li><p>valuesA DataFrame with the values used to build the
+<li><p>values A DataFrame with the values used to build the
   plots</p></li>
 </ul>
 
@@ -271,7 +272,9 @@ coordinates.</p></td>
   the ring must be chosen. The main interest is to avoid the cumulative
   effect of the classical k-function. Note that the cross k-function of
   points A around B is not necessarily the same as the cross k-function of
-  points B around A.</p>
+  points B around A. This function is maturing, it works as expected (unit
+  tests) but will probably be modified in the future releases (gain speed,
+  advanced features, etc.).</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># \donttest{</span>

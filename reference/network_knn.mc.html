@@ -172,7 +172,7 @@ neighbours will be found on the network.</p></td>
     </tr>
     <tr>
       <th>lines</th>
-      <td><p>A SpatialLinesDataFrame representing the network</p></td>
+      <td><p>A SpatialLinesDataFrame representing the underlying network</p></td>
     </tr>
     <tr>
       <th>k</th>
@@ -181,7 +181,7 @@ neighbours will be found on the network.</p></td>
     <tr>
       <th>destinations</th>
       <td><p>A SpatialPointsDataFrame, might be used if the neighbours
-must be found in a separate dataset. NULL if the neighbours must be found in
+must be found in a separate set of points NULL if the neighbours must be found in
 origins.</p></td>
     </tr>
     <tr>
@@ -190,7 +190,7 @@ origins.</p></td>
 consider them as neighbours. It is usefull only if a grid is used, a
 lower value will reduce calculating time, but one must be sure that the
 k nearest neighbours are within this radius. Otherwise NAs will be present
-in the final matrices.</p></td>
+in the results.</p></td>
     </tr>
     <tr>
       <th>snap_dist</th>
@@ -205,7 +205,7 @@ considered proportional to the geographical length of the lines.</p></td>
     </tr>
     <tr>
       <th>direction</th>
-      <td><p>Indicates a field providing information about authorized
+      <td><p>The name of a column indicating authorized
 traveling direction on lines. if NULL, then all lines can be used in both
 directions. Must be the name of a column otherwise. The values of the
 column must be "FT" (From - To), "TF" (To - From) or "Both".</p></td>
@@ -223,13 +223,14 @@ progress</p></td>
     </tr>
     <tr>
       <th>digits</th>
-      <td><p>The number of digits to retain in the spatial coordinates (
+      <td><p>The number of digits to retain from the spatial coordinates (
 simplification used to reduce risk of topological error)</p></td>
     </tr>
     <tr>
       <th>tol</th>
-      <td><p>A float indicating the spatial tolerance when points are
-added as vertices to lines.</p></td>
+      <td><p>A float indicating the minimum distance between the points and the
+lines' extremities when adding the point to the network. When points are
+closer, they are added at the extremity of the lines.</p></td>
     </tr>
     </table>
 

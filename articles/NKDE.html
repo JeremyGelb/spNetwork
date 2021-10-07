@@ -100,7 +100,7 @@
       <h1 data-toc-skip>Network Kernel Density Estimate</h1>
                         <h4 class="author">Jeremy Gelb</h4>
             
-            <h4 class="date">2021-10-03</h4>
+            <h4 class="date">2021-10-07</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/JeremyGelb/spNetwork/blob/master/vignettes/NKDE.Rmd"><code>vignettes/NKDE.Rmd</code></a></small>
       <div class="hidden name"><code>NKDE.Rmd</code></div>
@@ -109,11 +109,10 @@
 
     
     
-<p>This vignette is a short introduction to the <strong>NKDE</strong> feature of the <strong>spNetwork</strong> package.</p>
 <div id="quick-introduction-to-nkde" class="section level1">
 <h1 class="hasAnchor">
 <a href="#quick-introduction-to-nkde" class="anchor"></a>Quick introduction to NKDE</h1>
-<p>A classical Kernel Density Estimate (KDE) estimates the continuous density of a set of events in a two-dimensional space. The density is estimated at sampling points, traditionally the centres of pixels dividing into equal zones the study area.</p>
+<p>A classical Kernel Density Estimate (KDE) estimates the continuous density of a set of events in a two-dimensional space. The density is estimated at sampling points, traditionally the centres of pixels dividing the study area into equal zones.</p>
 <p>This approach is not adapted to analyze density of events occurring on a network, like accidents and crimes in streets, or leaks on a network of water pipes. Indeed, calculating density values for locations outside the network is meaningless and the Euclidean distance underestimates the real distance between two objects on the network. Moreover, networks are not isotropic spaces. In other words, it is not possible to move in every direction, but only along the edges of the network.</p>
 <p>To calculate a Network Kernel Density Estimate (NKDE), it is possible to:</p>
 <ul>
@@ -121,7 +120,7 @@
 <li>calculate network distances between objects instead of Euclidean distances.</li>
 <li>adjust the kernel function to deal with the anisotropic space</li>
 </ul>
-A picture is worth a thousand of words, so let us consider this situation:
+<p>A picture is worth a thousand of words, so let us consider this situation:</p>
 <center>
 <img src="images/step0.png" title="fig:" width="300" alt="Image Title">
 </center>
@@ -138,7 +137,7 @@ A picture is worth a thousand of words, so let us consider this situation:
 <p><span class="math inline">\(K(x) &gt;= 0 \text{, if } x &lt; bandwidth\)</span></p>
 <p><span class="math inline">\(K(x) = 0 \text{, if } x &gt; bandwidth\)</span></p>
 <p><span class="math inline">\(\int K(x)= 1\)</span></p>
-<p>The total mass of an event is 1, and is spread according to the function <em>K</em> within the bandwidth distance.</p>
+<p>The total mass of an event is 1, and is spread according to the function <em>K</em> within the bandwidth.</p>
 <p>For an easier representation, let us consider here the triangle kernel function.</p>
 <center>
 <img src="images/step2.png" title="fig:" width="300" alt="Image Title">
@@ -186,7 +185,7 @@ A picture is worth a thousand of words, so let us consider this situation:
 <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">df2</span><span class="op">)</span> <span class="op">+</span> 
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">x</span>,y<span class="op">=</span><span class="va">y</span>,color<span class="op">=</span><span class="va">kernel</span><span class="op">)</span>,size<span class="op">=</span><span class="fl">1</span><span class="op">)</span></code></pre></div>
 <p><img src="NKDE_files/figure-html/unnamed-chunk-2-1.png" width="700"></p>
-<p>As one can see, most of the kernels look alike. It is worth mentioning that the gaussian kernel does not integrate to 1 within the bandwidth (specific case of non-compact kernel). In the <strong>spNetwork</strong> package, all kernel values beyond the bandwidth are set to 0. This means that some mass of each event is lost with the gaussian kernel. To limit this effect, one can use the scaled version of the gaussian kernel for wich the bandwidth is divided by 3, limiting greatly the mass loss.</p>
+<p>As one can see, most of the kernels look alike. It is worth mentioning that the gaussian kernel does not integrate to 1 within the bandwidth (specific case of non-compact kernel). In the <strong>spNetwork</strong> package, all kernel values beyond the bandwidth are set to 0. This means that some mass of each event is lost with the gaussian kernel. To limit this effect, one can use the scaled version of the gaussian kernel for which the bandwidth is divided by 3, limiting greatly the mass loss.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">Funs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">gaussian_kernel</span>, <span class="va">gaussian_kernel_scaled</span>,<span class="va">epanechnikov_kernel</span>,
           <span class="va">quartic_kernel</span>,<span class="va">triangle_kernel</span>, <span class="va">uniform_kernel</span>,
@@ -306,7 +305,7 @@ cosine
 <div id="the-three-versions-of-nkde" class="section level1">
 <h1 class="hasAnchor">
 <a href="#the-three-versions-of-nkde" class="anchor"></a>The three versions of NKDE</h1>
-<p>The <strong>spNetwork</strong> package provides three methods to calculate NKDE. We present them briefly here. For more details, please read the original papers and books cited.</p>
+<p>The <strong>spNetwork</strong> package provides three methods to calculate NKDE. We present them briefly here. For more details, please read the original papers and books cited. An other vignette is also available (<em>Details about NKDE</em>) to explore the three of them in 3D plots.</p>
 <div id="simple-method" class="section level2">
 <h2 class="hasAnchor">
 <a href="#simple-method" class="anchor"></a>Simple method</h2>
@@ -388,7 +387,7 @@ cosine
 <div id="continuous-nkde" class="section level2">
 <h2 class="hasAnchor">
 <a href="#continuous-nkde" class="anchor"></a>Continuous NKDE</h2>
-<p>If the previous method is an ubiased estimator and quite easy to calculate, its discontinuous nature might be counter-intuitive in comparison with the simple method. The continuous NKDE merges the best of the two worlds: it adjusts the values of the NKDE at intersections to ensure that it integrates to 1 on its domain, and applies a backward correction to force the density values to be continuous. This process is accomplished by a recursive function, described in the book <em>Spatial Analysis Along Networks</em> <span class="citation">(Okabe and Sugihara <a href="#ref-okabe2012spatial" role="doc-biblioref">2012</a>)</span>. This function is more time consuming, so it might be necessary to stop it when the recursion is too deep. Considering that the kernel density is divided at each intersection, stopping the function at deep level 16 should give results almost identical to the true values.</p>
+<p>If the previous method is an unbiased estimator and quite easy to calculate, its discontinuous nature might be counter-intuitive in comparison with the simple method. The continuous NKDE merges the best of the two worlds: it adjusts the values of the NKDE at intersections to ensure that it integrates to 1 on its domain, and applies a backward correction to force the density values to be continuous. This process is accomplished by a recursive function, described in the book <em>Spatial Analysis Along Networks</em> <span class="citation">(Okabe and Sugihara <a href="#ref-okabe2012spatial" role="doc-biblioref">2012</a>)</span>. This function is more time consuming, so it might be necessary to stop it when the recursion is too deep. Considering that the kernel density is divided at each intersection, stopping the function at deep level 16 should give results almost identical to the true values.</p>
 <center>
 <img src="images/continuous.png" title="fig:" width="300" alt="Image Title">
 </center>
@@ -515,14 +514,14 @@ cosine
           subtitle <span class="op">=</span> <span class="st">"within a radius of 300 metres"</span>,
           caption <span class="op">=</span> <span class="st">"using the quartic kernel"</span><span class="op">)</span></code></pre></div>
 <p><img src="NKDE_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
-<p>As you can imagine it remains a costly process, especially for the continuous kernel that is calculated with a recursive function. The package <strong>spNetwork</strong> uses three approaches simultaneously to reduce calculation time:</p>
+<p>As you can imagine it remains a costly process, especially for the continuous kernel. The package <strong>spNetwork</strong> uses three approaches simultaneously to reduce calculation time:</p>
 <ul>
 <li>‘Rcpp’: the main functions are coded with C++</li>
 <li>‘Armadillo’: the linear algebra is performed with the ‘RcppArmadillo’ package</li>
 <li>multiprocessing: it is possible to split the calculation on multiple cores</li>
 </ul>
-<p>The calculus of the NKDE for each cell could be done by several cores. To do so, <strong>spNetwork</strong> provides a function <em>nkde.mc</em>. More specifically, it uses functions from the packages ‘future’ and ‘future.apply’. The selection of the plan has to be done by the user to ensure the best compatibility on each os and computer. See the documentation of the ‘future’ package if needed.</p>
-<p>The following code will produce the same results as before but split the work between two cores. Note that the plan used by the package ‘future’ may vary according to your os.</p>
+<p>The calculus of the NKDE for each cell could be done by several cores. To do so, <strong>spNetwork</strong> provides a function <code>nkde.mc</code>. More specifically, it uses functions from the packages <code>future</code> and <code>future.apply</code>. The selection of the plan has to be done by the user to ensure the best compatibility on each os and computer. See the documentation of the <code>future</code> package if needed.</p>
+<p>The following code will produce the same results as before but split the work between two cores.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="co"># setting the multisession plan</span>
@@ -553,18 +552,18 @@ cosine
 <div id="an-example-with-adaptive-bandwidth" class="section level1">
 <h1 class="hasAnchor">
 <a href="#an-example-with-adaptive-bandwidth" class="anchor"></a>An example with adaptive bandwidth</h1>
-<p>The examples provided in the previous sections are using only a fixed bandwidth. If we relax the need for a fixed bandwidth, we obtain an adaptive estimator. In other words, the bandwidth vary in the study area. <strong>spNetwork</strong> uses the method proposed by <span class="citation">Abramson (<a href="#ref-abramson1982bandwidth" role="doc-biblioref">1982</a>)</span>, implying a variation of the bandwidth that is inversely proportional to the square root of the target density itself. In other words, at places where the density of the spatial process is high, the bandwidth of the kernel will be smaller and inversely. The use of an adaptive bandwidth has many theoretical and practical advantages. First, it reduces the sensibility to outliers. Second, it reduces smoothing in sub-region with many events (giving more detailed density estimation) and increases the smoothing in sub-region with few events (giving fuzzier results because of the higher uncertainty).</p>
+<p>The examples provided in the previous sections are using only a fixed bandwidth. If we relax the need for a fixed bandwidth, we obtain an adaptive estimator. In other words, the bandwidth may vary in the study area. <strong>spNetwork</strong> uses the method proposed by <span class="citation">Abramson (<a href="#ref-abramson1982bandwidth" role="doc-biblioref">1982</a>)</span>, implying a variation of the bandwidth that is inversely proportional to the square root of the target density itself. In other words, at places where the density of the spatial process is high, the bandwidth of the kernel will be smaller and inversely. The use of an adaptive bandwidth has many theoretical and practical advantages. First, it reduces the sensibility to outliers. Second, it reduces smoothing in sub-region with many events (giving more detailed density estimation) and increases the smoothing in sub-region with few events (giving fuzzier results because of the higher uncertainty).</p>
 <p>The problem is that the true density itself is unknown (otherwise we would not have to estimate it with a smoothing method). To obtain the adaptive bandwidth, a three steps method is used :</p>
 <ol style="list-style-type: decimal">
 <li>A fixed reference bandwidth (<span class="math inline">\(h_{0}\)</span>) is selected. For each event (<span class="math inline">\(e_{i}\)</span>) on the network, the density of the spatial process is evaluated by using this reference bandwidth (<span class="math inline">\(\tilde{f}h_{0}(e_{i})\)</span>).</li>
-<li>For each event, the adaptive bandwidth is calculated with the following formula. A trimming values can be defined to limit the maximum adaptive bandwidth.</li>
+<li>For each event, the adaptive bandwidth is calculated with the following formula. A trimming value can be defined to limit the maximum of the calculated adaptive bandwidths.</li>
 <li>The densities at sampling points are then evaluated by using the obtained vector of bandwidth for each event.</li>
 </ol>
 <p><span class="math display">\[
 h(e_{i}) = h_{0} * \frac{1}{\sqrt{\tilde{f}h_{0}(e_{i})}} * \frac{1}{\gamma_{f}}\\
 \gamma_{f} = \exp(\frac{\sum_{i}log(\frac{1}{\sqrt{\tilde{f}h_{0}(e_{i})}})}{n})
 \]</span></p>
-<p>This method is called event oriented, because the new bandwidths are evaluated for the events rather than the sampling points. The sample oriented method is not implemented because not compatible with the algorithms used to calculate the discontinuous and continuous NKDE.</p>
+<p>This method is called event oriented, because the new bandwidths are evaluated for the events rather than the sampling points. The sample oriented method is not implemented because not compatible with the internal structure of <strong>spNetwork</strong>. Moreover, the event oriented density has an interesting advantage: adding more sampling points to have a more detailed density estimation has only a little impact on calculation time.</p>
 <p>In <strong>spNetwork</strong>, when an adaptive bandwidth is used, the calculated bandwidth for each event is returned too.</p>
 <p>Let us calculate a new NKDE, but with an adaptive bandwidth.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
@@ -595,7 +594,7 @@ h(e_{i}) = h_{0} * \frac{1}{\sqrt{\tilde{f}h_{0}(e_{i})}} * \frac{1}{\gamma_{f}}
 <span class="fu"><a href="https://rdrr.io/pkg/raster/man/plot.html">plot</a></span><span class="op">(</span><span class="va">bike_accidents</span>,add<span class="op">=</span><span class="cn">T</span>,col<span class="op">=</span><span class="st">'red'</span>,pch <span class="op">=</span> <span class="fl">19</span>,cex<span class="op">=</span><span class="fl">0.5</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/pkg/raster/man/plot.html">plot</a></span><span class="op">(</span><span class="va">circles</span><span class="op">[</span><span class="va">ids</span>,<span class="op">]</span>,add<span class="op">=</span><span class="cn">T</span>,border<span class="op">=</span><span class="st">'blue'</span>,lwd<span class="op">=</span><span class="fl">2</span><span class="op">)</span></code></pre></div>
 <p><img src="NKDE_files/figure-html/unnamed-chunk-13-1.png" width="700"></p>
-<p>And map the new densities with the same code as previous</p>
+<p>And map the new densities with the same code as before.</p>
 <pre><code>#&gt; style: jenks
 #&gt;           [0,0.002095183] (0.002095183,0.005201574]  (0.005201574,0.00924476] 
 #&gt;                      1744                       737                       334 
@@ -607,7 +606,7 @@ h(e_{i}) = h_{0} * \frac{1}{\sqrt{\tilde{f}h_{0}(e_{i})}} * \frac{1}{\gamma_{f}}
 <div id="applying-a-correction-factor-to-avoid-edge-effects" class="section level2">
 <h2 class="hasAnchor">
 <a href="#applying-a-correction-factor-to-avoid-edge-effects" class="anchor"></a>Applying a correction factor to avoid edge effects</h2>
-<p>When the study area is limited, the kernel density estimate is biased at the border because the events at the other side of the border are not sampled. To mitigate the induced bias, one could apply the Diggle correction factor.</p>
+<p>When the study area is bounded, the kernel density estimate is biased at the border because the events at the other side of the border are not sampled. To mitigate the induced bias, one could apply the Diggle correction factor.</p>
 <p><span class="math display">\[d(u) = \sum_{i=1}^{n}\frac{1}{e(x_{i})}K(dist(u-x_{i}))\\e(u) = \int_{W}{K(dist(u,v))}\]</span> The correction factor <span class="math inline">\(e(u)\)</span> is calculated for each event for which a part of its mass is outside the study area. More precisely, <span class="math inline">\(e(x_{i})\)</span> is the percentage of the mass of the event <span class="math inline">\(x_i\)</span> located inside the study area. The kernel function could be the simple, the continuous or the discontinuous. This correction factor can be used with the adaptive bandwidth too. Note that this correction is usable only if the network outside the study_area is available.</p>
 <p>Let us illustrate it here by using a sub part of the same data</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
@@ -661,7 +660,7 @@ h(e_{i}) = h_{0} * \frac{1}{\sqrt{\tilde{f}h_{0}(e_{i})}} * \frac{1}{\gamma_{f}}
 <div id="bandwidth-selection" class="section level2">
 <h2 class="hasAnchor">
 <a href="#bandwidth-selection" class="anchor"></a>Bandwidth selection</h2>
-<p>The bandwidth is the most important parameter when doing kernel density estimate. Many methods have been proposed to find an optimal bandwidth but all of them are either crude approximations or require large calculus time. In that context, a theory driven bandwidth is probably the way to go. However, <strong>spNetwork</strong> provides currently two functions to do data driven bandwidth selection:</p>
+<p>The bandwidth is the most important parameter when doing kernel density estimate. Many methods have been proposed to find an optimal bandwidth but all of them are either crude approximations or require large calculus time. In that context, selecting a theory based bandwidth is recommended. However, <strong>spNetwork</strong> provides currently two functions to do data driven bandwidth selection:</p>
 <ul>
 <li>
 <code>bw_cv_likelihood_calc</code>, using likelihood cross validation by leave one out. The idea is to find a bandwidth that will produce the most similar results if an event is dropped.</li>
