@@ -50,3 +50,4 @@ The worker the K-nearest points for a set of points on a network.
 \examples{
 #no example provided, this is an internal function
 }
+\keyword{internal}

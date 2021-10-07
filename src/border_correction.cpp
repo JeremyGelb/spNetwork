@@ -19,7 +19,7 @@
 //' @param max_depth the maximum recursion depth (after which recursion is stopped)
 //' @return a list of dataframes, used to calculate the Diggel correction factor
 //' @export
-//'
+//' @keywords internal
 // [[Rcpp::export]]
 List corrfactor_discontinuous_sparse(List neighbour_list, NumericVector events, DataFrame line_list, NumericVector bws, int max_depth){
 
@@ -129,7 +129,7 @@ List corrfactor_discontinuous_sparse(List neighbour_list, NumericVector events, 
 //' @param max_depth the maximum recursion depth (after which recursion is stopped)
 //' @return a list of dataframes, used to calculate the Diggel correction factor
 //' @export
-//
+//' @keywords internal
 // [[Rcpp::export]]
 List corrfactor_discontinuous(List neighbour_list, NumericVector events, DataFrame line_list, NumericVector bws, int max_depth){
 
@@ -243,7 +243,7 @@ List corrfactor_discontinuous(List neighbour_list, NumericVector events, DataFra
 //' @param max_depth the maximum recursion depth (after which recursion is stopped)
 //' @return a list of dataframes, used to calculate the Diggel correction factor
 //' @export
-//'
+//' @keywords internal
 // [[Rcpp::export]]
 List corrfactor_continuous_sparse(List neighbour_list, NumericVector events, DataFrame line_list, NumericVector bws, int max_depth){
 
@@ -374,7 +374,7 @@ List corrfactor_continuous_sparse(List neighbour_list, NumericVector events, Dat
 //' @param max_depth the maximum recursion depth (after which recursion is stopped)
 //' @return a list of dataframes, used to calculate the Diggel correction factor
 //' @export
-//'
+//' @keywords internal
 // [[Rcpp::export]]
 List corrfactor_continuous(List neighbour_list, NumericVector events, DataFrame line_list, NumericVector bws, int max_depth){
 

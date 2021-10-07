@@ -28,6 +28,7 @@
 //' @param max_depth the maximum recursion depth
 //' @return a vector with the kernel values calculated for each samples from
 //' the first node given
+//' @keywords internal
 arma::vec esc_kernel_rcpp_arma_sparse(fptr kernel_func, List neighbour_list, arma::sp_mat edge_mat, int v, double bw, NumericVector line_weights, arma::vec samples_edgeid, arma::vec samples_x, arma::vec samples_y, arma::vec nodes_x, arma::vec nodes_y, int max_depth){
 
   // let me create the vector of kernel values
@@ -221,6 +222,7 @@ arma::vec esc_kernel_rcpp_arma_sparse(fptr kernel_func, List neighbour_list, arm
 //' @param max_depth the maximum recursion depth
 //' @return a vector with the kernel values calculated for each samples from
 //' the first node given
+//' @keywords internal
 arma::vec esc_kernel_rcpp_arma(fptr kernel_func, List neighbour_list, IntegerMatrix edge_mat, int v, double bw, NumericVector line_weights, arma::vec samples_edgeid, arma::vec samples_x, arma::vec samples_y, arma::vec nodes_x, arma::vec nodes_y, int max_depth){
 
   // let me create the vector of kernel values
@@ -411,6 +413,7 @@ arma::vec esc_kernel_rcpp_arma(fptr kernel_func, List neighbour_list, IntegerMat
 //' @param verbose a boolean indicating if the function must print its progress
 //' @return a DataFrame with two columns : the kernel values (sum_k) and the number of events for each sample (n)
 //' @export
+//' @keywords internal
 //'
 // [[Rcpp::export]]
 DataFrame continuous_nkde_cpp_arma_sparse(List neighbour_list, NumericVector events, NumericVector weights, DataFrame samples, NumericVector bws, std::string kernel_name, DataFrame nodes, DataFrame line_list, int max_depth, bool verbose){
@@ -548,6 +551,7 @@ DataFrame continuous_nkde_cpp_arma_sparse(List neighbour_list, NumericVector eve
 //' @param verbose a boolean indicating if the function must print its progress
 //' @return a DataFrame with two columns : the kernel values (sum_k) and the number of events for each sample (n)
 //' @export
+//' @keywords internal
 //'
 // [[Rcpp::export]]
 DataFrame continuous_nkde_cpp_arma(List neighbour_list, NumericVector events, NumericVector weights, DataFrame samples, NumericVector bws, std::string kernel_name, DataFrame nodes, DataFrame line_list, int max_depth, bool verbose){

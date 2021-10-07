@@ -13,10 +13,10 @@
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
 <script src="pkgdown.js"></script><meta property="og:title" content="Spatial Analysis on Network">
 <meta property="og:description" content="Perform spatial analysis on network.
-    Allow to calculate Network Kernel Density Estimate, and to build
-    spatial matrices (listw objects like in spdep package) to conduct any kind of traditional 
-    spatial analysis with spatial weights based on reticular distances. K functions on network
-    are also available but still experimental. References: Okabe et al (2019) &lt;doi:10.1080/13658810802475491&gt;;
+    Implement several methods for spatial analysis on network: Network Kernel Density estimation, 
+    building of spatial matrices based on network distance (listw objects from spdep package), K functions estimation 
+    for point pattern analysis on network, k nearest neighbours on network, isochrones calculation, and graph generation
+    References: Okabe et al (2019) &lt;doi:10.1080/13658810802475491&gt;;
     Okabe et al (2012, ISBN:978-0470770818);Baddeley el al (2015, ISBN:9781482210200).">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -118,7 +118,7 @@
 <p>This package can be used to perform several types of analysis on geographical networks. This type of network have spatial coordinates associated with their nodes. They can be directed or undirected. In the actual development version the implemented methods are:</p>
 <ul>
 <li>Network Kernel Density Estimate, a method estimating density of a point pattern constrained on a network (see the vignettes <a href="https://jeremygelb.github.io/spNetwork/articles/NKDE.html">Network Kernel Density Estimate</a> and <a href="https://jeremygelb.github.io/spNetwork/articles/NKDEdetailed.html">Details about NKDE</a>).</li>
-<li>Network based spatial weight matrices, which can be used in a great number of traditional methods in spatial analysis (see the vignette <a href="https://jeremygelb.github.io/spNetwork/articles/SpatialWeightMatrices.html">Spatial Weight Matrices</a>).</li>
+<li>Spatial weight matrices based on network distances, which can be used in a great number of traditional methods in spatial analysis (see the vignette <a href="https://jeremygelb.github.io/spNetwork/articles/SpatialWeightMatrices.html">Spatial Weight Matrices</a>).</li>
 <li>Network k Functions, used to investigate the spatial distribution of a set of points on a network at several scales (see the vignette <a href="https://jeremygelb.github.io/spNetwork/articles/KNetworkFunctions.html">Network k Functions</a>).</li>
 <li>K nearest neighbours, to calculate for each point on a network its K nearest neighbour (see the function <code>network_knn</code>).</li>
 <li>Graph analysis, using the functions of the package <strong>igraph</strong> (see the vignette <a href="https://jeremygelb.github.io/spNetwork/articles/NetworkBuilding.html">Building graphs</a>)</li>
@@ -132,7 +132,7 @@
 <p>you can install the CRAN version of this package with the following code in R.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"spNetwork"</span><span class="op">)</span></code></pre></div>
-<p>To use all the new features before they are available in the CRAN version, you have to download the development version.</p>
+<p>To use all the new features before they are available in the CRAN version, you can download the development version.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html">install_github</a></span><span class="op">(</span><span class="st">"JeremyGelb/spNetwork"</span><span class="op">)</span></code></pre></div>
 <p>The packages uses mainly the following packages in its internal structure :</p>
@@ -145,6 +145,7 @@
 <li>future</li>
 <li>future.apply</li>
 <li>data.table</li>
+<li>SearchTrees</li>
 <li>Rcpp</li>
 <li>RcppArmadillo</li>
 </ul>
@@ -253,6 +254,11 @@
 <h3 class="hasAnchor">
 <a href="#work-in-progress" class="anchor"></a>Work in progress</h3>
 <p>New methods will be probably added in the future, but we will focus on performance for the next release. Do no hesitate to open an issue <a href="https://github.com/JeremyGelb/spNetwork/issues">here</a> if you have suggestion or if you encounter a bug.</p>
+<p>Features that will be added to the package in the future:</p>
+<ul>
+<li>temporal NKDE, a two dimensional kernel density estimation in network space and time</li>
+<li>accessibility measures based on distance matrix between population locations and services</li>
+</ul>
 </div>
 </div>
 <div id="authors" class="section level2">

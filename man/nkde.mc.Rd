@@ -30,20 +30,20 @@ nkde.mc(
 \arguments{
 \item{lines}{A SpatialLinesDataFrame representing the underlying network. The
 geometries must be a SpatialLinesDataFrame (may crash if some geometries
- are invalid)}
+ are invalid) without MultiLineSring.}
 
-\item{events}{A SpatialPointsDataFrame representing the events on the
-network. The points will be snapped on the network.}
+\item{events}{events A SpatialPointsDataFrame representing the events on the
+network. The points will be snapped on the network to their closest line.}
 
 \item{w}{A vector representing the weight of each event}
 
 \item{samples}{A SpatialPointsDataFrame representing the locations for
-which the densities will be estimated}
+which the densities will be estimated.}
 
 \item{kernel_name}{The name of the kernel to use. Must be one of triangle,
 gaussian, tricube, cosine ,triweight, quartic, epanechnikov or uniform.}
 
-\item{bw}{The kernel bandwidth (in meters)}
+\item{bw}{The kernel bandwidth (using the scale of the lines)}
 
 \item{adaptive}{A Boolean, indicating if an adaptive bandwidth must be
 used}
@@ -52,7 +52,7 @@ used}
 bandwidth}
 
 \item{method}{The method to use when calculating the NKDE, must be one of
-simple / discontinuous / continuous (see details for more information)}
+simple / discontinuous / continuous (see nkde details for more information)}
 
 \item{div}{The divisor to use for the kernel. Must be "n" (the number of
 events within the radius around each sampling point), "bw" (the bandwith)
@@ -73,29 +73,35 @@ estimates in most cases. A larger value can be used without problem for the
 discontinuous method. For the continuous method, a larger value will
 strongly impact calculation speed.}
 
-\item{digits}{The number of digits to retain in the spatial coordinates. It
-ensures that topology is good when building the network. Default is 3}
+\item{digits}{The number of digits to retain from the spatial coordinates. It
+ensures that topology is good when building the network. Default is 3. A
+too high precision (high number of digits) might break some connections}
 
-\item{tol}{When adding the events and the sampling points to the network,
-the minimum distance between these points and the lines' extremities. When
-points are closer, they are added at the extremity of the lines.}
+\item{tol}{A float indicating the minimum distance between the events and the
+lines' extremities when adding the point to the network. When points are
+closer, they are added at the extremity of the lines.}
 
-\item{agg}{A double indicating if the events must be aggregated within a distance.
-If NULL, the events are aggregated by rounding the coordinates.}
+\item{agg}{A double indicating if the events must be aggregated within a
+distance. If NULL, the events are aggregated only by rounding the
+coordinates.}
 
-\item{sparse}{A Boolean indicating if sparse or regular matrix should be
-used by the Rcpp functions. Regular matrix are faster, but require more
-memory and could lead to error, in particular with multiprocessing. Sparse
-matrix are slower, but require much less memory.}
+\item{sparse}{A Boolean indicating if sparse or regular matrices should be
+used by the Rcpp functions. These matrices are used to store edge indices
+between two nodes in a graph. Regular matrices are faster, but require more
+memory, in particular with multiprocessing. Sparse matrices are slower (a
+bit), but require much less memory.}
 
 \item{grid_shape}{A vector of two values indicating how the study area
-must be split when performing the calculus (see details). Default is c(1,1)}
+must be split when performing the calculus. Default is c(1,1) (no split). A finer grid could
+reduce memory usage ans increase speed when a large dataset is used. When using
+multiprocessing, the work in each grid is dispatched between the workers.}
 
 \item{verbose}{A Boolean, indicating if the function should print messages
 about process.}
 
 \item{check}{A Boolean indicating if the geometry checks must be run before
-calculating the density.}
+the operation. This might take some times, but it will ensure that the CRS
+of the provided objects are valid and identical, and that geometries are valid.}
 }
 \value{
 A vector of values, they are the density estimates at sampling

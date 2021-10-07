@@ -63,3 +63,4 @@ The main function to calculate discontinuous NKDE (ARMA and sparse matrix)
 
 The main function to calculate discontinuous NKDE (ARMA and Integer matrix)
 }
+\keyword{internal}

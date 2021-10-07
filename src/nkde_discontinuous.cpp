@@ -26,6 +26,7 @@
 //' @param max_depth the maximum recursion depth
 //' @return a vector with the kernel values calculated for each samples from
 //' the first node given
+//' @keywords internal
 arma::vec esd_kernel_rcpp_arma_sparse(fptr kernel_func, arma::sp_mat edge_mat,
                                       List neighbour_list ,int v, double bw,
                                       arma::vec line_weights, arma::vec samples_edgeid,
@@ -162,6 +163,7 @@ arma::vec esd_kernel_rcpp_arma_sparse(fptr kernel_func, arma::sp_mat edge_mat,
 //' @param max_depth the maximum recursion depth
 //' @return a vector with the kernel values calculated for each samples from
 //' the first node given
+//' @keywords internal
 arma::vec esd_kernel_rcpp_arma(fptr kernel_func, IntegerMatrix edge_mat,
                                List neighbour_list ,int v, double bw,
                                arma::vec line_weights, arma::vec samples_edgeid,
@@ -275,7 +277,7 @@ arma::vec esd_kernel_rcpp_arma(fptr kernel_func, IntegerMatrix edge_mat,
 //' @param verbose a boolean indicating if the function must print its progress
 //' @return a DataFrame with two columns : the kernel values (sum_k) and the number of events for each sample (n)
 //' @export
-//'
+//' @keywords internal
 // [[Rcpp::export]]
 DataFrame discontinuous_nkde_cpp_arma_sparse(List neighbour_list, NumericVector events, NumericVector weights, DataFrame samples, NumericVector bws, std::string kernel_name, DataFrame nodes, DataFrame line_list, int max_depth, bool verbose){
 
@@ -345,7 +347,7 @@ DataFrame discontinuous_nkde_cpp_arma_sparse(List neighbour_list, NumericVector 
 //' @param verbose a boolean indicating if the function must print its progress
 //' @return a DataFrame with two columns : the kernel values (sum_k) and the number of events for each sample (n)
 //' @export
-//'
+//' @keywords internal
 // [[Rcpp::export]]
 DataFrame discontinuous_nkde_cpp_arma(List neighbour_list, NumericVector events, NumericVector weights, DataFrame samples, NumericVector bws, std::string kernel_name, DataFrame nodes, DataFrame line_list, int max_depth, bool verbose){
 

@@ -20,4 +20,8 @@ This is a simple wrapup of the FNN::knnx.index function
 }
 \examples{
 #This is an internal function, no example provided
+eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
+mtl_libraries <- rgdal::readOGR(eventsgpkg,layer="mtl_libraries", verbose=FALSE)
+mtl_theatres <- rgdal::readOGR(eventsgpkg,layer="mtl_theatres", verbose=FALSE)
+close_libs <- closest_points(mtl_theatres, mtl_libraries)
 }

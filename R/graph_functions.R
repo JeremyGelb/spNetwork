@@ -2,15 +2,20 @@
 #'
 #' @description Generate an igraph object from a SpatialLinesDataFrame.
 #'
+#' @details This function can be used to generate an undirected graph object (igraph
+#'   object). It uses the coordinates of the linestrings extremites to create
+#'   the nodes of the graph. This is why the number of digits in the coordinates
+#'   is important. A too high precision (high number of digits) might break some
+#'   connections.
+#'
 #' @param lines A SpatialLinesDataFrame
 #' @param digits The number of digits to keep from the coordinates
-#' @param line_weight The name of a field that represent the cost to use a line
-#' @param attrs A Boolean indicating if the original lines attributes
-#' must be added to the graph lines
+#' @param line_weight The name of the column giving the weight of the lines
+#' @param attrs A boolean indicating if the original lines attributes should be
+#'   stored in the final object
 #' @return A list containing the following elements:
 #' \itemize{
-#'         \item graph: an igraph object that preserves the original lines
-#'         characteristics
+#'         \item graph: an igraph object
 #'         \item linelist: the dataframe used to build the graph
 #'         \item lines: the original SpatialLinesDataFrame
 #'         \item spvertices: a SpatialPointsDataFrame representing the vertices
@@ -90,18 +95,25 @@ build_graph <- function(lines, digits, line_weight, attrs = FALSE) {
 #'
 #' @description Generate a directed igraph object from a SpatialLinesDataFrame.
 #'
+#' @details This function can be used to generate a directed graph object (igraph
+#'   object). It uses the coordinates of the linestrings extremites to create
+#'   the nodes of the graph. This is why the number of digits in the coordinates
+#'   is important. A too high precision (high number of digits) might break some
+#'   connections. The column used to indicate directions can only have the
+#'   following values: "FT" (From-To), "TF" (To-From) and "Both".
+#'
 #' @param lines A SpatialLinesDataFrame
 #' @param digits The number of digits to keep from the coordinates
-#' @param line_weight The name of a field that represent the cost to use a line
-#' @param attrs A boolean indicating if the original lines attributes
-#' @param direction Indicate a field giving informations about authorized
-#' traveling direction on lines. if NULL, then all lines can be used in both
-#' directions. Must be the name of a column otherwise. The values of the
-#' column must be "FT" (From - To), "TF" (To - From) or "Both".
+#' @param line_weight The name of the column giving the weight of the lines
+#' @param attrs A boolean indicating if the original lines attributes should be
+#'   stored in the final object
+#' @param direction A column name indicating authorized traveling direction on
+#'   lines. if NULL, then all lines can be used in both directions. Must be the
+#'   name of a column otherwise. The values of the column must be "FT" (From -
+#'   To), "TF" (To - From) or "Both"
 #' @return A list containing the following elements:
 #' \itemize{
-#'         \item graph: an igraph object that preserves the original lines
-#'         characteristics
+#'         \item graph: an igraph object
 #'         \item linelist: the dataframe used to build the graph
 #'         \item lines: the original SpatialLinesDataFrame
 #'         \item spvertices: a SpatialPointsDataFrame representing the vertices
@@ -276,12 +288,27 @@ plot_graph <- function(graph) {
 #'
 #' @description A utility function to find topological errors in a network.
 #'
+#' @details This function can be used to check for three common problems in networks:
+#' disconnected components, dangle nodes and close nodes. When a network has disconnected
+#' components, this means that several unconnected graphs are composing the
+#' overall network. This can be caused by topological errors in the dataset. Dangle
+#' nodes are nodes connected to only one other node. This type of node can be normal
+#' at the border of a network, but can also be caused by topological errors. Close
+#' nodes are nodes that are not coincident, but so close that they probably should
+#' be coincident.
+#'
 #' @param lines A SpatialLinesDataFrame representing the network
 #' @param digits An integer indicating the number of digits to retain for
 #'   coordinates
-#' @return A list with two elements. The first is a SpatialPointsDataFrame
+#' @param max_search The maximum number of nearest neighbour to search to find
+#' close_nodes
+#' @param tol The minimum distance expected between two nodes. Under that values
+#' nodes are considered as too close and are returned in the results.
+#' @return A list with three elements. The first is a SpatialPointsDataFrame
 #'   indicating for each node of the network to which component it belongs. The
-#'   second is a SpatialPointsDataFrame with the dangle nodes of the network.
+#'   second is a SpatialPointsDataFrame with nodes that are too close one of
+#'   each other. The second is a SpatialPointsDataFrame with the dangle nodes of
+#'   the network.
 #' @importFrom rgeos gLength
 #' @importFrom sp coordinates
 #' @export
@@ -291,7 +318,7 @@ plot_graph <- function(graph) {
 #' mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
 #' topo_errors <- graph_checking(mtl_network, 2)
 #' }
-graph_checking <- function(lines,digits){
+graph_checking <- function(lines,digits, max_search = 5, tol = 0.1){
 
   ##step1 : adjusting the lines
   lines$length <- gLength(lines,byid = TRUE)
@@ -313,7 +340,15 @@ graph_checking <- function(lines,digits){
   dangle_nodes <- subset(graph_results$spvertices,
                             graph_results$spvertices$degree==1)
 
+  ##step5 : find nodes that are closer to a tolerance
+  xy_nodes <- sp::coordinates(graph_results$spvertices)
+  close_dists <- FNN::knn.dist(xy_nodes, k = max_search)
+  is_error <- apply(t(close_dists),MARGIN = 2, min) <= tol
+  close_nodes <- subset(graph_results$spvertices, is_error)
+
+
   return(list("dangle_nodes" = dangle_nodes,
+              "close_nodes" = close_nodes,
               "vertex_components" = graph_results$spvertices))
 
 }

@@ -32,9 +32,9 @@ actual development version the implemented methods are:
     Estimate](https://jeremygelb.github.io/spNetwork/articles/NKDE.html)
     and [Details about
     NKDE](https://jeremygelb.github.io/spNetwork/articles/NKDEdetailed.html)).
--   Network based spatial weight matrices, which can be used in a great
-    number of traditional methods in spatial analysis (see the vignette
-    [Spatial Weight
+-   Spatial weight matrices based on network distances, which can be
+    used in a great number of traditional methods in spatial analysis
+    (see the vignette [Spatial Weight
     Matrices](https://jeremygelb.github.io/spNetwork/articles/SpatialWeightMatrices.html)).
 -   Network k Functions, used to investigate the spatial distribution of
     a set of points on a network at several scales (see the vignette
@@ -63,7 +63,7 @@ install.packages("spNetwork")
 ```
 
 To use all the new features before they are available in the CRAN
-version, you have to download the development version.
+version, you can download the development version.
 
 ``` r
 devtools::install_github("JeremyGelb/spNetwork")
@@ -80,6 +80,7 @@ structure :
 -   future
 -   future.apply
 -   data.table
+-   SearchTrees
 -   Rcpp
 -   RcppArmadillo
 
@@ -201,6 +202,13 @@ New methods will be probably added in the future, but we will focus on
 performance for the next release. Do no hesitate to open an issue
 [here](https://github.com/JeremyGelb/spNetwork/issues) if you have
 suggestion or if you encounter a bug.
+
+Features that will be added to the package in the future:
+
+-   temporal NKDE, a two dimensional kernel density estimation in
+    network space and time
+-   accessibility measures based on distance matrix between population
+    locations and services
 
 ## Authors
 

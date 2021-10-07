@@ -11,20 +11,20 @@ build_graph_directed(lines, digits, line_weight, direction, attrs = FALSE)
 
 \item{digits}{The number of digits to keep from the coordinates}
 
-\item{line_weight}{The name of a field that represent the cost to use a line}
+\item{line_weight}{The name of the column giving the weight of the lines}
 
-\item{direction}{Indicate a field giving informations about authorized
-traveling direction on lines. if NULL, then all lines can be used in both
-directions. Must be the name of a column otherwise. The values of the
-column must be "FT" (From - To), "TF" (To - From) or "Both".}
+\item{direction}{A column name indicating authorized traveling direction on
+lines. if NULL, then all lines can be used in both directions. Must be the
+name of a column otherwise. The values of the column must be "FT" (From -
+To), "TF" (To - From) or "Both"}
 
-\item{attrs}{A boolean indicating if the original lines attributes}
+\item{attrs}{A boolean indicating if the original lines attributes should be
+stored in the final object}
 }
 \value{
 A list containing the following elements:
 \itemize{
-        \item graph: an igraph object that preserves the original lines
-        characteristics
+        \item graph: an igraph object
         \item linelist: the dataframe used to build the graph
         \item lines: the original SpatialLinesDataFrame
         \item spvertices: a SpatialPointsDataFrame representing the vertices
@@ -34,6 +34,14 @@ A list containing the following elements:
 }
 \description{
 Generate a directed igraph object from a SpatialLinesDataFrame.
+}
+\details{
+This function can be used to generate a directed graph object (igraph
+  object). It uses the coordinates of the linestrings extremites to create
+  the nodes of the graph. This is why the number of digits in the coordinates
+  is important. A too high precision (high number of digits) might break some
+  connections. The column used to indicate directions can only have the
+  following values: "FT" (From-To), "TF" (To-From) and "Both".
 }
 \examples{
 networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)

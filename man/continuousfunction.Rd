@@ -63,3 +63,4 @@ The main function to calculate continuous NKDE (with ARMADILO and sparse matrix)
 
 The main function to calculate continuous NKDE (with ARMADILO and integer matrix)
 }
+\keyword{internal}

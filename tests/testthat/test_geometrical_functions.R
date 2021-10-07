@@ -397,3 +397,44 @@ test_that("formal testing of the lixelize_lines.mc function", {
   expect_false(any(!test))
 
 })
+
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#### Testing the healing_edges function ####
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+test_that("formal testing of the lixelize_lines function", {
+
+  # creating some line
+  wkt_lines <- c(
+    "LINESTRING (0 10, 0 5)",
+    "LINESTRING (0 5, 0 0)",
+    "LINESTRING (5 0, 0 0)",
+    "LINESTRING (5 0, 5 5)",
+    "LINESTRING (0 0, 0 -5)"
+    )
+
+  linesdf <- data.frame(wkt = wkt_lines,
+                        id = paste("l",1:length(wkt_lines),sep=""))
+
+  geoms <- do.call(rbind,lapply(1:nrow(linesdf),function(i){
+    txt <- as.character(linesdf[i,]$wkt)
+    geom <- rgeos::readWKT(txt,id=i)
+    return(geom)
+  }))
+
+  all_lines <- sp::SpatialLinesDataFrame(geoms, linesdf,match.ID = F)
+
+  new_edges <- heal_edges(all_lines)
+
+  obtained_lengths <- as.vector(rgeos::gLength(new_edges,byid = T))
+  expected_lengths <- c(5,10,10)
+  res <- sum(abs(obtained_lengths - expected_lengths))
+
+  n_obs <- nrow(new_edges)
+
+  test1 <- res==0
+  test2 <- n_obs == 3
+  expect_true(test1 & test2)
+
+})

@@ -4,21 +4,39 @@
 \alias{graph_checking}
 \title{Topological error}
 \usage{
-graph_checking(lines, digits)
+graph_checking(lines, digits, max_search = 5, tol = 0.1)
 }
 \arguments{
 \item{lines}{A SpatialLinesDataFrame representing the network}
 
 \item{digits}{An integer indicating the number of digits to retain for
 coordinates}
+
+\item{max_search}{The maximum number of nearest neighbour to search to find
+close_nodes}
+
+\item{tol}{The minimum distance expected between two nodes. Under that values
+nodes are considered as too close and are returned in the results.}
 }
 \value{
-A list with two elements. The first is a SpatialPointsDataFrame
+A list with three elements. The first is a SpatialPointsDataFrame
   indicating for each node of the network to which component it belongs. The
-  second is a SpatialPointsDataFrame with the dangle nodes of the network.
+  second is a SpatialPointsDataFrame with nodes that are too close one of
+  each other. The second is a SpatialPointsDataFrame with the dangle nodes of
+  the network.
 }
 \description{
 A utility function to find topological errors in a network.
+}
+\details{
+This function can be used to check for three common problems in networks:
+disconnected components, dangle nodes and close nodes. When a network has disconnected
+components, this means that several unconnected graphs are composing the
+overall network. This can be caused by topological errors in the dataset. Dangle
+nodes are nodes connected to only one other node. This type of node can be normal
+at the border of a network, but can also be caused by topological errors. Close
+nodes are nodes that are not coincident, but so close that they probably should
+be coincident.
 }
 \examples{
 \donttest{

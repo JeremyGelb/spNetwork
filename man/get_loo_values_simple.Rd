@@ -42,3 +42,4 @@ a vector with the kernel values calculated for each event
 \description{
 The exported function to calculate simple NKDE likelihood cv
 }
+\keyword{interal}

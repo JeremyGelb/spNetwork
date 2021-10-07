@@ -23,12 +23,13 @@ test_that("Testing the function which check if a graph is valid", {
   }))
 
   all_lines <- sp::SpatialLinesDataFrame(geoms, linesdf,match.ID = F)
-  result <- graph_checking(all_lines, digits = 2)
+  result <- graph_checking(all_lines, digits = 2, max_search = 1)
 
   test1 <- nrow(result$dangle_nodes)== 4
   test2 <- unique(result$vertex_components$component) == 1
+  test3 <- nrow(result$close_nodes)== 0
 
-  expect_true(test1 & test2)
+  expect_true(test1 & test2 & test3)
 
 })
 

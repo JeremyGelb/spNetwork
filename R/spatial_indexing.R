@@ -12,6 +12,7 @@
 #' @return quadtree object from package SearchTrees
 #' @examples
 #' #This is an internal function, no example provided
+#' @keywords internal
 build_quadtree <- function(data){
   #step1 : extracting the bbox of the geometrie
   if(class(data)=="SpatialLinesDataFrame"){
@@ -45,6 +46,7 @@ build_quadtree <- function(data){
 #' @param tree a tree object from package SearchTrees
 #' @param data the original data used to build the tree object
 #' @return a subset of data, intersecting geometry
+#' @keywords internal
 #' @examples
 #' #This is an internal function, no example provided
 spatial_request <- function(geometry,tree,data){
@@ -68,8 +70,13 @@ spatial_request <- function(geometry,tree,data){
 #' @param origins a SpatialPointsDataFrame
 #' @param targets a SpatialPointsDataFrame
 #' @return for each origin point, the index of the nearest target point
+#' @export
 #' @examples
 #' #This is an internal function, no example provided
+#' eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
+#' mtl_libraries <- rgdal::readOGR(eventsgpkg,layer="mtl_libraries", verbose=FALSE)
+#' mtl_theatres <- rgdal::readOGR(eventsgpkg,layer="mtl_theatres", verbose=FALSE)
+#' close_libs <- closest_points(mtl_theatres, mtl_libraries)
 closest_points <- function(origins, targets){
 
   xy_origins <- sp::coordinates(origins)

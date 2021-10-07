@@ -2,7 +2,7 @@
 % Please edit documentation in R/k_functions.R
 \name{cross_kfunctions.mc}
 \alias{cross_kfunctions.mc}
-\title{Network cross k and g functions (multicore, experimental)}
+\title{Network cross k and g functions (multicore, maturing)}
 \usage{
 cross_kfunctions.mc(
   lines,
@@ -22,8 +22,9 @@ cross_kfunctions.mc(
 )
 }
 \arguments{
-\item{lines}{A SpatialLinesDataFrame with the sampling points. The geometries
-must be a SpatialLinesDataFrame (may crash if some geometries are invalid)}
+\item{lines}{A SpatialLinesDataFrame representing the underlying network. The
+geometries must be a SpatialLinesDataFrame (may crash if some geometries
+ are invalid) without MultiLineSring}
 
 \item{pointsA}{A SpatialPointsDataFrame representing the points to which the
 distances are calculated.}
@@ -31,49 +32,50 @@ distances are calculated.}
 \item{pointsB}{A SpatialPointsDataFrame representing the points from which
 the distances are calculated.}
 
-\item{start}{A double, the start value for evaluating the k and g functions}
+\item{start}{A double, the lowest distance used to evaluate the k and g functions}
 
-\item{end}{A double, the last value for evaluating the k and g functions}
+\item{end}{A double, the highest distance used to evaluate  the k and g functions}
 
-\item{step}{A double, the jump between two evaluations of the k and g
-function}
+\item{step}{A double, the step between two evaluations of the k and g
+function. start, end and step are used to create a vector of distances with the function seq}
 
-\item{width}{The width of each donut for the g-function}
+\item{width}{The width of each donut for the g-function. Half of the width is applied on
+both sides of the considered distance}
 
 \item{nsim}{An integer indicating the number of Monte Carlo simulations
-required}
+to perform for inference}
 
 \item{conf_int}{A double indicating the width confidence interval (default =
-0.05)}
+0.05) calculated on the Monte Carlo simulations}
 
-\item{digits}{An integer indicating the number of digits to retain for the
+\item{digits}{An integer indicating the number of digits to retain from the
 spatial coordinates}
 
 \item{tol}{When adding the points to the network, specify the minimum
 distance between these points and the lines' extremities. When points are
-closer, they are added at the extremity of the lines.}
+closer, they are added at the extremity of the lines}
 
 \item{resolution}{When simulating random points on the network, selecting a
 resolution will reduce greatly the calculation time. When resolution is null
 the random points can occur everywhere on the graph. If a value is specified,
-the edges are split according to this value and the random points are
-selected vertices on the new network.}
+the edges are split according to this value and the random points can only be
+vertices on the new network}
 
-\item{agg}{A double indicating if the events must be aggregated within a
-distance. If NULL, the events are aggregated by rounding the coordinates.}
+\item{agg}{A double indicating if the events must be aggregated within a distance.
+If NULL, the events are aggregated only by rounding the coordinates}
 
 \item{verbose}{A Boolean indicating if progress messages should be displayed}
 }
 \value{
-A list with the following values : \cr \itemize{ \item{plotk}{A
+A list with the following values : \cr \itemize{ \item{plotk}{ A
   ggplot2 object representing the values of the cross k-function}
-  \item{plotg}{A ggplot2 object representing the values of the cross
-  g-function} \item{values}{A DataFrame with the values used to build the
+  \item{plotg}{ A ggplot2 object representing the values of the cross
+  g-function} \item{values}{ A DataFrame with the values used to build the
   plots} }
 }
 \description{
 Calculate the cross k and g functions for a set of points on a
-  network with multicore support. (experimental)
+  network with multicore support. (maturing)
 }
 \examples{
 \donttest{

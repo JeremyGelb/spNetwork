@@ -41,3 +41,4 @@ the first node given
 \description{
 The worker function to calculate continuous NKDE (with ARMADILLO and integer matrix)
 }
+\keyword{internal}

@@ -109,7 +109,8 @@ remove_loop_lines <- function(lines, digits){
 #' @title Unify lines direction
 #'
 #' @description A function to deal with the directions of lines. It ensures
-#' that only From-To situation are present by reverting To-From lines.
+#' that only From-To situation are present by reverting To-From lines. For
+#' the lines labelled as To-From, the order of their vertices is reverted.
 #'
 #' @param lines A SpatialLinesDataFrame
 #' @param field Indicate a field giving informations about authorized
@@ -475,8 +476,8 @@ simple_lines <- function(lines) {
 
 #' @title Center points of lines
 #'
-#' @description Generate a SpatialPointsDataFrame with line center points. The
-#'   points are located at center of the line based on the length of the line.
+#' @description Generate a SpatialPointsDataFrame with point at the center of
+#'   lines. The length of the lines is used to determine its center.
 #'
 #' @param lines The SpatialLinesDataframe to use
 #' @return An object of class SpatialPointsDataFrame (package sp)
@@ -817,7 +818,7 @@ snapPointsToLines2 <- function(points, lines ,idField = NA, snap_dist = 300, max
 
 #' @title Heal edges
 #'
-#' @description Merge Lines if they form a longer linestring without external intersections
+#' @description Merge Lines if they form a longer linestring without external intersections (experimental)
 #'
 #' @param lines A SpatialLinesDataFrame
 #' @param digits An integer indicating the number of digits to keep in coordinates
@@ -849,28 +850,47 @@ heal_edges <- function(lines,digits = 3, verbose = TRUE){
     #if a point appears exactly twice, it might require a healing
     cases <- subset(countdf, countdf$count==2)
     consid_points <- subset(coords, coords$spindex %in% cases$spindex)
-    consid_lines <- subset(lines, lines$tmpOID %in% consid_points$tmpOID)
-    keeped_lines <- subset(lines, (lines$tmpOID %in% consid_points$tmpOID) == FALSE)
 
     #adding the start and end sp index to each line
     startpts <- subset(coords, coords$pttype=="start")
     endpts <- subset(coords, coords$pttype=="end")
 
-    tempDT <- as.data.table(consid_lines@data)
-    consid_lines$startidx <- setDT(tempDT)[startpts@data, on = "tmpOID", "startidx" := startpts$spindex][]$startidx
-    consid_lines$endidx <- setDT(tempDT)[endpts@data, on = "tmpOID", "endidx" := endpts$spindex][]$endidx
+    tempDT <- as.data.table(lines@data)
+    lines$startidx <- setDT(tempDT)[startpts@data, on = "tmpOID", "startidx" := startpts$spindex][]$startidx
+    lines$endidx <- setDT(tempDT)[endpts@data, on = "tmpOID", "endidx" := endpts$spindex][]$endidx
+
+
+    test <- (lines$startidx %in% consid_points$spindex | lines$endidx %in% consid_points$spindex)
+    consid_lines <- subset(lines, test)
+    keeped_lines <- subset(lines, test == FALSE)
+
+    #adding the start and end sp index to each line
+    startpts <- subset(coords, coords$pttype=="start")
+    endpts <- subset(coords, coords$pttype=="end")
 
     consid_lines$tmpOID <- as.character(consid_lines$tmpOID)
     # generating a neighbouring list from the extremies
+
     neighbouring <- lapply(1:nrow(consid_lines), function(i){
         line <- consid_lines[i,]
         val1 <- line$startidx
         val2 <- line$endidx
-        neighbours <- subset(consid_lines,
-                                 (consid_lines$startidx == val1 | consid_lines$endidx == val2 |
-                                  consid_lines$startidx == val2 | consid_lines$endidx == val1) &
-                                 ((consid_lines$startidx == val1 & consid_lines$endidx == val2)==FALSE)
-                             )
+        if(val1 %in% consid_points$spindex){
+            test1 <- (consid_lines$startidx == val1 | consid_lines$endidx == val1) &
+                               ((consid_lines$startidx == val1 & consid_lines$endidx == val2)==FALSE
+            )
+        }else{
+            test1 <- rep(FALSE, nrow(consid_lines))
+        }
+        if(val2 %in% consid_points$spindex){
+            test2 <- (consid_lines$startidx == val2 | consid_lines$endidx == val2) &
+                ((consid_lines$startidx == val1 & consid_lines$endidx == val2)==FALSE
+                )
+        }else{
+            test2 <- rep(FALSE, nrow(consid_lines))
+        }
+        neighbours <- subset(consid_lines, test1 | test2)
+
         codes <- neighbours$tmpOID
         return(codes)
     })
@@ -912,6 +932,8 @@ heal_edges <- function(lines,digits = 3, verbose = TRUE){
     new_sp <- SpatialLinesDataFrame(merged_lines, df, match.ID = F)
     new_sp$startidx <- NULL
     new_sp$endidx <- NULL
+    keeped_lines$startidx <- NULL
+    keeped_lines$endidx <- NULL
     new_lines <- rbind(keeped_lines, new_sp)
     new_lines$tmpOID <- NULL
     return(new_lines)
@@ -1001,7 +1023,7 @@ remove_mirror_edges <- function(lines, keep_shortest = TRUE, digits = 3, verbose
 #' @title Simplify a network
 #'
 #' @description Simplify a network by applying two corrections: Healing edges and
-#' Removing mirror edges
+#' Removing mirror edges (experimental).
 #'
 #' @details Healing is the operation to merge two connected linestring if the are
 #' intersecting at one extremity and do not intersect any other linestring. It helps
@@ -1010,6 +1032,7 @@ remove_mirror_edges <- function(lines, keep_shortest = TRUE, digits = 3, verbose
 #' extremities. If two edges start at the same point and end at the same point,
 #' they do not add information in the network and one can be removed to simplify
 #' the network. One can decide to keep the longest of the two edges or the shortest.
+#' NOTE: the edge healing does not consider lines directions currently!
 #'
 #' @param lines A SpatialLinesDataFrame
 #' @param digits An integer indicating the number of digits to keep in coordinates

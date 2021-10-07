@@ -31,3 +31,4 @@ a list of dataframes, used to calculate the Diggel correction factor
 A function to calculate the necessary information to apply the
 Diggle correction factor with a discontinuous method (sparse)
 }
+\keyword{internal}

@@ -24,7 +24,7 @@ library(ggplot2)
 
 # Introduction
 
-The K-function is a method used in spatial Point Pattern Analysis (PPA) to inspect the spatial distribution of a set of points. It allows the user to assess if the set is more or less clustered that what we could expect from a given distribution. Most of the time, the set of point is compared with a random distribution.
+The K-function is a method used in spatial Point Pattern Analysis (PPA) to inspect the spatial distribution of a set of points. It allows the user to assess if the set of points is more or less clustered that what we could expect from a given distribution. Most of the time, the set of point is compared with a random distribution.
 
 The empirical K-function for a specified radius $r$ is calculated with the following formula: 
 
@@ -37,7 +37,7 @@ A modified version of the K-function is the G-function (Pair Correlation Functio
 ![Image Title](images/k-g-functions.png){width=45%}
 </center>
 
-When the points are located on a network, the use of the Euclidean distance systematically underestimates the real distance between points These two functions can be extended for network spaces by using the network distance instead of the Euclidean distance. The value of the empirical k function on a network is calculated with the following formula: 
+When the points are located on a network, the use of the Euclidean distance systematically underestimates the real distance between points. These two functions can be extended for network spaces by using the network distance instead of the Euclidean distance. The value of the empirical k function on a network is calculated with the following formula: 
 
 $$\hat{K}(r)=\frac{1}{(n-1)/Lt} \sum_{i=1}^{n} \sum_{j=1 \atop j \neq i}^{n} \mathbf{1}\left\{d_{i j} \leq r\right\}$$
 
@@ -97,7 +97,7 @@ ggplot(plot_df)+
          y = "empirical K-function")
 ```
 
-The blue line is the empirical network K-function of the theatres in Montreal. The gray area represents the results of the 50 simulations in the interval 2.5% - 97.5%. Because the blue line is way above the gray area, we can conclude that the theatre are more clustered than what we can expect from a random distribution. (Note : most of the time, more simulations are required for inference)
+The blue line is the empirical network K-function of the theatres in Montreal. The gray area represents the results of the 50 simulations in the interval 2.5% - 97.5%. Because the blue line is way above the gray area, we can conclude that the theatres are more clustered than what we can expect from a random distribution. (Note: usually, more simulations are required for inference).
 
 ```{r, eval = FALSE}
 kfun_theatre$plotg
@@ -167,7 +167,7 @@ $$\hat{K}(r)=\frac{1}{n_a n_b)} \sum_{i=1}^{n_a} \sum_{j=1}^{n_b} \mathbf{1}\lef
 
 On a network, the formula is adapted: 
 
-$$\hat{K}(r)=\frac{1}{n_a/Lt)} \sum_{i=1}^{n_a} \sum_{j=1}^{n_b} \mathbf{1}\left\{d_{i j} \leq r\right\}$$
+$$\hat{K}(r)=\frac{1}{n_a/Lt} \sum_{i=1}^{n_a} \sum_{j=1}^{n_b} \mathbf{1}\left\{d_{i j} \leq r\right\}$$
 
 with $n_a$ the number of points in A and $n_b$ the number of points in B, and $Lt$ the total length of the network.
 
@@ -196,7 +196,7 @@ ggplot(plot_df)+
          y = "empirical K-function")
 ```
 
-One can conclude from the chart that the libraries are randomly located around the theatres and display nor clustering or dispersion around theatres.
+One can conclude from the chart that the libraries are randomly located around the theatres and display nor clustering nor dispersion around theatres.
 
 ```{r fig.align="center", fig.show='hold', message=FALSE, warning=FALSE, eval = FALSE}
 cross_theatre_biblio <- cross_kfunctions(main_network_mtl, mtl_theatres,
@@ -221,7 +221,7 @@ ggplot(plot_df)+
          y = "empirical K-function")
 ```
 
-However, this second chart shows that the theatres tend to be clustered around libraries. This is coherent with the map above. A random library is often located far from the theatres. But the theatres are concentrated in the city center and close of some libraries.
+However, this second chart shows that the theatres tend to be clustered around libraries. This is coherent with the map above. A random library is often located far from the theatres. But the theatres are concentrated in the city center and close to some specific libraries.
 
 ```{r include = FALSE}
 # reset all the user parameters

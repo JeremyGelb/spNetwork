@@ -21,6 +21,12 @@ A new SpatialPointsDataFrame
 \description{
 Function to aggregate points within a radius.
 }
+\details{
+This function can be used to aggregate points within a radius. This
+  is done by iterating over the features. For each feature, all the features
+  in the radius are found and merged (mean of coordinates). This process is
+  repeated until no more modification is applied.
+}
 \examples{
 eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
 bike_accidents <- rgdal::readOGR(eventsgpkg,layer="bike_accidents", verbose=FALSE)

@@ -14,51 +14,17 @@
 #'     \insertAllCited{}
 #' }
 #'
-#' @param bw_range The range of the bandwidths to consider, given as a numeric
-#' vector of two values: c(bandwidth_min, bandwidth_max)
-#' @param bw_step The step between each bandwidth to calculate given as a float
-#' @param lines A SpatialLinesDataFrame representing the underlying network. The
-#' geometries must be a SpatialLinesDataFrame (may crash if some geometries
-#'  are invalid)
-#' @param events events A SpatialPointsDataFrame representing the events on the
-#' network. The points will be snapped on the network.
-#' @param w A vector representing the weight of each event
-#' @param kernel_name The name of the kernel to use. Must be one of triangle,
-#' gaussian, tricube, cosine ,triweight, quartic, epanechnikov or uniform.
-#' @param method The method to use when calculating the NKDE, must be one of
-#' simple / discontinuous / continuous (see details for more information)
-#' @param diggle_correction A Boolean indicating if the correction factor
-#' for edge effect must be used.
-#' @param study_area A SpatialPolygonsDataFrame or a SpatialPolygon
-#' representing the limits of the study area.
-#' @param max_depth when using the continuous and discontinuous methods, the
-#' calculation time and memory use can go wild  if the network has many
-#' small edges (area with many of intersections and many events). To
-#' avoid it, it is possible to set here a maximum depth. Considering that the
-#' kernel is divided at intersections, a value of 10 should yield good
-#' estimates in most cases. A larger value can be used without problem for the
-#' discontinuous method. For the continuous method, a larger value will
-#' strongly impact calculation speed.
-#' @param digits The number of digits to retain in the spatial coordinates. It
-#' ensures that topology is good when building the network. Default is 3
-#' @param tol When adding the events and the sampling points to the network,
-#' the minimum distance between these points and the lines' extremities. When
-#' points are closer, they are added at the extremity of the lines.
-#' @param agg A double indicating if the events must be aggregated within a distance.
-#' If NULL, the events are aggregated by rounding the coordinates.
-#' @param sparse A Boolean indicating if sparse or regular matrix should be
-#' used by the Rcpp functions. Regular matrix are faster, but require more
-#' memory and could lead to error, in particular with multiprocessing. Sparse
-#' matrix are slower, but require much less memory (not used for the moment).
-#' @param grid_shape A vector of two values indicating how the study area
-#' must be split when performing the calculus (see details). Default is c(1,1).
+#' @template bw_selection-args
+#' @template nkde_params-arg
+#' @template nkde_geoms-args
+#' @template sparse-arg
+#' @template grid_shape-arg
 #' @param sub_sample A float between 0 and 1 indicating the percentage of quadra
 #' to keep in the calculus. For large datasets, it may be useful to limit the
 #' bandwidth evaluation and thus reduce calculation time.
 #' @param verbose A Boolean, indicating if the function should print messages
 #' about process.
-#' @param check A Boolean indicating if the geometry checks must be run before
-#' calculating the density.
+#' @template check-arg
 #' @return A dataframe with two columns, one for the bandwidths and the second for
 #' the Cronie and Van Lieshout's Criterion.
 #' @export
@@ -209,60 +175,26 @@ bw_cvl_calc <- function(bw_range,bw_step,lines, events, w, kernel_name, method, 
 #' @title Bandwidth selection by Cronie and Van Lieshout's Criterion (multicore version)
 #'
 #' @description Calculate for multiple bandiwdths the Cronie and Van Lieshout's Criterion to
-#' select an appropriate bandwidth in a data driven approach. A future plan can be used
-#' to split the work across cores. The different quadras generated in accordance with the
-#' argument grid_shape are used for the parallelisation. So if only one quadra is
-#' generate (grid_shape = c(1,1)), the function will still use only one core. This also
-#' affect the progress bar.
+#' select an appropriate bandwidth in a data driven approach. A plan from the package future can be used
+#' to split the work across several cores. The different cells generated in accordance with the
+#' argument grid_shape are used for the parallelisation. So if only one cell is
+#' generated (grid_shape = c(1,1)), the function will use only one core. The progress bar
+#' displays the progression for the cells.
 #'
 #'
 #' @details For more details, see help(bw_cvl_calc)
 #'
-#' @param bw_range The range of the bandwidths to consider, given as a numeric
-#' vector of two values: c(bandwidth_min, bandwidth_max)
-#' @param bw_step The step between each bandwidth to calculate given as a float
-#' @param lines A SpatialLinesDataFrame representing the underlying network. The
-#' geometries must be a SpatialLinesDataFrame (may crash if some geometries
-#'  are invalid)
-#' @param events events A SpatialPointsDataFrame representing the events on the
-#' network. The points will be snapped on the network.
-#' @param w A vector representing the weight of each event
-#' @param kernel_name The name of the kernel to use. Must be one of triangle,
-#' gaussian, tricube, cosine ,triweight, quartic, epanechnikov or uniform.
-#' @param method The method to use when calculating the NKDE, must be one of
-#' simple / discontinuous / continuous (see details for more information)
-#' @param diggle_correction A Boolean indicating if the correction factor
-#' for edge effect must be used.
-#' @param study_area A SpatialPolygonsDataFrame or a SpatialPolygon
-#' representing the limits of the study area.
-#' @param max_depth when using the continuous and discontinuous methods, the
-#' calculation time and memory use can go wild  if the network has many
-#' small edges (area with many of intersections and many events). To
-#' avoid it, it is possible to set here a maximum depth. Considering that the
-#' kernel is divided at intersections, a value of 10 should yield good
-#' estimates in most cases. A larger value can be used without problem for the
-#' discontinuous method. For the continuous method, a larger value will
-#' strongly impact calculation speed.
-#' @param digits The number of digits to retain in the spatial coordinates. It
-#' ensures that topology is good when building the network. Default is 3
-#' @param tol When adding the events and the sampling points to the network,
-#' the minimum distance between these points and the lines' extremities. When
-#' points are closer, they are added at the extremity of the lines.
-#' @param agg A double indicating if the events must be aggregated within a distance.
-#' If NULL, the events are aggregated by rounding the coordinates.
-#' @param sparse A Boolean indicating if sparse or regular matrix should be
-#' used by the Rcpp functions. Regular matrix are faster, but require more
-#' memory and could lead to error, in particular with multiprocessing. Sparse
-#' matrix are slower, but require much less memory (not used for the moment).
-#' @param grid_shape A vector of two values indicating how the study area
-#' must be split when performing the calculus (see details). Default is c(1,1).
+#' @template bw_selection-args
+#' @template nkde_params-arg
+#' @template nkde_geoms-args
+#' @template sparse-arg
+#' @template grid_shape-arg
 #' @param sub_sample A float between 0 and 1 indicating the percentage of quadra
 #' to keep in the calculus. For large datasets, it may be useful to limit the
 #' bandwidth evaluation and thus reduce calculation time.
 #' @param verbose A Boolean, indicating if the function should print messages
 #' about process.
-#' @param check A Boolean indicating if the geometry checks must be run before
-#' calculating the density.
+#' @template check-arg
 #' @return A dataframe with two columns, one for the bandwidths and the second for
 #' the Cronie and Van Lieshout's Criterion.
 #' @export

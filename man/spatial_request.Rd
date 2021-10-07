@@ -22,3 +22,4 @@ Use a quadtree index to perform spatial request.
 \examples{
 #This is an internal function, no example provided
 }
+\keyword{internal}

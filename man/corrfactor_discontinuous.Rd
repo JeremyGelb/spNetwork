@@ -4,6 +4,9 @@
 \alias{corrfactor_discontinuous}
 \title{A function to calculate the necessary informations to apply the
 Diggle correction factor with a discontinuous method}
+\usage{
+corrfactor_discontinuous(neighbour_list, events, line_list, bws, max_depth)
+}
 \arguments{
 \item{neighbour_list}{a list of the neighbours of each node}
 
@@ -22,3 +25,4 @@ a list of dataframes, used to calculate the Diggel correction factor
 A function to calculate the necessary informations to apply the
 Diggle correction factor with a discontinuous method
 }
+\keyword{internal}

@@ -111,6 +111,11 @@ clean_events <- function(events,digits=5,agg=NULL){
 #'
 #' @description Function to aggregate points within a radius.
 #'
+#' @details This function can be used to aggregate points within a radius. This
+#'   is done by iterating over the features. For each feature, all the features
+#'   in the radius are found and merged (mean of coordinates). This process is
+#'   repeated until no more modification is applied.
+#'
 #' @param points The SpatialPointsDataFrame to contract (must have a weight column)
 #' @param maxdist The distance to use
 #' @param weight The name of the column to use as weight (default is "weight").
@@ -1002,56 +1007,16 @@ nkde_worker <- function(lines, events, samples, kernel_name,bw, bws, method, div
 #'     \insertAllCited{}
 #' }
 #'
-#' @param lines A SpatialLinesDataFrame representing the underlying network. The
-#' geometries must be a SpatialLinesDataFrame (may crash if some geometries
-#'  are invalid)
-#' @param events A SpatialPointsDataFrame representing the events on the
-#' network. The points will be snapped on the network.
-#' @param w A vector representing the weight of each event
+#' @template nkde_params-arg
 #' @param samples A SpatialPointsDataFrame representing the locations for
 #' which the densities will be estimated.
-#' @param kernel_name The name of the kernel to use. Must be one of triangle,
-#' gaussian, scaled gaussian, tricube, cosine ,triweight, quartic,
-#' epanechnikov or uniform.
-#' @param bw The kernel bandwidth (in meters)
-#' @param adaptive A Boolean, indicating if an adaptive bandwidth must be
-#' used
-#' @param trim_bw A float, indicating the maximum value for the adaptive
-#' bandwidth
-#' @param method The method to use when calculating the NKDE, must be one of
-#' simple / discontinuous / continuous (see details for more information)
-#' @param div The divisor to use for the kernel. Must be "n" (the number of
-#' events within the radius around each sampling point), "bw" (the bandwith)
-#' "none" (the simple sum).
-#' @param diggle_correction A Boolean indicating if the correction factor
-#' for edge effect must be used.
-#' @param study_area A SpatialPolygonsDataFrame or a SpatialPolygon
-#' representing the limits of the study area.
-#' @param max_depth when using the continuous and discontinuous methods, the
-#' calculation time and memory use can go wild  if the network has many
-#' small edges (area with many of intersections and many events). To
-#' avoid it, it is possible to set here a maximum depth. Considering that the
-#' kernel is divided at intersections, a value of 10 should yield good
-#' estimates in most cases. A larger value can be used without problem for the
-#' discontinuous method. For the continuous method, a larger value will
-#' strongly impact calculation speed.
-#' @param digits The number of digits to retain in the spatial coordinates. It
-#' ensures that topology is good when building the network. Default is 3
-#' @param tol When adding the events and the sampling points to the network,
-#' the minimum distance between these points and the lines' extremities. When
-#' points are closer, they are added at the extremity of the lines.
-#' @param agg A double indicating if the events must be aggregated within a distance.
-#' If NULL, the events are aggregated by rounding the coordinates.
-#' @param sparse A Boolean indicating if sparse or regular matrix should be
-#' used by the Rcpp functions. Regular matrix are faster, but require more
-#' memory and could lead to error, in particular with multiprocessing. Sparse
-#' matrix are slower, but require much less memory.
-#' @param grid_shape A vector of two values indicating how the study area
-#' must be split when performing the calculus (see details). Default is c(1,1)
+#' @template nkde_params2-arg
+#' @template nkde_geoms-args
+#' @template sparse-arg
+#' @template grid_shape-arg
 #' @param verbose A Boolean, indicating if the function should print messages
 #' about process.
-#' @param check A Boolean indicating if the geometry checks must be run before
-#' calculating the densities
+#' @template check-arg
 #' @return A vector of values, they are the density estimates at samplings
 #' points
 #' @export
@@ -1189,55 +1154,16 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, tri
 #'
 #' @details For more details, see help(nkde)
 #'
-#' @param lines A SpatialLinesDataFrame representing the underlying network. The
-#' geometries must be a SpatialLinesDataFrame (may crash if some geometries
-#'  are invalid)
-#' @param events A SpatialPointsDataFrame representing the events on the
-#' network. The points will be snapped on the network.
-#' @param w A vector representing the weight of each event
+#' @template nkde_params-arg
 #' @param samples A SpatialPointsDataFrame representing the locations for
-#' which the densities will be estimated
-#' @param kernel_name The name of the kernel to use. Must be one of triangle,
-#' gaussian, tricube, cosine ,triweight, quartic, epanechnikov or uniform.
-#' @param bw The kernel bandwidth (in meters)
-#' @param adaptive A Boolean, indicating if an adaptive bandwidth must be
-#' used
-#' @param trim_bw A float, indicating the maximum value for the adaptive
-#' bandwidth
-#' @param method The method to use when calculating the NKDE, must be one of
-#' simple / discontinuous / continuous (see details for more information)
-#' @param div The divisor to use for the kernel. Must be "n" (the number of
-#' events within the radius around each sampling point), "bw" (the bandwith)
-#' "none" (the simple sum).
-#' @param diggle_correction A Boolean indicating if the correction factor
-#' for edge effect must be used.
-#' @param study_area A SpatialPolygonsDataFrame or a SpatialPolygon
-#' representing the limits of the study area.
-#' @param max_depth when using the continuous and discontinuous methods, the
-#' calculation time and memory use can go wild  if the network has many
-#' small edges (area with many of intersections and many events). To
-#' avoid it, it is possible to set here a maximum depth. Considering that the
-#' kernel is divided at intersections, a value of 10 should yield good
-#' estimates in most cases. A larger value can be used without problem for the
-#' discontinuous method. For the continuous method, a larger value will
-#' strongly impact calculation speed.
-#' @param digits The number of digits to retain in the spatial coordinates. It
-#' ensures that topology is good when building the network. Default is 3
-#' @param tol When adding the events and the sampling points to the network,
-#' the minimum distance between these points and the lines' extremities. When
-#' points are closer, they are added at the extremity of the lines.
-#' @param agg A double indicating if the events must be aggregated within a distance.
-#' If NULL, the events are aggregated by rounding the coordinates.
-#' @param sparse A Boolean indicating if sparse or regular matrix should be
-#' used by the Rcpp functions. Regular matrix are faster, but require more
-#' memory and could lead to error, in particular with multiprocessing. Sparse
-#' matrix are slower, but require much less memory.
-#' @param grid_shape A vector of two values indicating how the study area
-#' must be split when performing the calculus (see details). Default is c(1,1)
+#' which the densities will be estimated.
+#' @template nkde_params2-arg
+#' @template nkde_geoms-args
+#' @template sparse-arg
+#' @template grid_shape-arg
 #' @param verbose A Boolean, indicating if the function should print messages
 #' about process.
-#' @param check A Boolean indicating if the geometry checks must be run before
-#' calculating the density.
+#' @template check-arg
 #' @return A vector of values, they are the density estimates at sampling
 #' points
 #' @export

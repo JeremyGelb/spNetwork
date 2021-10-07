@@ -19,7 +19,8 @@ A SpatialLinesDataFrame
 }
 \description{
 A function to deal with the directions of lines. It ensures
-that only From-To situation are present by reverting To-From lines.
+that only From-To situation are present by reverting To-From lines. For
+the lines labelled as To-From, the order of their vertices is reverted.
 }
 \examples{
 networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)

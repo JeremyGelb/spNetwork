@@ -32,7 +32,7 @@ A SpatialLinesDataFrame
 }
 \description{
 Simplify a network by applying two corrections: Healing edges and
-Removing mirror edges
+Removing mirror edges (experimental).
 }
 \details{
 Healing is the operation to merge two connected linestring if the are
@@ -42,6 +42,7 @@ Removing mirror edges is the operation to remove edges that have the same
 extremities. If two edges start at the same point and end at the same point,
 they do not add information in the network and one can be removed to simplify
 the network. One can decide to keep the longest of the two edges or the shortest.
+NOTE: the edge healing does not consider lines directions currently!
 }
 \examples{
 library(spNetwork)

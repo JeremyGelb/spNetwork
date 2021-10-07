@@ -38,3 +38,4 @@ the first node given
 \description{
 The worker function to calculate discontinuous NKDE (with ARMADILLO and sparse matrix)
 }
+\keyword{internal}

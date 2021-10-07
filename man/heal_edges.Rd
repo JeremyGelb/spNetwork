@@ -18,7 +18,7 @@ A SpatialLinesDataFrame with the eventually merged geometries. Note
 that if lines are merged, only the attributes of the first line are preserved
 }
 \description{
-Merge Lines if they form a longer linestring without external intersections
+Merge Lines if they form a longer linestring without external intersections (experimental)
 }
 \examples{
 #This is an internal function, no example provided

@@ -313,10 +313,10 @@ randomize_distmatrix <- function(graph, edge_df, n, start_vert = NULL){
 #### execution k functions ####
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-#' @title Network k and g functions (experimental)
+#' @title Network k and g functions (maturing)
 #'
 #' @description Calculate the k and g functions for a set of points on a
-#'   network (experimental).
+#'   network (maturing).
 #'
 #' @details The k-function is a method to characterize the dispersion of a set
 #'   of points. For each point, the numbers of other points in subsequent radii
@@ -330,38 +330,16 @@ randomize_distmatrix <- function(graph, edge_df, n, start_vert = NULL){
 #'   can expect from randomness and vice-versa. The function also calculates the
 #'   g-function, a modified version of the k-function using rings instead of
 #'   disks. The width of the ring must be chosen. The main interest is to avoid
-#'   the cumulative effect of the classical k-function.
+#'   the cumulative effect of the classical k-function. This function is maturing,
+#'   it works as expected (unit tests) but will probably be modified in the
+#'   future releases (gain speed, advanced features, etc.).
 #'
-#' @param lines A SpatialLinesDataFrame with the sampling points. The geometries
-#'   must be a SpatialLinesDataFrame (may crash if some geometries are invalid)
-#' @param points A SpatialPointsDataFrame representing the points on the
-#'   network. These points will be snapped on the network.
-#' @param start A double, the start value for evaluating the k and g functions
-#' @param end A double, the last value for evaluating the k and g functions
-#' @param step A double, the jump between two evaluations of the k and g
-#'   function
-#' @param width The width of each donut for the g-function
-#' @param nsim An integer indicating the number of Monte Carlo simulations
-#'   required
-#' @param conf_int A double indicating the width confidence interval (default =
-#'   0.05)
-#' @param digits An integer indicating the number of digits to retain for the
-#'   spatial coordinates
-#' @param tol When adding the points to the network, specify the minimum
-#'   distance between these points and the lines' extremities. When points are
-#'   closer, they are added at the extremity of the lines.
-#' @param resolution When simulating random points on the network, selecting a
-#'   resolution will reduce greatly the calculation time. When resolution is null
-#'   the random points can occur everywhere on the graph. If a value is specified,
-#'   the edges are split according to this value and the random points are
-#'   selected vertices on the new network.
-#' @param agg A double indicating if the events must be aggregated within a
-#'   distance. If NULL, the events are aggregated by rounding the coordinates.
-#' @param verbose A Boolean indicating if progress messages should be displayed.
+#' @template kfunctions-arg
+#' @template common_kfunctions-arg
 #'
-#' @return A list with the following values : \cr \itemize{ \item{plotk}{A
-#'   ggplot2 object representing the values of the k-function} \item{plotg}{A
-#'   ggplot2 object representing the values of the g-function} \item{values}{A
+#' @return A list with the following values : \cr \itemize{ \item{plotk}{ A
+#'   ggplot2 object representing the values of the k-function} \item{plotg}{ A
+#'   ggplot2 object representing the values of the g-function} \item{values}{ A
 #'   DataFrame with the values used to build the plots} }
 #' @importFrom stats quantile
 #' @importFrom rgeos gLength
@@ -542,44 +520,20 @@ kfunctions <- function(lines, points, start, end, step, width, nsim, conf_int = 
 }
 
 
-#' @title Network k and g functions (multicore, experimental)
+#' @title Network k and g functions (multicore, maturing)
 #'
 #' @description Calculate the k and g functions for a set of points on a network
 #'   with multicore support. For details, please see the function kfunctions.
-#'   (experimental)
+#'   (maturing)
 #'
 #' @details For details, please look at the function kfunctions.
 #'
-#' @param lines A SpatialLinesDataFrame with the sampling points. The geometries
-#'   must be a SpatialLinesDataFrame (may crash if some geometries are invalid)
-#' @param points A SpatialPointsDataFrame representing the points on the
-#'   network. These points will be snapped on the network.
-#' @param start A double, the start value for evaluating the k and g functions
-#' @param end A double, the last value for evaluating the k and g functions
-#' @param step A double, the jump between two evaluations of the k and g
-#'   functions
-#' @param width The width of each donut for the g-function
-#' @param nsim An integer indicating the number of Monte Carlo simulations
-#'   required
-#' @param conf_int A double indicating the width confidence interval (default =
-#'   0.05)
-#' @param digits An integer indicating the number of digits to retain for the
-#'   spatial coordinates
-#' @param tol When adding the points to the network, specify the minimum
-#'   distance between these points and the lines' extremities. When points are
-#'   closer, they are added at the extremity of the lines.
-#' @param resolution When simulating random points on the network, selecting a
-#'   resolution will reduce greatly the calculation time. When resolution is null
-#'   the random points can occur everywhere on the graph. If a value is specified,
-#'   the edges are split according to this value and the random points are
-#'   selected vertices on the new network.
-#' @param agg A double indicating if the events must be aggregated within a
-#'   distance. If NULL, the events are aggregated by rounding the coordinates.
-#' @param verbose A Boolean indicating if progress messages should be displayed
+#' @template kfunctions-arg
+#' @template common_kfunctions-arg
 #'
-#' @return A list with the following values : \cr \itemize{ \item{plotk}{A
-#'   ggplot2 object representing the values of the k-function} \item{plotg}{A
-#'   ggplot2 object representing the values of the g-function} \item{values}{A
+#' @return A list with the following values : \cr \itemize{ \item{plotk}{ A
+#'   ggplot2 object representing the values of the k-function} \item{plotg}{ A
+#'   ggplot2 object representing the values of the g-function} \item{values}{ A
 #'   DataFrame with the values used to build the plots} }
 #'
 #' @importFrom stats quantile
@@ -776,10 +730,10 @@ kfunctions.mc <- function(lines, points, start, end, step, width, nsim, conf_int
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-#' @title Network cross k and g functions (experimental)
+#' @title Network cross k and g functions (maturing)
 #'
 #' @description Calculate the cross k and g functions for a set of points on a
-#'   network. (experimental)
+#'   network. (maturing)
 #'
 #' @details The cross k-function is a method to characterize the dispersion of a
 #'   set of points (A) around a second set of points (B). For each point in B,
@@ -797,42 +751,17 @@ kfunctions.mc <- function(lines, points, start, end, step, width, nsim, conf_int
 #'   the ring must be chosen. The main interest is to avoid the cumulative
 #'   effect of the classical k-function. Note that the cross k-function of
 #'   points A around B is not necessarily the same as the cross k-function of
-#'   points B around A.
+#'   points B around A. This function is maturing, it works as expected (unit
+#'   tests) but will probably be modified in the future releases (gain speed,
+#'   advanced features, etc.).
 #'
-#' @param lines A SpatialLinesDataFrame with the sampling points. The geometries
-#'   must be a SpatialLinesDataFrame (may crash if some geometries are invalid)
-#' @param pointsA A SpatialPointsDataFrame representing the points to which the
-#'   distances are calculated.
-#' @param pointsB A SpatialPointsDataFrame representing the points from which
-#'   the distances are calculated.
-#' @param start A double, the start value for evaluating the k and g functions
-#' @param end A double, the last value for evaluating the k and g functions
-#' @param step A double, the jump between two evaluations of the k and g
-#'   function
-#' @param width The width of each donut for the g-function
-#' @param nsim An integer indicating the number of Monte Carlo simulations
-#'   required
-#' @param conf_int A double indicating the width confidence interval (default =
-#'   0.05)
-#' @param digits An integer indicating the number of digits to retain for the
-#'   spatial coordinates
-#' @param tol When adding the points to the network, specify the minimum
-#'   distance between these points and the lines' extremities. When points are
-#'   closer, they are added at the extremity of the lines.
-#' @param resolution When simulating random points on the network, selecting a
-#'   resolution will reduce greatly the calculation time. When resolution is null
-#'   the random points can occur everywhere on the graph. If a value is specified,
-#'   the edges are split according to this value and the random points are
-#'   selected vertices on the new network.
-#' @param agg A double indicating if the events must be aggregated within a
-#'   distance. if NULL, then the events are aggregated by rounding the
-#'   coordinates.
-#' @param verbose A Boolean indicating if progress messages should be displayed
+#' @template kross_kfunctions-arg
+#' @template common_kfunctions-arg
 #'
-#' @return A list with the folowing values : \cr \itemize{ \item{plotk}{A
+#' @return A list with the folowing values : \cr \itemize{ \item{plotk}{ A
 #'   ggplot2 object representing the values of the cross k-function}
-#'   \item{plotg}{A ggplot2 object representing the values of the cross
-#'   g-function} \item{values}{A DataFrame with the values used to build the
+#'   \item{plotg}{ A ggplot2 object representing the values of the cross
+#'   g-function} \item{values}{ A DataFrame with the values used to build the
 #'   plots} }
 #' @importFrom stats quantile
 #' @importFrom rgeos gLength
@@ -1023,44 +952,18 @@ cross_kfunctions <- function(lines, pointsA, pointsB, start, end, step, width, n
 }
 
 
-#' @title Network cross k and g functions (multicore, experimental)
+#' @title Network cross k and g functions (multicore, maturing)
 #'
 #' @description Calculate the cross k and g functions for a set of points on a
-#'   network with multicore support. (experimental)
+#'   network with multicore support. (maturing)
 #'
-#' @param lines A SpatialLinesDataFrame with the sampling points. The geometries
-#'   must be a SpatialLinesDataFrame (may crash if some geometries are invalid)
-#' @param pointsA A SpatialPointsDataFrame representing the points to which the
-#'   distances are calculated.
-#' @param pointsB A SpatialPointsDataFrame representing the points from which
-#'   the distances are calculated.
-#' @param start A double, the start value for evaluating the k and g functions
-#' @param end A double, the last value for evaluating the k and g functions
-#' @param step A double, the jump between two evaluations of the k and g
-#'   function
-#' @param width The width of each donut for the g-function
-#' @param nsim An integer indicating the number of Monte Carlo simulations
-#'   required
-#' @param conf_int A double indicating the width confidence interval (default =
-#'   0.05)
-#' @param digits An integer indicating the number of digits to retain for the
-#'   spatial coordinates
-#' @param tol When adding the points to the network, specify the minimum
-#'   distance between these points and the lines' extremities. When points are
-#'   closer, they are added at the extremity of the lines.
-#' @param resolution When simulating random points on the network, selecting a
-#'   resolution will reduce greatly the calculation time. When resolution is null
-#'   the random points can occur everywhere on the graph. If a value is specified,
-#'   the edges are split according to this value and the random points are
-#'   selected vertices on the new network.
-#' @param agg A double indicating if the events must be aggregated within a
-#'   distance. If NULL, the events are aggregated by rounding the coordinates.
-#' @param verbose A Boolean indicating if progress messages should be displayed
+#' @template kross_kfunctions-arg
+#' @template common_kfunctions-arg
 #'
-#' @return A list with the following values : \cr \itemize{ \item{plotk}{A
+#' @return A list with the following values : \cr \itemize{ \item{plotk}{ A
 #'   ggplot2 object representing the values of the cross k-function}
-#'   \item{plotg}{A ggplot2 object representing the values of the cross
-#'   g-function} \item{values}{A DataFrame with the values used to build the
+#'   \item{plotg}{ A ggplot2 object representing the values of the cross
+#'   g-function} \item{values}{ A DataFrame with the values used to build the
 #'   plots} }
 #' @importFrom stats quantile
 #' @importFrom rgeos gLength

@@ -100,7 +100,7 @@
       <h1 data-toc-skip>Network k Functions</h1>
                         <h4 class="author">Jeremy Gelb</h4>
             
-            <h4 class="date">2021-10-03</h4>
+            <h4 class="date">2021-10-06</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/JeremyGelb/spNetwork/blob/master/vignettes/KNetworkFunctions.Rmd"><code>vignettes/KNetworkFunctions.Rmd</code></a></small>
       <div class="hidden name"><code>KNetworkFunctions.Rmd</code></div>
@@ -112,14 +112,14 @@
 <div id="introduction" class="section level1">
 <h1 class="hasAnchor">
 <a href="#introduction" class="anchor"></a>Introduction</h1>
-<p>The K-function is a method used in spatial Point Pattern Analysis (PPA) to inspect the spatial distribution of a set of points. It allows the user to assess if the set is more or less clustered that what we could expect from a given distribution. Most of the time, the set of point is compared with a random distribution.</p>
+<p>The K-function is a method used in spatial Point Pattern Analysis (PPA) to inspect the spatial distribution of a set of points. It allows the user to assess if the set of points is more or less clustered that what we could expect from a given distribution. Most of the time, the set of point is compared with a random distribution.</p>
 <p>The empirical K-function for a specified radius <span class="math inline">\(r\)</span> is calculated with the following formula:</p>
 <p><span class="math display">\[\hat{K}(r)=\frac{1}{n(n-1)} \sum_{i=1}^{n} \sum_{j=1 \atop j \neq i}^{n} \mathbf{1}\left\{d_{i j} \leq r\right\}\]</span> Basically, the K-function calculates for a radius <span class="math inline">\(r\)</span> the proportion of cell with a value bellow <span class="math inline">\(r\)</span> in the distance matrix between all the points <span class="math inline">\(D_{ij}\)</span>. In other words, the K-function estimates “the average number of neighbours of a typical random point” <span class="citation">(<a href="#ref-baddeley2015spatial" role="doc-biblioref">Baddeley, Rubak, and Turner 2015</a>)</span>.</p>
 <p>A modified version of the K-function is the G-function (Pair Correlation Function) <span class="citation">(<a href="#ref-stoyan1996estimating" role="doc-biblioref">Stoyan and Stoyan 1996</a>)</span>. The regular K-function is calculated for subsequent disks with increasing radii and thus is cumulative in nature. The G-function uses rings instead of disks and permits the analysis of the points concentrations at different geographical scales.</p>
 <center>
 <img src="images/k-g-functions.png" title="fig:" style="width:45.0%" alt="Image Title">
 </center>
-<p>When the points are located on a network, the use of the Euclidean distance systematically underestimates the real distance between points These two functions can be extended for network spaces by using the network distance instead of the Euclidean distance. The value of the empirical k function on a network is calculated with the following formula:</p>
+<p>When the points are located on a network, the use of the Euclidean distance systematically underestimates the real distance between points. These two functions can be extended for network spaces by using the network distance instead of the Euclidean distance. The value of the empirical k function on a network is calculated with the following formula:</p>
 <p><span class="math display">\[\hat{K}(r)=\frac{1}{(n-1)/Lt} \sum_{i=1}^{n} \sum_{j=1 \atop j \neq i}^{n} \mathbf{1}\left\{d_{i j} \leq r\right\}\]</span></p>
 <p>With <span class="math inline">\(Lt\)</span> the total length of the network and <span class="math inline">\(n\)</span> the number of events.</p>
 </div>
@@ -153,7 +153,7 @@
                            verbose <span class="op">=</span> <span class="cn">FALSE</span>, conf_int <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span>
 <span class="va">kfun_theatre</span><span class="op">$</span><span class="va">plotk</span></code></pre></div>
 <p><img src="KNetworkFunctions_files/figure-html/unnamed-chunk-4-1.png" width="700" style="display: block; margin: auto;"></p>
-<p>The blue line is the empirical network K-function of the theatres in Montreal. The gray area represents the results of the 50 simulations in the interval 2.5% - 97.5%. Because the blue line is way above the gray area, we can conclude that the theatre are more clustered than what we can expect from a random distribution. (Note : most of the time, more simulations are required for inference)</p>
+<p>The blue line is the empirical network K-function of the theatres in Montreal. The gray area represents the results of the 50 simulations in the interval 2.5% - 97.5%. Because the blue line is way above the gray area, we can conclude that the theatres are more clustered than what we can expect from a random distribution. (Note: usually, more simulations are required for inference).</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">kfun_theatre</span><span class="op">$</span><span class="va">plotg</span></code></pre></div>
 <p><img src="KNetworkFunctions_files/figure-html/unnamed-chunk-6-1.png" width="700" style="display: block; margin: auto;"></p>
@@ -176,7 +176,7 @@
 <p>The cross-K-function is used to determine if two set of points A and B tend to be close or far away one from each other. For a radius <em>r</em>, the empirical cross-K-function is calculated with the following formula :</p>
 <p><span class="math display">\[\hat{K}(r)=\frac{1}{n_a n_b)} \sum_{i=1}^{n_a} \sum_{j=1}^{n_b} \mathbf{1}\left\{d_{i j} \leq r\right\}\]</span></p>
 <p>On a network, the formula is adapted:</p>
-<p><span class="math display">\[\hat{K}(r)=\frac{1}{n_a/Lt)} \sum_{i=1}^{n_a} \sum_{j=1}^{n_b} \mathbf{1}\left\{d_{i j} \leq r\right\}\]</span></p>
+<p><span class="math display">\[\hat{K}(r)=\frac{1}{n_a/Lt} \sum_{i=1}^{n_a} \sum_{j=1}^{n_b} \mathbf{1}\left\{d_{i j} \leq r\right\}\]</span></p>
 <p>with <span class="math inline">\(n_a\)</span> the number of points in A and <span class="math inline">\(n_b\)</span> the number of points in B, and <span class="math inline">\(Lt\)</span> the total length of the network.</p>
 <p>Note that the cross-K-function A to B is not necessarily the same results as the cross-K-function B to A. Again, in <strong>spNetwork</strong>, the inference is based on Monte Carlo Simulations. The locations of the reference set of points are randomized to estimate if the current situation is more or less clustered that what we could expect at random.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
@@ -186,7 +186,7 @@
 
 <span class="va">cross_biblio_theatre</span><span class="op">$</span><span class="va">plotk</span></code></pre></div>
 <p><img src="KNetworkFunctions_files/figure-html/unnamed-chunk-12-1.png" width="700" style="display: block; margin: auto;"></p>
-<p>One can conclude from the chart that the libraries are randomly located around the theatres and display nor clustering or dispersion around theatres.</p>
+<p>One can conclude from the chart that the libraries are randomly located around the theatres and display nor clustering nor dispersion around theatres.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">cross_theatre_biblio</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cross_kfunctions.html">cross_kfunctions</a></span><span class="op">(</span><span class="va">main_network_mtl</span>, <span class="va">mtl_theatres</span>,
                       <span class="va">mtl_libraries</span>, start <span class="op">=</span> <span class="fl">0</span>, end <span class="op">=</span> <span class="fl">5000</span>,
@@ -194,7 +194,7 @@
 
 <span class="va">cross_theatre_biblio</span><span class="op">$</span><span class="va">plotk</span></code></pre></div>
 <p><img src="KNetworkFunctions_files/figure-html/unnamed-chunk-14-1.png" width="700" style="display: block; margin: auto;"></p>
-<p>However, this second chart shows that the theatres tend to be clustered around libraries. This is coherent with the map above. A random library is often located far from the theatres. But the theatres are concentrated in the city center and close of some libraries.</p>
+<p>However, this second chart shows that the theatres tend to be clustered around libraries. This is coherent with the map above. A random library is often located far from the theatres. But the theatres are concentrated in the city center and close to some specific libraries.</p>
 <div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-baddeley2015spatial" class="csl-entry">
 Baddeley, Adrian, Ege Rubak, and Rolf Turner. 2015. <em>Spatial Point Patterns: Methodology and Applications with r</em>. CRC press.
