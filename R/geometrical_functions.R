@@ -113,8 +113,8 @@ remove_loop_lines <- function(lines, digits){
 #' the lines labelled as To-From, the order of their vertices is reverted.
 #'
 #' @param lines A SpatialLinesDataFrame
-#' @param field Indicate a field giving informations about authorized
-#' traveling direction on lines. if NULL, then all lines can be used in both
+#' @param field Indicate a field giving information about authorized
+#' travelling direction on lines. if NULL, then all lines can be used in both
 #' directions. Must be the name of a column otherwise. The values of the
 #' column must be "FT" (From - To), "TF" (To - From) or "Both".
 #' @return A SpatialLinesDataFrame
@@ -222,7 +222,7 @@ reverse_lines <- function(lines){
 #' @title Add vertices to a SpatialLinesDataFrame
 #'
 #' @description Add vertices (SpatialPoints) to their nearest lines
-#'   (SpatialLines), may fail if the lines geometries are self intersecting.
+#'   (SpatialLines), may fail if the line geometries are self intersecting.
 #'
 #' @param lines The SpatialLinesDataframe to modify
 #' @param points The SpatialPoints to add to as vertex to the lines
@@ -324,7 +324,7 @@ add_vertices_lines <- function(lines, points, nearest_lines_idx, mindist) {
 #' @title Cut lines into lixels
 #'
 #' @description Cut a SpatialLines object into lixels with a specified minimal
-#'   distance may fail if the lines geometries are self intersecting.
+#'   distance may fail if the line geometries are self intersecting.
 #'
 #' @param lines The SpatialLinesDataframe to modify
 #' @param lx_length The length of a lixel
@@ -376,7 +376,7 @@ lixelize_lines<- function(lines, lx_length, mindist = NULL) {
 #'@title Cut lines into lixels (multicore)
 #'
 #'@description Cut a SpatialLines object into lixels with a specified minimal
-#'  distance may fail if the lines geometries are self intersecting with
+#'  distance may fail if the line geometries are self intersecting with
 #'  multicore support.
 #'
 #'@param lines The SpatialLinesDataframe to modify
@@ -474,10 +474,10 @@ simple_lines <- function(lines) {
     return(final_lines)
 }
 
-#' @title Center points of lines
+#' @title Centre points of lines
 #'
-#' @description Generate a SpatialPointsDataFrame with point at the center of
-#'   lines. The length of the lines is used to determine its center.
+#' @description Generate a SpatialPointsDataFrame with points at the centre of
+#'   lines. The length of the lines is used to determine its centre.
 #'
 #' @param lines The SpatialLinesDataframe to use
 #' @return An object of class SpatialPointsDataFrame (package sp)
@@ -1141,7 +1141,7 @@ simplify_network <- function(lines, digits = 3, heal = TRUE, mirror = TRUE, keep
 #' @title Split lines at vertices in a SpatialLinesDataFrame
 #'
 #' @description Split lines (SpatialLines) at their nearest vertices
-#' (SpatialPoints), may fail if the lines geometries are self intersecting.
+#' (SpatialPoints), may fail if the line geometries are self intersecting.
 #'
 #' @param lines The SpatialLinesDataframe to split
 #' @param points The SpatialPoints to add to as vertex to the lines

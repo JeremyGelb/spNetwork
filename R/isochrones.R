@@ -3,7 +3,7 @@
 #'
 #' @description Calculate isochrones on a network
 #'
-#' @details An isochrones is the set of reachable lines around a node in a network within
+#' @details An isochrone is the set of reachable lines around a node in a network within
 #' a specified distance (or time). This function perform dynamic segmentation to return the
 #' part of the edges reached and not only the fully covered edges. Several start points and
 #' several distances can be given. The network can also be directed. The lines returned
@@ -18,12 +18,12 @@
 #' @param mindist The minimum distance between two points. When two points are
 #' too close, they might end up snapped at the same location on a line.
 #' Default is 1.
-#' @param weight The name of the column in lines to use a edge weight. If NULL,
+#' @param weight The name of the column in lines to use an edge weight. If NULL,
 #' the geographical length is used. Note that if lines are split during the
 #' network creation, the weight column is recalculated proportionally to the new lines
 #' length.
 #' @param direction The name of the column indicating authorized
-#' traveling direction on lines. if NULL, then all lines can be used in both
+#' travelling direction on lines. if NULL, then all lines can be used in both
 #' directions (undirected). The values of the column must be "FT" (From - To),
 #' "TF" (To - From) or "Both".
 #' @return A SpatialLinesDataFrame representing the isochrones with the

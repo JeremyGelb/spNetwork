@@ -2,7 +2,7 @@
 % Please edit documentation in R/geometrical_functions.R
 \name{lines_center}
 \alias{lines_center}
-\title{Center points of lines}
+\title{Centre points of lines}
 \usage{
 lines_center(lines)
 }
@@ -13,8 +13,8 @@ lines_center(lines)
 An object of class SpatialPointsDataFrame (package sp)
 }
 \description{
-Generate a SpatialPointsDataFrame with point at the center of
-  lines. The length of the lines is used to determine its center.
+Generate a SpatialPointsDataFrame with points at the centre of
+  lines. The length of the lines is used to determine its centre.
 }
 \examples{
 \donttest{

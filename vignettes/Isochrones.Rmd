@@ -22,7 +22,7 @@ colorlinks: yes
 
 An isochrone is a geometrical representation of the area that can be reached for a starting on a network within a given distance (in time or space units).
 
-There is already several libraries to build isochrones with R (`opentripplanner`, `osrm` `rmapzen`, etc.), but they are all based on OpenStreetMap data or on external API. We propose here a simple implementation that can be used on a geographical network read as *SpatialLinesDataFrame*.
+There are already several libraries to build isochrones with R (`opentripplanner`, `osrm`, `rmapzen`, etc.), but they are all based on OpenStreetMap data or on external API. We propose here a simple implementation that can be used on a geographical network read as *SpatialLinesDataFrame*.
 
 We give here a simple example with the Montreal network dataset and calculate several isochrones from the centre of the dataset.
 
@@ -59,7 +59,7 @@ plot(mtl_network)
 plot(df_center, add = TRUE, col = "red")
 ```
 
-The second step is to calculate the isochrones with the function `calc_isochrones`. In this example, we use the length of a segment as the weight but other values could be used. We also consider that all the roads can be used in both way (see parameter `direction`)
+The second step is to calculate the isochrones with the function `calc_isochrones`. In this example, we use the length of a segment as the weight but other values could be used. We also consider that all the roads can be used in both directions (see parameter `direction`)
 
 ```{r message=FALSE, warning=FALSE}
 iso_results <- calc_isochrones(lines = mtl_network,
@@ -73,7 +73,7 @@ iso_results <- calc_isochrones(lines = mtl_network,
 The results are reported as lines, which can be mapped.
 
 ```{r message=FALSE, warning=FALSE}
-# creating a factor and changing order for better visualisation
+# creating a factor and changing order for better vizualisation
 iso_results$fac_dist <- as.factor(iso_results$distance)
 iso_results <- iso_results[order(-1*iso_results$distance),]
 
@@ -98,7 +98,7 @@ The best starting point is probably to calculate for each set of points a concav
 ```{r message=FALSE, warning=FALSE}
 library(concaveman)
 
-# identidying each isochrone
+# identifying each isochrone
 iso_results$iso_oid <- paste(iso_results$point_id,
                              iso_results$distance,
                              sep = "_")
@@ -106,7 +106,7 @@ iso_results$iso_oid <- paste(iso_results$point_id,
 # creating the polygons for each isochrone
 polygons <- lapply(unique(iso_results$iso_oid), function(oid){
   
-  # subsetting the required lines
+  # subseting the required lines
   lines <- subset(iso_results, iso_results$iso_oid == oid)
   
   # extracting the coordinates of the lines
@@ -131,7 +131,7 @@ raster::crs(iso_sp) <- raster::crs(mtl_network)
 We can now map the obtained polygons.
 
 ```{r message=FALSE, warning=FALSE}
-# creating a factor and changing order for better visualisation
+# creating a factor and changing order for better vizualisation
 iso_sp$fac_dist <- as.factor(iso_sp$distance)
 iso_sp <- iso_sp[order(-1*iso_sp$distance),]
 

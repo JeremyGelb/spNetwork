@@ -1,8 +1,8 @@
-# spNetwork 0.1.2.9000
+# spNetwork 0.2.0
 
 ## New Features
 
-* Added two function for data driven bandwidth selection (see vignette NKDE)
+* Added two function for data-driven bandwidth selection (see vignette NKDE)
 * Added a function to simplify network before processing (*simplify_network*), reducing network complexity by removing useless edges or merge continuous edge can improve performance. This function is still experimental and must be used only for undirected networks.
 * Added two functions to calculate k nearest neighbours: *network_knn* and *network_knn.mc*
 * Added a function to calculate isochrones on a geographical network: *calc_isochrones* and a Vignette (*Calculating isochrones*) to give an example.
@@ -25,7 +25,7 @@ We follow now the code coverage. We want to reach 70% coverage before the next C
 
 ## performance
 
-* Performance was improved for function *listw_network*, *listw_network.mc*, *kfunctions*, *kfunctions.mc*, *cross_kfunctions* and *cross_kfunctions.mc*, by reducing the complexity of the network with no loss of accuracy.
+* Performance was improved for functions *listw_network*, *listw_network.mc*, *kfunctions*, *kfunctions.mc*, *cross_kfunctions* and *cross_kfunctions.mc*, by reducing the complexity of the network with no loss of accuracy.
 * Several geometrical functions have been accelerated by c++ code using the boost library
 * upgraded c++ compilation requirement to c++17
 * the functions used for the nkde calculation were reworked. Sensible speed gain can be observed.

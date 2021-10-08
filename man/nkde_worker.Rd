@@ -66,7 +66,7 @@ method. For the continuous method, a larger value will strongly impact
 calculation speed.}
 
 \item{verbose}{A Boolean, indicating if the function should print messages
-about process.}
+about the process.}
 }
 \value{
 A numeric vector with the nkde values

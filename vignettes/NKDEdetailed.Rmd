@@ -141,10 +141,10 @@ knitr::knit_hooks$set(webgl = hook_webgl)
 The first method was proposed by @xie2008kernel. The differences with a classical KDE are: 
 
 * the events are snapped on a network
-* the distances between sampling points and events are network distance (ie. not euclidean distance)
+* the distances between sampling points and events are network distances (i.e. not Euclidean distance)
 
 To visualize the result, we calculate here the density values and plot them in 3D. 
-We sample the kernel values at each one centimeter on the lines.
+We sample the kernel values at each one centimetres on the lines.
 
 
 ```{r message=FALSE, warning=FALSE}
@@ -262,7 +262,7 @@ d3_plot_situation(all_lines, events, samples_pts, continuous_kernel, scales = c(
 ```
 
 
-The larger the bandwidth, the more common links the events have un common in their range.
+The larger the bandwidth, the more common links the events share in their range.
 
 ```{r test-rgl5, message=FALSE, warning=FALSE, webgl = TRUE, out.width= "75%"}
 

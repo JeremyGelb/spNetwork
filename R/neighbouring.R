@@ -48,7 +48,7 @@ utils::globalVariables(c("origin", "fid"))
 #' @param mindist The minimum distance between two different observations.
 #' It is important for it to be different from 0 when a W style is used.
 #' @param direction Indicate a field giving information about authorized
-#' traveling direction on lines. if NULL, then all lines can be used in both
+#' travelling direction on lines. if NULL, then all lines can be used in both
 #' directions. Must be the name of a column otherwise. The values of the
 #' column must be "FT" (From - To), "TF" (To - From) or "Both".
 #' @param matrice_type The type of the weighting scheme. Can be 'B' for Binary,
@@ -245,7 +245,7 @@ prepare_elements_netlistw <- function(is,grid,snapped_points,lines,maxdistance){
 #' @param maxdistance The maximum distance between two observations to
 #' consider them as neighbours.
 #' @param method A string indicating how the starting points will be built.
-#' If 'centroid' is used, then the center of lines or polygons is used. If
+#' If 'centroid' is used, then the centre of lines or polygons is used. If
 #' 'pointsalong' is used, then points will be placed along polygons' borders or
 #' along lines as starting and end points. If 'ends' is used (only for lines)
 #' the first and last vertices of lines are used as starting and ending points.
@@ -259,7 +259,7 @@ prepare_elements_netlistw <- function(is,grid,snapped_points,lines,maxdistance){
 #' @param mindist The minimum distance between two different observations.
 #' It is important for it to be different from 0 when a W style is used.
 #' @param direction Indicates a field providing information about authorized
-#' traveling direction on lines. if NULL, then all lines can be used in both
+#' travelling direction on lines. if NULL, then all lines can be used in both
 #' directions. Must be the name of a column otherwise. The values of the
 #' column must be "FT" (From - To), "TF" (To - From) or "Both".
 #' @param dist_func Indicates the function to use to convert the distance
@@ -430,7 +430,7 @@ network_listw <- function(origins,lines, maxdistance, method="centroid", point_d
 #' @param maxdistance The maximum distance between two observations to
 #' consider them as neighbours.
 #' @param method A string indicating how the starting points will be built.
-#' If 'centroid' is used, then the center of lines or polygons is used. If
+#' If 'centroid' is used, then the centre of lines or polygons is used. If
 #' 'pointsalong' is used, then points will be placed along polygons' borders or
 #' along lines as starting and end points. If 'ends' is used (only for lines)
 #' the first and last vertices of lines are used as starting and ending points.
@@ -444,7 +444,7 @@ network_listw <- function(origins,lines, maxdistance, method="centroid", point_d
 #' @param mindist The minimum distance between two different observations.
 #' It is important for it to be different from 0 when a W style is used.
 #' @param direction Indicates a field giving information about authorized
-#' traveling direction on lines. if NULL, then all lines can be used in both
+#' travelling direction on lines. if NULL, then all lines can be used in both
 #' directions. Must be the name of a column otherwise. The values of the
 #' column must be "FT" (From - To), "TF" (To - From) or "Both".
 #' @param dist_func Indicates the function to use to convert the distance

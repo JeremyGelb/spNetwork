@@ -10,7 +10,7 @@ split_graph_components(graph_result)
 \item{graph_result}{A list typically obtained from the function build_graph or build_graph_directed}
 }
 \value{
-A list of lists, the graph_result splitted for each graph component
+A list of lists, the graph_result split for each graph component
 }
 \description{
 Function to split the results of build_graph and build_graph_directed

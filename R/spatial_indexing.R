@@ -65,7 +65,7 @@ spatial_request <- function(geometry,tree,data){
 #' @title Find closest points
 #'
 #' @description Solve the nearest neighbour problem for two SpatialPointsDataFrame.
-#' This is a simple wrapup of the FNN::knnx.index function
+#' This is a simple wrap-up of the FNN::knnx.index function
 #'
 #' @param origins a SpatialPointsDataFrame
 #' @param targets a SpatialPointsDataFrame

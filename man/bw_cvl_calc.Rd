@@ -57,13 +57,13 @@ calculation time and memory use can go wild  if the network has many
 small edges (area with many of intersections and many events). To
 avoid it, it is possible to set here a maximum depth. Considering that the
 kernel is divided at intersections, a value of 10 should yield good
-estimates in most cases. A larger value can be used without problem for the
+estimates in most cases. A larger value can be used without a problem for the
 discontinuous method. For the continuous method, a larger value will
 strongly impact calculation speed.}
 
 \item{digits}{The number of digits to retain from the spatial coordinates. It
-ensures that topology is good when building the network. Default is 3. A
-too high precision (high number of digits) might break some connections}
+ensures that topology is good when building the network. Default is 3. Too high a
+precision (high number of digits) might break some connections}
 
 \item{tol}{A float indicating the minimum distance between the events and the
 lines' extremities when adding the point to the network. When points are
@@ -81,7 +81,7 @@ bit), but require much less memory.}
 
 \item{grid_shape}{A vector of two values indicating how the study area
 must be split when performing the calculus. Default is c(1,1) (no split). A finer grid could
-reduce memory usage ans increase speed when a large dataset is used. When using
+reduce memory usage and increase speed when a large dataset is used. When using
 multiprocessing, the work in each grid is dispatched between the workers.}
 
 \item{sub_sample}{A float between 0 and 1 indicating the percentage of quadra
@@ -89,7 +89,7 @@ to keep in the calculus. For large datasets, it may be useful to limit the
 bandwidth evaluation and thus reduce calculation time.}
 
 \item{verbose}{A Boolean, indicating if the function should print messages
-about process.}
+about the process.}
 
 \item{check}{A Boolean indicating if the geometry checks must be run before
 the operation. This might take some times, but it will ensure that the CRS
@@ -100,8 +100,8 @@ A dataframe with two columns, one for the bandwidths and the second for
 the Cronie and Van Lieshout's Criterion.
 }
 \description{
-Calculate for multiple bandiwdths the Cronie and Van Lieshout's Criterion to
-select an appropriate bandwidth in a data driven approach.
+Calculate for multiple bandwidth the Cronie and Van Lieshout's Criterion to
+select an appropriate bandwidth in a data-driven approach.
 }
 \details{
 The Cronie and Van Lieshout's Criterion \insertCite{cronie2018non}{spNetwork}

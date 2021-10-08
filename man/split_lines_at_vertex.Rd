@@ -21,7 +21,7 @@ An object of class SpatialLinesDataFrame (package sp)
 }
 \description{
 Split lines (SpatialLines) at their nearest vertices
-(SpatialPoints), may fail if the lines geometries are self intersecting.
+(SpatialPoints), may fail if the line geometries are self intersecting.
 }
 \examples{
 # reading the data

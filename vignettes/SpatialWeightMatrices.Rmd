@@ -90,7 +90,7 @@ nbAccident <- ifelse(is.na(lixels$nbAccident),0,lixels$nbAccident)
 
 We use here the function *network_listw* the create a `listw` object representing the spatial weight matrix. The distances can be calculated from the centroids of the lixels, from the extremities of the lixels or from evenly spaced points on the lixels. We use here the second approach and specify it with the parameter `method = "ends"`.
 
-Let us consider that above 300 meters two segments are not neighbours anymore, and convert the distances between the observations into spatial weights by using the inverse of the squared distance.
+Let us consider that above 300 metres two segments are not neighbours anymore, and convert the distances between the observations into spatial weights by using the inverse of the squared distance.
 
 ```{r message=FALSE, warning=FALSE, eval = FALSE}
 netlistw <- network_listw(lixels,mtl_network,
@@ -103,14 +103,14 @@ netlistw <- network_listw(lixels,mtl_network,
                            grid_shape = c(1,1),
                            verbose=FALSE)
 ```
-With that matrix, we can calculate the Moran I for the number of accident on lixels.
+With that matrix, we can calculate the Moran I for the number of accidents on a lixel.
 
 ```{r message=FALSE, warning=FALSE}
 Test <- moran.test(nbAccident, netlistw, zero.policy = T)
 print(round(Test$estimate,4))
 ```
 
-The autocorrelation is week, this is due to the large distance used and the fact that the analyzed variable is a counting variable (number of accidents). Indeed, the Moran I is supposed to be used on continuous variables.
+The autocorrelation is weak, this is due to the large distance used and the fact that the analyzed variable is a counting variable (number of accidents). Indeed, the Moran I is supposed to be used on continuous variables.
 
 One could go further and define its own function to convert distances into spatial weights
 
@@ -156,10 +156,10 @@ if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
 
 # Other features
 
-* A spatial matrix could be calculated for every type of geometries not only lines. Points can directly be used. For polygons, it is possible to use the centers of the geometries as starting points. One can also chose a distance and equally spaced starting points will be defined on the border of the polygons according to that distance.
-* The cost of traveling on a edge could be set to something else than "length".
+* A spatial matrix could be calculated for every type of geometries not only lines. Points can directly be used. For polygons, it is possible to use the centres of the geometries as starting points. One can also choose a distance and equally spaced starting points will be defined on the border of the polygons according to that distance.
+* The cost of travelling on an edge could be set to something else than "length".
 * It is possible to specify directions on the network.
-* With a little bit of work, it is possible to use the functions presented above to find the nearest feature of observations on a network as described [here](https://github.com/JeremyGelb/spNetwork/issues/3)
+* With a little bit of work, it is possible to use the functions presented above to find the nearest feature of observations on a network as described [here](https://github.com/JeremyGelb/spNetwork/issues/3).
 
 ```{r include = FALSE}
 # reset all the user parameters

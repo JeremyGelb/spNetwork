@@ -12,7 +12,7 @@ clean_events(events, digits = 5, agg = NULL)
 \item{digits}{The number of digits to keep}
 
 \item{agg}{A double indicating if the points must be aggregated within a distance.
-if NULL, then the points are aggregated by rouding the coordinates.}
+if NULL, then the points are aggregated by rounding the coordinates.}
 }
 \value{
 A new SpatialPointsDataFrame

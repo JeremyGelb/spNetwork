@@ -32,7 +32,7 @@ SpatialPolygonsDataFrame for which the spatial neighbouring list will be built}
 consider them as neighbours.}
 
 \item{method}{A string indicating how the starting points will be built.
-If 'centroid' is used, then the center of lines or polygons is used. If
+If 'centroid' is used, then the centre of lines or polygons is used. If
 'pointsalong' is used, then points will be placed along polygons' borders or
 along lines as starting and end points. If 'ends' is used (only for lines)
 the first and last vertices of lines are used as starting and ending points.}
@@ -51,7 +51,7 @@ considered proportional to the geographical length of the lines.}
 It is important for it to be different from 0 when a W style is used.}
 
 \item{direction}{Indicates a field providing information about authorized
-traveling direction on lines. if NULL, then all lines can be used in both
+travelling direction on lines. if NULL, then all lines can be used in both
 directions. Must be the name of a column otherwise. The values of the
 column must be "FT" (From - To), "TF" (To - From) or "Both".}
 

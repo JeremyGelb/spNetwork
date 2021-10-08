@@ -193,5 +193,24 @@ As suggested, the modifications applied to the user's option, par and working di
 
 ## Round 1 (after automatic checks) the 18/01/2021
 
-The package was accepted on CRAN today, but an error occured on SOLARIS.
+The package was accepted on CRAN today, but an error occurred on SOLARIS.
 The error occurs when I set manually the CRS of sp objects in the test and in the vignette NKDEdetailed. I removed the lines specifying the projection (maybe an error with PROJ4 ?). Because the package has already been accepted on CRAN, I have to raise the version number.
+
+
+# Version 0.2.0
+
+submitted the 08/10/2021
+
+This is the result of RCMD check before submission.
+
+-- R CMD check results ------------------------------------------------------ spNetwork 0.2.0 ----
+Duration: 8m 21.4s
+
+> checking installed package size ... NOTE
+    installed size is  9.5Mb
+    sub-directories of 1Mb or more:
+      doc       2.0Mb
+      extdata   4.0Mb
+      libs      2.8Mb
+
+0 errors √ | 0 warnings √ | 1 note x

@@ -1,6 +1,6 @@
 #' @param digits The number of digits to retain from the spatial coordinates. It
-#'   ensures that topology is good when building the network. Default is 3. A
-#'   too high precision (high number of digits) might break some connections
+#'   ensures that topology is good when building the network. Default is 3. Too high a
+#'   precision (high number of digits) might break some connections
 #' @param tol A float indicating the minimum distance between the events and the
 #'   lines' extremities when adding the point to the network. When points are
 #'   closer, they are added at the extremity of the lines.

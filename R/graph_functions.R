@@ -5,13 +5,13 @@
 #' @details This function can be used to generate an undirected graph object (igraph
 #'   object). It uses the coordinates of the linestrings extremities to create
 #'   the nodes of the graph. This is why the number of digits in the coordinates
-#'   is important. A too high precision (high number of digits) might break some
+#'   is important. Too high a precision (high number of digits) might break some
 #'   connections.
 #'
 #' @param lines A SpatialLinesDataFrame
 #' @param digits The number of digits to keep from the coordinates
 #' @param line_weight The name of the column giving the weight of the lines
-#' @param attrs A boolean indicating if the original lines attributes should be
+#' @param attrs A boolean indicating if the original lines' attributes should be
 #'   stored in the final object
 #' @return A list containing the following elements:
 #' \itemize{
@@ -96,16 +96,16 @@ build_graph <- function(lines, digits, line_weight, attrs = FALSE) {
 #' @description Generate a directed igraph object from a SpatialLinesDataFrame.
 #'
 #' @details This function can be used to generate a directed graph object (igraph
-#'   object). It uses the coordinates of the linestrings extremites to create
+#'   object). It uses the coordinates of the linestrings extremities to create
 #'   the nodes of the graph. This is why the number of digits in the coordinates
-#'   is important. A too high precision (high number of digits) might break some
+#'   is important. Too high a precision (high number of digits) might break some
 #'   connections. The column used to indicate directions can only have the
 #'   following values: "FT" (From-To), "TF" (To-From) and "Both".
 #'
 #' @param lines A SpatialLinesDataFrame
 #' @param digits The number of digits to keep from the coordinates
 #' @param line_weight The name of the column giving the weight of the lines
-#' @param attrs A boolean indicating if the original lines attributes should be
+#' @param attrs A boolean indicating if the original lines' attributes should be
 #'   stored in the final object
 #' @param direction A column name indicating authorized travelling direction on
 #'   lines. if NULL, then all lines can be used in both directions. Must be the

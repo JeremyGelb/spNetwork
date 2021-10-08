@@ -57,12 +57,12 @@ calculation time and memory use can go wild  if the network has many
 small edges (area with many of intersections and many events). To
 avoid it, it is possible to set here a maximum depth. Considering that the
 kernel is divided at intersections, a value of 10 should yield good
-estimates in most cases. A larger value can be used without problem for the
+estimates in most cases. A larger value can be used without a problem for the
 discontinuous method. For the continuous method, a larger value will
 strongly impact calculation speed.}
 
 \item{verbose}{A Boolean, indicating if the function should print messages
-about process.}
+about the process.}
 
 \item{agg}{A double indicating if the events must be aggregated within a distance.
 If NULL, the events are aggregated by rounding the coordinates.}

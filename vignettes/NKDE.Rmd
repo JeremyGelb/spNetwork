@@ -53,7 +53,7 @@ To calculate a Network Kernel Density Estimate (NKDE), it is possible to:
 * calculate network distances between objects instead of Euclidean distances.
 * adjust the kernel function to deal with the anisotropic space
 
-A picture is worth a thousand of words, so let us consider this situation: 
+A picture is worth thousand of words, so let us consider this situation: 
 
 <center>
 ![Image Title](images/step0.png){width=300px}
@@ -182,7 +182,7 @@ df <- data.frame("kernel"=Names,
 kable(df)
 
 ```
-However, the fact that the gaussian kernel does not integrate to 1 within the bandwidth can leads to negative values when using the continuous NKDE (presented latter). Thus, we recommend using the quartic kernel instead.
+However, the fact that the gaussian kernel does not integrate to 1 within the bandwidth can lead to negative values when using the continuous NKDE (presented latter). Thus, we recommend using the quartic kernel instead.
 
 ```{r message=FALSE, warning=FALSE}
 x <- seq(-15.01,15.01,by = 0.01)
@@ -203,7 +203,7 @@ ggplot(df2) +
 
 # The three versions of NKDE
 
-The **spNetwork** package provides three methods to calculate NKDE. We present them briefly here. For more details, please read the original papers and books cited. An other vignette is also available (*Details about NKDE*) to explore the three of them in 3D plots.
+The **spNetwork** package provides three methods to calculate NKDE. We present them briefly here. For more details, please read the original papers and books cited. Another vignette is also available (*Details about NKDE*) to explore the three of them in 3D plots.
 
 ## Simple method
 
@@ -448,7 +448,7 @@ print(paste("overall difference between the regular and paralellized method : ",
 
 The examples provided in the previous sections are using only a fixed bandwidth. If we relax the need for a fixed bandwidth, we obtain an adaptive estimator. In other words, the bandwidth may vary in the study area. **spNetwork** uses the method proposed by @abramson1982bandwidth, implying a variation of the bandwidth that is inversely proportional to the square root of the target density itself. In other words, at places where the density of the spatial process is high, the bandwidth of the kernel will be smaller and inversely. The use of an adaptive bandwidth has many theoretical and practical advantages. First, it reduces the sensibility to outliers. Second, it reduces smoothing in sub-region with many events (giving more detailed density estimation) and increases the smoothing in sub-region with few events (giving fuzzier results because of the higher uncertainty).
 
-The problem is that the true density itself is unknown (otherwise we would not have to estimate it with a smoothing method). To obtain the adaptive bandwidth, a three steps method is used : 
+The problem is that the true density itself is unknown (otherwise we would not have to estimate it with a smoothing method). To obtain the adaptive bandwidth, a three-step method is used : 
 
 1. A fixed reference bandwidth ($h_{0}$) is selected. For each event ($e_{i}$) on the network, the density of the spatial process is evaluated by using this reference bandwidth ($\tilde{f}h_{0}(e_{i})$).
 2. For each event, the adaptive bandwidth is calculated with the following formula. A trimming value can be defined to limit the maximum of the calculated adaptive bandwidths.
@@ -650,7 +650,7 @@ The bandwidth is the most important parameter when doing kernel density estimate
 * `bw_cv_likelihood_calc`, using likelihood cross validation by leave one out. The idea is to find a bandwidth that will produce the most similar results if an event is dropped.
 * `bw_cvl_calc`, using the Cronie and Van Lieshout's Criterion [@cronie2018non]. The goal is to minimize the difference between the size of the observation window and the sum of the reciprocal of the estimated kernel density at the events locations. In the network case, the size of the study area is the sum of the length of each line in the network. Thus, it is important to only use the relevant parts of the network.
 
-For both, one can uses the multicore version of the functions to speed up the calculation. It is also possible to run it on a subset of the dataset (based on the spatial grid) if running time is too long.
+For both, one can use the multicore version of the functions to speed up the calculation. It is also possible to run it on a subset of the dataset (based on the spatial grid) if running time is too long.
 
 ```{r eval = FALSE}
 bws_selection_cv <- bw_cv_likelihood_calc(
@@ -685,14 +685,14 @@ cv_values <- data.frame(
 knitr::kable(cv_values,digits = 2,row.names = FALSE)
 ```
 
-As one can see here, the cross-validation approach suggests a value between 400 and 500 meters, while the Cronie and Van Lieshout's Criterion recommend a value between 250 and 300 meters.
+As one can see here, the cross-validation approach suggests a value between 400 and 500 metres, while the Cronie and Van Lieshout's Criterion recommend a value between 250 and 300 metres.
 
 
 ## Complementary functions
 
 To define the sampling points on the network, some complementary functions are provided: 
 
-* `lines_center` returns the center point of each line in a *SpatialLinesDataFrame*.
+* `lines_center` returns the centre point of each line in a *SpatialLinesDataFrame*.
 * `lixelize_lines` returns lixels obtained after dividing a *SpatialLinesDataFrame*.
 * `lines_points_along` returns points at a specified distance along each lines in a *SpatialLinesDataFrame*.
 

@@ -21,7 +21,7 @@ An object of class SpatialLinesDataFrame (package sp)
 }
 \description{
 Add vertices (SpatialPoints) to their nearest lines
-  (SpatialLines), may fail if the lines geometries are self intersecting.
+  (SpatialLines), may fail if the line geometries are self intersecting.
 }
 \examples{
 #This is an internal function, no example provided

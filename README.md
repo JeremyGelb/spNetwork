@@ -8,7 +8,7 @@
 <!-- badges: start -->
 
 [![R-CMD-check](https://github.com/JeremyGelb/spNetwork/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/JeremyGelb/spNetwork/actions/workflows/R-CMD-check.yaml)
-[![](https://img.shields.io/badge/devel%20version-0.1.2.9000-green.svg)](https://github.com/https://jeremygelb.github.io/spNetwork/)
+[![](https://img.shields.io/badge/devel%20version-0.2.0-green.svg)](https://github.com/https://jeremygelb.github.io/spNetwork/)
 [![](https://www.r-pkg.org/badges/version/spNetwork?color=blue)](https://cran.r-project.org/package=spNetwork)
 [![](http://cranlogs.r-pkg.org/badges/grand-total/spNetwork?color=blue)](https://cran.r-project.org/package=spNetwork)
 [![](http://cranlogs.r-pkg.org/badges/last-month/spNetwork?color=green)](https://cran.r-project.org/package=spNetwork)
@@ -45,7 +45,7 @@ actual development version the implemented methods are:
 -   Graph analysis, using the functions of the package **igraph** (see
     the vignette [Building
     graphs](https://jeremygelb.github.io/spNetwork/articles/NetworkBuilding.html))
--   Isochrones, to delineate accessible area around points localised on
+-   Isochrones, to delineate accessible area around points localized on
     a network (see the vignette [Calculating
     isochrones](https://jeremygelb.github.io/spNetwork/articles/Isochrones.html))
 

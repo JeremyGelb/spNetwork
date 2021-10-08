@@ -13,7 +13,7 @@ build_graph(lines, digits, line_weight, attrs = FALSE)
 
 \item{line_weight}{The name of the column giving the weight of the lines}
 
-\item{attrs}{A boolean indicating if the original lines attributes should be
+\item{attrs}{A boolean indicating if the original lines' attributes should be
 stored in the final object}
 }
 \value{
@@ -32,9 +32,9 @@ Generate an igraph object from a SpatialLinesDataFrame.
 }
 \details{
 This function can be used to generate an undirected graph object (igraph
-  object). It uses the coordinates of the linestrings extremites to create
+  object). It uses the coordinates of the linestrings extremities to create
   the nodes of the graph. This is why the number of digits in the coordinates
-  is important. A too high precision (high number of digits) might break some
+  is important. Too high a precision (high number of digits) might break some
   connections.
 }
 \examples{

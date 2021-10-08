@@ -31,7 +31,7 @@ An object of class SpatialLinesDataFrame (package sp)
 }
 \description{
 Cut a SpatialLines object into lixels with a specified minimal
- distance may fail if the lines geometries are self intersecting with
+ distance may fail if the line geometries are self intersecting with
  multicore support.
 }
 \examples{

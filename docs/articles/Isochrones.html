@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
       </span>
     </div>
 
@@ -100,7 +100,7 @@
       <h1 data-toc-skip>Calculating isochrones</h1>
                         <h4 class="author">Jeremy Gelb</h4>
             
-            <h4 class="date">2021-10-07</h4>
+            <h4 class="date">2021-10-08</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/JeremyGelb/spNetwork/blob/master/vignettes/Isochrones.Rmd"><code>vignettes/Isochrones.Rmd</code></a></small>
       <div class="hidden name"><code>Isochrones.Rmd</code></div>
@@ -113,8 +113,8 @@
 <h1 class="hasAnchor">
 <a href="#introduction" class="anchor"></a>Introduction</h1>
 <p>An isochrone is a geometrical representation of the area that can be reached for a starting on a network within a given distance (in time or space units).</p>
-<p>There is already several libraries to build isochrones with R (<code>opentripplanner</code>, <code>osrm</code> <code>rmapzen</code>, etc.), but they are all based on OpenStreetMap data or on external API. We propose here a simple implementation that can be used on a geographical network read as <em>SpatialLinesDataFrame</em>.</p>
-<p>We give here a simple exemple with the Montreal network dataset and calculate several isochrones from the center of the dataset.</p>
+<p>There are already several libraries to build isochrones with R (<code>opentripplanner</code>, <code>osrm</code>, <code>rmapzen</code>, etc.), but they are all based on OpenStreetMap data or on external API. We propose here a simple implementation that can be used on a geographical network read as <em>SpatialLinesDataFrame</em>.</p>
+<p>We give here a simple example with the Montreal network dataset and calculate several isochrones from the centre of the dataset.</p>
 </div>
 <div id="calculating-the-isochrones" class="section level1">
 <h1 class="hasAnchor">
@@ -148,7 +148,7 @@
 <span class="fu"><a href="https://rdrr.io/pkg/raster/man/plot.html">plot</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/pkg/raster/man/plot.html">plot</a></span><span class="op">(</span><span class="va">df_center</span>, add <span class="op">=</span> <span class="cn">TRUE</span>, col <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span></code></pre></div>
 <p><img src="Isochrones_files/figure-html/unnamed-chunk-1-1.png" width="700"></p>
-<p>The second step is to calculate the isochrones with the function <code>calc_isochrones</code>. In this example, we use the length of a segment as the weight but other values could be used. We also consider that all the roads can be used in both way (see parameter <code>direction</code>)</p>
+<p>The second step is to calculate the isochrones with the function <code>calc_isochrones</code>. In this example, we use the length of a segment as the weight but other values could be used. We also consider that all the roads can be used in both directions (see parameter <code>direction</code>)</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">iso_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc_isochrones.html">calc_isochrones</a></span><span class="op">(</span>lines <span class="op">=</span> <span class="va">mtl_network</span>,
                                start_points <span class="op">=</span> <span class="va">df_center</span>,
@@ -157,7 +157,7 @@
                                <span class="op">)</span></code></pre></div>
 <p>The results are reported as lines, which can be mapped.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># creating a factor and changing order for better visualisation</span>
+<code class="sourceCode R"><span class="co"># creating a factor and changing order for better vizualisation</span>
 <span class="va">iso_results</span><span class="op">$</span><span class="va">fac_dist</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/raster/man/factor.html">as.factor</a></span><span class="op">(</span><span class="va">iso_results</span><span class="op">$</span><span class="va">distance</span><span class="op">)</span>
 <span class="va">iso_results</span> <span class="op">&lt;-</span> <span class="va">iso_results</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span><span class="op">*</span><span class="va">iso_results</span><span class="op">$</span><span class="va">distance</span><span class="op">)</span>,<span class="op">]</span>
 
@@ -179,7 +179,7 @@
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://joelgombin.github.io/concaveman/">concaveman</a></span><span class="op">)</span>
 
-<span class="co"># identidying each isochrone</span>
+<span class="co"># identifying each isochrone</span>
 <span class="va">iso_results</span><span class="op">$</span><span class="va">iso_oid</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="va">iso_results</span><span class="op">$</span><span class="va">point_id</span>,
                              <span class="va">iso_results</span><span class="op">$</span><span class="va">distance</span>,
                              sep <span class="op">=</span> <span class="st">"_"</span><span class="op">)</span>
@@ -187,7 +187,7 @@
 <span class="co"># creating the polygons for each isochrone</span>
 <span class="va">polygons</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/raster/man/unique.html">unique</a></span><span class="op">(</span><span class="va">iso_results</span><span class="op">$</span><span class="va">iso_oid</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">oid</span><span class="op">)</span><span class="op">{</span>
   
-  <span class="co"># subsetting the required lines</span>
+  <span class="co"># subseting the required lines</span>
   <span class="va">lines</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/raster/man/subset.html">subset</a></span><span class="op">(</span><span class="va">iso_results</span>, <span class="va">iso_results</span><span class="op">$</span><span class="va">iso_oid</span> <span class="op">==</span> <span class="va">oid</span><span class="op">)</span>
   
   <span class="co"># extracting the coordinates of the lines</span>
@@ -209,7 +209,7 @@
 <span class="fu">raster</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/raster/man/projection.html">crs</a></span><span class="op">(</span><span class="va">iso_sp</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu">raster</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/raster/man/projection.html">crs</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span></code></pre></div>
 <p>We can now map the obtained polygons.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># creating a factor and changing order for better visualisation</span>
+<code class="sourceCode R"><span class="co"># creating a factor and changing order for better vizualisation</span>
 <span class="va">iso_sp</span><span class="op">$</span><span class="va">fac_dist</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/raster/man/factor.html">as.factor</a></span><span class="op">(</span><span class="va">iso_sp</span><span class="op">$</span><span class="va">distance</span><span class="op">)</span>
 <span class="va">iso_sp</span> <span class="op">&lt;-</span> <span class="va">iso_sp</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span><span class="op">*</span><span class="va">iso_sp</span><span class="op">$</span><span class="va">distance</span><span class="op">)</span>,<span class="op">]</span>
 

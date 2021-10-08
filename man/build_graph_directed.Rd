@@ -13,12 +13,12 @@ build_graph_directed(lines, digits, line_weight, direction, attrs = FALSE)
 
 \item{line_weight}{The name of the column giving the weight of the lines}
 
-\item{direction}{A column name indicating authorized traveling direction on
+\item{direction}{A column name indicating authorized travelling direction on
 lines. if NULL, then all lines can be used in both directions. Must be the
 name of a column otherwise. The values of the column must be "FT" (From -
 To), "TF" (To - From) or "Both"}
 
-\item{attrs}{A boolean indicating if the original lines attributes should be
+\item{attrs}{A boolean indicating if the original lines' attributes should be
 stored in the final object}
 }
 \value{
@@ -37,9 +37,9 @@ Generate a directed igraph object from a SpatialLinesDataFrame.
 }
 \details{
 This function can be used to generate a directed graph object (igraph
-  object). It uses the coordinates of the linestrings extremites to create
+  object). It uses the coordinates of the linestrings extremities to create
   the nodes of the graph. This is why the number of digits in the coordinates
-  is important. A too high precision (high number of digits) might break some
+  is important. Too high a precision (high number of digits) might break some
   connections. The column used to indicate directions can only have the
   following values: "FT" (From-To), "TF" (To-From) and "Both".
 }

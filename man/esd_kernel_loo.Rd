@@ -36,4 +36,4 @@ The function to calculate discontinuous NKDE likelihood cv
 
 The function to calculate simple NKDE likelihood cv
 }
-\keyword{interal}
+\keyword{internal}

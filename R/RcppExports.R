@@ -242,7 +242,7 @@ corrfactor_continuous <- function(neighbour_list, events, line_list, bws, max_de
 #' @param max_depth the maximum recursion depth
 #' @return a vector with the kernel values calculated for each samples from
 #' the first node given
-#' @keywords interal
+#' @keywords internal
 NULL
 
 #' @title The function to calculate discontinuous NKDE likelihood cv
@@ -260,7 +260,7 @@ NULL
 #' @param max_depth the maximum recursion depth
 #' @return a vector with the kernel values calculated for each samples from
 #' the first node given
-#' @keywords interal
+#' @keywords internal
 NULL
 
 #' @title The function to calculate simple NKDE likelihood cv
@@ -278,7 +278,7 @@ NULL
 #' @param max_depth the maximum recursion depth
 #' @return a vector with the kernel values calculated for each samples from
 #' the first node given
-#' @keywords interal
+#' @keywords internal
 NULL
 
 #' @title The exported function to calculate continuous NKDE likelihood cv
@@ -295,7 +295,7 @@ NULL
 #' @param max_depth the maximum recursion depth
 #' @return a vector with the kernel values calculated for each event
 #' @export
-#' @keywords interal
+#' @keywords internal
 get_loo_values_continuous <- function(neighbour_list, samples, sweights, events, weights, bws, kernel_name, line_list, max_depth) {
     .Call('_spNetwork_get_loo_values_continuous', PACKAGE = 'spNetwork', neighbour_list, samples, sweights, events, weights, bws, kernel_name, line_list, max_depth)
 }
@@ -314,7 +314,7 @@ get_loo_values_continuous <- function(neighbour_list, samples, sweights, events,
 #' @param max_depth the maximum recursion depth
 #' @return a vector with the kernel values calculated for each event
 #' @export
-#' @keywords interal
+#' @keywords internal
 get_loo_values_discontinuous <- function(neighbour_list, samples, sweights, events, weights, bws, kernel_name, line_list, max_depth) {
     .Call('_spNetwork_get_loo_values_discontinuous', PACKAGE = 'spNetwork', neighbour_list, samples, sweights, events, weights, bws, kernel_name, line_list, max_depth)
 }
@@ -333,7 +333,7 @@ get_loo_values_discontinuous <- function(neighbour_list, samples, sweights, even
 #' @param max_depth the maximum recursion depth
 #' @return a vector with the kernel values calculated for each event
 #' @export
-#' @keywords interal
+#' @keywords internal
 get_loo_values_simple <- function(neighbour_list, samples, sweights, events, weights, bws, kernel_name, line_list, max_depth) {
     .Call('_spNetwork_get_loo_values_simple', PACKAGE = 'spNetwork', neighbour_list, samples, sweights, events, weights, bws, kernel_name, line_list, max_depth)
 }

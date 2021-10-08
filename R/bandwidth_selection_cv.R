@@ -1,7 +1,7 @@
 #' @title Bandwidth selection by likelihood cross validation
 #'
-#' @description Calculate for multiple bandiwdths the cross validation likelihood to
-#' select an appropriate bandwidth in a data driven approach
+#' @description Calculate for multiple bandwidth the cross validation likelihood to
+#' select an appropriate bandwidth in a data-driven approach
 #'
 #' @details  The function calculates the likelihood cross validation score for several
 #' bandwidths in order to find the most appropriate one. The general idea is to find the
@@ -206,9 +206,9 @@ bw_cv_likelihood_calc <- function(bw_range,bw_step,lines, events, w, kernel_name
 #' @title Bandwidth selection by likelihood cross validation (multicore version)
 #'
 #' @description Calculate for multiple bandiwdths the cross validation likelihood to
-#' select an appropriate bandwidth in a data driven approach. A plan from the package future can be used
+#' select an appropriate bandwidth in a data-driven approach. A plan from the package future can be used
 #' to split the work across several cores. The different cells generated in accordance with the
-#' argument grid_shape are used for the parallelisation. So if only one cell is
+#' argument grid_shape are used for the parallelization. So if only one cell is
 #' generated (grid_shape = c(1,1)), the function will use only one core. The progress bar
 #' displays the progression for the cells.
 #'
@@ -447,7 +447,7 @@ bw_cv_likelihood_calc.mc <- function(bw_range,bw_step,lines, events, w, kernel_n
 #' small edges (area with many of intersections and many events). To
 #' avoid it, it is possible to set here a maximum depth. Considering that the
 #' kernel is divided at intersections, a value of 10 should yield good
-#' estimates in most cases. A larger value can be used without problem for the
+#' estimates in most cases. A larger value can be used without a problem for the
 #' discontinuous method. For the continuous method, a larger value will
 #' strongly impact calculation speed.
 #' @param digits The number of digits to retain in the spatial coordinates. It

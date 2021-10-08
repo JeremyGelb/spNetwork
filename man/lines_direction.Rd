@@ -9,8 +9,8 @@ lines_direction(lines, field)
 \arguments{
 \item{lines}{A SpatialLinesDataFrame}
 
-\item{field}{Indicate a field giving informations about authorized
-traveling direction on lines. if NULL, then all lines can be used in both
+\item{field}{Indicate a field giving information about authorized
+travelling direction on lines. if NULL, then all lines can be used in both
 directions. Must be the name of a column otherwise. The values of the
 column must be "FT" (From - To), "TF" (To - From) or "Both".}
 }

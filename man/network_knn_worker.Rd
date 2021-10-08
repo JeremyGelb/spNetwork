@@ -24,7 +24,7 @@ neighbours will be found on the network.}
 \item{k}{An integer indicating the number of neighbours to find..}
 
 \item{direction}{Indicates a field providing information about authorized
-traveling direction on lines. if NULL, then all lines can be used in both
+travelling direction on lines. if NULL, then all lines can be used in both
 directions. Must be the name of a column otherwise. The values of the
 column must be "FT" (From - To), "TF" (To - From) or "Both".}
 

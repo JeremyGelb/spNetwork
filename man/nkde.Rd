@@ -69,13 +69,13 @@ calculation time and memory use can go wild  if the network has many
 small edges (area with many of intersections and many events). To
 avoid it, it is possible to set here a maximum depth. Considering that the
 kernel is divided at intersections, a value of 10 should yield good
-estimates in most cases. A larger value can be used without problem for the
+estimates in most cases. A larger value can be used without a problem for the
 discontinuous method. For the continuous method, a larger value will
 strongly impact calculation speed.}
 
 \item{digits}{The number of digits to retain from the spatial coordinates. It
-ensures that topology is good when building the network. Default is 3. A
-too high precision (high number of digits) might break some connections}
+ensures that topology is good when building the network. Default is 3. Too high a
+precision (high number of digits) might break some connections}
 
 \item{tol}{A float indicating the minimum distance between the events and the
 lines' extremities when adding the point to the network. When points are
@@ -93,11 +93,11 @@ bit), but require much less memory.}
 
 \item{grid_shape}{A vector of two values indicating how the study area
 must be split when performing the calculus. Default is c(1,1) (no split). A finer grid could
-reduce memory usage ans increase speed when a large dataset is used. When using
+reduce memory usage and increase speed when a large dataset is used. When using
 multiprocessing, the work in each grid is dispatched between the workers.}
 
 \item{verbose}{A Boolean, indicating if the function should print messages
-about process.}
+about the process.}
 
 \item{check}{A Boolean indicating if the geometry checks must be run before
 the operation. This might take some times, but it will ensure that the CRS
@@ -114,8 +114,8 @@ sampling points, and events
 \details{
 **The three NKDE methods**\cr
 Estimating the density of a point process is commonly done by using an
-ordinary two dimensional kernel density function. However, there are
-numerous cases for which the events do not occur in a two dimensional
+ordinary two-dimensional kernel density function. However, there are
+numerous cases for which the events do not occur in a two-dimensional
 space but on a network (like car crashes, outdoor crimes, leaks in pipelines,
 etc.). New methods were developed to adapt the methodology to networks,
 three of them are available in this package.
@@ -134,8 +134,8 @@ three of them are available in this package.
   equally "divides" the mass density of an event at intersections}
   \item{method="continuous"}{If the discontinuous method is unbiased, it
   leads to a discontinuous kernel function which is a bit counter-intuitive.
-  \insertCite{okabe2009kernel;textual}{spNetwork} proposed another version of the kernel, that divide
-  the mass of the density at intersection but adjusts the density before the
+  \insertCite{okabe2009kernel;textual}{spNetwork} proposed another version of the kernel, that divides
+  the mass of the density at intersections but adjusts the density before the
   intersection to make the function continuous.}
 }
 The three methods are available because, even though that the simple
@@ -147,7 +147,7 @@ function as used in Geographically Weighted Regression.\cr
 It is possible to use adaptive bandwidth instead of fixed bandwidth.
 Adaptive bandwidths are calculated using the Abramson’s smoothing regimen \insertCite{abramson1982bandwidth}{spNetwork}.
 To do so, an original fixed bandwidth must be specified (bw parameter), and
-is used to estimate priory densities at event locations. These densities
+is used to estimate the priory densitiy at event locations. These densities
 are then used to calculate local bandwidth. The maximum size of the local
 bandwidth can be limited with the parameter trim_bw. For more details, see
 the vignettes.
@@ -175,7 +175,7 @@ the lines if they are close to them. This is controlled by the parameter tol.
 In the same way, it is possible to limit the number of vertices by
 aggregating the events that are close to each other. In that case, the
 weights of the aggregated events are summed. According to an aggregation
-distance, a buffer is drawn around the fist event, each other event falling
+distance, a buffer is drawn around the fist event, all events falling
 in that buffer are aggregated to the first event, forming a new event. The
 coordinates of this new event are the mean of the original events
 coordinates. This procedure is repeated until no events are aggregated. The

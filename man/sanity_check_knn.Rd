@@ -32,7 +32,7 @@ origins.}
 \item{k}{An integer indicating the number of neighbours to find..}
 
 \item{maxdistance}{The maximum distance between two observations to
-consider them as neighbours. It is usefull only if a grid is used, a
+consider them as neighbours. It is useful only if a grid is used, a
 lower value will reduce calculating time, but one must be sure that the
 k nearest neighbours are within this radius. Otherwise NAs will be present
 in the final matrices.}
@@ -45,7 +45,7 @@ the network.}
 considered proportional to the geographical length of the lines.}
 
 \item{direction}{Indicates a field providing information about authorized
-traveling direction on lines. if NULL, then all lines can be used in both
+travelling direction on lines. if NULL, then all lines can be used in both
 directions. Must be the name of a column otherwise. The values of the
 column must be "FT" (From - To), "TF" (To - From) or "Both".}
 

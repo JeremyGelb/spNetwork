@@ -67,7 +67,7 @@ If NULL, the events are aggregated only by rounding the coordinates}
 \item{verbose}{A Boolean indicating if progress messages should be displayed}
 }
 \value{
-A list with the folowing values : \cr \itemize{ \item{plotk}{ A
+A list with the following values : \cr \itemize{ \item{plotk}{ A
   ggplot2 object representing the values of the cross k-function}
   \item{plotg}{ A ggplot2 object representing the values of the cross
   g-function} \item{values}{ A DataFrame with the values used to build the

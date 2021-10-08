@@ -32,7 +32,7 @@ must be found in a separate set of points NULL if the neighbours must be found i
 origins.}
 
 \item{maxdistance}{The maximum distance between two observations to
-consider them as neighbours. It is usefull only if a grid is used, a
+consider them as neighbours. It is useful only if a grid is used, a
 lower value will reduce calculating time, but one must be sure that the
 k nearest neighbours are within this radius. Otherwise NAs will be present
 in the results.}

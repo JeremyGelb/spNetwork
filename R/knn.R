@@ -7,7 +7,7 @@
 #' @param lines A SpatialLinesDataFrame representing the network
 #' @param k An integer indicating the number of neighbours to find..
 #' @param direction Indicates a field providing information about authorized
-#' traveling direction on lines. if NULL, then all lines can be used in both
+#' travelling direction on lines. if NULL, then all lines can be used in both
 #' directions. Must be the name of a column otherwise. The values of the
 #' column must be "FT" (From - To), "TF" (To - From) or "Both".
 #' @param use_dest A boolean indicating if the origins and separations are
@@ -386,7 +386,7 @@ network_knn.mc <- function(origins, lines, k, destinations = NULL, maxdistance =
 #' @param lines A SpatialLinesDataFrame representing the network
 #' @param k An integer indicating the number of neighbours to find..
 #' @param maxdistance The maximum distance between two observations to
-#' consider them as neighbours. It is usefull only if a grid is used, a
+#' consider them as neighbours. It is useful only if a grid is used, a
 #' lower value will reduce calculating time, but one must be sure that the
 #' k nearest neighbours are within this radius. Otherwise NAs will be present
 #' in the final matrices.
@@ -396,7 +396,7 @@ network_knn.mc <- function(origins, lines, k, destinations = NULL, maxdistance =
 #' (the geographical length), but can be the name of a column. The value is
 #' considered proportional to the geographical length of the lines.
 #' @param direction Indicates a field providing information about authorized
-#' traveling direction on lines. if NULL, then all lines can be used in both
+#' travelling direction on lines. if NULL, then all lines can be used in both
 #' directions. Must be the name of a column otherwise. The values of the
 #' column must be "FT" (From - To), "TF" (To - From) or "Both".
 #' @param grid_shape A vector of length 2 indicating the shape of the grid to

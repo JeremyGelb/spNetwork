@@ -30,7 +30,7 @@ consider them as neighbours.}
 weights.}
 
 \item{direction}{Indicate a field giving information about authorized
-traveling direction on lines. if NULL, then all lines can be used in both
+travelling direction on lines. if NULL, then all lines can be used in both
 directions. Must be the name of a column otherwise. The values of the
 column must be "FT" (From - To), "TF" (To - From) or "Both".}
 

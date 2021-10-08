@@ -41,7 +41,7 @@ int get_first_index(NumericVector& v1, double x){
 //' @param max_depth the maximum recursion depth
 //' @return a vector with the kernel values calculated for each samples from
 //' the first node given
-//' @keywords interal
+//' @keywords internal
 NumericVector esc_kernel_loo(fptros kernel_func, NumericVector samples_k, List& neighbour_list, arma::sp_mat& edge_mat, int v, int v1, int l1, double d,double alpha, double bw, NumericVector& line_weights, NumericVector& events, int depth, int max_depth){
 
   //mettre a jour d
@@ -102,7 +102,7 @@ NumericVector esc_kernel_loo(fptros kernel_func, NumericVector samples_k, List& 
 //' @param max_depth the maximum recursion depth
 //' @return a vector with the kernel values calculated for each event
 //' @export
-//' @keywords interal
+//' @keywords internal
 // [[Rcpp::export]]
 DataFrame get_loo_values_continuous(List neighbour_list,
                                     NumericVector samples, NumericVector sweights,
@@ -181,7 +181,7 @@ DataFrame get_loo_values_continuous(List neighbour_list,
 //' @param max_depth the maximum recursion depth
 //' @return a vector with the kernel values calculated for each samples from
 //' the first node given
-//' @keywords interal
+//' @keywords internal
 NumericVector esd_kernel_loo(fptros kernel_func, arma::sp_mat& edge_mat, NumericVector& events,
                              List& neighbour_list ,int v, double bw,
                              NumericVector& line_weights, int depth, int max_depth){
@@ -280,7 +280,7 @@ NumericVector esd_kernel_loo(fptros kernel_func, arma::sp_mat& edge_mat, Numeric
 //' @param max_depth the maximum recursion depth
 //' @return a vector with the kernel values calculated for each event
 //' @export
-//' @keywords interal
+//' @keywords internal
 // [[Rcpp::export]]
 NumericVector get_loo_values_discontinuous(List neighbour_list, NumericVector samples, NumericVector sweights,
                                            NumericVector events, NumericVector weights,
@@ -338,7 +338,7 @@ NumericVector get_loo_values_discontinuous(List neighbour_list, NumericVector sa
 //' @param max_depth the maximum recursion depth
 //' @return a vector with the kernel values calculated for each samples from
 //' the first node given
-//' @keywords interal
+//' @keywords internal
 NumericVector ess_kernel_loo(fptros kernel_func, arma::sp_mat& edge_mat, NumericVector& events,
                              List& neighbour_list ,int v, double bw,
                              NumericVector& line_weights, int depth, int max_depth){
@@ -427,7 +427,7 @@ NumericVector ess_kernel_loo(fptros kernel_func, arma::sp_mat& edge_mat, Numeric
 //' @param max_depth the maximum recursion depth
 //' @return a vector with the kernel values calculated for each event
 //' @export
-//' @keywords interal
+//' @keywords internal
 // [[Rcpp::export]]
 NumericVector get_loo_values_simple(List neighbour_list, NumericVector samples, NumericVector sweights,
                                     NumericVector events, NumericVector weights,

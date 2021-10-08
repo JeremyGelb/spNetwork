@@ -39,4 +39,4 @@ the first node given
 \description{
 The recursive function to calculate continuous NKDE likelihood cv
 }
-\keyword{interal}
+\keyword{internal}
