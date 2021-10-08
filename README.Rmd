@@ -43,7 +43,7 @@ This package can be used to perform several types of analysis on geographical ne
 * Network k Functions, used to investigate the spatial distribution of a set of points on a network at several scales (see the vignette [Network k Functions](https://jeremygelb.github.io/spNetwork/articles/KNetworkFunctions.html)).
 * K nearest neighbours, to calculate for each point on a network its K nearest neighbour (see the function `network_knn`).
 * Graph analysis, using the functions of the package **igraph** (see the vignette [Building graphs](https://jeremygelb.github.io/spNetwork/articles/NetworkBuilding.html))
-* Isochrones, to delineate accessible area around points localised on a network (see the vignette [Calculating isochrones](https://jeremygelb.github.io/spNetwork/articles/Isochrones.html))
+* Isochrones, to delineate accessible area around points localized on a network (see the vignette [Calculating isochrones](https://jeremygelb.github.io/spNetwork/articles/Isochrones.html))
 
 Calculation on network can be long, efforts were made to reduce computation time by implementing several core functions with **Rcpp** and **RcppArmadillo** and by using multiprocessing when possible. 
 

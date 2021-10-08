@@ -24,7 +24,7 @@ An isochrone is a geometrical representation of the area that can be reached for
 
 There is already several libraries to build isochrones with R (`opentripplanner`, `osrm` `rmapzen`, etc.), but they are all based on OpenStreetMap data or on external API. We propose here a simple implementation that can be used on a geographical network read as *SpatialLinesDataFrame*.
 
-We give here a simple exemple with the Montreal network dataset and calculate several isochrones from the center of the dataset.
+We give here a simple example with the Montreal network dataset and calculate several isochrones from the centre of the dataset.
 
 # calculating the isochrones
 

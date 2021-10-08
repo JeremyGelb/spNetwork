@@ -28,7 +28,7 @@ To illustrate the process, we give a full example with the calculation of the co
 2. Snapping the accidents to the network
 3. Cutting the lines of the network at the snapped accidents' locations
 4. Building a graph with the cut lines
-5. Calculating for each node of the graph its centrality (betweeness)
+5. Calculating for each node of the graph its centrality (betweenness)
 6. Calculating the correlation between the NKDE density and the centrality measure.
 
 Let us start by loading some data.
@@ -114,7 +114,7 @@ new_lines <- split_lines_at_vertex(mtl_network,
                                    mindist = 0.1)
 ```
 
-# Building a graph with the cutted lines
+# Building a graph with the cut lines
 
 We can now build the graph from the cut lines.
 

@@ -61,3 +61,4 @@ LinkingTo:
     BH
 SystemRequirements: C++17
 RdMacros: Rdpack
+Language: en-CA

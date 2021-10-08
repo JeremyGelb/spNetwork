@@ -79,7 +79,7 @@ utils::globalVariables(c("spid", "weight", ".")) # nocov end
 #' @param events The SpatialPointsDataFrame to contract (must have a weight column)
 #' @param digits The number of digits to keep
 #' @param agg A double indicating if the points must be aggregated within a distance.
-#' if NULL, then the points are aggregated by rouding the coordinates.
+#' if NULL, then the points are aggregated by rounding the coordinates.
 #' @return A new SpatialPointsDataFrame
 #' @importFrom data.table tstrsplit setDF
 #' @keywords internal

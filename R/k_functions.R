@@ -758,7 +758,7 @@ kfunctions.mc <- function(lines, points, start, end, step, width, nsim, conf_int
 #' @template kross_kfunctions-arg
 #' @template common_kfunctions-arg
 #'
-#' @return A list with the folowing values : \cr \itemize{ \item{plotk}{ A
+#' @return A list with the following values : \cr \itemize{ \item{plotk}{ A
 #'   ggplot2 object representing the values of the cross k-function}
 #'   \item{plotg}{ A ggplot2 object representing the values of the cross
 #'   g-function} \item{values}{ A DataFrame with the values used to build the

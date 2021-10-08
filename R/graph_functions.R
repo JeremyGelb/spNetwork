@@ -3,7 +3,7 @@
 #' @description Generate an igraph object from a SpatialLinesDataFrame.
 #'
 #' @details This function can be used to generate an undirected graph object (igraph
-#'   object). It uses the coordinates of the linestrings extremites to create
+#'   object). It uses the coordinates of the linestrings extremities to create
 #'   the nodes of the graph. This is why the number of digits in the coordinates
 #'   is important. A too high precision (high number of digits) might break some
 #'   connections.
@@ -107,7 +107,7 @@ build_graph <- function(lines, digits, line_weight, attrs = FALSE) {
 #' @param line_weight The name of the column giving the weight of the lines
 #' @param attrs A boolean indicating if the original lines attributes should be
 #'   stored in the final object
-#' @param direction A column name indicating authorized traveling direction on
+#' @param direction A column name indicating authorized travelling direction on
 #'   lines. if NULL, then all lines can be used in both directions. Must be the
 #'   name of a column otherwise. The values of the column must be "FT" (From -
 #'   To), "TF" (To - From) or "Both"
@@ -420,7 +420,7 @@ dist_mat_dupl <- function(graph, start, end ){
 #' into their sub components
 #'
 #' @param graph_result A list typically obtained from the function build_graph or build_graph_directed
-#' @return A list of lists, the graph_result splitted for each graph component
+#' @return A list of lists, the graph_result split for each graph component
 #' @export
 #' @examples
 #' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
