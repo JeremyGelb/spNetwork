@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
       </span>
     </div>
 
@@ -156,7 +156,7 @@
 <span class="va">lixels</span><span class="op">$</span><span class="va">nbAccident</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">lixels</span><span class="op">@</span><span class="va">data</span>,<span class="va">counts_df</span>, by<span class="op">=</span><span class="st">"oid"</span><span class="op">)</span><span class="op">$</span><span class="va">count</span>
 <span class="va">nbAccident</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">lixels</span><span class="op">$</span><span class="va">nbAccident</span><span class="op">)</span>,<span class="fl">0</span>,<span class="va">lixels</span><span class="op">$</span><span class="va">nbAccident</span><span class="op">)</span></code></pre></div>
 <p>We use here the function <em>network_listw</em> the create a <code>listw</code> object representing the spatial weight matrix. The distances can be calculated from the centroids of the lixels, from the extremities of the lixels or from evenly spaced points on the lixels. We use here the second approach and specify it with the parameter <code>method = "ends"</code>.</p>
-<p>Let us consider that above 300 meters two segments are not neighbours anymore, and convert the distances between the observations into spatial weights by using the inverse of the squared distance.</p>
+<p>Let us consider that above 300 metres two segments are not neighbours anymore, and convert the distances between the observations into spatial weights by using the inverse of the squared distance.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">netlistw</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/network_listw.html">network_listw</a></span><span class="op">(</span><span class="va">lixels</span>,<span class="va">mtl_network</span>,
                            method <span class="op">=</span> <span class="st">"ends"</span>,
@@ -167,13 +167,13 @@
                            matrice_type <span class="op">=</span> <span class="st">'W'</span>,
                            grid_shape <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span>,
                            verbose<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
-<p>With that matrix, we can calculate the Moran I for the number of accident on lixels.</p>
+<p>With that matrix, we can calculate the Moran I for the number of accidents on a lixel.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">Test</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/spdep/man/moran.test.html">moran.test</a></span><span class="op">(</span><span class="va">nbAccident</span>, <span class="va">netlistw</span>, zero.policy <span class="op">=</span> <span class="cn">T</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">Test</span><span class="op">$</span><span class="va">estimate</span>,<span class="fl">4</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt; Moran I statistic       Expectation          Variance </span>
 <span class="co">#&gt;             5e-03            -8e-04             3e-04</span></code></pre></div>
-<p>The autocorrelation is week, this is due to the large distance used and the fact that the analyzed variable is a counting variable (number of accidents). Indeed, the Moran I is supposed to be used on continuous variables.</p>
+<p>The autocorrelation is weak, this is due to the large distance used and the fact that the analyzed variable is a counting variable (number of accidents). Indeed, the Moran I is supposed to be used on continuous variables.</p>
 <p>One could go further and define its own function to convert distances into spatial weights</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">my_conv_func</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">{</span>
@@ -214,11 +214,10 @@
 <h1 class="hasAnchor">
 <a href="#other-features" class="anchor"></a>Other features</h1>
 <ul>
-<li>A spatial matrix could be calculated for every type of geometries not only lines. Points can directly be used. For polygons, it is possible to use the centers of the geometries as starting points. One can also chose a distance and equally spaced starting points will be defined on the border of the polygons according to that distance.</li>
-<li>The cost of traveling on a edge could be set to something else than “length”.</li>
+<li>A spatial matrix could be calculated for every type of geometries not only lines. Points can directly be used. For polygons, it is possible to use the centres of the geometries as starting points. One can also choose a distance and equally spaced starting points will be defined on the border of the polygons according to that distance.</li>
+<li>The cost of travelling on an edge could be set to something else than “length”.</li>
 <li>It is possible to specify directions on the network.</li>
-<li>With a little bit of work, it is possible to use the functions presented above to find the nearest feature of observations on a network as described <a href="https://github.com/JeremyGelb/spNetwork/issues/3">here</a>
-</li>
+<li>With a little bit of work, it is possible to use the functions presented above to find the nearest feature of observations on a network as described <a href="https://github.com/JeremyGelb/spNetwork/issues/3">here</a>.</li>
 </ul>
 </div>
   </div>

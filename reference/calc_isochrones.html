@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
       </span>
     </div>
 
@@ -180,7 +180,7 @@ Default is 1.</p></td>
     </tr>
     <tr>
       <th>weight</th>
-      <td><p>The name of the column in lines to use a edge weight. If NULL,
+      <td><p>The name of the column in lines to use an edge weight. If NULL,
 the geographical length is used. Note that if lines are split during the
 network creation, the weight column is recalculated proportionally to the new lines
 length.</p></td>
@@ -188,7 +188,7 @@ length.</p></td>
     <tr>
       <th>direction</th>
       <td><p>The name of the column indicating authorized
-traveling direction on lines. if NULL, then all lines can be used in both
+travelling direction on lines. if NULL, then all lines can be used in both
 directions (undirected). The values of the column must be "FT" (From - To),
 "TF" (To - From) or "Both".</p></td>
     </tr>
@@ -204,7 +204,7 @@ following columns</p><ul>
 
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>An isochrones is the set of reachable lines around a node in a network within
+    <p>An isochrone is the set of reachable lines around a node in a network within
 a specified distance (or time). This function perform dynamic segmentation to return the
 part of the edges reached and not only the fully covered edges. Several start points and
 several distances can be given. The network can also be directed. The lines returned

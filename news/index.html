@@ -71,7 +71,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
       </span>
     </div>
 
@@ -141,15 +141,15 @@
       <small>Source: <a href='https://github.com/JeremyGelb/spNetwork/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
-    <div id="spnetwork-0129000" class="section level1">
-<h1 class="page-header" data-toc-text="0.1.2.9000">
-<a href="#spnetwork-0129000" class="anchor"></a>spNetwork 0.1.2.9000<small> Unreleased </small>
+    <div id="spnetwork-020" class="section level1">
+<h1 class="page-header" data-toc-text="0.2.0">
+<a href="#spnetwork-020" class="anchor"></a>spNetwork 0.2.0<small> Unreleased </small>
 </h1>
 <div id="new-features" class="section level2">
 <h2 class="hasAnchor">
 <a href="#new-features" class="anchor"></a>New Features</h2>
 <ul>
-<li>Added two function for data driven bandwidth selection (see vignette NKDE)</li>
+<li>Added two function for data-driven bandwidth selection (see vignette NKDE)</li>
 <li>Added a function to simplify network before processing (<em>simplify_network</em>), reducing network complexity by removing useless edges or merge continuous edge can improve performance. This function is still experimental and must be used only for undirected networks.</li>
 <li>Added two functions to calculate k nearest neighbours: <em>network_knn</em> and <em>network_knn.mc</em>
 </li>
@@ -179,7 +179,7 @@
 <h2 class="hasAnchor">
 <a href="#performance" class="anchor"></a>performance</h2>
 <ul>
-<li>Performance was improved for function <em>listw_network</em>, <em>listw_network.mc</em>, <em>kfunctions</em>, <em>kfunctions.mc</em>, <em>cross_kfunctions</em> and <em>cross_kfunctions.mc</em>, by reducing the complexity of the network with no loss of accuracy.</li>
+<li>Performance was improved for functions <em>listw_network</em>, <em>listw_network.mc</em>, <em>kfunctions</em>, <em>kfunctions.mc</em>, <em>cross_kfunctions</em> and <em>cross_kfunctions.mc</em>, by reducing the complexity of the network with no loss of accuracy.</li>
 <li>Several geometrical functions have been accelerated by c++ code using the boost library</li>
 <li>upgraded c++ compilation requirement to c++17</li>
 <li>the functions used for the nkde calculation were reworked. Sensible speed gain can be observed.</li>

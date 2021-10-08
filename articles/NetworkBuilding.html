@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
       </span>
     </div>
 
@@ -179,7 +179,7 @@
 <h1 class="hasAnchor">
 <a href="#snapping-the-accidents-to-the-network" class="anchor"></a>Snapping the accidents to the network</h1>
 <p>For this step, we will use the function <code>snapPointsToLines2</code>. It is mainly based on the function <code>snapPointsToLines</code> from <strong>maptools</strong> but can be used for bigger datasets. Note that we create two index columns: <code>OID</code> for the accidents’ location and <code>LineID</code> for the network lines.</p>
-<p>We will also start by aggregating the points that are too close to each other. We will aggregate all the points that are within a 5 meters radius.</p>
+<p>We will also start by aggregating the points that are too close to each other. We will aggregate all the points that are within a 5 metres radius.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">bike_accidents</span><span class="op">$</span><span class="va">weight</span> <span class="op">&lt;-</span> <span class="fl">1</span>
 <span class="va">agg_points</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_points.html">aggregate_points</a></span><span class="op">(</span><span class="va">bike_accidents</span>, maxdist <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>
@@ -221,7 +221,7 @@
 <span class="va">vertices</span> <span class="op">&lt;-</span> <span class="va">graph_result</span><span class="op">$</span><span class="va">spvertices</span>
 <span class="va">vertices</span><span class="op">$</span><span class="va">btws</span> <span class="op">&lt;-</span> <span class="va">btws</span>
 
-<span class="co"># mapping the betweeness</span>
+<span class="co"># mapping the betweenness</span>
 <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">vertices</span><span class="op">)</span> <span class="op">+</span> 
   <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_symbols.html">tm_dots</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"btws"</span>, style <span class="op">=</span> <span class="st">"kmeans"</span>,
           n <span class="op">=</span> <span class="fl">6</span>, size <span class="op">=</span> <span class="fl">0.1</span>, palette <span class="op">=</span> <span class="st">"-RdYlBu"</span><span class="op">)</span><span class="op">+</span>
@@ -236,7 +236,7 @@
 
 <span class="va">snapped_accidents</span><span class="op">$</span><span class="va">btws</span> <span class="op">&lt;-</span> <span class="va">vertices</span><span class="op">$</span><span class="va">btws</span><span class="op">[</span><span class="va">corr_nodes</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">]</span>
 
-<span class="co"># second: nn mergning between original points and snapped points</span>
+<span class="co"># second: nn merging between original points and snapped points</span>
 <span class="va">xy1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/sp/man/coordinates.html">coordinates</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">)</span>
 <span class="va">xy2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/sp/man/coordinates.html">coordinates</a></span><span class="op">(</span><span class="va">snapped_accidents</span><span class="op">)</span>
 
@@ -269,7 +269,7 @@
 ## sample estimates:
 ##       cor 
 ## 0.1110699</code></pre>
-<p>We can see that their is no correlation between the two variables. There is no association between the degree of centrality of an accident location in the network and the density of accidents in a radius of 300m at that location.</p>
+<p>We can see that there is no correlation between the two variables. There is no association between the degree of centrality of an accident location in the network and the density of accidents in a radius of 300m at that location.</p>
 </div>
   </div>
 
