@@ -100,7 +100,7 @@
       <h1 data-toc-skip>Building graphs</h1>
                         <h4 class="author">Jeremy Gelb</h4>
             
-            <h4 class="date">2021-10-07</h4>
+            <h4 class="date">2021-10-08</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/JeremyGelb/spNetwork/blob/master/vignettes/NetworkBuilding.Rmd"><code>vignettes/NetworkBuilding.Rmd</code></a></small>
       <div class="hidden name"><code>NetworkBuilding.Rmd</code></div>
@@ -119,7 +119,7 @@
 <li>Snapping the accidents to the network</li>
 <li>Cutting the lines of the network at the snapped accidents’ locations</li>
 <li>Building a graph with the cut lines</li>
-<li>Calculating for each node of the graph its centrality (betweeness)</li>
+<li>Calculating for each node of the graph its centrality (betweenness)</li>
 <li>Calculating the correlation between the NKDE density and the centrality measure.</li>
 </ol>
 <p>Let us start by loading some data.</p>
@@ -201,9 +201,9 @@
                                    <span class="va">snapped_accidents</span><span class="op">$</span><span class="va">nearest_line_id</span>,
                                    mindist <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="building-a-graph-with-the-cutted-lines" class="section level1">
+<div id="building-a-graph-with-the-cut-lines" class="section level1">
 <h1 class="hasAnchor">
-<a href="#building-a-graph-with-the-cutted-lines" class="anchor"></a>Building a graph with the cutted lines</h1>
+<a href="#building-a-graph-with-the-cut-lines" class="anchor"></a>Building a graph with the cut lines</h1>
 <p>We can now build the graph from the cut lines.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">new_lines</span><span class="op">$</span><span class="va">OID</span> <span class="op">&lt;-</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/pkg/raster/man/ncell.html">nrow</a></span><span class="op">(</span><span class="va">new_lines</span><span class="op">)</span>
