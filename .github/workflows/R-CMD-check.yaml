@@ -83,7 +83,7 @@ jobs:
       - name: change exe permission for configure file
         if: runner.os == 'Linux'
         run: |
-          sudo mount -o remount,exec /tmp
+          sudo mount -o exec /tmp
 
       - name: Install dependencies
         run: |
