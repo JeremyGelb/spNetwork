@@ -201,7 +201,7 @@ The error occurs when I set manually the CRS of sp objects in the test and in th
 
 submitted the 08/10/2021
 
-This is the result of RCMD check before submission.
+This is the result of RCMD check before submission on windows devel version.
 
 -- R CMD check results ------------------------------------------------------ spNetwork 0.2.0 ----
 Duration: 8m 21.4s
@@ -214,3 +214,50 @@ Duration: 8m 21.4s
       libs      2.8Mb
 
 0 errors √ | 0 warnings √ | 1 note x
+
+github actions were also used to test on: windows-latest, macOS-latest and Ubuntu-20.4
+
+## Round 1 (after automatic checks)
+
+3 NOTES were raised: 
+
+**problem:**
+Possibly misspelled words in DESCRIPTION:
+  isochrones (11:77)
+
+**correction**:
+This word is pretty common in spatial analysis. However,I changed it in the description for "reachable area".
+
+**problem:**
+Found the following (possibly) invalid URLs:
+  URL: https://github.com/https://jeremygelb.github.io/spNetwork/
+  
+**correction**
+This error is caused by the use of the package badger. This badge is now created by hand.
+
+**problem:**
+Non-standard file/directory found at top level:
+  'man-roxygen'
+
+**correction**
+This folder was added to .Rbuildignore
+
+
+# Version 0.2.1
+
+This version is submitted to correct 2 warnings and one error in CRAN checks on multiple platforms.
+
+submitted the 12/10/2021
+
+**problem:**
+Pandoc is required to build R Markdown vignettes but not available. Please make sure it is installed. (on r-release-macos-x86_64 and r-oldrel-macos-x86_64 )
+
+**correction:**
+This was caused by a modified header for the new vignette. This has been fixed.
+
+**problem:**
+Error: C++17 standard requested but CXX17 is not defined
+* removing ‘/home/ripley/R/Lib32/spNetwork’
+
+**correction:**
+It seems that SOLARIS x86 does not support C++17. I find a solution in the package rcppsimdjson facing the same issue. It uses a *configure* file checking that c++17 is available and switch to c++11 otherwise. A warning message is also printed for the user. I hope it will work because I can not test it locally nor on rhub.

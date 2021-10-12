@@ -124,6 +124,7 @@ build_graph <- function(lines, digits, line_weight, attrs = FALSE) {
 #' @importFrom utils strcapture
 #' @export
 #' @examples
+#' \donttest{
 #' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
 #' mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
 #' mtl_network$length <- rgeos::gLength(mtl_network, byid = TRUE)
@@ -135,6 +136,7 @@ build_graph <- function(lines, digits, line_weight, attrs = FALSE) {
 #'         line_weight = "length",
 #'         direction = "direction",
 #'         attrs = TRUE)
+#' }
 build_graph_directed <- function(lines, digits, line_weight, direction, attrs = FALSE) {
 
   # doubling the lines if needed

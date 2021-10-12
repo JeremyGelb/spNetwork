@@ -11,5 +11,6 @@
 ^\.github$
 ^_pkgdown\.yml$
 ^docs$
+^man-roxygen$
 ^pkgdown$
 ^codecov\.yml$

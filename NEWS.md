@@ -1,3 +1,7 @@
+# spNetwork 0.2.1
+
+Minor release to fix a bug on SOLARIS for CRAN
+
 # spNetwork 0.2.0
 
 ## New Features

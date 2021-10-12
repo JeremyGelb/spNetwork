@@ -21,9 +21,12 @@ library(badger)
 <!-- badges: start -->
 
 [![R-CMD-check](https://github.com/JeremyGelb/spNetwork/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/JeremyGelb/spNetwork/actions/workflows/R-CMD-check.yaml)
+
 ```{r echo=FALSE, results='asis'}
+version <- packageVersion("spNetwork")
+
 cat(
-  badge_github_version(color = "green"),
+  paste0("[![](https://img.shields.io/badge/devel%20version-",version,"-green.svg)](https://jeremygelb.github.io/spNetwork/)"),
   badge_cran_release(color = "blue"),
   badge_cran_download(color = "blue", type = "grand-total"),
   badge_cran_download("spNetwork", "last-month", "green")

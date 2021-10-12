@@ -44,6 +44,7 @@ This function can be used to generate a directed graph object (igraph
   following values: "FT" (From-To), "TF" (To-From) and "Both".
 }
 \examples{
+\donttest{
 networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
 mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
 mtl_network$length <- rgeos::gLength(mtl_network, byid = TRUE)
@@ -55,4 +56,5 @@ graph_result <- build_graph_directed(lines = mtl_network_directed,
         line_weight = "length",
         direction = "direction",
         attrs = TRUE)
+}
 }
