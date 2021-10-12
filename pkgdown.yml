@@ -4,9 +4,9 @@ pkgdown_sha: ~
 articles:
   Isochrones: Isochrones.html
   KNetworkFunctions: KNetworkFunctions.html
+  NetworkBuilding: NetworkBuilding.html
   NKDE: NKDE.html
   NKDEdetailed: NKDEdetailed.html
-  NetworkBuilding: NetworkBuilding.html
   SpatialWeightMatrices: SpatialWeightMatrices.html
-last_built: 2021-10-08T20:12Z
+last_built: 2021-10-12T22:04Z
 
