@@ -55,8 +55,10 @@ jobs:
         shell: Rscript {0}
 
       - name: Query raster for macos
+        if: runner.os == 'macOS'
         run: |
           install.packages('remotes')
+          remotes::install_github('rspatial/terra')
           remotes::install_github('rspatial/raster')
         shell: Rscript {0}
 
