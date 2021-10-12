@@ -82,9 +82,9 @@ jobs:
       - name: change exe permission for configure file
         if: runner.os == 'Linux'
         run: |
-          sudo mkdir ~/rpackagestmp
-          sudo export TMPDIR=~/rpackagestmp
-          sudo mount -o remount,exec ~/rpackagestmp
+          mkdir /home/runner/rpackagestmp
+          export TMPDIR=/home/runner/rpackagestmp
+          sudo mount -o remount,exec /home/runner/rpackagestmp
       - name: Install dependencies
         run: |
           remotes::install_deps(dependencies = TRUE)
