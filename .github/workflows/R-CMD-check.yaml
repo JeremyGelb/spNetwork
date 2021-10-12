@@ -46,6 +46,7 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           brew install xquartz
+          brew install gdal-dev
 
       - name: Query dependencies
         run: |
@@ -80,7 +81,7 @@ jobs:
       - name: change exe permission for configure file
         if: runner.os == 'Linux'
         run: |
-          mount -o remount,exec /tmp
+          sudo mount -o remount,exec /tmp
       - name: Install dependencies
         run: |
           remotes::install_deps(dependencies = TRUE)
