@@ -42,11 +42,6 @@ jobs:
 
       - uses: r-lib/actions/setup-pandoc@v1
 
-      - name: change exe permission for configure file
-        if: runner.os == 'Linux'
-        run: |
-          sudo mount -o exec ~/tmp
-
       - name: Install system dependencies for MACOS
         if: runner.os == 'macOS'
         run: |
