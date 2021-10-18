@@ -671,3 +671,259 @@ DataFrame continuous_nkde_cpp_arma(List neighbour_list, NumericVector events, Nu
 //   DataFrame df =  DataFrame::create( Named("sum_k") = v1 ,Named("n") = v2);
 //   return df;
 // }
+
+
+//#####################################################################################
+// #################  THE EXECUTION FUNCTIONS FOR TNKDE  ##############################
+//#####################################################################################
+
+//' @title The main function to calculate continuous TNKDE (with ARMADILO and sparse matrix)
+//' @name tnkdecontinuousfunction
+//' @param neighbour_list a list of the neighbours of each node
+//' @param events a numeric vector of the node id of each event
+//' @param events_time a numeric vector with the time for the events
+//' @param weights a numeric vector of the weight of each event
+//' @param samples a DataFrame of the samples (with spatial coordinates and belonging edge)
+//' @param samples_time a NumericVector indicating when to do the samples
+//' @param obw_net a float giving the overall network bandwidth, used to standardize the densities
+//' if div = "bw"
+//' @param bws_net the network kernel bandwidths for each event
+//' @param obw_time a float giving the overall time bandwidth, used to standardize the densities
+//' if div = "bw"
+//' @param bws_time the time kernel bandwidths for each event
+//' @param kernel_name the name of the kernel to use
+//' @param nodes a DataFrame representing the nodes of the graph (with spatial coordinates)
+//' @param line_list a DataFrame representing the lines of the graph
+//' @param max_depth the maximum recursion depth (after which recursion is stopped)
+//' @param verbose a boolean indicating if the function must print its progress
+//' @param div a string indicating how to standardize the kernel values
+//' @return a List with two matrices: the kernel values (sum_k) and the number of events for each sample (n)
+//' @export
+//' @keywords internal
+//'
+// [[Rcpp::export]]
+List continuous_tnkde_cpp_arma_sparse(List neighbour_list,
+                                     IntegerVector events, NumericVector events_time,NumericVector weights,
+                                     DataFrame samples, arma::vec samples_time,
+                                     float obw_net, NumericVector bws_net,
+                                     float obw_time,  NumericVector bws_time,
+                                     std::string kernel_name, DataFrame nodes, DataFrame line_list,
+                                     int max_depth, bool verbose, std::string div){
+
+  //selecting the kernel function
+  fptr kernel_func = select_kernel(kernel_name);
+
+  //step0 extract the columns of the dataframe
+  NumericVector line_weights = line_list["weight"];
+  arma::vec samples_edgeid = as<arma::vec>(samples["edge_id"]);
+  arma::vec samples_x =  as<arma::vec>(samples["X_coords"]);
+  arma::vec samples_y =  as<arma::vec>(samples["Y_coords"]);
+  arma::vec nodes_x = as<arma::vec>(nodes["X_coords"]);
+  arma::vec nodes_y = as<arma::vec>(nodes["Y_coords"]);
+
+  //step 1 : set all values to 0
+  // NOTE : we will produce matrices here (tnkde)
+  arma::mat base_k(samples_x.n_elem, samples_time.n_elem);
+  arma::mat base_count(samples_x.n_elem, samples_time.n_elem);
+  arma::mat count(samples_x.n_elem, samples_time.n_elem);
+  arma::vec samples_k(samples_x.n_elem);
+
+  // NOTE It is possible that we must recalculate the density for the same vertex
+  // we will store them instead
+  std::map<int, int> event_counter = count_values_intvec(events);
+  std::map<int, arma::vec> saved_values;
+
+  //calculer le dictionnaire des lignes
+  //IntegerMatrix edge_mat = make_matrix(line_list,neighbour_list);
+  arma::sp_mat edge_mat = make_matrix_sparse(line_list, neighbour_list);
+
+  //step2 : iterer sur chaque event
+  int cnt_e = events.length()-1;
+  Progress p(cnt_e, verbose);
+  for(int i=0; i <= cnt_e; ++i){
+    p.increment(); // update progress
+    //preparer les differentes valeurs de departs pour l'event y
+    int y = events[i];
+    double w = weights[i];
+    double bw_net = bws_net[i];
+    double bw_time = bws_time[i];
+    double et = events_time[i];
+
+    // calculating the density value on the network
+    if(event_counter[y] > 1){
+      // here we have a dupplicated event, we must either use the savec nkde or calculate it and save it latter
+      if(map_contains_key(saved_values,y)){
+        // we already have the value !
+        samples_k = saved_values[y];
+      }else{
+        // we have not yet the value
+        samples_k = esc_kernel_rcpp_arma_sparse(kernel_func, neighbour_list, edge_mat, y, bw_net, line_weights, samples_edgeid, samples_x, samples_y, nodes_x, nodes_y, max_depth);
+        saved_values[y] = samples_k;
+      }
+    }else{
+      // this is not a duplicate event, no need to store the value in memory
+      samples_k = esc_kernel_rcpp_arma_sparse(kernel_func, neighbour_list, edge_mat, y, bw_net, line_weights, samples_edgeid, samples_x, samples_y, nodes_x, nodes_y, max_depth);
+    }
+
+    // ok, now we must calculate the temporal densities
+    arma::vec temporal_density = kernel_func(arma::abs(samples_time - et), bw_time);
+
+    // and standardize by bw if required
+    if(div == "bw"){
+      temporal_density = temporal_density / obw_time;
+      samples_k = samples_k / obw_net;
+    }
+
+    // and create an awesome spatio-temporal matrix
+    arma::mat k_mat(samples_x.n_elem, samples_time.n_elem);
+
+    for(int j = 0; j < temporal_density.n_elem; j++){
+      k_mat.col(j) = samples_k * temporal_density[j];
+    }
+
+    base_k += k_mat*w;
+    // calculating the new value
+    count.fill(0.0);
+    arma::umat ids = arma::find(samples_k>0);
+    count.elem(ids).fill(1.0);
+    base_count += count*w;
+
+  };
+
+  // standardise the result if div = n
+  if(div == "n"){
+    base_k = base_k / base_count;
+  }
+
+  List results = List::create(
+    Named("sum_k") = base_k,
+    Named("n") = base_count );
+
+  return results;
+}
+
+
+
+//' @title The main function to calculate continuous TNKDE (with ARMADILO and integer matrix)
+//' @name tnkdecontinuousfunction
+//' @param neighbour_list a list of the neighbours of each node
+//' @param events a numeric vector of the node id of each event
+//' @param events_time a numeric vector with the time for the events
+//' @param weights a numeric vector of the weight of each event
+//' @param samples a DataFrame of the samples (with spatial coordinates and belonging edge)
+//' @param samples_time a NumericVector indicating when to do the samples
+//' @param obw_net a float giving the overall network bandwidth, used to standardize the densities
+//' if div = "bw"
+//' @param bws_net the network kernel bandwidths for each event
+//' @param obw_time a float giving the overall time bandwidth, used to standardize the densities
+//' if div = "bw"
+//' @param kernel_name the name of the kernel to use
+//' @param nodes a DataFrame representing the nodes of the graph (with spatial coordinates)
+//' @param line_list a DataFrame representing the lines of the graph
+//' @param max_depth the maximum recursion depth (after which recursion is stopped)
+//' @param verbose a boolean indicating if the function must print its progress
+//' @param div a string indicating how to standardize the kernel values
+//' @return a List with two matrices: the kernel values (sum_k) and the number of events for each sample (n)
+//' @export
+//' @keywords internal
+//'
+// [[Rcpp::export]]
+List continuous_tnkde_cpp_arma(List neighbour_list,
+                              IntegerVector events, NumericVector events_time,NumericVector weights,
+                              DataFrame samples, arma::vec samples_time,
+                              float obw_net, NumericVector bws_net,
+                              float obw_time, NumericVector bws_time,
+                              std::string kernel_name, DataFrame nodes, DataFrame line_list,
+                              int max_depth, bool verbose, std::string div){
+
+  //selecting the kernel function
+  fptr kernel_func = select_kernel(kernel_name);
+
+  //step0 extract the columns of the dataframe
+  NumericVector line_weights = line_list["weight"];
+  arma::vec samples_edgeid = as<arma::vec>(samples["edge_id"]);
+  arma::vec samples_x =  as<arma::vec>(samples["X_coords"]);
+  arma::vec samples_y =  as<arma::vec>(samples["Y_coords"]);
+  arma::vec nodes_x = as<arma::vec>(nodes["X_coords"]);
+  arma::vec nodes_y = as<arma::vec>(nodes["Y_coords"]);
+
+  //step 1 : set all values to 0
+  // NOTE : we will produce matrices here (tnkde)
+  arma::mat base_k(samples_x.n_elem, samples_time.n_elem);
+  arma::mat base_count(samples_x.n_elem, samples_time.n_elem);
+  arma::mat count(samples_x.n_elem, samples_time.n_elem);
+  arma::vec samples_k(samples_x.n_elem);
+
+  // NOTE It is possible that we must recalculate the density for the same vertex
+  // we will store them instead
+  std::map<int, int> event_counter = count_values_intvec(events);
+  std::map<int, arma::vec> saved_values;
+
+  //calculer le dictionnaire des lignes
+  IntegerMatrix edge_mat = make_matrix(line_list,neighbour_list);
+
+  //step2 : iterer sur chaque event
+  int cnt_e = events.length()-1;
+  Progress p(cnt_e, verbose);
+  for(int i=0; i <= cnt_e; ++i){
+    p.increment(); // update progress
+    //preparer les differentes valeurs de departs pour l'event y
+    int y = events[i];
+    double w = weights[i];
+    double bw_net = bws_net[i];
+    double bw_time = bws_time[i];
+    double et = events_time[i];
+
+    // calculating the density value on the network
+    if(event_counter[y] > 1){
+      // here we have a dupplicated event, we must either use the savec nkde or calculate it and save it latter
+      if(map_contains_key(saved_values,y)){
+        // we already have the value !
+        samples_k = saved_values[y];
+      }else{
+        // we have not yet the value
+        samples_k = esc_kernel_rcpp_arma(kernel_func, neighbour_list, edge_mat, y, bw_net, line_weights, samples_edgeid, samples_x, samples_y, nodes_x, nodes_y, max_depth);
+        saved_values[y] = samples_k;
+      }
+    }else{
+      // this is not a duplicate event, no need to store the value in memory
+      samples_k = esc_kernel_rcpp_arma(kernel_func, neighbour_list, edge_mat, y, bw_net, line_weights, samples_edgeid, samples_x, samples_y, nodes_x, nodes_y, max_depth);
+    }
+
+    // ok, now we must calculate the temporal densities
+    arma::vec temporal_density = kernel_func(arma::abs(samples_time - et), bw_time);
+
+    // and standardize by bw if required
+    if(div == "bw"){
+      temporal_density = temporal_density / obw_time;
+      samples_k = samples_k / obw_net;
+    }
+
+    // and create an awesome spatio-temporal matrix
+    arma::mat k_mat(samples_x.n_elem, samples_time.n_elem);
+
+    for(int j = 0; j < temporal_density.n_elem; j++){
+      k_mat.col(j) = samples_k * temporal_density[j];
+    }
+
+    base_k += k_mat*w;
+    // calculating the new value
+    count.fill(0.0);
+    arma::umat ids = arma::find(samples_k>0);
+    count.elem(ids).fill(1.0);
+    base_count += count*w;
+
+  };
+
+  // standardise the result if div = n
+  if(div == "n"){
+    base_k = base_k / base_count;
+  }
+
+  List results = List::create(
+    Named("sum_k") = base_k,
+    Named("n") = base_count );
+  return results;
+}
+
+

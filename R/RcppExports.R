@@ -448,6 +448,61 @@ continuous_nkde_cpp_arma <- function(neighbour_list, events, weights, samples, b
     .Call('_spNetwork_continuous_nkde_cpp_arma', PACKAGE = 'spNetwork', neighbour_list, events, weights, samples, bws, kernel_name, nodes, line_list, max_depth, verbose)
 }
 
+#' @title The main function to calculate continuous TNKDE (with ARMADILO and sparse matrix)
+#' @name tnkdecontinuousfunction
+#' @param neighbour_list a list of the neighbours of each node
+#' @param events a numeric vector of the node id of each event
+#' @param events_time a numeric vector with the time for the events
+#' @param weights a numeric vector of the weight of each event
+#' @param samples a DataFrame of the samples (with spatial coordinates and belonging edge)
+#' @param samples_time a NumericVector indicating when to do the samples
+#' @param obw_net a float giving the overall network bandwidth, used to standardize the densities
+#' if div = "bw"
+#' @param bws_net the network kernel bandwidths for each event
+#' @param obw_time a float giving the overall time bandwidth, used to standardize the densities
+#' if div = "bw"
+#' @param bws_time the time kernel bandwidths for each event
+#' @param kernel_name the name of the kernel to use
+#' @param nodes a DataFrame representing the nodes of the graph (with spatial coordinates)
+#' @param line_list a DataFrame representing the lines of the graph
+#' @param max_depth the maximum recursion depth (after which recursion is stopped)
+#' @param verbose a boolean indicating if the function must print its progress
+#' @param div a string indicating how to standardize the kernel values
+#' @return a List with two matrices: the kernel values (sum_k) and the number of events for each sample (n)
+#' @export
+#' @keywords internal
+#'
+continuous_tnkde_cpp_arma_sparse <- function(neighbour_list, events, events_time, weights, samples, samples_time, obw_net, bws_net, obw_time, bws_time, kernel_name, nodes, line_list, max_depth, verbose, div) {
+    .Call('_spNetwork_continuous_tnkde_cpp_arma_sparse', PACKAGE = 'spNetwork', neighbour_list, events, events_time, weights, samples, samples_time, obw_net, bws_net, obw_time, bws_time, kernel_name, nodes, line_list, max_depth, verbose, div)
+}
+
+#' @title The main function to calculate continuous TNKDE (with ARMADILO and integer matrix)
+#' @name tnkdecontinuousfunction
+#' @param neighbour_list a list of the neighbours of each node
+#' @param events a numeric vector of the node id of each event
+#' @param events_time a numeric vector with the time for the events
+#' @param weights a numeric vector of the weight of each event
+#' @param samples a DataFrame of the samples (with spatial coordinates and belonging edge)
+#' @param samples_time a NumericVector indicating when to do the samples
+#' @param obw_net a float giving the overall network bandwidth, used to standardize the densities
+#' if div = "bw"
+#' @param bws_net the network kernel bandwidths for each event
+#' @param obw_time a float giving the overall time bandwidth, used to standardize the densities
+#' if div = "bw"
+#' @param kernel_name the name of the kernel to use
+#' @param nodes a DataFrame representing the nodes of the graph (with spatial coordinates)
+#' @param line_list a DataFrame representing the lines of the graph
+#' @param max_depth the maximum recursion depth (after which recursion is stopped)
+#' @param verbose a boolean indicating if the function must print its progress
+#' @param div a string indicating how to standardize the kernel values
+#' @return a List with two matrices: the kernel values (sum_k) and the number of events for each sample (n)
+#' @export
+#' @keywords internal
+#'
+continuous_tnkde_cpp_arma <- function(neighbour_list, events, events_time, weights, samples, samples_time, obw_net, bws_net, obw_time, bws_time, kernel_name, nodes, line_list, max_depth, verbose, div) {
+    .Call('_spNetwork_continuous_tnkde_cpp_arma', PACKAGE = 'spNetwork', neighbour_list, events, events_time, weights, samples, samples_time, obw_net, bws_net, obw_time, bws_time, kernel_name, nodes, line_list, max_depth, verbose, div)
+}
+
 #' @title The worker function to calculate discontinuous NKDE (with ARMADILLO and sparse matrix)
 #' @name discontinuousWorker_sparse
 #' @param kernel_func a cpp pointer function (selected with the kernel name)
@@ -526,5 +581,57 @@ discontinuous_nkde_cpp_arma_sparse <- function(neighbour_list, events, weights, 
 #' @keywords internal
 discontinuous_nkde_cpp_arma <- function(neighbour_list, events, weights, samples, bws, kernel_name, nodes, line_list, max_depth, verbose) {
     .Call('_spNetwork_discontinuous_nkde_cpp_arma', PACKAGE = 'spNetwork', neighbour_list, events, weights, samples, bws, kernel_name, nodes, line_list, max_depth, verbose)
+}
+
+#' @title The main function to calculate discontinuous NKDE (ARMA and sparse matrix)
+#' @name tnkdediscontinuousfunctionsparse
+#' @param neighbour_list a list of the neighbours of each node
+#' @param events a numeric vector of the node id of each event
+#' @param events_time a numeric vector with the time for the events
+#' @param weights a numeric vector of the weight of each event
+#' @param samples a DataFrame of the samples (with spatial coordinates and belonging edge)
+#' @param samples_time a NumericVector indicating when to do the samples
+#' @param obw_net a float giving the overall network bandwidth, used to standardize the densities
+#' if div = "bw"
+#' @param bws_net the network kernel bandwidths for each event
+#' @param obw_time a float giving the overall time bandwidth, used to standardize the densities
+#' if div = "bw"
+#' @param kernel_name the name of the kernel function to use
+#' @param nodes a DataFrame representing the nodes of the graph (with spatial coordinates)
+#' @param line_list a DataFrame representing the lines of the graph
+#' @param max_depth the maximum recursion depth (after which recursion is stopped)
+#' @param verbose a boolean indicating if the function must print its progress
+#' @param div a string indicating how to standardize the kernel values
+#' @return a List with two matrices: the kernel values (sum_k) and the number of events for each sample (n)
+#' @export
+#' @keywords internal
+discontinuous_tnkde_cpp_arma_sparse <- function(neighbour_list, events, weights, events_time, samples, samples_time, obw_net, bws_net, obw_time, bws_time, kernel_name, nodes, line_list, max_depth, verbose, div) {
+    .Call('_spNetwork_discontinuous_tnkde_cpp_arma_sparse', PACKAGE = 'spNetwork', neighbour_list, events, weights, events_time, samples, samples_time, obw_net, bws_net, obw_time, bws_time, kernel_name, nodes, line_list, max_depth, verbose, div)
+}
+
+#' @title The main function to calculate discontinuous NKDE (ARMA and Integer matrix)
+#' @name tnkdediscontinuousfunction
+#' @param neighbour_list a list of the neighbours of each node
+#' @param events a numeric vector of the node id of each event
+#' @param events_time a numeric vector with the time for the events
+#' @param weights a numeric vector of the weight of each event
+#' @param samples a DataFrame of the samples (with spatial coordinates and belonging edge)
+#' @param samples_time a NumericVector indicating when to do the samples
+#' @param obw_net a float giving the overall network bandwidth, used to standardize the densities
+#' if div = "bw"
+#' @param bws_net the network kernel bandwidths for each event
+#' @param obw_time a float giving the overall time bandwidth, used to standardize the densities
+#' if div = "bw"
+#' @param kernel_name the name of the kernel function to use
+#' @param nodes a DataFrame representing the nodes of the graph (with spatial coordinates)
+#' @param line_list a DataFrame representing the lines of the graph
+#' @param max_depth the maximum recursion depth (after which recursion is stopped)
+#' @param verbose a boolean indicating if the function must print its progress
+#' @param div a string indicating how to standardize the kernel values
+#' @return a List with two matrices: the kernel values (sum_k) and the number of events for each sample (n)
+#' @export
+#' @keywords internal
+discontinuous_tnkde_cpp_arma <- function(neighbour_list, events, weights, events_time, samples, samples_time, obw_net, bws_net, obw_time, bws_time, kernel_name, nodes, line_list, max_depth, verbose, div) {
+    .Call('_spNetwork_discontinuous_tnkde_cpp_arma', PACKAGE = 'spNetwork', neighbour_list, events, weights, events_time, samples, samples_time, obw_net, bws_net, obw_time, bws_time, kernel_name, nodes, line_list, max_depth, verbose, div)
 }
 

@@ -19,3 +19,4 @@ using namespace arma;
 // [[Rcpp::depends(BH)]]
 typedef arma::vec (*fptr)(arma::vec, double);
 typedef double (*fptros)(double, double);
+

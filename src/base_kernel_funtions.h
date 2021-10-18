@@ -37,4 +37,8 @@ fptr select_kernel(std::string c);
 // a function to select the right kernel according to its name (one shot version)
 fptros select_kernelos(std::string c);
 
+// two minor functions
+std::map<int, int> count_values_intvec(IntegerVector x);
+bool map_contains_key(std::map<int, arma::vec>& map, int key);
+
 #endif

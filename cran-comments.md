@@ -261,3 +261,17 @@ Error: C++17 standard requested but CXX17 is not defined
 
 **correction:**
 It seems that SOLARIS x86 does not support C++17. I find a solution in the package rcppsimdjson facing the same issue. It uses a *configure* file checking that c++17 is available and switch to c++11 otherwise. A warning message is also printed for the user. I hope it will work because I can not test it locally nor on rhub.
+
+## Round 1 13/10/2021 (after Ligges check)
+
+**problem:**
+Found the following (possibly) invalid URLs:
+     URL: https://codecov.io/gh/JeremyGelb/spNetwork?branch=master
+(moved to https://app.codecov.io/gh/JeremyGelb/spNetwork?branch=master)
+       From: README.md
+       Status: 301
+       Message: Moved Permanently
+       
+**correction:**
+
+The URL was replaced as suggested in the Readme

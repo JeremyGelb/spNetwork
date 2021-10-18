@@ -462,6 +462,58 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// continuous_tnkde_cpp_arma_sparse
+List continuous_tnkde_cpp_arma_sparse(List neighbour_list, IntegerVector events, NumericVector events_time, NumericVector weights, DataFrame samples, arma::vec samples_time, float obw_net, NumericVector bws_net, float obw_time, NumericVector bws_time, std::string kernel_name, DataFrame nodes, DataFrame line_list, int max_depth, bool verbose, std::string div);
+RcppExport SEXP _spNetwork_continuous_tnkde_cpp_arma_sparse(SEXP neighbour_listSEXP, SEXP eventsSEXP, SEXP events_timeSEXP, SEXP weightsSEXP, SEXP samplesSEXP, SEXP samples_timeSEXP, SEXP obw_netSEXP, SEXP bws_netSEXP, SEXP obw_timeSEXP, SEXP bws_timeSEXP, SEXP kernel_nameSEXP, SEXP nodesSEXP, SEXP line_listSEXP, SEXP max_depthSEXP, SEXP verboseSEXP, SEXP divSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type neighbour_list(neighbour_listSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type events(eventsSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type events_time(events_timeSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type weights(weightsSEXP);
+    Rcpp::traits::input_parameter< DataFrame >::type samples(samplesSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type samples_time(samples_timeSEXP);
+    Rcpp::traits::input_parameter< float >::type obw_net(obw_netSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type bws_net(bws_netSEXP);
+    Rcpp::traits::input_parameter< float >::type obw_time(obw_timeSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type bws_time(bws_timeSEXP);
+    Rcpp::traits::input_parameter< std::string >::type kernel_name(kernel_nameSEXP);
+    Rcpp::traits::input_parameter< DataFrame >::type nodes(nodesSEXP);
+    Rcpp::traits::input_parameter< DataFrame >::type line_list(line_listSEXP);
+    Rcpp::traits::input_parameter< int >::type max_depth(max_depthSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    Rcpp::traits::input_parameter< std::string >::type div(divSEXP);
+    rcpp_result_gen = Rcpp::wrap(continuous_tnkde_cpp_arma_sparse(neighbour_list, events, events_time, weights, samples, samples_time, obw_net, bws_net, obw_time, bws_time, kernel_name, nodes, line_list, max_depth, verbose, div));
+    return rcpp_result_gen;
+END_RCPP
+}
+// continuous_tnkde_cpp_arma
+List continuous_tnkde_cpp_arma(List neighbour_list, IntegerVector events, NumericVector events_time, NumericVector weights, DataFrame samples, arma::vec samples_time, float obw_net, NumericVector bws_net, float obw_time, NumericVector bws_time, std::string kernel_name, DataFrame nodes, DataFrame line_list, int max_depth, bool verbose, std::string div);
+RcppExport SEXP _spNetwork_continuous_tnkde_cpp_arma(SEXP neighbour_listSEXP, SEXP eventsSEXP, SEXP events_timeSEXP, SEXP weightsSEXP, SEXP samplesSEXP, SEXP samples_timeSEXP, SEXP obw_netSEXP, SEXP bws_netSEXP, SEXP obw_timeSEXP, SEXP bws_timeSEXP, SEXP kernel_nameSEXP, SEXP nodesSEXP, SEXP line_listSEXP, SEXP max_depthSEXP, SEXP verboseSEXP, SEXP divSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type neighbour_list(neighbour_listSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type events(eventsSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type events_time(events_timeSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type weights(weightsSEXP);
+    Rcpp::traits::input_parameter< DataFrame >::type samples(samplesSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type samples_time(samples_timeSEXP);
+    Rcpp::traits::input_parameter< float >::type obw_net(obw_netSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type bws_net(bws_netSEXP);
+    Rcpp::traits::input_parameter< float >::type obw_time(obw_timeSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type bws_time(bws_timeSEXP);
+    Rcpp::traits::input_parameter< std::string >::type kernel_name(kernel_nameSEXP);
+    Rcpp::traits::input_parameter< DataFrame >::type nodes(nodesSEXP);
+    Rcpp::traits::input_parameter< DataFrame >::type line_list(line_listSEXP);
+    Rcpp::traits::input_parameter< int >::type max_depth(max_depthSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    Rcpp::traits::input_parameter< std::string >::type div(divSEXP);
+    rcpp_result_gen = Rcpp::wrap(continuous_tnkde_cpp_arma(neighbour_list, events, events_time, weights, samples, samples_time, obw_net, bws_net, obw_time, bws_time, kernel_name, nodes, line_list, max_depth, verbose, div));
+    return rcpp_result_gen;
+END_RCPP
+}
 // discontinuous_nkde_cpp_arma_sparse
 DataFrame discontinuous_nkde_cpp_arma_sparse(List neighbour_list, NumericVector events, NumericVector weights, DataFrame samples, NumericVector bws, std::string kernel_name, DataFrame nodes, DataFrame line_list, int max_depth, bool verbose);
 RcppExport SEXP _spNetwork_discontinuous_nkde_cpp_arma_sparse(SEXP neighbour_listSEXP, SEXP eventsSEXP, SEXP weightsSEXP, SEXP samplesSEXP, SEXP bwsSEXP, SEXP kernel_nameSEXP, SEXP nodesSEXP, SEXP line_listSEXP, SEXP max_depthSEXP, SEXP verboseSEXP) {
@@ -502,6 +554,58 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// discontinuous_tnkde_cpp_arma_sparse
+List discontinuous_tnkde_cpp_arma_sparse(List neighbour_list, IntegerVector events, NumericVector weights, NumericVector events_time, DataFrame samples, arma::vec samples_time, float obw_net, NumericVector bws_net, float obw_time, NumericVector bws_time, std::string kernel_name, DataFrame nodes, DataFrame line_list, int max_depth, bool verbose, std::string div);
+RcppExport SEXP _spNetwork_discontinuous_tnkde_cpp_arma_sparse(SEXP neighbour_listSEXP, SEXP eventsSEXP, SEXP weightsSEXP, SEXP events_timeSEXP, SEXP samplesSEXP, SEXP samples_timeSEXP, SEXP obw_netSEXP, SEXP bws_netSEXP, SEXP obw_timeSEXP, SEXP bws_timeSEXP, SEXP kernel_nameSEXP, SEXP nodesSEXP, SEXP line_listSEXP, SEXP max_depthSEXP, SEXP verboseSEXP, SEXP divSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type neighbour_list(neighbour_listSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type events(eventsSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type weights(weightsSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type events_time(events_timeSEXP);
+    Rcpp::traits::input_parameter< DataFrame >::type samples(samplesSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type samples_time(samples_timeSEXP);
+    Rcpp::traits::input_parameter< float >::type obw_net(obw_netSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type bws_net(bws_netSEXP);
+    Rcpp::traits::input_parameter< float >::type obw_time(obw_timeSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type bws_time(bws_timeSEXP);
+    Rcpp::traits::input_parameter< std::string >::type kernel_name(kernel_nameSEXP);
+    Rcpp::traits::input_parameter< DataFrame >::type nodes(nodesSEXP);
+    Rcpp::traits::input_parameter< DataFrame >::type line_list(line_listSEXP);
+    Rcpp::traits::input_parameter< int >::type max_depth(max_depthSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    Rcpp::traits::input_parameter< std::string >::type div(divSEXP);
+    rcpp_result_gen = Rcpp::wrap(discontinuous_tnkde_cpp_arma_sparse(neighbour_list, events, weights, events_time, samples, samples_time, obw_net, bws_net, obw_time, bws_time, kernel_name, nodes, line_list, max_depth, verbose, div));
+    return rcpp_result_gen;
+END_RCPP
+}
+// discontinuous_tnkde_cpp_arma
+List discontinuous_tnkde_cpp_arma(List neighbour_list, IntegerVector events, NumericVector weights, NumericVector events_time, DataFrame samples, arma::vec samples_time, float obw_net, NumericVector bws_net, float obw_time, NumericVector bws_time, std::string kernel_name, DataFrame nodes, DataFrame line_list, int max_depth, bool verbose, std::string div);
+RcppExport SEXP _spNetwork_discontinuous_tnkde_cpp_arma(SEXP neighbour_listSEXP, SEXP eventsSEXP, SEXP weightsSEXP, SEXP events_timeSEXP, SEXP samplesSEXP, SEXP samples_timeSEXP, SEXP obw_netSEXP, SEXP bws_netSEXP, SEXP obw_timeSEXP, SEXP bws_timeSEXP, SEXP kernel_nameSEXP, SEXP nodesSEXP, SEXP line_listSEXP, SEXP max_depthSEXP, SEXP verboseSEXP, SEXP divSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type neighbour_list(neighbour_listSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type events(eventsSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type weights(weightsSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type events_time(events_timeSEXP);
+    Rcpp::traits::input_parameter< DataFrame >::type samples(samplesSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type samples_time(samples_timeSEXP);
+    Rcpp::traits::input_parameter< float >::type obw_net(obw_netSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type bws_net(bws_netSEXP);
+    Rcpp::traits::input_parameter< float >::type obw_time(obw_timeSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type bws_time(bws_timeSEXP);
+    Rcpp::traits::input_parameter< std::string >::type kernel_name(kernel_nameSEXP);
+    Rcpp::traits::input_parameter< DataFrame >::type nodes(nodesSEXP);
+    Rcpp::traits::input_parameter< DataFrame >::type line_list(line_listSEXP);
+    Rcpp::traits::input_parameter< int >::type max_depth(max_depthSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    Rcpp::traits::input_parameter< std::string >::type div(divSEXP);
+    rcpp_result_gen = Rcpp::wrap(discontinuous_tnkde_cpp_arma(neighbour_list, events, weights, events_time, samples, samples_time, obw_net, bws_net, obw_time, bws_time, kernel_name, nodes, line_list, max_depth, verbose, div));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_spNetwork_quartic_kernel_cpp", (DL_FUNC) &_spNetwork_quartic_kernel_cpp, 2},
@@ -537,8 +641,12 @@ static const R_CallMethodDef CallEntries[] = {
     {"_spNetwork_lixelize_lines_cpp", (DL_FUNC) &_spNetwork_lixelize_lines_cpp, 3},
     {"_spNetwork_continuous_nkde_cpp_arma_sparse", (DL_FUNC) &_spNetwork_continuous_nkde_cpp_arma_sparse, 10},
     {"_spNetwork_continuous_nkde_cpp_arma", (DL_FUNC) &_spNetwork_continuous_nkde_cpp_arma, 10},
+    {"_spNetwork_continuous_tnkde_cpp_arma_sparse", (DL_FUNC) &_spNetwork_continuous_tnkde_cpp_arma_sparse, 16},
+    {"_spNetwork_continuous_tnkde_cpp_arma", (DL_FUNC) &_spNetwork_continuous_tnkde_cpp_arma, 16},
     {"_spNetwork_discontinuous_nkde_cpp_arma_sparse", (DL_FUNC) &_spNetwork_discontinuous_nkde_cpp_arma_sparse, 10},
     {"_spNetwork_discontinuous_nkde_cpp_arma", (DL_FUNC) &_spNetwork_discontinuous_nkde_cpp_arma, 10},
+    {"_spNetwork_discontinuous_tnkde_cpp_arma_sparse", (DL_FUNC) &_spNetwork_discontinuous_tnkde_cpp_arma_sparse, 16},
+    {"_spNetwork_discontinuous_tnkde_cpp_arma", (DL_FUNC) &_spNetwork_discontinuous_tnkde_cpp_arma, 16},
     {NULL, NULL, 0}
 };
 

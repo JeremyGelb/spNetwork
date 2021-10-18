@@ -1,3 +1,8 @@
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#### NETWORK DIGGLE CORRECTION FACTOR ####
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 #' @title Simple NKDE border correction
 #'
 #' @description A function to calculate the Diggle correction factor with the
@@ -264,4 +269,59 @@ correction_factor <- function(study_area,events,lines,method, bws, kernel_name, 
   events_df$corrfactor <- ifelse(is.na(events_df$corrfactor), 1,
                                  events_df$corrfactor)
   return(events_df$corrfactor)
+}
+
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#### TIME DIGGLE CORRECTION FACTOR ####
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+#' @title Time extent correction for NKDE
+#'
+#' @description Function to calculate the time extent correction factor in tnkde.
+#'
+#' @param events_time A numeric vector representing when the events occurred
+#' @param samples_time A numeric vector representing when the densities will
+#' be sampled
+#' @param bws_time A numeric vector with the temporal bandwidths
+#' @param kernel_name The name of the kernel to use
+#' @importFrom cubature cubintegrate
+#' @return A numeric vector with the correction factor values for each event
+#' @keywords internal
+#' @examples
+#' #no example provided, this is an internal function
+correction_factor_time <- function(events_time, samples_time, bws_time, kernel_name){
+  kernel_func <- select_kernel(kernel_name)
+
+  # step1 : determine the study period
+  start_time <- min(samples_time)
+  end_time <- max(samples_time)
+
+
+  # step2 : calculating for each event if it is above or under the limits
+  low_diff <- events_time-bws_time - start_time
+  low_diff <- ifelse(low_diff < 0, abs(low_diff), 0)
+
+  up_diff <- end_time - (events_time  + bws_time)
+  up_diff <- ifelse(up_diff < 0, abs(up_diff), 0)
+
+  # calculating the part of the density outside the area (lower bound)
+  get_integral <- function(bw, low_diff){
+    cubintegrate(kernel_func,lower=(bw-low_diff),upper=bw,
+                 bw=bw, relTol = 1e-15)$integral
+  }
+  get_inegral_vec <- Vectorize(get_integral,vectorize.args = c("low_diff","bw"))
+  out_lower <- get_inegral_vec(low_diff = low_diff, bw = bws_time)
+
+  # calculating the part of the density outside the area (upper bound)
+  get_integral <- function(bw, up_diff){
+    cubintegrate(kernel_func,lower=0,upper=up_diff,
+                 bw=bw, relTol = 1e-15)$integral
+  }
+  get_inegral_vec <- Vectorize(get_integral,vectorize.args = c("up_diff","bw"))
+  out_upper <- get_inegral_vec(up_diff = up_diff, bw = bws_time)
+
+  diffs <- (1-out_lower) + (1-out_upper) - 1
+  return(1/diffs)
+
 }
