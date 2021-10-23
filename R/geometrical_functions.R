@@ -1044,10 +1044,12 @@ remove_mirror_edges <- function(lines, keep_shortest = TRUE, digits = 3, verbose
 #' @return A SpatialLinesDataFrame
 #' @export
 #' @examples
+#' \donttest{
 #' library(spNetwork)
 #' networkgpkg <- system.file("extdata", "networks.gpkg",package = "spNetwork", mustWork = TRUE)
 #' lines <- mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network",verbose = FALSE)
 #' edited_lines <- simplify_network(lines, digits = 3, verbose = FALSE)
+#' }
 simplify_network <- function(lines, digits = 3, heal = TRUE, mirror = TRUE, keep_shortest = TRUE, verbose = TRUE){
 
     if(heal){
@@ -1154,6 +1156,7 @@ simplify_network <- function(lines, digits = 3, heal = TRUE, mirror = TRUE, keep
 #' @importFrom utils txtProgressBar setTxtProgressBar
 #' @export
 #' @examples
+#' \donttest{
 #' # reading the data
 #' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
 #' mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
@@ -1171,20 +1174,32 @@ simplify_network <- function(lines, digits = 3, heal = TRUE, mirror = TRUE, keep
 #' # splitting lines
 #' new_lines <- split_lines_at_vertex(mtl_network, snapped_points,
 #'     snapped_points$nearest_line_id, 1)
+#' }
 split_lines_at_vertex <- function(lines, points, nearest_lines_idx, mindist) {
 
     coords <- sp::coordinates(points)
-    lines_coords <- unlist(sp::coordinates(lines), recursive = FALSE)
-    elements <- split_lines_at_points_cpp(coords, lines_coords, nearest_lines_idx, mindist)
-    new_lines_list <- elements[[1]]
-    idxs <- elements[[2]]
+    # step1 : remove points that are not far enough from the extremities
+    exts <- lines_extremities(lines)
+    coords2 <- sp::coordinates(exts)
+    min_dists <- FNN::knnx.dist(data = coords2, query = coords,k = 1)
+    coords <- subset(coords, min_dists > mindist)
+    nearest_lines_idx <- nearest_lines_idx[min_dists > mindist]
+    # no need to split here, great !
+    if(nrow(coords) == 0){
+        return(lines)
+    }else{
+        lines_coords <- unlist(sp::coordinates(lines), recursive = FALSE)
+        elements <- split_lines_at_points_cpp(coords, lines_coords, nearest_lines_idx, mindist)
+        new_lines_list <- elements[[1]]
+        idxs <- elements[[2]]
 
-    final_lines <- do.call(raster::spLines,new_lines_list)
+        final_lines <- do.call(raster::spLines,new_lines_list)
 
-    final_lines <- SpatialLinesDataFrame(final_lines,
-                                         lines@data[idxs,],match.ID = FALSE)
-    raster::crs(final_lines) <- raster::crs(lines)
-    return(final_lines)
+        final_lines <- SpatialLinesDataFrame(final_lines,
+                                             lines@data[idxs,],match.ID = FALSE)
+        raster::crs(final_lines) <- raster::crs(lines)
+        return(final_lines)
+    }
 }
 
 

@@ -413,6 +413,7 @@ network_knn.mc <- function(origins, lines, k, destinations = NULL, maxdistance =
 #' @importFrom sp coordinates SpatialPoints SpatialPointsDataFrame
 #' @importFrom utils txtProgressBar setTxtProgressBar
 #' @importFrom rgeos gLength gBuffer gIntersects gPointOnSurface
+#' @keywords internal
 #' @examples
 #' #no example provided, this is an internal function
 sanity_check_knn <- function(origins, destinations, lines, k, maxdistance, snap_dist, line_weight, direction, grid_shape, verbose , digits, tol){ # nocov start

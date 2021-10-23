@@ -264,13 +264,13 @@ split_by_grid <- function(grid,samples,events,lines,bw,tol, digits, split_all = 
       a <- nrow(sel_events)
       b <- nrow(sel_lines)
       x <-  a*b
-      if(is.na(x)){
-        stop(paste("The matrix size will be exceeded (",a," x ",b,"), please consider using a finer grid to split the study area",sep=""))
-      }
-      if(x >= 2*10^9){
-        stop(paste("The matrix size will be exceeded (",a," x ",b,"), please consider using a finer grid to split the study area",sep=""))
-      }
-      snapped_events <- snapPointsToLines(sel_events,sel_lines,idField = "oid")
+      # if(is.na(x)){
+      #   stop(paste("The matrix size will be exceeded (",a," x ",b,"), please consider using a finer grid to split the study area",sep=""))
+      # }
+      # if(x >= 2*10^9){
+      #   stop(paste("The matrix size will be exceeded (",a," x ",b,"), please consider using a finer grid to split the study area",sep=""))
+      # }
+      snapped_events <- snapPointsToLines2(sel_events,sel_lines,idField = "oid", snap_dist = bw)
       sel_events <- cbind(snapped_events,sel_events)
       if(split_all){
         new_lines <- add_vertices_lines(sel_lines,sel_events,sel_events$nearest_line_id,tol)

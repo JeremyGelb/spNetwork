@@ -46,6 +46,7 @@ reference:
   - build_graph_directed
   - graph_checking
   - simplify_network
+  - split_graph_components
 - title: "Isochrones"
   desc: >
     Functions to calculate isochrones.

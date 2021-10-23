@@ -177,7 +177,6 @@ IntegerVector find_nearest_object_in_line_rtree(NumericMatrix pts, List lines, d
 
   // prepare some objects
   linestring_t my_line;
-  point_t mypt;
 
   // step1: reading the lines as a vector of lines
   lines_vector vec_lines = lines_vector_from_coordinates(lines);
@@ -597,6 +596,7 @@ List split_lines_at_points_cpp(arma::mat Xmat, List lines, arma::colvec nearest_
       }
       // subsetting the matrix for dists < mindist
       mat ok_distMat = distMat.rows(find(distMat.col(2) >= mindist &&  distMat.col(2)<= line_length - mindist));
+
       ok_distMat.col(3) = colvec(ok_distMat.n_rows,fill::zeros);//as<arma::vec>(original);
       //combining the two matrices
       mat total_mat = join_cols(line_mat,ok_distMat);

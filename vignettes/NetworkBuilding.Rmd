@@ -55,12 +55,16 @@ bike_accidents <- rgdal::readOGR(eventsgpkg,layer="bike_accidents", verbose = FA
 plot(mtl_network)
 plot(bike_accidents,add=T,col='red',pch = 19)
 ```
+```{r include=FALSE}
+load(system.file("extdata", "results_vignette_network_build.rda",
+                           package = "spNetwork", mustWork = TRUE))
+```
 
 # Calculating the NKDE density
 
 This step is easy to perform with the basic functions of **spNetwork**. For the sake of simplicity, we select an arbitrary bandwidth of 300m and use the discontinuous kernel.
 
-```{r message=FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE, eval = FALSE}
 # calculating the density values
 densities <- nkde(mtl_network, 
                   events = bike_accidents,
@@ -75,7 +79,8 @@ densities <- nkde(mtl_network,
                   verbose = FALSE)
 
 bike_accidents$density <- densities * 1000
-
+```
+```{r message=FALSE, warning=FALSE}
 # mapping the density values
 tm_shape(mtl_network) + 
   tm_lines(col = "black") +
@@ -91,7 +96,7 @@ For this step, we will use the function `snapPointsToLines2`. It is mainly based
 
 We will also start by aggregating the points that are too close to each other. We will aggregate all the points that are within a 5 metres radius.
 
-```{r message=FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE, eval = FALSE}
 bike_accidents$weight <- 1
 agg_points <- aggregate_points(bike_accidents, maxdist = 5)
 
@@ -107,7 +112,7 @@ snapped_accidents <- snapPointsToLines2(agg_points,
 
 The next step is to use the new points to cut the lines of the network.
 
-```{r message=FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE, eval = FALSE}
 new_lines <- split_lines_at_vertex(mtl_network, 
                                    snapped_accidents,
                                    snapped_accidents$nearest_line_id,
@@ -118,7 +123,7 @@ new_lines <- split_lines_at_vertex(mtl_network,
 
 We can now build the graph from the cut lines.
 
-```{r message=FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE, eval = FALSE}
 new_lines$OID <- 1:nrow(new_lines)
 new_lines$length <- gLength(new_lines, byid = TRUE)
 
@@ -129,12 +134,13 @@ graph_result <- build_graph(new_lines, 2, "length", attrs = TRUE)
 
 The graph can be used with the library **igraph**. We will calculate here the betweenness centrality of each node in the graph.
 
-```{r message=FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE, eval = FALSE}
 btws <- igraph::betweenness(graph_result$graph, directed = FALSE,
                             normalized = TRUE)
 vertices <- graph_result$spvertices
 vertices$btws <- btws
-
+```
+```{r message=FALSE, warning=FALSE}
 # mapping the betweenness
 tm_shape(vertices) + 
   tm_dots(col = "btws", style = "kmeans",
@@ -145,8 +151,7 @@ tm_shape(vertices) +
 
 The last step is to find for each of the original points its corresponding node. We will do it by using the k nearest neighbours approach with the package **FNN**.
 
-```{r message=FALSE, warning=FALSE}
-
+```{r message=FALSE, warning=FALSE, eval = FALSE}
 # first: nn merging between snapped points and nodes
 xy1 <- coordinates(snapped_accidents)
 xy2 <- coordinates(vertices)
@@ -160,7 +165,8 @@ xy2 <- coordinates(snapped_accidents)
 
 corr_nodes <- get.knnx(xy2, xy1, k=1)
 bike_accidents$btws <- snapped_accidents$btws[corr_nodes[[1]]]
-
+```
+```{r message=FALSE, warning=FALSE}
 # mapping the results
 tm_shape(bike_accidents) + 
   tm_dots(col = "btws", style = "kmeans",

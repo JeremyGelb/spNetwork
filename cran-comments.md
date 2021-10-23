@@ -261,3 +261,47 @@ Error: C++17 standard requested but CXX17 is not defined
 
 **correction:**
 It seems that SOLARIS x86 does not support C++17. I find a solution in the package rcppsimdjson facing the same issue. It uses a *configure* file checking that c++17 is available and switch to c++11 otherwise. A warning message is also printed for the user. I hope it will work because I can not test it locally nor on rhub.
+
+## round 2 (after manual check by Uwe Ligges)
+
+**problem:**
+
+"""
+Thanks, we see:
+
+with gcc-UBSAN:
+
+spNetwork.Rcheck/spNetwork-Ex.Rout:/data/gannet/ripley/R/test-4.2/RcppArmadillo/include/armadillo_bits/subview_meat.hpp:1433:54:
+runtime error: reference binding to null pointer of type 'const double'
+(many times)
+
+spNetwork.Rcheck/spNetwork-Ex.Rout:/data/gannet/ripley/R/test-4.2/RcppArmadillo/include/armadillo_bits/access.hpp:28:100:
+runtime error: reference binding to null pointer of type 'double'
+spNetwork.Rcheck/spNetwork-Ex.Rout:/data/gannet/ripley/R/test-4.2/RcppArmadillo/include/armadillo_bits/subview_meat.hpp:1433:54:
+runtime error: reference binding to null pointer of type 'const double'
+
+
+with clang-UBSAN:
+
+spNetwork.Rcheck/build_vignettes.log:/data/gannet/ripley/R/test-clang/RcppArmadillo/include/armadillo_bits/subview_meat.hpp:1433:23:
+runtime error: reference binding to null pointer of type 'const double'
+4 times
+"""
+
+**correction:**
+After inspection, it seems that these errors occured when building the vignette NetworkBuilding. More specifically, it seems linked to the c++ function spNetwork_split_lines_at_points_cpp. The error was probably caused by an edge case were no lines need to be split. In that case, we try to reach elements in an empty (nrow = 0) arma matrix. This has been fixed by catching this edge case before calling the c++ function. When the lines do not need to be split, the input lines are directly returned. It is interesting that the error is not raised when advanced testing (sanitizer) is not used (and the results are valid according to the unit tests).
+
+NOTE: I tried to replicate the error by installing docker and following the instructions here: http://dirk.eddelbuettel.com/blog/2015/01/18/. However, I was not able to perform the test because of an error in the lattice package generated when sanitizer tests are applied.
+
+## round 3 (after automatic check)
+
+**problem:**
+* checking examples ... [106s] NOTE
+Examples with CPU (user + system) or elapsed time > 10s
+                       user system elapsed
+split_lines_at_vertex 13.03   0.24   13.41
+simplify_network       9.78   0.07   10.01
+
+**correction:**
+Applied `\donttest{}` to both functions.
+

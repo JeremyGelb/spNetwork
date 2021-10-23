@@ -45,8 +45,10 @@ the network. One can decide to keep the longest of the two edges or the shortest
 NOTE: the edge healing does not consider lines directions currently!
 }
 \examples{
+\donttest{
 library(spNetwork)
 networkgpkg <- system.file("extdata", "networks.gpkg",package = "spNetwork", mustWork = TRUE)
 lines <- mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network",verbose = FALSE)
 edited_lines <- simplify_network(lines, digits = 3, verbose = FALSE)
+}
 }

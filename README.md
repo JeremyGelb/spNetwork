@@ -14,7 +14,7 @@
 [![](http://cranlogs.r-pkg.org/badges/grand-total/spNetwork?color=blue)](https://cran.r-project.org/package=spNetwork)
 [![](http://cranlogs.r-pkg.org/badges/last-month/spNetwork?color=green)](https://cran.r-project.org/package=spNetwork)
 [![Codecov test
-coverage](https://codecov.io/gh/JeremyGelb/spNetwork/branch/master/graph/badge.svg)](https://codecov.io/gh/JeremyGelb/spNetwork?branch=master)
+coverage](https://codecov.io/gh/JeremyGelb/spNetwork/branch/master/graph/badge.svg)](https://app.codecov.io/gh/JeremyGelb/spNetwork?branch=master)
 <!-- badges: end -->
 
 The package’s website is available

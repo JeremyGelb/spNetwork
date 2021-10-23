@@ -72,3 +72,4 @@ Check if all the parameters are valid for the knn functions
 \examples{
 #no example provided, this is an internal function
 }
+\keyword{internal}

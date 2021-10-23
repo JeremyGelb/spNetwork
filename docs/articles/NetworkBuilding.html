@@ -100,7 +100,7 @@
       <h1 data-toc-skip>Building graphs</h1>
                         <h4 class="author">Jeremy Gelb</h4>
             
-            <h4 class="date">2021-10-12</h4>
+            <h4 class="date">2021-10-19</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/JeremyGelb/spNetwork/blob/master/vignettes/NetworkBuilding.Rmd"><code>vignettes/NetworkBuilding.Rmd</code></a></small>
       <div class="hidden name"><code>NetworkBuilding.Rmd</code></div>
@@ -164,23 +164,23 @@
                   sparse <span class="op">=</span> <span class="cn">TRUE</span>,
                   verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
 
-<span class="va">bike_accidents</span><span class="op">$</span><span class="va">density</span> <span class="op">&lt;-</span> <span class="va">densities</span> <span class="op">*</span> <span class="fl">1000</span>
-
-<span class="co"># mapping the density values</span>
+<span class="va">bike_accidents</span><span class="op">$</span><span class="va">density</span> <span class="op">&lt;-</span> <span class="va">densities</span> <span class="op">*</span> <span class="fl">1000</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># mapping the density values</span>
 <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span> <span class="op">+</span> 
   <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_lines.html">tm_lines</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"black"</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">)</span> <span class="op">+</span> 
   <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_symbols.html">tm_dots</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"density"</span>, style <span class="op">=</span> <span class="st">"kmeans"</span>,
           n <span class="op">=</span> <span class="fl">6</span>, size <span class="op">=</span> <span class="fl">0.1</span>, palette <span class="op">=</span> <span class="st">"-RdYlBu"</span><span class="op">)</span><span class="op">+</span>
   <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_layout.html">tm_layout</a></span><span class="op">(</span>legend.outside <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> </code></pre></div>
-<p><img src="NetworkBuilding_files/figure-html/unnamed-chunk-2-1.png" width="700"></p>
+<p><img src="NetworkBuilding_files/figure-html/unnamed-chunk-4-1.png" width="700"></p>
 </div>
 <div id="snapping-the-accidents-to-the-network" class="section level1">
 <h1 class="hasAnchor">
 <a href="#snapping-the-accidents-to-the-network" class="anchor"></a>Snapping the accidents to the network</h1>
 <p>For this step, we will use the function <code>snapPointsToLines2</code>. It is mainly based on the function <code>snapPointsToLines</code> from <strong>maptools</strong> but can be used for bigger datasets. Note that we create two index columns: <code>OID</code> for the accidents’ location and <code>LineID</code> for the network lines.</p>
 <p>We will also start by aggregating the points that are too close to each other. We will aggregate all the points that are within a 5 metres radius.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">bike_accidents</span><span class="op">$</span><span class="va">weight</span> <span class="op">&lt;-</span> <span class="fl">1</span>
 <span class="va">agg_points</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_points.html">aggregate_points</a></span><span class="op">(</span><span class="va">bike_accidents</span>, maxdist <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>
 
@@ -195,7 +195,7 @@
 <h1 class="hasAnchor">
 <a href="#cutting-the-lines-of-the-network" class="anchor"></a>Cutting the lines of the network</h1>
 <p>The next step is to use the new points to cut the lines of the network.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">new_lines</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/split_lines_at_vertex.html">split_lines_at_vertex</a></span><span class="op">(</span><span class="va">mtl_network</span>, 
                                    <span class="va">snapped_accidents</span>,
                                    <span class="va">snapped_accidents</span><span class="op">$</span><span class="va">nearest_line_id</span>,
@@ -205,7 +205,7 @@
 <h1 class="hasAnchor">
 <a href="#building-a-graph-with-the-cut-lines" class="anchor"></a>Building a graph with the cut lines</h1>
 <p>We can now build the graph from the cut lines.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">new_lines</span><span class="op">$</span><span class="va">OID</span> <span class="op">&lt;-</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/pkg/raster/man/ncell.html">nrow</a></span><span class="op">(</span><span class="va">new_lines</span><span class="op">)</span>
 <span class="va">new_lines</span><span class="op">$</span><span class="va">length</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/rgeos/man/misc-gLength.html">gLength</a></span><span class="op">(</span><span class="va">new_lines</span>, byid <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 
@@ -215,20 +215,20 @@
 <h1 class="hasAnchor">
 <a href="#calculating-for-each-node-of-the-graph-its-centrality" class="anchor"></a>Calculating for each node of the graph its centrality</h1>
 <p>The graph can be used with the library <strong>igraph</strong>. We will calculate here the betweenness centrality of each node in the graph.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">btws</span> <span class="op">&lt;-</span> <span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/igraph/man/betweenness.html">betweenness</a></span><span class="op">(</span><span class="va">graph_result</span><span class="op">$</span><span class="va">graph</span>, directed <span class="op">=</span> <span class="cn">FALSE</span>,
                             normalized <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 <span class="va">vertices</span> <span class="op">&lt;-</span> <span class="va">graph_result</span><span class="op">$</span><span class="va">spvertices</span>
-<span class="va">vertices</span><span class="op">$</span><span class="va">btws</span> <span class="op">&lt;-</span> <span class="va">btws</span>
-
-<span class="co"># mapping the betweenness</span>
+<span class="va">vertices</span><span class="op">$</span><span class="va">btws</span> <span class="op">&lt;-</span> <span class="va">btws</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># mapping the betweenness</span>
 <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">vertices</span><span class="op">)</span> <span class="op">+</span> 
   <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_symbols.html">tm_dots</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"btws"</span>, style <span class="op">=</span> <span class="st">"kmeans"</span>,
           n <span class="op">=</span> <span class="fl">6</span>, size <span class="op">=</span> <span class="fl">0.1</span>, palette <span class="op">=</span> <span class="st">"-RdYlBu"</span><span class="op">)</span><span class="op">+</span>
   <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_layout.html">tm_layout</a></span><span class="op">(</span>legend.outside <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> </code></pre></div>
-<p><img src="NetworkBuilding_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
+<p><img src="NetworkBuilding_files/figure-html/unnamed-chunk-9-1.png" width="700"></p>
 <p>The last step is to find for each of the original points its corresponding node. We will do it by using the k nearest neighbours approach with the package <strong>FNN</strong>.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># first: nn merging between snapped points and nodes</span>
 <span class="va">xy1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/sp/man/coordinates.html">coordinates</a></span><span class="op">(</span><span class="va">snapped_accidents</span><span class="op">)</span>
 <span class="va">xy2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/sp/man/coordinates.html">coordinates</a></span><span class="op">(</span><span class="va">vertices</span><span class="op">)</span>
@@ -241,22 +241,22 @@
 <span class="va">xy2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/sp/man/coordinates.html">coordinates</a></span><span class="op">(</span><span class="va">snapped_accidents</span><span class="op">)</span>
 
 <span class="va">corr_nodes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/FNN/man/get.knn.html">get.knnx</a></span><span class="op">(</span><span class="va">xy2</span>, <span class="va">xy1</span>, k<span class="op">=</span><span class="fl">1</span><span class="op">)</span>
-<span class="va">bike_accidents</span><span class="op">$</span><span class="va">btws</span> <span class="op">&lt;-</span> <span class="va">snapped_accidents</span><span class="op">$</span><span class="va">btws</span><span class="op">[</span><span class="va">corr_nodes</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">]</span>
-
-<span class="co"># mapping the results</span>
+<span class="va">bike_accidents</span><span class="op">$</span><span class="va">btws</span> <span class="op">&lt;-</span> <span class="va">snapped_accidents</span><span class="op">$</span><span class="va">btws</span><span class="op">[</span><span class="va">corr_nodes</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">]</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># mapping the results</span>
 <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">)</span> <span class="op">+</span> 
   <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_symbols.html">tm_dots</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"btws"</span>, style <span class="op">=</span> <span class="st">"kmeans"</span>,
           n <span class="op">=</span> <span class="fl">6</span>, size <span class="op">=</span> <span class="fl">0.1</span>, palette <span class="op">=</span> <span class="st">"-RdYlBu"</span><span class="op">)</span><span class="op">+</span>
   <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_layout.html">tm_layout</a></span><span class="op">(</span>legend.outside <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
-<p><img src="NetworkBuilding_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<p><img src="NetworkBuilding_files/figure-html/unnamed-chunk-11-1.png" width="700"></p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">)</span> <span class="op">+</span> 
   <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_symbols.html">tm_dots</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"density"</span>, style <span class="op">=</span> <span class="st">"kmeans"</span>,
           n <span class="op">=</span> <span class="fl">6</span>, size <span class="op">=</span> <span class="fl">0.1</span>, palette <span class="op">=</span> <span class="st">"-RdYlBu"</span><span class="op">)</span><span class="op">+</span>
   <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_layout.html">tm_layout</a></span><span class="op">(</span>legend.outside <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> </code></pre></div>
-<p><img src="NetworkBuilding_files/figure-html/unnamed-chunk-7-2.png" width="700"></p>
+<p><img src="NetworkBuilding_files/figure-html/unnamed-chunk-11-2.png" width="700"></p>
 <p>And finally, we can calculate the correlation between the two variables !</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/stats/cor.test.html">cor.test</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">$</span><span class="va">density</span>, <span class="va">bike_accidents</span><span class="op">$</span><span class="va">btws</span><span class="op">)</span></code></pre></div>
 <pre><code>## 
 ##  Pearson's product-moment correlation
