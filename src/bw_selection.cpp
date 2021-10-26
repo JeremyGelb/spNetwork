@@ -405,9 +405,7 @@ NumericVector ess_kernel_loo(fptros kernel_func, arma::sp_mat& edge_mat, Numeric
       }
     }
   }
-
   return kvalues;
-
 }
 
 
@@ -459,7 +457,8 @@ NumericVector get_loo_values_simple(List neighbour_list, NumericVector samples, 
     double w = weights[i];
     double bw = bws[i];
     // launching recursion
-    NumericVector k = ess_kernel_loo(kernel_func,edge_mat, samples, neighbour_list ,y,bw, line_weights, depth,max_depth);
+    // here we got the the influences of the vertex y on each other vertices
+    NumericVector k = ess_kernel_loo(kernel_func,edge_mat, samples, neighbour_list ,y, bw, line_weights, depth,max_depth);
     // getting the actual base_k values (summed at each iteration)
     base_k += (k*w);
   };
