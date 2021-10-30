@@ -338,6 +338,10 @@ get_loo_values_simple <- function(neighbour_list, samples, sweights, events, wei
     .Call('_spNetwork_get_loo_values_simple', PACKAGE = 'spNetwork', neighbour_list, samples, sweights, events, weights, bws, kernel_name, line_list, max_depth)
 }
 
+tnkde_get_loo_values <- function(method, neighbour_list, events, events_time, weights, bws_net, bws_time, kernel_name, line_list, max_depth, min_tol) {
+    .Call('_spNetwork_tnkde_get_loo_values', PACKAGE = 'spNetwork', method, neighbour_list, events, events_time, weights, bws_net, bws_time, kernel_name, line_list, max_depth, min_tol)
+}
+
 find_nearest_object_in_line_rtree <- function(pts, lines, min_dist, max_iter) {
     .Call('_spNetwork_find_nearest_object_in_line_rtree', PACKAGE = 'spNetwork', pts, lines, min_dist, max_iter)
 }

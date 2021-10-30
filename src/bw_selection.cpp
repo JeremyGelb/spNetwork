@@ -7,16 +7,6 @@
 //#### bandwidth selection by likelihood loo cross validation #####
 //########################################################################
 
-// a simple function to find the index of the first occurence of value in a numeric vector
-int get_first_index(NumericVector& v1, double x){
-  int i;
-  for( i = 0; i < v1.size(); ++i) {
-    if(v1[i] == x){
-      return i;
-    }
-  }
-  return -1;
-}
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // Here we have the working functions for loo with continuous kernel

@@ -542,7 +542,38 @@ nkde_worker_bw_sel <- function(lines, events, samples, kernel_name, bws, method,
 #### FOR SPATIO-TEMPORAL ####
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-bws_tnkde_cv_likelihood_calc <- function(bw_net_range,bw_net_step,
+# bw_net_range = c(50,500)
+# bw_net_step = 50
+# bw_time_range = c(30,60)
+# bw_time_step = 10
+#
+# networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
+# mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
+# bike_accidents <- rgdal::readOGR("inst/extdata/events.gpkg",layer="bike_accidents_time", verbose=FALSE)
+# dt <- as.POSIXct(bike_accidents$Date, format = "%Y/%m/%d")
+# bike_accidents$Time <- as.integer(difftime(dt, min(dt),units = "days"))
+#
+# lixels <- lixelize_lines(mtl_network,200,mindist = 50)
+# lines  = mtl_network
+# events = bike_accidents
+# time_field = "Time"
+# w = rep(1, nrow(events))
+# kernel_name = "quartic"
+# method = "continuous"
+# diggle_correction = FALSE
+# study_area = NULL
+# max_depth = 8
+# digits=5
+# tol=0.1
+# agg=20
+# sparse=TRUE
+# grid_shape=c(1,1)
+# sub_sample=1
+# verbose=TRUE
+# check=TRUE
+
+
+bws_tnkde_cv_likelihood_calc <- function(bw_net_range, bw_net_step,
                                          bw_time_range, bw_time_step,
                                          lines, events, time_field,
                                          w, kernel_name, method,
@@ -553,7 +584,9 @@ bws_tnkde_cv_likelihood_calc <- function(bw_net_range,bw_net_step,
   ## step0 basic checks
   samples <- events
   events$time <- events[[time_field]]
+  events$weight <- w
   div <- "bw"
+  events$wid <- 1:nrow(events)
 
   if(verbose){
     print("checking inputs ...")
@@ -569,7 +602,7 @@ bws_tnkde_cv_likelihood_calc <- function(bw_net_range,bw_net_step,
     stop("using the continuous NKDE and the gaussian kernel function can yield negative values for densities because the gaussian kernel does not integrate to 1 within the bandiwdth, please consider using the quartic kernel instead")
   }
 
-  if(min(bw_net_range)<=0 | bw_time_range<=0){
+  if(min(bw_net_range)<=0 | min(bw_time_range) <=0){
     stop("the bandwidths for the kernel must be superior to 0")
   }
 
@@ -588,10 +621,13 @@ bws_tnkde_cv_likelihood_calc <- function(bw_net_range,bw_net_step,
   if(verbose){
     print("prior data preparation ...")
   }
-  data <- prepare_data(samples, lines, events,w,digits,tol,agg)
+
+  data <- prepare_data(samples, lines, events, w , digits,tol,agg)
   lines <- data$lines
-  samples <- data$events
-  events <- data$events
+  events_loc <- data$events
+
+  idx <- FNN::knnx.index(sp::coordinates(events_loc),sp::coordinates(events), k = 1)
+  events$goid <- events_loc$goid[idx]
 
   ## step2  creating the grid
   grid <- build_grid(grid_shape,list(lines,samples,events))
@@ -604,10 +640,12 @@ bws_tnkde_cv_likelihood_calc <- function(bw_net_range,bw_net_step,
   net_bws <- seq(from = bw_net_range[[1]], to = bw_net_range[[2]], by = bw_net_step)
   net_bws_corr <- lapply(net_bws, function(bw){
     if(diggle_correction){
-      bws <- rep(bw,nrow(events))
+      bws <- rep(bw,nrow(events_loc))
       # network corr_factor
-      corr_factor <- correction_factor(study_area, events, lines, method, bws,
+      corr_factor <- correction_factor(study_area, events_loc, lines, method, bws,
                                        kernel_name, tol, digits, max_depth, sparse)
+
+      corr_factor <- corr_factor[events$goid]
     }else{
       corr_factor<- rep(1,nrow(events))
     }
@@ -628,22 +666,28 @@ bws_tnkde_cv_likelihood_calc <- function(bw_net_range,bw_net_step,
   })
 
 
-  ## storing the weights in the dataframes
+  ## NB : the weights can change because of the different BW in time and space
+  ## The weights will be passed to c++, to is must be in an easy format, like an array
+  ## event_weights(rows = bws_net, cols = bws_time, slices = events)
+  events_weight <- array(0, dim = c(length(net_bws), length(time_bws), nrow(events)))
+
   for (i in 1:length(time_bws_corr)){
     bw_time <- time_bws[[i]]
     corr_time <- time_bws_corr[[i]]
     for (j in 1:length(net_bws_corr)){
       bw_net <- net_bws[[j]]
       corr_net <- net_bws_corr[[j]]
-      events[[paste("weight",bw_time,bw_net,sep="_")]] <- events$weight * corr_time * corr_net
-      samples[[paste("weight",bw_time,bw_net,sep="_")]] <- samples$weight * corr_time * corr_net
+
+      events_weight[j,i,] <- events$weight * corr_time * corr_net
+      #events[[paste("weight",bw_time,bw_net,sep="_")]] <- events$weight * corr_time * corr_net
+      #samples[[paste("weight",bw_time,bw_net,sep="_")]] <- samples$weight * corr_time * corr_net
     }
   }
 
   max_bw_net <- max(net_bws)
 
   ## step3 splitting the dataset with each rectangle
-  selections <- split_by_grid(grid,samples,events,lines,max_bw, tol, digits, split_all = FALSE)
+  selections <- split_by_grid(grid, samples, events_loc, lines,max_bw_net, tol, digits, split_all = FALSE)
 
   ## sub sampling the quadra if required
   if (sub_sample < 1){
@@ -663,76 +707,40 @@ bws_tnkde_cv_likelihood_calc <- function(bw_net_range,bw_net_step,
   }
   dfs <- lapply(1:n_quadra,function(i){
     sel <- selections[[i]]
-
-    ### ---- TODO ---- ###
-    values <- nkde_worker_bw_sel(sel$lines, sel$events,
-                                 sel$samples, kernel_name, all_bws,
+    sel_events_loc <- sel$events
+    sel_events <- subset(events, events$goid %in% sel$events$goid)
+    sel_weights <- events_weight[,,sel_events$wid]
+    values <- tnkde_worker_bw_sel(sel$lines, sel_events_loc, sel_events, sel_weights,
+                                 kernel_name, net_bws, time_bws,
                                  method, div, digits,
                                  tol,sparse, max_depth, verbose)
+    # lines = sel$lines
+    # events_loc = sel_events_loc
+    # events = sel_events
+    # w = sel_weights
+    # bws_net = net_bws
+    # bws_time = time_bws
 
     if(verbose){
       setTxtProgressBar(pb, i)
     }
 
-    # si on est en mode continu, on obtient une liste de dataframes
-    # sinon une liste de vecteurs numeriques
-    if(method == "continuous"){
-      dfk <- data.frame(do.call(cbind,lapply(values,function(v){v$kvalues})))
-      dfloo <- data.frame(do.call(cbind,lapply(values,function(v){v$loovalues})))
-      dfk$goid <- sel$samples$goid
-      dfloo$goid <- sel$samples$goid
-      return(list(dfk,dfloo))
-
-    }else{
-      ## on combine les resultats de chaque bw dans une matrice
-      df <- data.frame(do.call(cbind,values))
-      names(df) <- paste("k",1:ncol(df),sep="")
-      df$goid <- sel$samples$goid
-      return(df)
-    }
-
-
+    # values est une matrice (bw_net, bw_time) avec les sommes de loglikelihood de chaque
+    return(values)
   })
 
-  ## step5  combining the results for each quadra
-  if(method == "continuous"){
-    tot_df <- do.call(rbind,lapply(dfs,function(df){df[[1]]}))
-    tot_df <- tot_df[order(tot_df$goid),]
-    tot_loos <- do.call(rbind,lapply(dfs,function(df){df[[2]]}))
-    tot_loos <- tot_loos[order(tot_loos$goid),]
-  }else{
-    tot_df <- do.call(rbind,dfs)
-    tot_df <- tot_df[order(tot_df$goid),]
-  }
+  add <- function(x) Reduce("+", x)
 
+  final_mat <- add(dfs)
+  colnames(final_mat) <- time_bws
+  rownames(final_mat) <- net_bws
 
-  ## calculer les valeurs de CV
-  kern_fun <- select_kernel(kernel_name)
-  cv_scores <- sapply(1:length(all_bws), function(i){
-    bw <- all_bws[[i]]
-    kvalues <- tot_df[,i]
-    if (method %in% c("simple","discontinuous")){
-      correction <- kern_fun(0,bw) * (1/bw)
-    } else{
-      correction <- tot_loos[,i]
-    }
-    cv_values <- kvalues - correction
-    cv_values[cv_values==0] <- .Machine$double.xmin
-    score <- sum(log(cv_values))
-    return(score)
-  })
-
-  finaldf <- data.frame(
-    "bw" = all_bws,
-    "cv_scores" = cv_scores
-  )
-
-  return(finaldf)
+  return(final_mat)
 }
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-nkde_worker_bw_sel <- function(lines, events, samples, kernel_name, bws_net, bws_time, method, div, digits, tol, sparse, max_depth, verbose = FALSE){
+tnkde_worker_bw_sel <- function(lines, events_loc, events, w, kernel_name, bws_net, bws_time, method, div, digits, tol, sparse, max_depth, verbose = FALSE){
 
   # if we do not have event in that space, just return NULL
   if(nrow(events)==0){
@@ -747,51 +755,20 @@ nkde_worker_bw_sel <- function(lines, events, samples, kernel_name, bws_net, bws
 
   ## step2 finding for each event, its corresponding node
   ## NOTE : there will be less samples than events most of the time
-  ## because of the avoidance of island effects.
-  events$vertex_id <- closest_points(events, nodes)
-  samples$vertex_id <- closest_points(samples, nodes)
-  events$oid <- 1:nrow(events)
+  events_loc$vertex_id <- closest_points(events_loc, nodes)
+  events$vertex_id <- events_loc$vertex_id[events$goid]
 
   ## step3 starting the calculations !
   neighbour_list <- adjacent_vertices(graph,nodes$id,mode="out")
   neighbour_list <- lapply(neighbour_list,function(x){return (as.numeric(x))})
 
-  ## we calculate the nkde values for each bw provided
-  kernel_values <- lapply(bws, function(bw){
-
-    repbws <- rep(bw,nrow(events))
-
-    if(method == "simple"){
-      values <- spNetwork::get_loo_values_simple(neighbour_list, samples$vertex_id, samples[[paste("weight_",bw,sep="")]],
-                                                 events$vertex_id, events[[paste("weight_",bw,sep="")]],
-                                                 repbws, kernel_name, graph_result$linelist, max_depth)
-    }else if(method=="continuous"){
-      ##and finally calculating the values
-      # NOTE : Values is a dataframe with two columns :
-      # the kvalue calculated for each event when all the events are considered
-      # the kvalue specific at each event (when all other events are not considered)
-      values <- spNetwork::get_loo_values_continuous(neighbour_list,  samples$vertex_id, samples[[paste("weight_",bw,sep="")]],
-                                                     events$vertex_id, events[[paste("weight_",bw,sep="")]],
-                                                     repbws, kernel_name, graph_result$linelist, max_depth)
-
-    }else if(method == "discontinuous"){
-      values <- spNetwork::get_loo_values_discontinuous(neighbour_list, samples$vertex_id, samples[[paste("weight_",bw,sep="")]],
-                                                        events$vertex_id, events[[paste("weight_",bw,sep="")]], repbws,
-                                                        kernel_name, graph_result$linelist, max_depth)
-    }
-
-    ## step7 adjusting the kernel values !
-    # dividing by bw is crucial, other wise, larger BW are always better !
-    if(method == "continuous"){
-      df <- data.frame(
-        kvalues = values$sum_k * (1/bw),
-        loovalues = values$loo * (1/bw)
-      )
-      return(df)
-    }else {
-      return(values * (1/bw))
-    }
-  })
+  kernel_values <- tnkde_get_loo_values(method,
+                                               neighbour_list,
+                                               events$vertex_id, events$time, w,
+                                               bws_net, bws_time,
+                                               kernel_name, graph_result$linelist, max_depth,
+                                               .Machine$double.xmin
+                                        )
 
   ## at that point, we have a list of numeric vectors or a list of dataframes, one for each bw
   return(kernel_values)
