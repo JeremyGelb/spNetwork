@@ -542,36 +542,64 @@ nkde_worker_bw_sel <- function(lines, events, samples, kernel_name, bws, method,
 #### FOR SPATIO-TEMPORAL ####
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-# bw_net_range = c(50,500)
-# bw_net_step = 50
-# bw_time_range = c(30,60)
-# bw_time_step = 10
-#
-# networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
-# mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
-# bike_accidents <- rgdal::readOGR("inst/extdata/events.gpkg",layer="bike_accidents_time", verbose=FALSE)
-# dt <- as.POSIXct(bike_accidents$Date, format = "%Y/%m/%d")
-# bike_accidents$Time <- as.integer(difftime(dt, min(dt),units = "days"))
-#
-# lixels <- lixelize_lines(mtl_network,200,mindist = 50)
-# lines  = mtl_network
-# events = bike_accidents
-# time_field = "Time"
-# w = rep(1, nrow(events))
-# kernel_name = "quartic"
-# method = "continuous"
-# diggle_correction = FALSE
-# study_area = NULL
-# max_depth = 8
-# digits=5
-# tol=0.1
-# agg=20
-# sparse=TRUE
-# grid_shape=c(1,1)
-# sub_sample=1
-# verbose=TRUE
-# check=TRUE
 
+#' @title Bandwidth selection by likelihood cross validation for temporal NKDE
+#'
+#' @description Calculate for multiple network and time bandwidths the cross validation likelihood to
+#' select an appropriate bandwidth in a data-driven approach
+#'
+#' @details  The function calculates the likelihood cross validation score for several time and network
+#' bandwidths in order to find the most appropriate one. The general idea is to find the pair of
+#' bandwidths that would produce the most similar results if one event was removed from
+#' the dataset (leave one out cross validation). We use here the shortcut formula as
+#' described by the package spatstat \insertCite{spatstatpkg}{spNetwork}.
+#'
+#' LCV(h) = sum[i] log(lambda[-i](x[i]))
+#'
+#' Where the sum is taken for all events x[i] and where lambda[-i](x[i]) is the leave-one-out kernel
+#' estimate at x[i] for a bandwidth h. A lower value indicates a better bandwidth.
+#'
+#' @references{
+#'     \insertAllCited{}
+#' }
+#'
+#' @template bw_tnkde_selection-args
+#' @template nkde_params-arg
+#' @template nkde_geoms-args
+#' @param time_field The name of the field in events indicating when the events occurred. It must be a numeric field
+#' @template sparse-arg
+#' @template grid_shape-arg
+#' @param sub_sample A float between 0 and 1 indicating the percentage of quadra
+#' to keep in the calculus. For large datasets, it may be useful to limit the
+#' bandwidth evaluation and thus reduce calculation time.
+#' @param verbose A Boolean, indicating if the function should print messages
+#' about process.
+#' @template check-arg
+#' @return A matrix with the cross validation score.  Each row correspond to a network
+#' bandwidth and each column to a time bandwidth (the higher the better).
+#' @export
+#' @examples
+#' # loading the data
+#' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
+#' eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
+#' #eventsgpkg <- "C:/Users/gelbj/OneDrive/Documents/R/dev-packages/sauvetage_spNetwork/spNetwork/inst/extdata/events.gpkg"
+#' mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
+#' bike_accidents <- rgdal::readOGR(eventsgpkg,layer="bike_accidents", verbose=FALSE)
+#'
+#' # converting the Date field to a numeric field (counting days)
+#' bike_accidents$Time <- as.POSIXct(bike_accidents$Date, format = "%Y/%m/%d")
+#' bike_accidents$Time <- difftime(bike_accidents$Time, min(bike_accidents$Time), units = "days")
+#' bike_accidents$Time <- as.numeric(bike_accidents$Time)
+#'
+#' # calculating the cross validation values
+#' cv_scores <- bws_tnkde_cv_likelihood_calc(
+#'   bw_net_range = c(100,800), bw_net_step = 100,
+#'   bw_time_range = c(10,30), bw_time_step = 5,
+#'   lines = mtl_network, events = bike_accidents, time_field = "Time",
+#'   w = rep(1, length(bike_accidents)), kernel_name = "quartic", method = "discontinuous",
+#'   diggle_correction = FALSE, study_area = NULL,
+#'   max_depth = 10, digits = 2, tol = 0.1, agg = 15,
+#'   sparse=TRUE, grid_shape=c(1,1), sub_sample=1, verbose = FALSE, check = TRUE)
 
 bws_tnkde_cv_likelihood_calc <- function(bw_net_range, bw_net_step,
                                          bw_time_range, bw_time_step,
@@ -679,8 +707,6 @@ bws_tnkde_cv_likelihood_calc <- function(bw_net_range, bw_net_step,
       corr_net <- net_bws_corr[[j]]
 
       events_weight[j,i,] <- events$weight * corr_time * corr_net
-      #events[[paste("weight",bw_time,bw_net,sep="_")]] <- events$weight * corr_time * corr_net
-      #samples[[paste("weight",bw_time,bw_net,sep="_")]] <- samples$weight * corr_time * corr_net
     }
   }
 
@@ -688,6 +714,7 @@ bws_tnkde_cv_likelihood_calc <- function(bw_net_range, bw_net_step,
 
   ## step3 splitting the dataset with each rectangle
   selections <- split_by_grid(grid, samples, events_loc, lines,max_bw_net, tol, digits, split_all = FALSE)
+  #selections <- split_by_grid(grid, events, events_loc, lines,max_bw_net, tol, digits, split_all = FALSE)
 
   ## sub sampling the quadra if required
   if (sub_sample < 1){
@@ -706,20 +733,22 @@ bws_tnkde_cv_likelihood_calc <- function(bw_net_range, bw_net_step,
     pb <- txtProgressBar(min = 0, max = n_quadra, style = 3)
   }
   dfs <- lapply(1:n_quadra,function(i){
+
     sel <- selections[[i]]
+
+
+    # the events_loc must cover the quadra and the bw
     sel_events_loc <- sel$events
-    sel_events <- subset(events, events$goid %in% sel$events$goid)
+    # idem for all the events
+    sel_events <- subset(events, events$goid %in% sel_events_loc$goid)
+    # but I also need to know on which events I must calculate the densities (in the quadra)
+    quad_events <- sel$samples
     sel_weights <- events_weight[,,sel_events$wid]
+
     values <- tnkde_worker_bw_sel(sel$lines, sel_events_loc, sel_events, sel_weights,
                                  kernel_name, net_bws, time_bws,
                                  method, div, digits,
                                  tol,sparse, max_depth, verbose)
-    # lines = sel$lines
-    # events_loc = sel_events_loc
-    # events = sel_events
-    # w = sel_weights
-    # bws_net = net_bws
-    # bws_time = time_bws
 
     if(verbose){
       setTxtProgressBar(pb, i)
@@ -738,8 +767,28 @@ bws_tnkde_cv_likelihood_calc <- function(bw_net_range, bw_net_step,
   return(final_mat)
 }
 
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
+#' @title Worker function fo Bandwidth selection by likelihood cross validation for temporal NKDE
+#'
+#' @description Calculate for multiple network and time bandwidths the cross validation likelihood to
+#' select an appropriate bandwidth in a data-driven approach
+#' @param lines A SpatialLinesDataFrame representing the underlying network
+#' @param events_loc A SpatialPointsDataFrame representing the location of the events
+#' @param events A SpatialPointsDataFrame representing the events. Multiple events can share
+#' the same location. They are linked by the goid column
+#' @param w A numeric vector with the weight of the events
+#' @param quad_events a SpatialPointsDataFrame indicating for which events the densities must be calculated
+#' @param kernel_name The name of the kernel to use (string)
+#' @param bws_net A numeric vector with the network bandwidths
+#' @param bws_time A numeric vector with the time bandwidths
+#' @param method The type of NKDE to use (string)
+#' @template nkde_geoms-args
+#' @template sparse-arg
+#' @param verbose A boolean
+#' @keywords internal
+#' @examples
+#' # no example provided, this is an internal function
 tnkde_worker_bw_sel <- function(lines, events_loc, events, w, kernel_name, bws_net, bws_time, method, div, digits, tol, sparse, max_depth, verbose = FALSE){
 
   # if we do not have event in that space, just return NULL
