@@ -60,6 +60,43 @@ tkde <- function(events, w, samples, bw, kernel_name, adaptive = FALSE){
     return(sum(kern_func(dists,bws)*w))
   })
 
-  return(kernel_values)
+  return((1/bw)*kernel_values)
 
+}
+
+
+#' @title Bandwidth selection for Temporal Kernel density estimate by likelihood cross validation
+#'
+#' @description Calculate the likelihood cross validation score for several bandwidths for the
+#' Temporal Kernel density estimatation
+#' @param events A numeric vector representing the moments of occurrence of events
+#' @param w The weight of the events
+#' @param bws A numeric vector, the bandiwdths to use
+#' @param kernel_name The name of the kernel to use
+#' @examples
+#' eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
+#' bike_accidents <- rgdal::readOGR(eventsgpkg,layer="bike_accidents", verbose=FALSE)
+#' bike_accidents$Date <- as.POSIXct(bike_accidents$Date, format = "%Y/%m/%d")
+#' start <- min(bike_accidents$Date)
+#' diff <- as.integer(difftime(bike_accidents$Date , start, units = "days"))
+#' w <- rep(1,length(diff))
+#' scores <- bw_cv_likelihood_calc_tkde(diff, w, seq(10,60,10), "quartic")
+bw_cv_likelihood_calc_tkde <- function(events, w, bws, kernel_name){
+
+  kern_func <- select_kernel(kernel_name)
+  n <- length(events)
+
+  scores <- sapply(bws, function(bw){
+    vals <- sapply(1:length(events), function(i){
+      ei <- events[[i]]
+      wi <- w[[i]]
+      dists <- abs(ei-events)
+      dens <- kern_func(dists,bw)*w
+      tot_dens <- ((sum(dens) - (kern_func(0,bw)*wi)))
+      return(tot_dens)
+    })
+    score <- ((sum(log(vals)))/n) - log((n-1)*bw)
+    return(score)
+  })
+  return(scores)
 }

@@ -117,7 +117,7 @@ eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustW
 mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
 bike_accidents <- rgdal::readOGR(eventsgpkg,layer="bike_accidents", verbose=FALSE)
 future::plan(future::multisession(workers=2))
-cv_scores <- bw_cvl_calc(c(200,400),50,
+cv_scores <- bw_cvl_calc.mc(c(200,400),50,
                                mtl_network, bike_accidents,
                                rep(1,nrow(bike_accidents)),
                                "quartic", "discontinuous",

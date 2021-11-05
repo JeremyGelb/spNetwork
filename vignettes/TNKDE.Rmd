@@ -1,0 +1,233 @@
+---
+title: "Temporal Network Kernel Density Estimate"
+author: "Jeremy Gelb"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Temporal Network Kernel Density Estimate"}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: spnetwork_bilbio.bibtex
+link-citations: yes
+colorlinks: yes
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+backup_option <- options()
+base_wd <- getwd()
+library(ggplot2)
+```
+
+# Introduction
+
+Events recorded on a network often also have a temporal dimension. In that context, one could estimate the density of events in both time and network space.
+
+The spatio-temporal kernel is calculated as the product of the network kernel density and the time kernel density. At each sample point located at location *l* and time *t*, the Temporal Network Kernel Density Estimate (TNKDE) is calculated as follow:
+
+$$tnkde(l,t) = \frac{1}{bw_{net} * bw_{time}} * \sum^n_{i=1}(k_{net}(d(l,i_l),bw_{net})*k_{time}(d(t,i_t),bw_{time}))$$
+
+with:
+
+* $k_{net}$ the network kernel density function
+* $k_{time}$ the time kernel density function 
+* $bw_{net}$ the bandwidth used for the network kernel
+* $bw_{time}$ the bandwidth used for the time kernel
+* *n* the number of events
+* *i* an event at location $i_l$ and time $i_t$
+* $d(a,b)$ the distance (in time or space) between *a* and *b*
+
+As specified in the previous formula, two bandwidths are necessary, one for space and one for time.
+
+We give in this vignette a short example with bike accident data in 2016 in the central districts of Montreal.
+
+# Temporal dimension
+
+We start here by exploring the density of events in time.
+
+```{r message=FALSE, warning=FALSE}
+# first load data and packages
+library(sp)
+library(maptools)
+library(rgeos)
+library(spNetwork)
+library(tmap)
+library(raster)
+
+eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
+bike_accidents <- rgdal::readOGR(eventsgpkg,layer="bike_accidents", verbose=FALSE)
+
+# converting the Date field to a numeric field (counting days)
+bike_accidents$Time <- as.POSIXct(bike_accidents$Date, format = "%Y/%m/%d")
+start <- as.POSIXct("2016/01/01", format = "%Y/%m/%d")
+bike_accidents$Time <- difftime(bike_accidents$Time, start, units = "days")
+bike_accidents$Time <- as.numeric(bike_accidents$Time)
+
+months <- as.character(1:12)
+months <- ifelse(nchar(months)==1, paste0("0", months), months)
+months_starts_labs <- paste("2016/",months,"/01", sep = "")
+months_starts_num <- as.POSIXct(months_starts_labs, format = "%Y/%m/%d")
+months_starts_num <- difftime(months_starts_num, start, units = "days")
+months_starts_num <- as.numeric(months_starts_num)
+months_starts_labs <- gsub("2016/", "", months_starts_labs, fixed = TRUE)
+
+ggplot(bike_accidents@data) + 
+  geom_histogram(aes(x = Time), bins = 30, color = "white") + 
+  scale_x_continuous(breaks = months_starts_num, labels = months_starts_labs)
+```
+
+This is not surprising to observe that most of the accidents occur during spring summer, and fall. We will remove the lonely observations during the three first months of the year because they might influence the bandwidths' size latter.
+
+```{r message=FALSE, warning=FALSE}
+bike_accidents <- subset(bike_accidents, bike_accidents$Time >= 90)
+```
+
+We can now calculate the kernel density values in time for several bandwidths.
+
+```{r message=FALSE, warning=FALSE}
+w <- rep(1,nrow(bike_accidents))
+samples <- seq(0, max(bike_accidents$Time), 0.5)
+
+time_kernel_values <- data.frame(
+  bw_10 = tkde(bike_accidents$Time, w = w, samples = samples, bw = 10, kernel_name = "quartic"),
+  bw_20 = tkde(bike_accidents$Time, w = w, samples = samples, bw = 20, kernel_name = "quartic"),
+  bw_30 = tkde(bike_accidents$Time, w = w, samples = samples, bw = 30, kernel_name = "quartic"),
+  bw_40 = tkde(bike_accidents$Time, w = w, samples = samples, bw = 40, kernel_name = "quartic"),
+  bw_50 = tkde(bike_accidents$Time, w = w, samples = samples, bw = 50, kernel_name = "quartic"),
+  bw_60 = tkde(bike_accidents$Time, w = w, samples = samples, bw = 60, kernel_name = "quartic"),
+  time = samples
+)
+
+df_time <- reshape2::melt(time_kernel_values,id.vars = "time")
+df_time$variable <- as.factor(df_time$variable)
+
+ggplot(data = df_time) + 
+  geom_line(aes(x = time, y = value)) +
+  scale_x_continuous(breaks = months_starts_num, labels = months_starts_labs) +
+  facet_wrap(vars(variable), ncol=2, scales = "free")
+```
+It seems that a bandwidth between 30 and 40 days capture the bimodal character of the temporal dimension of bike accidents. The lower densities during July and August are likely caused by the lower traffic due to holidays.
+
+It is also possible to use the classical functions from R to find a bandwidth with a datadriver approach.
+
+```{r message=FALSE, warning=FALSE}
+bw1 <- bw.bcv(bike_accidents$Time, nb = 1000, lower = 1, upper = 80)
+bw2 <- bw.ucv(bike_accidents$Time, nb = 1000, lower = 1, upper = 80)
+bw3 <- bw.SJ(bike_accidents$Time, nb = 1000, lower = 1, upper = 80)
+
+
+time_kernel_values <- data.frame(
+  bw_bcv = tkde(bike_accidents$Time, w = w, samples = samples, bw = bw1, kernel_name = "quartic"),
+  bw_ucv = tkde(bike_accidents$Time, w = w, samples = samples, bw = bw2, kernel_name = "quartic"),
+  bw_SJ = tkde(bike_accidents$Time, w = w, samples = samples, bw = bw3, kernel_name = "quartic"),
+  time = samples
+)
+
+df_time <- reshape2::melt(time_kernel_values,id.vars = "time")
+df_time$variable <- as.factor(df_time$variable)
+
+ggplot(data = df_time) + 
+  geom_line(aes(x = time, y = value)) +
+  scale_x_continuous(breaks = months_starts_num, labels = months_starts_labs) +
+  facet_wrap(vars(variable), ncol=2, scales = "free")
+
+```
+
+In that case, the automatic bandwidths selection methods yield much more noisy results with small bandwidths. Bike accidents are rare events and too small time bandwidths would create results with meaningless hot spots.
+
+# Spatial dimension
+
+Before considering the spatio-temporal case, we can also investigate the temporal dimension.
+
+```{r message=FALSE, warning=FALSE}
+# loading the road network
+networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
+mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
+
+tm_shape(mtl_network) + 
+  tm_lines(col = "black") + 
+  tm_shape(bike_accidents) + 
+  tm_dots(col = "red", size = 0.1)
+
+```
+
+We map here the result for several bandwidths
+
+
+# Spatio-temporal
+
+We can now estiamte the kernel density in both space and time. Note that increasing the dimension leads to larger bandwidths.
+
+```{r message=FALSE, warning=FALSE}
+cv_scores <- bws_tnkde_cv_likelihood_calc(
+  bw_net_range = c(100,1000),
+  bw_net_step = 100,
+  bw_time_range = c(10,60),
+  bw_time_step = 10,
+  lines = mtl_network,
+  events = bike_accidents,
+  time_field = "Time",
+  w = rep(1, length(bike_accidents)),
+  kernel_name = "quartic",
+  method = "discontinuous",
+  diggle_correction = FALSE,
+  study_area = NULL,
+  max_depth = 10,
+  digits = 2,
+  tol = 0.1,
+  agg = 15,
+  sparse=TRUE,
+  grid_shape=c(1,1),
+  sub_sample=1,
+  verbose = FALSE,
+  check = TRUE)
+
+knitr::kable(cv_scores)
+
+```
+According to the leave one out cross validation method, the optimal set of bandwidths are 700 metres and 60 days.
+
+
+```{r message=FALSE, warning=FALSE}
+
+lixels <- lixelize_lines(mtl_network, 50)
+sample_points <- lines_center(lixels)
+sample_time <- seq(0, max(bike_accidents$Time), 10)
+
+densities <- tnkde(lines = mtl_network,
+                   events = bike_accidents, time_field = "Time", w = rep(1, nrow(bike_accidents)), 
+                   samples_loc = sample_points, samples_time = sample_time, 
+                   kernel_name = "quartic", bw_net = 700, bw_time = 60, adaptive = TRUE,
+                   trim_bw_net = 900, trim_bw_time = 80, method = "discontinuous",
+                   div = "bw", max_depth = 10, digits = 2, tol = 0.01, agg = 15, grid_shape = c(1,1))
+
+all_densities <- c(densities$k)
+
+
+library(classInt)
+library(viridis)
+color_breaks <- classIntervals(all_densities, n = 10, style = "kmeans")
+
+
+all_maps <- lapply(1:ncol(densities$k), function(i){
+  time <- sample_time[[i]]
+  date <- as.Date(start) + time
+  
+  sample_points$density <- densities$k[,i]
+  map1 <- tm_shape(sample_points) + 
+  tm_dots(col = "density", size = 0.01,
+          breaks = color_breaks$brks, palette = viridis(10)) + 
+    tm_layout(legend.show=FALSE, main.title = as.character(date), main.title.size = 0.5)
+  return(map1)
+})
+
+
+tmap_animation(all_maps, filename = "animated_map.gif",width = 1000, height = 1000, dpi = 300, delay = 50)
+
+```
+
+
+

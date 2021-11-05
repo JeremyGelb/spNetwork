@@ -113,7 +113,7 @@ described by the package spatstat \insertCite{spatstatpkg}{spNetwork}.
 LCV(h) = sum[i] log(lambda[-i](x[i]))
 
 Where the sum is taken for all events x[i] and where lambda[-i](x[i]) is the leave-one-out kernel
-estimate at x[i] for a bandwidth h. A lower value indicates a better bandwidth.
+estimate at x[i] for a bandwidth h. A higher value indicates a better bandwidth.
 }
 \examples{
 \donttest{

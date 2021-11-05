@@ -1,0 +1,562 @@
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#### shared functions ####
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+bw_checks <- function(check,lines,samples,events,
+                      kernel_name, method, bw_net_range = NULL, bw_time_range = NULL,
+                      bw_net_step = NULL, bw_time_step = NULL,
+                      diggle_correction = FALSE, study_area = NULL){
+
+  if((kernel_name %in% c("triangle", "gaussian", "scaled gaussian", "tricube", "cosine" ,"triweight", "quartic", 'epanechnikov','uniform'))==FALSE){
+    stop('the name of the kernel function must be one of c("triangle", "gaussian", "scaled gaussian", "tricube", "cosine" ,"triweight", "quartic", "epanechnikov" ,"uniform")')
+  }
+
+  if(method %in% c("simple","continuous","discontinuous") == FALSE){
+    stop('the method must be one of c("simple","continuous","discontinuous"')
+  }
+  if(method == "continuous" & kernel_name == "gaussian"){
+    stop("using the continuous NKDE and the gaussian kernel function can yield negative values for densities because the gaussian kernel does not integrate to 1 within the bandiwdth, please consider using the quartic kernel instead")
+  }
+
+  if(is.null(bw_net_range) == FALSE){
+    if(min(bw_net_range)<=0){
+      stop("the bandwidths for the kernel must be superior to 0")
+    }
+  }
+  if(is.null(bw_time_range) == FALSE){
+    if(min(bw_time_range)<=0){
+      stop("the bandwidths for the kernel must be superior to 0")
+    }
+  }
+
+  if(is.null(bw_net_step) == FALSE){
+    if(bw_net_step<=0){
+      stop("the step between two bandwidths must be greater than 0")
+    }
+  }
+  if(is.null(bw_time_step) == FALSE){
+    if(bw_time_step<=0){
+      stop("the step between two bandwidths must be greater than 0")
+    }
+  }
+
+  if(diggle_correction & is.null(study_area)){
+    stop("the study_area must be defined if the Diggle correction factor is used")
+  }
+  if(check){
+    check_geometries(lines,samples,events,study_area)
+  }
+}
+
+bw_tnkde_corr_factor <- function(net_bws, time_bws, diggle_correction, events, events_loc, lines,
+                                 method, kernel_name, tol, digits, max_depts, sparse){
+  net_bws_corr <- lapply(net_bws, function(bw){
+    if(diggle_correction){
+      bws <- rep(bw,nrow(events_loc))
+      # network corr_factor
+      corr_factor <- correction_factor(study_area, events_loc, lines, method, bws,
+                                       kernel_name, tol, digits, max_depth, sparse)
+
+      corr_factor <- corr_factor[events$goid]
+    }else{
+      corr_factor<- rep(1,nrow(events))
+    }
+    return(corr_factor)
+  })
+
+  ## calculating time corr_factors
+
+  time_bws_corr <- lapply(time_bws, function(bw){
+    if(diggle_correction){
+      bws <- rep(bw,nrow(events))
+      # network corr_factor
+      corr_factor <- correction_factor_time(events$time, events$time, bws, kernel_name)
+    }else{
+      corr_factor<- rep(1,nrow(events))
+    }
+    return(corr_factor)
+  })
+  return(list(net_bws_corr, time_bws_corr))
+}
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#### The single core version ####
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+#' @title Bandwidth selection by likelihood cross validation for temporal NKDE
+#'
+#' @description Calculate for multiple network and time bandwidths the cross validation likelihood to
+#' select an appropriate bandwidth in a data-driven approach
+#'
+#' @details  The function calculates the likelihood cross validation score for several time and network
+#' bandwidths in order to find the most appropriate one. The general idea is to find the pair of
+#' bandwidths that would produce the most similar results if one event was removed from
+#' the dataset (leave one out cross validation). We use here the shortcut formula as
+#' described by the package spatstat \insertCite{spatstatpkg}{spNetwork}.
+#'
+#' LCV(h) = sum[i] log(lambda[-i](x[i]))
+#'
+#' Where the sum is taken for all events x[i] and where lambda[-i](x[i]) is the leave-one-out kernel
+#' estimate at x[i] for a bandwidth h. A lower value indicates a better bandwidth.
+#'
+#' @references{
+#'     \insertAllCited{}
+#' }
+#'
+#' @template bw_tnkde_selection-args
+#' @template nkde_params-arg
+#' @template nkde_geoms-args
+#' @param time_field The name of the field in events indicating when the events occurred. It must be a numeric field
+#' @template sparse-arg
+#' @template grid_shape-arg
+#' @param sub_sample A float between 0 and 1 indicating the percentage of quadra
+#' to keep in the calculus. For large datasets, it may be useful to limit the
+#' bandwidth evaluation and thus reduce calculation time.
+#' @param verbose A Boolean, indicating if the function should print messages
+#' about process.
+#' @template check-arg
+#' @return A matrix with the cross validation score.  Each row correspond to a network
+#' bandwidth and each column to a time bandwidth (the higher the better).
+#' @export
+#' @examples
+#' # loading the data
+#' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
+#' eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
+#' #eventsgpkg <- "C:/Users/gelbj/OneDrive/Documents/R/dev-packages/sauvetage_spNetwork/spNetwork/inst/extdata/events.gpkg"
+#' mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
+#' bike_accidents <- rgdal::readOGR(eventsgpkg,layer="bike_accidents", verbose=FALSE)
+#'
+#' # converting the Date field to a numeric field (counting days)
+#' bike_accidents$Time <- as.POSIXct(bike_accidents$Date, format = "%Y/%m/%d")
+#' bike_accidents$Time <- difftime(bike_accidents$Time, min(bike_accidents$Time), units = "days")
+#' bike_accidents$Time <- as.numeric(bike_accidents$Time)
+#' bike_accidents <- subset(bike_accidents, bike_accidents$Time>=89)
+#'
+#' # calculating the cross validation values
+#' cv_scores <- bws_tnkde_cv_likelihood_calc(
+#'   bw_net_range = c(100,1000),
+#'   bw_net_step = 100,
+#'   bw_time_range = c(10,60),
+#'   bw_time_step = 5,
+#'   lines = mtl_network,
+#'   events = bike_accidents,
+#'   time_field = "Time",
+#'   w = rep(1, length(bike_accidents)),
+#'   kernel_name = "quartic",
+#'   method = "discontinuous",
+#'   diggle_correction = FALSE,
+#'   study_area = NULL,
+#'   max_depth = 10,
+#'   digits = 2,
+#'   tol = 0.1,
+#'   agg = 15,
+#'   sparse=TRUE,
+#'   grid_shape=c(1,1),
+#'   sub_sample=1,
+#'   verbose = FALSE,
+#'   check = TRUE)
+bws_tnkde_cv_likelihood_calc <- function(bw_net_range, bw_net_step,
+                                         bw_time_range, bw_time_step,
+                                         lines, events, time_field,
+                                         w, kernel_name, method,
+                                         diggle_correction = FALSE, study_area = NULL,
+                                         max_depth = 15, digits=5, tol=0.1, agg=NULL, sparse=TRUE,
+                                         grid_shape=c(1,1), sub_sample=1, verbose=TRUE, check=TRUE){
+
+  ## step0 basic checks
+  samples <- events
+  events$time <- events[[time_field]]
+  events$weight <- w
+  div <- "bw"
+  events$wid <- 1:nrow(events)
+
+  ## checking inputs
+  bw_checks(check, lines, samples, events,
+                  kernel_name, method, bw_net_range = bw_net_range, bw_time_range = bw_time_range,
+                  bw_net_step = bw_net_step, bw_time_step = bw_time_step,
+                  diggle_correction = diggle_correction, study_area = study_area)
+
+  ## step1 : preparing the data
+  if(verbose){
+    print("prior data preparation ...")
+  }
+
+  data <- prepare_data(samples, lines, events, w , digits,tol,agg)
+  lines <- data$lines
+  events_loc <- data$events
+
+  idx <- FNN::knnx.index(sp::coordinates(events_loc),sp::coordinates(events), k = 1)
+  events$goid <- events_loc$goid[idx]
+
+  ## step2  creating the grid
+  grid <- build_grid(grid_shape,list(lines,samples,events))
+
+  ## calculating the correction factor for each bw combinaisons
+  net_bws <- seq(from = bw_net_range[[1]], to = bw_net_range[[2]], by = bw_net_step)
+  time_bws <- seq(from = bw_time_range[[1]], to = bw_time_range[[2]], by = bw_time_step)
+
+  if(verbose){
+    print("Calculating the correction factor if required")
+  }
+
+  ## calculating network corr_factors
+  corr_factors <- bw_tnkde_corr_factor(net_bws, time_bws, diggle_correction, events, events_loc, lines,
+                                   method, kernel_name, tol, digits, max_depts, sparse)
+  net_bws_corr <- corr_factors[[1]]
+  time_bws_corr <- corr_factors[[2]]
+
+
+  ## NB : the weights can change because of the different BW in time and space
+  ## The weights will be passed to c++, to is must be in an easy format, like an array
+  ## event_weights(rows = bws_net, cols = bws_time, slices = events)
+  events_weight <- array(0, dim = c(length(net_bws), length(time_bws), nrow(events)))
+
+  for (i in 1:length(time_bws_corr)){
+    bw_time <- time_bws[[i]]
+    corr_time <- time_bws_corr[[i]]
+    for (j in 1:length(net_bws_corr)){
+      bw_net <- net_bws[[j]]
+      corr_net <- net_bws_corr[[j]]
+      events_weight[j,i,] <- events$weight * corr_time * corr_net
+    }
+  }
+
+  max_bw_net <- max(net_bws)
+
+  ## step3 splitting the dataset with each rectangle
+  # NB : here we select the events in the gris (samples) and the events locations in the buffer (events_loc)
+  selections <- split_by_grid(grid, events, events_loc, lines,max_bw_net, tol, digits, split_all = FALSE)
+
+  ## sub sampling the quadra if required
+  if (sub_sample < 1){
+    nb <- ceiling(length(selections) * sub_sample)
+    selections <- selections[sample(1:length(selections),size = nb,replace = F)]
+  }
+
+  ## step 4 calculating the CV values
+  if(verbose){
+    print("start calculating the CV values ...")
+  }
+
+  n_quadra <- length(selections)
+
+  if (verbose){
+    pb <- txtProgressBar(min = 0, max = n_quadra, style = 3)
+  }
+  dfs <- lapply(1:n_quadra,function(i){
+
+    sel <- selections[[i]]
+
+    # the events_loc must cover the quadra and the bw
+    sel_events_loc <- sel$events
+
+    # idem for all the events
+    sel_events <- subset(events, events$goid %in% sel_events_loc$goid)
+
+    # but I also need to know on which events I must calculate the densities (in the quadra)
+    quad_events <- sel$samples
+    sel_weights <- events_weight[,,sel_events$wid]
+
+    values <- tnkde_worker_bw_sel(sel$lines, quad_events, sel_events_loc, sel_events, sel_weights,
+                                  kernel_name, net_bws, time_bws,
+                                  method, div, digits,
+                                  tol,sparse, max_depth, verbose)
+
+
+    if(verbose){
+      setTxtProgressBar(pb, i)
+    }
+
+    # values est une matrice (bw_net, bw_time) avec les sommes de loglikelihood de chaque
+    return(values)
+  })
+
+  # removing NULL elements in list
+  dfs[sapply(dfs, is.null)] <- NULL
+
+  add <- function(x) Reduce("+", x)
+
+  final_mat <- add(dfs)
+  colnames(final_mat) <- time_bws
+  rownames(final_mat) <- net_bws
+
+  return(final_mat)
+}
+
+
+
+
+#' @title Bandwidth selection by likelihood cross validation for temporal NKDE (multicore)
+#'
+#' @description Calculate for multiple network and time bandwidths the cross validation likelihood to
+#' select an appropriate bandwidth in a data-driven approach with multicore support
+#'
+#' @details See the function bws_tnkde_cv_likelihood_calc for more details. Note that the calculation is split
+#' according to the grid_shape argument. If the grid_shape is c(1,1) then only one process can be used.
+#'
+#' @template bw_tnkde_selection-args
+#' @template nkde_params-arg
+#' @template nkde_geoms-args
+#' @param time_field The name of the field in events indicating when the events occurred. It must be a numeric field
+#' @template sparse-arg
+#' @template grid_shape-arg
+#' @param sub_sample A float between 0 and 1 indicating the percentage of quadra
+#' to keep in the calculus. For large datasets, it may be useful to limit the
+#' bandwidth evaluation and thus reduce calculation time.
+#' @param verbose A Boolean, indicating if the function should print messages
+#' about process.
+#' @template check-arg
+#' @return A matrix with the cross validation score.  Each row correspond to a network
+#' bandwidth and each column to a time bandwidth (the higher the better).
+#' @export
+#' @examples
+#' # loading the data
+#' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
+#' eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
+#' mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
+#' bike_accidents <- rgdal::readOGR(eventsgpkg,layer="bike_accidents", verbose=FALSE)
+#'
+#' # converting the Date field to a numeric field (counting days)
+#' bike_accidents$Time <- as.POSIXct(bike_accidents$Date, format = "%Y/%m/%d")
+#' bike_accidents$Time <- difftime(bike_accidents$Time, min(bike_accidents$Time), units = "days")
+#' bike_accidents$Time <- as.numeric(bike_accidents$Time)
+#' bike_accidents <- subset(bike_accidents, bike_accidents$Time>=89)
+#'
+#' # calculating the cross validation values
+#' cv_scores <- bws_tnkde_cv_likelihood_calc.mc(
+#'   bw_net_range = c(100,1000),
+#'   bw_net_step = 100,
+#'   bw_time_range = c(10,60),
+#'   bw_time_step = 5,
+#'   lines = mtl_network,
+#'   events = bike_accidents,
+#'   time_field = "Time",
+#'   w = rep(1, length(bike_accidents)),
+#'   kernel_name = "quartic",
+#'   method = "discontinuous",
+#'   diggle_correction = FALSE,
+#'   study_area = NULL,
+#'   max_depth = 10,
+#'   digits = 2,
+#'   tol = 0.1,
+#'   agg = 15,
+#'   sparse=TRUE,
+#'   grid_shape=c(1,1),
+#'   sub_sample=1,
+#'   verbose = FALSE,
+#'   check = TRUE)
+bws_tnkde_cv_likelihood_calc.mc <- function(bw_net_range, bw_net_step,
+                                         bw_time_range, bw_time_step,
+                                         lines, events, time_field,
+                                         w, kernel_name, method,
+                                         diggle_correction = FALSE, study_area = NULL,
+                                         max_depth = 15, digits=5, tol=0.1, agg=NULL, sparse=TRUE,
+                                         grid_shape=c(1,1), sub_sample=1, verbose=TRUE, check=TRUE){
+
+  ## step0 basic checks
+  samples <- events
+  events$time <- events[[time_field]]
+  events$weight <- w
+  div <- "bw"
+  events$wid <- 1:nrow(events)
+
+  ## checking inputs
+  bw_checks(check, lines, samples, events,
+            kernel_name, method, bw_net_range = bw_net_range, bw_time_range = bw_time_range,
+            bw_net_step = bw_net_step, bw_time_step = bw_time_step,
+            diggle_correction = diggle_correction, study_area = study_area)
+
+  ## step1 : preparing the data
+  if(verbose){
+    print("prior data preparation ...")
+  }
+
+  data <- prepare_data(samples, lines, events, w , digits,tol,agg)
+  lines <- data$lines
+  events_loc <- data$events
+
+  idx <- FNN::knnx.index(sp::coordinates(events_loc),sp::coordinates(events), k = 1)
+  events$goid <- events_loc$goid[idx]
+
+  ## step2  creating the grid
+  grid <- build_grid(grid_shape,list(lines,samples,events))
+
+  ## calculating the correction factor for each bw combinaisons
+  net_bws <- seq(from = bw_net_range[[1]], to = bw_net_range[[2]], by = bw_net_step)
+  time_bws <- seq(from = bw_time_range[[1]], to = bw_time_range[[2]], by = bw_time_step)
+
+  if(verbose){
+    print("Calculating the correction factor if required")
+  }
+
+  ## calculating network corr_factors
+  corr_factors <- bw_tnkde_corr_factor(net_bws, time_bws, diggle_correction, events, events_loc, lines,
+                                       method, kernel_name, tol, digits, max_depts, sparse)
+  net_bws_corr <- corr_factors[[1]]
+  time_bws_corr <- corr_factors[[2]]
+
+
+  ## NB : the weights can change because of the different BW in time and space
+  ## The weights will be passed to c++, to is must be in an easy format, like an array
+  ## event_weights(rows = bws_net, cols = bws_time, slices = events)
+  events_weight <- array(0, dim = c(length(net_bws), length(time_bws), nrow(events)))
+
+  for (i in 1:length(time_bws_corr)){
+    bw_time <- time_bws[[i]]
+    corr_time <- time_bws_corr[[i]]
+    for (j in 1:length(net_bws_corr)){
+      bw_net <- net_bws[[j]]
+      corr_net <- net_bws_corr[[j]]
+      events_weight[j,i,] <- events$weight * corr_time * corr_net
+    }
+  }
+
+  max_bw_net <- max(net_bws)
+
+  ## step3 splitting the dataset with each rectangle
+  # NB : here we select the events in the gris (samples) and the events locations in the buffer (events_loc)
+  selections <- split_by_grid(grid, events, events_loc, lines,max_bw_net, tol, digits, split_all = FALSE)
+
+  ## sub sampling the quadra if required
+  if (sub_sample < 1){
+    nb <- ceiling(length(selections) * sub_sample)
+    selections <- selections[sample(1:length(selections),size = nb,replace = F)]
+  }
+
+  ## step 4 calculating the CV values
+  if(verbose){
+    print("start calculating the CV values ...")
+  }
+
+  n_quadra <- length(selections)
+
+
+  if(verbose){
+    progressr::with_progress({
+      p <- progressr::progressor(along = selections)
+      dfs <- future.apply::future_lapply(selections, function(sel) {
+
+        # the events_loc must cover the quadra and the bw
+        sel_events_loc <- sel$events
+
+        # idem for all the events
+        sel_events <- subset(events, events$goid %in% sel_events_loc$goid)
+
+        # but I also need to know on which events I must calculate the densities (in the quadra)
+        quad_events <- sel$samples
+        sel_weights <- events_weight[,,sel_events$wid]
+
+        values <- tnkde_worker_bw_sel(sel$lines, quad_events, sel_events_loc, sel_events, sel_weights,
+                                      kernel_name, net_bws, time_bws,
+                                      method, div, digits,
+                                      tol,sparse, max_depth, verbose)
+
+        p(sprintf("i=%g", sel$index))
+
+        return(values)
+
+      })
+    })
+  }else{
+    dfs <- future.apply::future_lapply(selections, function(sel) {
+
+      # the events_loc must cover the quadra and the bw
+      sel_events_loc <- sel$events
+
+      # idem for all the events
+      sel_events <- subset(events, events$goid %in% sel_events_loc$goid)
+
+      # but I also need to know on which events I must calculate the densities (in the quadra)
+      quad_events <- sel$samples
+      sel_weights <- events_weight[,,sel_events$wid]
+
+      values <- tnkde_worker_bw_sel(sel$lines, quad_events, sel_events_loc, sel_events, sel_weights,
+                                    kernel_name, net_bws, time_bws,
+                                    method, div, digits,
+                                    tol,sparse, max_depth, verbose)
+      return(values)
+    })
+  }
+
+  # removing NULL elements in list
+  dfs[sapply(dfs, is.null)] <- NULL
+
+  add <- function(x) Reduce("+", x)
+
+  final_mat <- add(dfs)
+  colnames(final_mat) <- time_bws
+  rownames(final_mat) <- net_bws
+
+  return(final_mat)
+}
+
+
+
+
+
+#' @title Worker function fo Bandwidth selection by likelihood cross validation for temporal NKDE
+#'
+#' @description Calculate for multiple network and time bandwidths the cross validation likelihood to
+#' select an appropriate bandwidth in a data-driven approach
+#' @param lines A SpatialLinesDataFrame representing the underlying network
+#' @param quad_events a SpatialPointsDataFrame indicating for which events the densities must be calculated
+#' @param events_loc A SpatialPointsDataFrame representing the location of the events
+#' @param events A SpatialPointsDataFrame representing the events. Multiple events can share
+#' the same location. They are linked by the goid column
+#' @param w A numeric array with the weight of the events for each pair of bandwidth
+#' @param kernel_name The name of the kernel to use (string)
+#' @param bws_net A numeric vector with the network bandwidths
+#' @param bws_time A numeric vector with the time bandwidths
+#' @param method The type of NKDE to use (string)
+#' @template nkde_geoms-args
+#' @template sparse-arg
+#' @param verbose A boolean
+#' @param cvl A boolean indicating if the cvl method (TRUE) or the loo (FALSE) method must be used
+#' @keywords internal
+#' @examples
+#' # no example provided, this is an internal function
+tnkde_worker_bw_sel <- function(lines, quad_events, events_loc, events, w, kernel_name, bws_net, bws_time, method, div, digits, tol, sparse, max_depth, verbose = FALSE, cvl = FALSE){
+
+  # if we do not have event in that space, just return NULL
+  if(nrow(events)==0){
+    return(NULL)
+  }
+
+  ## step1 creating the graph
+  graph_result <- build_graph(lines,digits = digits,line_weight = "length")
+  graph <- graph_result$graph
+  nodes <- graph_result$spvertices
+  edges <- graph_result$spedges
+
+  ## step2 finding for each event, its corresponding node
+  ## NOTE : there will be less samples than events most of the time
+  events_loc$vertex_id <- closest_points(events_loc, nodes)
+
+  events_loc2 <- events_loc@data
+  events2 <- events@data
+  quad_events2 <- quad_events@data
+
+  #first a join for all the events in the bw
+  setDT(events2)[events_loc2, on = "goid", vertex_id := i.vertex_id]
+
+  #and a second join for the quad_events
+  setDT(quad_events2)[events_loc2, on = "goid", vertex_id := i.vertex_id]
+
+  ## step3 starting the calculations !
+  neighbour_list <- adjacent_vertices(graph,nodes$id,mode="out")
+  neighbour_list <- lapply(neighbour_list,function(x){return (as.numeric(x))})
+
+  kernel_values <- tnkde_get_loo_values(method,
+                                        neighbour_list,
+                                        quad_events2$vertex_id, quad_events2$wid, quad_events2$time,
+                                        events2$vertex_id, events2$wid, events2$time, w,
+                                        bws_net, bws_time,
+                                        kernel_name, graph_result$linelist, max_depth,
+                                        .Machine$double.xmin
+  )
+
+  ## at that point, we have a list of numeric vectors or a list of dataframes, one for each bw
+  return(kernel_values)
+}

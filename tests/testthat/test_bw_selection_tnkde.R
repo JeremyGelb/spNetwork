@@ -75,9 +75,9 @@ test_that("Testing the bw selection function with CV likelihood and simple kerne
                                            tol=0.001,
                                            agg=NULL,
                                            sparse=TRUE,
-                                           grid_shape=c(1,1),
+                                           grid_shape=c(3,3),
                                            sub_sample=1,
-                                           verbose=TRUE,
+                                           verbose=FALSE,
                                            check=FALSE)
 
   expect_equal(obs_value[1,1], total)

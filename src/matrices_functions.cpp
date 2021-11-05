@@ -11,6 +11,18 @@ int get_first_index(NumericVector& v1, double x){
   return -1;
 }
 
+// a simple function to find the index of the first occurence of value in a numeric vector
+std::vector<int> get_all_indeces(NumericVector& v1, double x){
+  int i;
+  std::vector<int> idxs;
+  for( i = 0; i < v1.size(); ++i) {
+    if(v1[i] == x){
+      idxs.push_back(i);
+    }
+  }
+  return idxs;
+}
+
 
 // short function to create a matrix from the neighbour_list
 // note : might be better as a sparse matrix ?

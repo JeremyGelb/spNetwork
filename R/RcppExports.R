@@ -338,6 +338,77 @@ get_loo_values_simple <- function(neighbour_list, samples, sweights, events, wei
     .Call('_spNetwork_get_loo_values_simple', PACKAGE = 'spNetwork', neighbour_list, samples, sweights, events, weights, bws, kernel_name, line_list, max_depth)
 }
 
+#' @title The worker function to calculate simple NKDE likelihood cv
+#' @name ess_kernel_loo_nkde
+#' @param kernel_func a cpp pointer function (selected with the kernel name)
+#' @param edge_mat matrix, to find the id of each edge given two neighbours.
+#' @param events a NumericVector indicating the nodes in graph beeing events
+#' @param neighbour_list a List, giving for each node an IntegerVector with
+#' its neighbours
+#' @param v the actual node to consider (int)
+#' @param bws_net an arma::vec with the network bandwidths to consider
+#' @param line_weights a vector with the length of the edges
+#' @param depth the actual recursion depth
+#' @param max_depth the maximum recursion depth
+#' @return a matrix with the impact of the event v on each other event for
+#' each pair of bandwidths (mat(event, bws_net))
+#' @keywords internal
+NULL
+
+#' @title The worker function to calculate discontinuous TNKDE likelihood cv
+#' @name esd_kernel_loo_nkde
+#' @param kernel_func a cpp pointer function (selected with the kernel name)
+#' @param edge_mat matrix, to find the id of each edge given two neighbours.
+#' @param events a NumericVector indicating the nodes in graph beeing events
+#' @param neighbour_list a List, giving for each node an IntegerVector with
+#' its neighbours
+#' @param v the actual node to consider (int)
+#' @param bws_net an arma::vec with the network bandwidths to consider
+#' @param line_weights a vector with the length of the edges
+#' @param depth the actual recursion depth
+#' @param max_depth the maximum recursion depth
+#' @return a cube with the impact of the event v on each other event for
+#' each pair of bandwidths (cube(bws_net, bws_time, events))
+NULL
+
+#' @title The worker function to calculate continuous TNKDE likelihood cv
+#' @name esc_kernel_loo_nkde
+#' @param kernel_func a cpp pointer function (selected with the kernel name)
+#' @param edge_mat matrix, to find the id of each edge given two neighbours.
+#' @param events a NumericVector indicating the nodes in graph beeing events
+#' @param neighbour_list a List, giving for each node an IntegerVector with
+#' its neighbours
+#' @param v the actual node to consider (int)
+#' @param bws_net an arma::vec with the network bandwidths to consider
+#' @param line_weights a vector with the length of the edges
+#' @param depth the actual recursion depth
+#' @param max_depth the maximum recursion depth
+#' @return a cube with the impact of the event v on each other event for
+#' each pair of bandwidths (cube(bws_net, bws_time, events))
+NULL
+
+#' @title The exposed function to calculate NKDE likelihood cv
+#' @name nkde_get_loo_values
+#' @param method a string, one of "simple", "continuous", "discontinuous"
+#' @param neighbour_list a List, giving for each node an IntegerVector with
+#' its neighbours
+#' @param events a NumericVector indicating the nodes in graph beeing events
+#' @param weights a matrix with the weights associated with each events (row) for each
+#' bws_net (cols).
+#' @param bws_net an arma::vec with the network bandwidths to consider
+#' @param kernel_name a string with the name of the kernel to use
+#' @param line_list a DataFrame describing the lines
+#' @param max_depth the maximum recursion depth
+#' @param min_tol a double indicating by how much 0 in densities values must be replaced
+#' @param cvl a boolean indicating if the Cronie (TRUE) or CV likelihood (FALSE) must be used
+#' @return a matrix with the CV score for each pair of bandiwdths
+#' @export
+#' @examples
+#' # no example provided, this is an internal function
+nkde_get_loo_values <- function(method, neighbour_list, sel_events, sel_events_wid, events, events_wid, weights, bws_net, kernel_name, line_list, max_depth, min_tol, cvl) {
+    .Call('_spNetwork_nkde_get_loo_values', PACKAGE = 'spNetwork', method, neighbour_list, sel_events, sel_events_wid, events, events_wid, weights, bws_net, kernel_name, line_list, max_depth, min_tol, cvl)
+}
+
 #' @title The worker function to calculate simple TNKDE likelihood cv
 #' @name ess_kernel_loo_tnkde
 #' @param kernel_func a cpp pointer function (selected with the kernel name)
@@ -415,8 +486,8 @@ NULL
 #' @export
 #' @examples
 #' # no example provided, this is an internal function
-tnkde_get_loo_values <- function(method, neighbour_list, events, events_time, weights, bws_net, bws_time, kernel_name, line_list, max_depth, min_tol) {
-    .Call('_spNetwork_tnkde_get_loo_values', PACKAGE = 'spNetwork', method, neighbour_list, events, events_time, weights, bws_net, bws_time, kernel_name, line_list, max_depth, min_tol)
+tnkde_get_loo_values <- function(method, neighbour_list, sel_events, sel_events_wid, sel_events_time, events, events_wid, events_time, weights, bws_net, bws_time, kernel_name, line_list, max_depth, min_tol) {
+    .Call('_spNetwork_tnkde_get_loo_values', PACKAGE = 'spNetwork', method, neighbour_list, sel_events, sel_events_wid, sel_events_time, events, events_wid, events_time, weights, bws_net, bws_time, kernel_name, line_list, max_depth, min_tol)
 }
 
 find_nearest_object_in_line_rtree <- function(pts, lines, min_dist, max_iter) {
