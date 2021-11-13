@@ -2,78 +2,71 @@
 % Please edit documentation in R/bandwidth_selection_cv.R
 \name{nkde_worker_bw_sel}
 \alias{nkde_worker_bw_sel}
-\title{Worker function for bandwidth selection by likelihood cross validation}
+\title{Bandwidth selection by likelihood cross validation worker function}
 \usage{
 nkde_worker_bw_sel(
   lines,
+  quad_events,
+  events_loc,
   events,
-  samples,
+  w,
   kernel_name,
-  bws,
+  bws_net,
   method,
   div,
   digits,
   tol,
   sparse,
   max_depth,
-  verbose = FALSE
+  verbose = FALSE,
+  cvl = FALSE
 )
 }
 \arguments{
-\item{lines}{A SpatialLinesDataFrame representing the underlying network. The
-geometries must be a SpatialLinesDataFrame (may crash if some geometries
- are invalid)}
+\item{lines}{A SpatialLinesDataFrame representing the underlying network}
 
-\item{events}{A SpatialPointsDataFrame representing the events on the
-network.}
+\item{quad_events}{a SpatialPointsDataFrame indicating for which events the densities must be calculated}
 
-\item{samples}{A SpatialPointsDataFrame representing the samples on the
-network.}
+\item{events_loc}{A SpatialPointsDataFrame representing the location of the events}
 
-\item{kernel_name}{The name of the kernel to use. Must be one of triangle,
-gaussian, tricube, cosine ,triweight, quartic, epanechnikov or uniform.}
+\item{events}{A SpatialPointsDataFrame representing the events. Multiple events can share
+the same location. They are linked by the goid column}
 
-\item{bws}{A vector with all the bandiwdths to test.}
+\item{w}{A numeric matrix with the weight of the events for each bandwdith}
 
-\item{method}{The method to use when calculating the NKDE, must be one of
-simple / discontinuous / continuous (see details for more information)}
+\item{kernel_name}{The name of the kernel to use (string)}
 
-\item{div}{The divisor to use (should always be dist here).}
+\item{bws_net}{A numeric vector with the network bandwidths}
 
-\item{digits}{The number of digits to retain in the spatial coordinates. It
-ensures that topology is good when building the network. Default is 3}
+\item{method}{The type of NKDE to use (string)}
 
-\item{tol}{When adding the events and the sampling points to the network,
-the minimum distance between these points and the lines' extremities. When
-points are closer, they are added at the extremity of the lines.}
+\item{digits}{The number of digits to retain from the spatial coordinates. It
+ensures that topology is good when building the network. Default is 3. Too high a
+precision (high number of digits) might break some connections}
 
-\item{sparse}{A Boolean indicating if sparse or regular matrix should be
-used by the Rcpp functions. Regular matrix are faster, but require more
-memory and could lead to error, in particular with multiprocessing. Sparse
-matrix are slower, but require much less memory (not used for the moment).}
+\item{tol}{A float indicating the minimum distance between the events and the
+lines' extremities when adding the point to the network. When points are
+closer, they are added at the extremity of the lines.}
 
-\item{max_depth}{when using the continuous and discontinuous methods, the
-calculation time and memory use can go wild  if the network has many
-small edges (area with many of intersections and many events). To
-avoid it, it is possible to set here a maximum depth. Considering that the
-kernel is divided at intersections, a value of 10 should yield good
-estimates in most cases. A larger value can be used without a problem for the
-discontinuous method. For the continuous method, a larger value will
-strongly impact calculation speed.}
+\item{sparse}{A Boolean indicating if sparse or regular matrices should be
+used by the Rcpp functions. These matrices are used to store edge indices
+between two nodes in a graph. Regular matrices are faster, but require more
+memory, in particular with multiprocessing. Sparse matrices are slower (a
+bit), but require much less memory.}
 
-\item{verbose}{A Boolean, indicating if the function should print messages
-about process.}
+\item{verbose}{A boolean}
 
-\item{agg}{A double indicating if the events must be aggregated within a distance.
-If NULL, the events are aggregated by rounding the coordinates.}
-}
-\value{
-A list of dataframes (continuous kernel) or a list of numeric vectors (other kernels).
+\item{cvl}{A boolean indicating if the cvl method (TRUE) or the loo (FALSE) method must be used}
+
+\item{agg}{A double indicating if the events must be aggregated within a
+distance. If NULL, the events are aggregated only by rounding the
+coordinates.}
 }
 \description{
-The worker function for bandwidth selection by likelihood cross validation
+worker function for calculating for multiple bandwidth the cross validation likelihood to
+select an appropriate bandwidth in a data-driven approach
 }
 \examples{
-#This is an internal function, no example provided
+# no example provided, this is an internal function
 }
 \keyword{internal}

@@ -1,3 +1,18 @@
+# spNetwork 0.3.0.9000
+
+## New Features
+
+* Added a set of functions to perform Temporal Network Kernel Density Estimation (see vignette TNKDE)
+
+## documentation
+
+* A new vignette is presenting the Temporal Network Kernel Density Estimation
+
+## performance
+
+* Performance was improved for data driven bandwidth selection for NKDE
+* The function *lines_points_along* has been reworked with c++ and is now way faster
+
 # spNetwork 0.2.1
 
 Minor release to fix a bug on SOLARIS for CRAN

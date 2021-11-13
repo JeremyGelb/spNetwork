@@ -345,3 +345,27 @@ fptros select_kernelos(std::string c) {
   }
   return quartic_kernelos;
 } //# nocov end
+
+
+//#####################################################################################
+// #####################  some common functions  ####################################
+//#####################################################################################
+
+
+// A simple function to find duplicates in an integer vector
+std::map<int, int> count_values_intvec(IntegerVector x){
+  // Creating a map
+  std::map<int, int> counter;
+  // Filling the map
+  for (int i = 0; i != x.length(); ++i) {
+    counter[ x[i] ] += 1;
+  }
+  return counter;
+}
+
+// A simple function to check if a map contains a value
+bool map_contains_key(std::map<int, arma::vec>& map, int key){
+  if (map.find(key) == map.end()) return false;
+  return true;
+}
+

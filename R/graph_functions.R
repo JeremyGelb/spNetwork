@@ -289,22 +289,22 @@ plot_graph <- function(graph) {
 #'
 #' @description A utility function to find topological errors in a network.
 #'
-#' @details This function can be used to check for three common problems in networks:
-#' disconnected components, dangle nodes and close nodes. When a network has disconnected
-#' components, this means that several unconnected graphs are composing the
-#' overall network. This can be caused by topological errors in the dataset. Dangle
-#' nodes are nodes connected to only one other node. This type of node can be normal
-#' at the border of a network, but can also be caused by topological errors. Close
-#' nodes are nodes that are not coincident, but so close that they probably should
-#' be coincident.
+#' @details This function can be used to check for three common problems in
+#'   networks: disconnected components, dangle nodes and close nodes. When a
+#'   network has disconnected components, this means that several unconnected
+#'   graphs are composing the overall network. This can be caused by topological
+#'   errors in the dataset. Dangle nodes are nodes connected to only one other
+#'   node. This type of node can be normal at the border of a network, but can
+#'   also be caused by topological errors. Close nodes are nodes that are not
+#'   coincident, but so close that they probably should be coincident.
 #'
 #' @param lines A SpatialLinesDataFrame representing the network
 #' @param digits An integer indicating the number of digits to retain for
 #'   coordinates
 #' @param max_search The maximum number of nearest neighbour to search to find
-#' close_nodes
-#' @param tol The minimum distance expected between two nodes. Under that values
-#' nodes are considered as too close and are returned in the results.
+#'   close_nodes
+#' @param tol The minimum distance expected between two nodes. If two nodes are
+#'   closer, they are returned in the result of the function.
 #' @return A list with three elements. The first is a SpatialPointsDataFrame
 #'   indicating for each node of the network to which component it belongs. The
 #'   second is a SpatialPointsDataFrame with nodes that are too close one of

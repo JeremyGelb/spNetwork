@@ -2,7 +2,7 @@
 % Please edit documentation in R/bandwidth_selection_cv.R
 \name{bw_cv_likelihood_calc.mc}
 \alias{bw_cv_likelihood_calc.mc}
-\title{Bandwidth selection by likelihood cross validation (multicore version)}
+\title{Bandwidth selection by likelihood cross validation (multicore)}
 \usage{
 bw_cv_likelihood_calc.mc(
   bw_range,
@@ -100,15 +100,12 @@ A dataframe with two columns, one for the bandwidths and the second for
 the cross validation score (the lower the better).
 }
 \description{
-Calculate for multiple bandiwdths the cross validation likelihood to
-select an appropriate bandwidth in a data-driven approach. A plan from the package future can be used
-to split the work across several cores. The different cells generated in accordance with the
-argument grid_shape are used for the parallelization. So if only one cell is
-generated (grid_shape = c(1,1)), the function will use only one core. The progress bar
-displays the progression for the cells.
+Calculate for multiple bandwidth the cross validation likelihood to
+select an appropriate bandwidth in a data-driven approach
 }
 \details{
-For more details, see help(bw_cv_likelihood_calc)
+See the function bw_cv_likelihood_calc for more details. The calculation is split
+according to the parameter grid_shape. If grid_shape = c(1,1), then parallel processing cannot be used.
 }
 \examples{
 \donttest{

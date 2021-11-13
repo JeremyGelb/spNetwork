@@ -100,7 +100,7 @@ A dataframe with two columns, one for the bandwidths and the second for
 the Cronie and Van Lieshout's Criterion.
 }
 \description{
-Calculate for multiple bandiwdths the Cronie and Van Lieshout's Criterion to
+Calculate for multiple bandwidths the Cronie and Van Lieshout's Criterion to
 select an appropriate bandwidth in a data-driven approach. A plan from the package future can be used
 to split the work across several cores. The different cells generated in accordance with the
 argument grid_shape are used for the parallelization. So if only one cell is
@@ -117,7 +117,7 @@ eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustW
 mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
 bike_accidents <- rgdal::readOGR(eventsgpkg,layer="bike_accidents", verbose=FALSE)
 future::plan(future::multisession(workers=2))
-cv_scores <- bw_cvl_calc(c(200,400),50,
+cv_scores <- bw_cvl_calc.mc(c(200,400),50,
                                mtl_network, bike_accidents,
                                rep(1,nrow(bike_accidents)),
                                "quartic", "discontinuous",

@@ -73,7 +73,7 @@ sampling points, and events" />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0.9000</span>
       </span>
     </div>
 
@@ -112,6 +112,9 @@ sampling points, and events" />
     </li>
     <li>
       <a href="../articles/SpatialWeightMatrices.html">Spatial Weight Matrices</a>
+    </li>
+    <li>
+      <a href="../articles/TNKDE.html">Temporal Network Kernel Density Estimate</a>
     </li>
   </ul>
 </li>
@@ -222,7 +225,7 @@ simple / discontinuous / continuous (see nkde details for more information)</p><
     <tr>
       <th>div</th>
       <td><p>The divisor to use for the kernel. Must be "n" (the number of
-events within the radius around each sampling point), "bw" (the bandwith)
+events within the radius around each sampling point), "bw" (the bandwidth)
 "none" (the simple sum).</p></td>
     </tr>
     <tr>
@@ -294,8 +297,7 @@ of the provided objects are valid and identical, and that geometries are valid.<
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A vector of values, they are the density estimates at samplings
-points</p>
+    <p>A vector of values, they are the density estimates at sampling points</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>**The three NKDE methods**<br />

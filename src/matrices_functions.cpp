@@ -1,5 +1,43 @@
 #include "spNetwork.h"
 
+// a simple function to create a vector of values between a start and an end with defined step
+std::vector<double> seq_num(double start, double end, double step){
+
+  std::vector<double> values;
+  double cumul = 0;
+  while(cumul+step < end){
+    cumul+=step;
+    values.push_back(cumul);
+  }
+  return values;
+
+}
+
+
+// a simple function to find the index of the first occurence of value in a numeric vector
+int get_first_index(NumericVector& v1, double x){
+  int i;
+  for( i = 0; i < v1.size(); ++i) {
+    if(v1[i] == x){
+      return i;
+    }
+  }
+  return -1;
+}
+
+// a simple function to find the index of the first occurence of value in a numeric vector
+std::vector<int> get_all_indeces(NumericVector& v1, double x){
+  int i;
+  std::vector<int> idxs;
+  for( i = 0; i < v1.size(); ++i) {
+    if(v1[i] == x){
+      idxs.push_back(i);
+    }
+  }
+  return idxs;
+}
+
+
 // short function to create a matrix from the neighbour_list
 // note : might be better as a sparse matrix ?
 IntegerMatrix make_matrix(DataFrame df, List neighbour_list){

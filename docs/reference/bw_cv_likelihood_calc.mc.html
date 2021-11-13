@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Bandwidth selection by likelihood cross validation (multicore version) — bw_cv_likelihood_calc.mc • spNetwork</title>
+<title>Bandwidth selection by likelihood cross validation (multicore) — bw_cv_likelihood_calc.mc • spNetwork</title>
 
 
 <!-- jquery -->
@@ -39,13 +39,9 @@
 
 
 
-<meta property="og:title" content="Bandwidth selection by likelihood cross validation (multicore version) — bw_cv_likelihood_calc.mc" />
-<meta property="og:description" content="Calculate for multiple bandiwdths the cross validation likelihood to
-select an appropriate bandwidth in a data-driven approach. A plan from the package future can be used
-to split the work across several cores. The different cells generated in accordance with the
-argument grid_shape are used for the parallelization. So if only one cell is
-generated (grid_shape = c(1,1)), the function will use only one core. The progress bar
-displays the progression for the cells." />
+<meta property="og:title" content="Bandwidth selection by likelihood cross validation (multicore) — bw_cv_likelihood_calc.mc" />
+<meta property="og:description" content="Calculate for multiple bandwidth the cross validation likelihood to
+select an appropriate bandwidth in a data-driven approach" />
 
 
 
@@ -77,7 +73,7 @@ displays the progression for the cells." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0.9000</span>
       </span>
     </div>
 
@@ -117,6 +113,9 @@ displays the progression for the cells." />
     <li>
       <a href="../articles/SpatialWeightMatrices.html">Spatial Weight Matrices</a>
     </li>
+    <li>
+      <a href="../articles/TNKDE.html">Temporal Network Kernel Density Estimate</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -143,18 +142,14 @@ displays the progression for the cells." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Bandwidth selection by likelihood cross validation (multicore version)</h1>
+    <h1>Bandwidth selection by likelihood cross validation (multicore)</h1>
     <small class="dont-index">Source: <a href='https://github.com/JeremyGelb/spNetwork/blob/master/R/bandwidth_selection_cv.R'><code>R/bandwidth_selection_cv.R</code></a></small>
     <div class="hidden name"><code>bw_cv_likelihood_calc.mc.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Calculate for multiple bandiwdths the cross validation likelihood to
-select an appropriate bandwidth in a data-driven approach. A plan from the package future can be used
-to split the work across several cores. The different cells generated in accordance with the
-argument grid_shape are used for the parallelization. So if only one cell is
-generated (grid_shape = c(1,1)), the function will use only one core. The progress bar
-displays the progression for the cells.</p>
+    <p>Calculate for multiple bandwidth the cross validation likelihood to
+select an appropriate bandwidth in a data-driven approach</p>
     </div>
 
     <pre class="usage"><span class='fu'>bw_cv_likelihood_calc.mc</span><span class='op'>(</span>
@@ -294,7 +289,8 @@ of the provided objects are valid and identical, and that geometries are valid.<
 the cross validation score (the lower the better).</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>For more details, see help(bw_cv_likelihood_calc)</p>
+    <p>See the function bw_cv_likelihood_calc for more details. The calculation is split
+according to the parameter grid_shape. If grid_shape = c(1,1), then parallel processing cannot be used.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><span class='co'># \donttest{</span>

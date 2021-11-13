@@ -305,3 +305,17 @@ simplify_network       9.78   0.07   10.01
 **correction:**
 Applied `\donttest{}` to both functions.
 
+
+## Round 1 13/10/2021 (after Ligges check)
+
+**problem:**
+Found the following (possibly) invalid URLs:
+     URL: https://codecov.io/gh/JeremyGelb/spNetwork?branch=master
+(moved to https://app.codecov.io/gh/JeremyGelb/spNetwork?branch=master)
+       From: README.md
+       Status: 301
+       Message: Moved Permanently
+       
+**correction:**
+
+The URL was replaced as suggested in the Readme

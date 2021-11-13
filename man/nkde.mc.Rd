@@ -55,7 +55,7 @@ bandwidth}
 simple / discontinuous / continuous (see nkde details for more information)}
 
 \item{div}{The divisor to use for the kernel. Must be "n" (the number of
-events within the radius around each sampling point), "bw" (the bandwith)
+events within the radius around each sampling point), "bw" (the bandwidth)
 "none" (the simple sum).}
 
 \item{diggle_correction}{A Boolean indicating if the correction factor

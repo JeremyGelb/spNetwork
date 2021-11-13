@@ -560,6 +560,20 @@ add_center_lines <- function(lines) {
 #' new_pts <- lines_points_along(mtl_network,50)
 #' }
 lines_points_along <- function(lines,dist){
+
+    coords <- unlist(sp::coordinates(lines), recursive = FALSE)
+    new_coords <- points_along_lines_cpp(coords, dist)
+
+    # adding a useless column to avoid a bug when lines has only one column
+    lines$tmpOID <- 1:nrow(lines)
+    data <- lines@data[new_coords[,3]+1,]
+    all_pts <- sp::SpatialPointsDataFrame(new_coords[,1:2],data)
+    all_pts$tmpOID <- NULL
+    raster::crs(all_pts) <- raster::crs(lines)
+    return(all_pts)
+}
+
+lines_points_along <- function(lines,dist){
     lenghts <- gLength(lines, byid = TRUE)
     list_pts <- lapply(1:nrow(lines),function(i){
         line <- lines[i,]
@@ -605,6 +619,26 @@ surrounding_points <- function(polygons,dist){
     return(all_pts)
 }
 
+# this is the previous version of the function, kept for debuging
+# lines_points_along <- function(lines,dist){
+#     lenghts <- gLength(lines, byid = TRUE)
+#     list_pts <- lapply(1:nrow(lines),function(i){
+#         line <- lines[i,]
+#         line_lenght <- lenghts[i]
+#         distances <- seq(0,line_lenght,dist)
+#         pts <- gInterpolate(line,distances)
+#         return(pts)
+#     })
+#     oids <- lapply(1:length(list_pts),function(i){rep(i,length(list_pts[[i]]))})
+#     oids <- do.call("c",oids)
+#     all_pts <- do.call(rbind,list_pts)
+#     # adding a useless column to avoid a bug when lines has only one column
+#     lines$tmpOID <- 1:nrow(lines)
+#     data <- lines@data[oids,]
+#     all_pts <- sp::SpatialPointsDataFrame(all_pts,data)
+#     all_pts$tmpOID <- NULL
+#     return(all_pts)
+# }
 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #### gridding function ####
@@ -1037,10 +1071,10 @@ remove_mirror_edges <- function(lines, keep_shortest = TRUE, digits = 3, verbose
 #' @param lines A SpatialLinesDataFrame
 #' @param digits An integer indicating the number of digits to keep in coordinates
 #' @param heal A boolean indicating if the healing operation must be performed
-#' @param mirror A booleans indicating if the mirror edges must be removed
-#' @param keep_shortest A boolean, if TRUE, then the shortest line is keeped from
-#' mirror edges. if FALSE, then the longest line is keeped.
-#' @param verbose A boolean indicating if messages and progressbar should be displayed
+#' @param mirror A boolean indicating if the mirror edges must be removed
+#' @param keep_shortest A boolean, if TRUE, then the shortest line is kept from
+#' mirror edges. if FALSE, then the longest line is kept.
+#' @param verbose A boolean indicating if messages and a progress bar should be displayed
 #' @return A SpatialLinesDataFrame
 #' @export
 #' @examples

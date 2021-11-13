@@ -8,10 +8,6 @@
 #' gaussian, tricube, cosine ,triweight, quartic, epanechnikov or uniform.
 #' @param method The method to use when calculating the NKDE, must be one of
 #' simple / discontinuous / continuous (see nkde details for more information)
-#' @param diggle_correction A Boolean indicating if the correction factor
-#' for edge effect must be used.
-#' @param study_area A SpatialPolygonsDataFrame or a SpatialPolygon
-#' representing the limits of the study area.
 #' @param max_depth when using the continuous and discontinuous methods, the
 #' calculation time and memory use can go wild  if the network has many
 #' small edges (area with many of intersections and many events). To
