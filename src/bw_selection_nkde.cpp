@@ -376,7 +376,10 @@ arma::mat esc_kernel_loo_nkde(fptros kernel_func, arma::sp_mat& edge_mat,
 //' @param method a string, one of "simple", "continuous", "discontinuous"
 //' @param neighbour_list a List, giving for each node an IntegerVector with
 //' its neighbours
+//' @param sel_events a Numeric vector indicating the selected events (id of nodes)
+//' @param sel_events_wid a Numeric Vector indicating the unique if of the selected events
 //' @param events a NumericVector indicating the nodes in graph beeing events
+//' @param events_wid a NumericVector indicating the unique id of all the events
 //' @param weights a matrix with the weights associated with each events (row) for each
 //' bws_net (cols).
 //' @param bws_net an arma::vec with the network bandwidths to consider
@@ -385,12 +388,12 @@ arma::mat esc_kernel_loo_nkde(fptros kernel_func, arma::sp_mat& edge_mat,
 //' @param max_depth the maximum recursion depth
 //' @param min_tol a double indicating by how much 0 in densities values must be replaced
 //' @param cvl a boolean indicating if the Cronie (TRUE) or CV likelihood (FALSE) must be used
-//' @return a matrix with the CV score for each pair of bandiwdths
+//' @return a vector with the CV score for each bandwidth and the densities if required
 //' @export
 //' @examples
 //' # no example provided, this is an internal function
 // [[Rcpp::export]]
-arma::vec nkde_get_loo_values(std::string method, List neighbour_list,
+arma::colvec nkde_get_loo_values(std::string method, List neighbour_list,
                                NumericVector sel_events, NumericVector sel_events_wid,
                                NumericVector events, NumericVector events_wid,
                                arma::mat weights,
@@ -479,9 +482,6 @@ arma::vec nkde_get_loo_values(std::string method, List neighbour_list,
   }else{
     result = arma::sum(arma::pow(base_k,-1.0),0).t();
   }
-
-
-
   return result;
 }
 

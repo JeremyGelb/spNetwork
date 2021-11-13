@@ -175,6 +175,8 @@ test_that("Testing the continuous tnkde with a simple case", {
                          y=c(1.1))
   sp::coordinates(sp_point) <- cbind(sp_point$x,sp_point$y)
 
+  sample_times <- c(1,2,3,4,5)
+
   # real distance is 2, and let us say that the network bw is 5 and bw_times is 5
   net_density <- (1/5) * (quartic_kernel(2,5) - ((1/2) * quartic_kernel(4,5)))
   time_densities <- (1/5) * quartic_kernel(abs(sample_times-event$time),5)

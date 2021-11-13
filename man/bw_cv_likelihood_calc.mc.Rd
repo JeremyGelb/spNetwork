@@ -105,7 +105,7 @@ select an appropriate bandwidth in a data-driven approach
 }
 \details{
 See the function bw_cv_likelihood_calc for more details. The calculation is split
-according to the parameter grid_shape. If grid_shape = c(1,1), then parallel processing can not be used.
+according to the parameter grid_shape. If grid_shape = c(1,1), then parallel processing cannot be used.
 }
 \examples{
 \donttest{

@@ -30,9 +30,10 @@ adaptive_bw_1d <- function(events, w, bw, kernel_name){
 #' @param events A numeric vector representing the moments of occurrence of events
 #' @param w The weight of the events
 #' @param samples A numeric vector representing the moments to sample
-#' @param bw A float, the bandiwdth to use
+#' @param bw A float, the bandwidth to use
 #' @param kernel_name The name of the kernel to use
 #' @param adaptive Boolean
+#' @export
 #' @examples
 #' eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
 #' bike_accidents <- rgdal::readOGR(eventsgpkg,layer="bike_accidents", verbose=FALSE)
@@ -68,11 +69,12 @@ tkde <- function(events, w, samples, bw, kernel_name, adaptive = FALSE){
 #' @title Bandwidth selection for Temporal Kernel density estimate by likelihood cross validation
 #'
 #' @description Calculate the likelihood cross validation score for several bandwidths for the
-#' Temporal Kernel density estimatation
+#' Temporal Kernel density
 #' @param events A numeric vector representing the moments of occurrence of events
 #' @param w The weight of the events
 #' @param bws A numeric vector, the bandiwdths to use
 #' @param kernel_name The name of the kernel to use
+#' @export
 #' @examples
 #' eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
 #' bike_accidents <- rgdal::readOGR(eventsgpkg,layer="bike_accidents", verbose=FALSE)

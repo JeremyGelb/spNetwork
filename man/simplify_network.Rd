@@ -20,12 +20,12 @@ simplify_network(
 
 \item{heal}{A boolean indicating if the healing operation must be performed}
 
-\item{mirror}{A booleans indicating if the mirror edges must be removed}
+\item{mirror}{A boolean indicating if the mirror edges must be removed}
 
-\item{keep_shortest}{A boolean, if TRUE, then the shortest line is keeped from
-mirror edges. if FALSE, then the longest line is keeped.}
+\item{keep_shortest}{A boolean, if TRUE, then the shortest line is kept from
+mirror edges. if FALSE, then the longest line is kept.}
 
-\item{verbose}{A boolean indicating if messages and progressbar should be displayed}
+\item{verbose}{A boolean indicating if messages and a progress bar should be displayed}
 }
 \value{
 A SpatialLinesDataFrame

@@ -306,19 +306,19 @@ correction_factor_time <- function(events_time, samples_time, bws_time, kernel_n
   up_diff <- ifelse(up_diff < 0, abs(up_diff), 0)
 
   # calculating the part of the density outside the area (lower bound)
-  get_integral <- function(bw, low_diff){
+  get_integral1 <- function(bw, low_diff){
     cubintegrate(kernel_func,lower=(bw-low_diff),upper=bw,
                  bw=bw, relTol = 1e-15)$integral
   }
-  get_inegral_vec <- Vectorize(get_integral,vectorize.args = c("low_diff","bw"))
+  get_inegral_vec <- Vectorize(get_integral1, vectorize.args = c("low_diff","bw"))
   out_lower <- get_inegral_vec(low_diff = low_diff, bw = bws_time)
 
   # calculating the part of the density outside the area (upper bound)
-  get_integral <- function(bw, up_diff){
+  get_integral2 <- function(bw, up_diff){
     cubintegrate(kernel_func,lower=0,upper=up_diff,
                  bw=bw, relTol = 1e-15)$integral
   }
-  get_inegral_vec <- Vectorize(get_integral,vectorize.args = c("up_diff","bw"))
+  get_inegral_vec <- Vectorize(get_integral2, vectorize.args = c("up_diff","bw"))
   out_upper <- get_inegral_vec(up_diff = up_diff, bw = bws_time)
 
   diffs <- (1-out_lower) + (1-out_upper) - 1

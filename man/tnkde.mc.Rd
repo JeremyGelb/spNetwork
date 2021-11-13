@@ -56,7 +56,7 @@ gaussian, tricube, cosine ,triweight, quartic, epanechnikov or uniform.}
 \item{bw_time}{The time kernel bandwidth}
 
 \item{adaptive}{A Boolean, indicating if an adaptive bandwidth must be
-used. Both spatial and temporal banwidth are adapted but separately.}
+used. Both spatial and temporal bandwidths are adapted but separately.}
 
 \item{trim_bw_net}{A float, indicating the maximum value for the adaptive
 network bandwidth}
@@ -97,6 +97,24 @@ closer, they are added at the extremity of the lines.}
 \item{agg}{A double indicating if the events must be aggregated within a
 distance. If NULL, the events are aggregated only by rounding the
 coordinates.}
+
+\item{sparse}{A Boolean indicating if sparse or regular matrices should be
+used by the Rcpp functions. These matrices are used to store edge indices
+between two nodes in a graph. Regular matrices are faster, but require more
+memory, in particular with multiprocessing. Sparse matrices are slower (a
+bit), but require much less memory.}
+
+\item{grid_shape}{A vector of two values indicating how the study area
+must be split when performing the calculus. Default is c(1,1) (no split). A finer grid could
+reduce memory usage and increase speed when a large dataset is used. When using
+multiprocessing, the work in each grid is dispatched between the workers.}
+
+\item{verbose}{A Boolean, indicating if the function should print messages
+about the process.}
+
+\item{check}{A Boolean indicating if the geometry checks must be run before
+the operation. This might take some times, but it will ensure that the CRS
+of the provided objects are valid and identical, and that geometries are valid.}
 }
 \description{
 Calculate the Temporal Network Kernel Density Estimate based on a network of lines,
@@ -104,4 +122,45 @@ sampling points in space and times, and events in space and time with multicore 
 }
 \details{
 For details, see help(tnkde) and help(nkde)
+}
+\examples{
+\donttest{
+# loading the data
+eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
+bike_accidents <- rgdal::readOGR(eventsgpkg,layer="bike_accidents", verbose=FALSE)
+networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
+mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
+
+# converting the Date field to a numeric field (counting days)
+bike_accidents$Time <- as.POSIXct(bike_accidents$Date, format = "\%Y/\%m/\%d")
+start <- as.POSIXct("2016/01/01", format = "\%Y/\%m/\%d")
+bike_accidents$Time <- difftime(bike_accidents$Time, start, units = "days")
+bike_accidents$Time <- as.numeric(bike_accidents$Time)
+
+# creating sample points
+lixels <- lixelize_lines(mtl_network, 50)
+sample_points <- lines_center(lixels)
+
+# choosing sample in times (every 10 days)
+sample_time <- seq(0, max(bike_accidents$Time), 10)
+
+future::plan(future::multisession(workers=2))
+
+# calculating the densities
+tnkde_densities <- tnkde.mc(lines = mtl_network,
+    events = bike_accidents, time_field = "Time",
+    w = rep(1, nrow(bike_accidents)),
+    samples_loc = sample_points,
+    samples_time = sample_time,
+    kernel_name = "quartic",
+    bw_net = 700, bw_time = 60, adaptive = TRUE,
+    trim_bw_net = 900, trim_bw_time = 80,
+    method = "discontinuous", div = "bw",
+    max_depth = 10, digits = 2, tol = 0.01,
+    agg = 15, grid_shape = c(1,1),
+    verbose  = FALSE)
+
+## make sure any open connections are closed afterward
+if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
+}
 }

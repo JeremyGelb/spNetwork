@@ -56,7 +56,7 @@ gaussian, tricube, cosine ,triweight, quartic, epanechnikov or uniform.}
 \item{bw_time}{The time kernel bandwidth}
 
 \item{adaptive}{A Boolean, indicating if an adaptive bandwidth must be
-used. Both spatial and temporal banwidth are adapted but separately.}
+used. Both spatial and temporal bandwidths are adapted but separately.}
 
 \item{trim_bw_net}{A float, indicating the maximum value for the adaptive
 network bandwidth}
@@ -97,6 +97,24 @@ closer, they are added at the extremity of the lines.}
 \item{agg}{A double indicating if the events must be aggregated within a
 distance. If NULL, the events are aggregated only by rounding the
 coordinates.}
+
+\item{sparse}{A Boolean indicating if sparse or regular matrices should be
+used by the Rcpp functions. These matrices are used to store edge indices
+between two nodes in a graph. Regular matrices are faster, but require more
+memory, in particular with multiprocessing. Sparse matrices are slower (a
+bit), but require much less memory.}
+
+\item{grid_shape}{A vector of two values indicating how the study area
+must be split when performing the calculus. Default is c(1,1) (no split). A finer grid could
+reduce memory usage and increase speed when a large dataset is used. When using
+multiprocessing, the work in each grid is dispatched between the workers.}
+
+\item{verbose}{A Boolean, indicating if the function should print messages
+about the process.}
+
+\item{check}{A Boolean indicating if the geometry checks must be run before
+the operation. This might take some times, but it will ensure that the CRS
+of the provided objects are valid and identical, and that geometries are valid.}
 }
 \description{
 Calculate the Temporal Network Kernel Density Estimate based on a network of lines,
@@ -104,30 +122,70 @@ sampling points in space and times, and events in space and time.
 }
 \details{
 **Temporal Network Kernel Density Estimate**\cr
-The TNKDE is an extension of the NKDE considering both the location of events on a the network and
+The TNKDE is an extension of the NKDE considering both the location of events on the network and
 in time. Thus, density estimation (density sampling) can be done along lines of the network and
 at different time. It can be used with the three NKDE (simple, discontinuous and continuous).
 \cr\cr
 **density in time and space**\cr
-Two bandwidths must be provided, one for the network distance and one for the time distance. They are
-both used to calculate the contribution of each event to each sampling point. Let us consider one event
-E and a sample S. dnet(E,S) is the network density of E at S location and dtime(E,S) is the time density of
-E at S time. The total density is thus dnet(E,S) * dtime(E,S). If one of the two densities is 0, then the
-tota density is 0 because the sampling point is out of the covered area by the event in time or in the
-network space.
+Two bandwidths must be provided, one for the network distance and one for the
+time distance. They are both used to calculate the contribution of each event
+to each sampling point. Let us consider one event E and a sample S. dnet(E,S)
+is the contribution to network density of E at S location and dtime(E,S) is
+the contribution to time density of E at S time. The total contribution is
+thus dnet(E,S) * dtime(E,S). If one of the two densities is 0, then the total
+density is 0 because the sampling point is out of the covered area by the
+event in time or in the network space.
 \cr\cr
 **adaptive bandwidth**\cr
-It is possible to use adaptive bandwidth both on the network and in time.
-Adaptive bandwidths are calculated using the Abramson’s smoothing regimen \insertCite{abramson1982bandwidth}{spNetwork}.
-To do so, the original fixed bandwidths must be specified (bw_net and bw_time parameters).
-They are used to estimate the priory densitiy at event locations and time, separately.
-These densities are then used to calculate local bandwidths. The maximum size of the two local
-bandwidths can be limited with the parameters trim_bw_net and trim_bw_time.
-#' \cr\cr
-**Diggle correction factor**\cr
-A set of events can be limited in both space (limits of the study area) and time (
-begining and ending of the data collection period). These limits induce lower densities
-at the border of the set of events, because they are not sampled outside the limits. It is
-possible to apply the Diggle correction factor \insertCite{diggle1985kernel}{spNetwork} in both the network and time spaces to minimize
-this effect.
+It is possible to use an adaptive bandwidth both on the network and in time.
+Adaptive bandwidths are calculated using the Abramson’s smoothing regimen
+\insertCite{abramson1982bandwidth}{spNetwork}. To do so, the original fixed
+bandwidths must be specified (bw_net and bw_time parameters). They are used
+to estimate the priory density at event locations and time, separately. These
+densities are then used to calculate local bandwidths. Isolated events in
+time or on the network will receive larger bandwidths. The maximum size of
+the two local bandwidths can be limited with the parameters trim_bw_net and
+trim_bw_time. #' \cr\cr **Diggle correction factor**\cr A set of events can
+be limited in both space (limits of the study area) and time ( beginning and
+ending of the data collection period). These limits induce lower densities at
+the border of the set of events, because they are not sampled outside the
+limits. It is possible to apply the Diggle correction factor
+\insertCite{diggle1985kernel}{spNetwork} in both the network and time spaces
+to minimize this effect.
+}
+\examples{
+\donttest{
+# loading the data
+eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
+bike_accidents <- rgdal::readOGR(eventsgpkg,layer="bike_accidents", verbose=FALSE)
+networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
+mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
+
+# converting the Date field to a numeric field (counting days)
+bike_accidents$Time <- as.POSIXct(bike_accidents$Date, format = "\%Y/\%m/\%d")
+start <- as.POSIXct("2016/01/01", format = "\%Y/\%m/\%d")
+bike_accidents$Time <- difftime(bike_accidents$Time, start, units = "days")
+bike_accidents$Time <- as.numeric(bike_accidents$Time)
+
+# creating sample points
+lixels <- lixelize_lines(mtl_network, 50)
+sample_points <- lines_center(lixels)
+
+# choosing sample in times (every 10 days)
+sample_time <- seq(0, max(bike_accidents$Time), 10)
+
+# calculating the densities
+tnkde_densities <- tnkde(lines = mtl_network,
+    events = bike_accidents, time_field = "Time",
+    w = rep(1, nrow(bike_accidents)),
+    samples_loc = sample_points,
+    samples_time = sample_time,
+    kernel_name = "quartic",
+    bw_net = 700, bw_time = 60, adaptive = TRUE,
+    trim_bw_net = 900, trim_bw_time = 80,
+    method = "discontinuous", div = "bw",
+    max_depth = 10, digits = 2, tol = 0.01,
+    agg = 15, grid_shape = c(1,1),
+    verbose  = FALSE)
+}
 }

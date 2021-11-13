@@ -345,7 +345,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // nkde_get_loo_values
-arma::vec nkde_get_loo_values(std::string method, List neighbour_list, NumericVector sel_events, NumericVector sel_events_wid, NumericVector events, NumericVector events_wid, arma::mat weights, arma::vec bws_net, std::string kernel_name, DataFrame line_list, int max_depth, double min_tol, bool cvl);
+arma::colvec nkde_get_loo_values(std::string method, List neighbour_list, NumericVector sel_events, NumericVector sel_events_wid, NumericVector events, NumericVector events_wid, arma::mat weights, arma::vec bws_net, std::string kernel_name, DataFrame line_list, int max_depth, double min_tol, bool cvl);
 RcppExport SEXP _spNetwork_nkde_get_loo_values(SEXP methodSEXP, SEXP neighbour_listSEXP, SEXP sel_eventsSEXP, SEXP sel_events_widSEXP, SEXP eventsSEXP, SEXP events_widSEXP, SEXP weightsSEXP, SEXP bws_netSEXP, SEXP kernel_nameSEXP, SEXP line_listSEXP, SEXP max_depthSEXP, SEXP min_tolSEXP, SEXP cvlSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -467,6 +467,18 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type lx_length(lx_lengthSEXP);
     Rcpp::traits::input_parameter< double >::type mindist(mindistSEXP);
     rcpp_result_gen = Rcpp::wrap(lixelize_lines_cpp(lines, lx_length, mindist));
+    return rcpp_result_gen;
+END_RCPP
+}
+// points_along_lines_cpp
+NumericMatrix points_along_lines_cpp(List lines, double dist);
+RcppExport SEXP _spNetwork_points_along_lines_cpp(SEXP linesSEXP, SEXP distSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type lines(linesSEXP);
+    Rcpp::traits::input_parameter< double >::type dist(distSEXP);
+    rcpp_result_gen = Rcpp::wrap(points_along_lines_cpp(lines, dist));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -689,6 +701,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_spNetwork_add_center_lines_cpp", (DL_FUNC) &_spNetwork_add_center_lines_cpp, 1},
     {"_spNetwork_split_lines_at_points_cpp", (DL_FUNC) &_spNetwork_split_lines_at_points_cpp, 4},
     {"_spNetwork_lixelize_lines_cpp", (DL_FUNC) &_spNetwork_lixelize_lines_cpp, 3},
+    {"_spNetwork_points_along_lines_cpp", (DL_FUNC) &_spNetwork_points_along_lines_cpp, 2},
     {"_spNetwork_continuous_nkde_cpp_arma_sparse", (DL_FUNC) &_spNetwork_continuous_nkde_cpp_arma_sparse, 10},
     {"_spNetwork_continuous_nkde_cpp_arma", (DL_FUNC) &_spNetwork_continuous_nkde_cpp_arma, 10},
     {"_spNetwork_continuous_tnkde_cpp_arma_sparse", (DL_FUNC) &_spNetwork_continuous_tnkde_cpp_arma_sparse, 16},

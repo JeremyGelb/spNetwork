@@ -4,5 +4,5 @@
 #' @param trim_bw A float, indicating the maximum value for the adaptive
 #' bandwidth
 #' @param div The divisor to use for the kernel. Must be "n" (the number of
-#' events within the radius around each sampling point), "bw" (the bandwith)
+#' events within the radius around each sampling point), "bw" (the bandwidth)
 #' "none" (the simple sum).

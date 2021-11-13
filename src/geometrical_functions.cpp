@@ -3,6 +3,7 @@
 // **** operations which need C++ acceleration
 // ******************************************************************
 #include "spNetwork.h"
+#include "matrices_functions.h"
 
 
 // some boost libraries used to building an rtree
@@ -730,3 +731,72 @@ List lixelize_lines_cpp(List lines, double lx_length, double mindist){
   return final;
 
 }
+
+
+
+// *********************************************************************
+// Points along lines
+// *********************************************************************
+
+/*
+ *
+ * A function to create some points along some lines
+ *
+ */
+// [[Rcpp::export]]
+NumericMatrix points_along_lines_cpp(List lines, double dist){
+
+  //creating the containers (a list for the points and a vector for the lines indices)
+  std::vector<double> new_X;
+  std::vector<double> new_Y;
+  std::vector<int> new_index;
+  point_t p(0,0);
+
+  // starting the iterations
+  int i,j;
+  for(i=0; i<lines.length(); i++){
+    NumericMatrix line = lines(i);
+    linestring_t line_geom = line_from_coords(line);
+    double line_length = bg::length(line_geom);
+
+    // determining how many points I will create
+    std::vector<double> dists = seq_num(0,line_length,dist);
+
+    if(dists.size() == 0){
+      dists.push_back(line_length/2.0);
+    }
+
+    // creating the points
+
+    for(double & d : dists){
+      bg::line_interpolate(line_geom, d, p);
+      new_X.push_back(p.x());
+      new_Y.push_back(p.y());
+      new_index.push_back(i);
+    }
+
+    // for (j = 0; j < dists.length(); j++){
+    //   double d = dists.get(j);
+    //   bg::line_interpolate(line_geom, d, p);
+    //   new_X.push_back(p.x());
+    //   new_Y.push_back(p.y());
+    //   new_index.push_back(i);
+    // }
+
+  }
+
+  // creating the final matrix
+  NumericMatrix pts_coords(new_X.size(),3);
+
+  NumericVector vec1 = wrap(new_X);
+  pts_coords(_,0) = vec1;
+  NumericVector vec2 = wrap(new_Y);
+  pts_coords(_,1) = vec2;
+  NumericVector vec3 = wrap(new_index);
+  pts_coords(_,2) = vec3;
+
+  return pts_coords;
+
+}
+
+

@@ -16,7 +16,7 @@
 #     stop('the method must be one of c("simple","continuous","discontinuous"')
 #   }
 #   if(method == "continuous" & kernel_name == "gaussian"){
-#     stop("using the continuous NKDE and the gaussian kernel function can yield negative values for densities because the gaussian kernel does not integrate to 1 within the bandiwdth, please consider using the quartic kernel instead")
+#     stop("using the continuous NKDE and the gaussian kernel function can yield negative values for densities because the gaussian kernel does not integrate to 1 within the bandwidth, please consider using the quartic kernel instead")
 #   }
 #
 #   if(min(bw_range)<=0){
@@ -210,6 +210,7 @@
 #'
 #' @template bw_selection-args
 #' @template nkde_params-arg
+#' @template diggle_corr-arg
 #' @template nkde_geoms-args
 #' @template sparse-arg
 #' @template grid_shape-arg
@@ -238,7 +239,7 @@
 #'                                sparse=TRUE, grid_shape=c(1,1),
 #'                                sub_sample = 1, verbose=TRUE, check=TRUE)
 #'}
-bw_cvl_calc <- function(bw_range,bw_step,lines, events, w, kernel_name, method,  diggle_correction = FALSE, study_area = NULL, max_depth = 15, digits=5, tol=0.1, agg=NULL, sparse=TRUE, grid_shape=c(1,1), sub_sample=1, verbose=TRUE, check=TRUE){
+bw_cvl_calc <- function(bw_range, bw_step,lines, events, w, kernel_name, method,  diggle_correction = FALSE, study_area = NULL, max_depth = 15, digits=5, tol=0.1, agg=NULL, sparse=TRUE, grid_shape=c(1,1), sub_sample=1, verbose=TRUE, check=TRUE){
 
   ## step0 basic checks
   samples <- events
@@ -335,11 +336,6 @@ bw_cvl_calc <- function(bw_range,bw_step,lines, events, w, kernel_name, method, 
                                   method, div, digits,
                                   tol,sparse, max_depth, verbose, cvl = TRUE)
 
-
-    if(verbose){
-      setTxtProgressBar(pb, i)
-    }
-
     return(values)
 
   })
@@ -349,22 +345,19 @@ bw_cvl_calc <- function(bw_range,bw_step,lines, events, w, kernel_name, method, 
   dfs[sapply(dfs, is.null)] <- NULL
 
   add <- function(x) Reduce("+", x)
-
   cv_scores <- (add(dfs) - wl)**2
-
-
-  finaldf <- data.frame(
+  bw_scores <- data.frame(
     "bw" = all_bws,
     "cvl_scores" = cv_scores
   )
 
-  return(finaldf)
+  return(bw_scores)
 }
 
 
 #' @title Bandwidth selection by Cronie and Van Lieshout's Criterion (multicore version)
 #'
-#' @description Calculate for multiple bandiwdths the Cronie and Van Lieshout's Criterion to
+#' @description Calculate for multiple bandwidths the Cronie and Van Lieshout's Criterion to
 #' select an appropriate bandwidth in a data-driven approach. A plan from the package future can be used
 #' to split the work across several cores. The different cells generated in accordance with the
 #' argument grid_shape are used for the parallelization. So if only one cell is
@@ -376,6 +369,7 @@ bw_cvl_calc <- function(bw_range,bw_step,lines, events, w, kernel_name, method, 
 #'
 #' @template bw_selection-args
 #' @template nkde_params-arg
+#' @template diggle_corr-arg
 #' @template nkde_geoms-args
 #' @template sparse-arg
 #' @template grid_shape-arg

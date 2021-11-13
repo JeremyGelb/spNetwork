@@ -16,7 +16,7 @@
 #' (the geographical length), but can be the name of a column. The value is
 #' considered proportional to the geographical length of the lines.
 #' @param direction The name of a column indicating authorized
-#' traveling direction on lines. if NULL, then all lines can be used in both
+#' travelling direction on lines. if NULL, then all lines can be used in both
 #' directions. Must be the name of a column otherwise. The values of the
 #' column must be "FT" (From - To), "TF" (To - From) or "Both".
 #' @param grid_shape A vector of length 2 indicating the shape of the grid to

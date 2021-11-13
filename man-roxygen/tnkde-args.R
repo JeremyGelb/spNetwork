@@ -2,7 +2,7 @@
 #' @param bw_net The network kernel bandwidth (using the scale of the lines)
 #' @param bw_time The time kernel bandwidth
 #' @param adaptive A Boolean, indicating if an adaptive bandwidth must be
-#' used. Both spatial and temporal banwidth are adapted but separately.
+#' used. Both spatial and temporal bandwidths are adapted but separately.
 #' @param trim_bw_net A float, indicating the maximum value for the adaptive
 #' network bandwidth
 #' @param trim_bw_time A float, indicating the maximum value for the adaptive

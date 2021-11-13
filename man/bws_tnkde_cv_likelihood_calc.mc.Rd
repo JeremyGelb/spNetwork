@@ -99,7 +99,7 @@ to keep in the calculus. For large datasets, it may be useful to limit the
 bandwidth evaluation and thus reduce calculation time.}
 
 \item{verbose}{A Boolean, indicating if the function should print messages
-about process.}
+about the process.}
 
 \item{check}{A Boolean indicating if the geometry checks must be run before
 the operation. This might take some times, but it will ensure that the CRS
@@ -118,6 +118,7 @@ See the function bws_tnkde_cv_likelihood_calc for more details. Note that the ca
 according to the grid_shape argument. If the grid_shape is c(1,1) then only one process can be used.
 }
 \examples{
+\donttest{
 # loading the data
 networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
 eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
@@ -129,6 +130,8 @@ bike_accidents$Time <- as.POSIXct(bike_accidents$Date, format = "\%Y/\%m/\%d")
 bike_accidents$Time <- difftime(bike_accidents$Time, min(bike_accidents$Time), units = "days")
 bike_accidents$Time <- as.numeric(bike_accidents$Time)
 bike_accidents <- subset(bike_accidents, bike_accidents$Time>=89)
+
+future::plan(future::multisession(workers=2))
 
 # calculating the cross validation values
 cv_scores <- bws_tnkde_cv_likelihood_calc.mc(
@@ -153,4 +156,8 @@ cv_scores <- bws_tnkde_cv_likelihood_calc.mc(
   sub_sample=1,
   verbose = FALSE,
   check = TRUE)
+
+## make sure any open connections are closed afterward
+if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
+}
 }

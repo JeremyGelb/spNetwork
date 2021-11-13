@@ -247,6 +247,7 @@
 #'
 #' @template bw_selection-args
 #' @template nkde_params-arg
+#' @template diggle_corr-arg
 #' @template nkde_geoms-args
 #' @template sparse-arg
 #' @template grid_shape-arg
@@ -404,9 +405,10 @@ bw_cv_likelihood_calc <- function(bw_range,bw_step,lines, events, w, kernel_name
 #' select an appropriate bandwidth in a data-driven approach
 #'
 #' @details  See the function bw_cv_likelihood_calc for more details. The calculation is split
-#' according to the parameter grid_shape. If grid_shape = c(1,1), then parallel processing can not be used.
+#' according to the parameter grid_shape. If grid_shape = c(1,1), then parallel processing cannot be used.
 #'
 #' @template bw_selection-args
+#' @template diggle_corr-arg
 #' @template nkde_params-arg
 #' @template nkde_geoms-args
 #' @template sparse-arg
@@ -624,6 +626,8 @@ nkde_worker_bw_sel <- function(lines, quad_events, events_loc, events, w, kernel
   quad_events2 <- quad_events@data
 
   #first a join for all the events in the bw
+  vertex_id <- NULL #avoid a note
+  i.vertex_id<- NULL #avoid a note
   setDT(events2)[events_loc2, on = "goid", vertex_id := i.vertex_id]
 
   #and a second join for the quad_events
@@ -639,9 +643,6 @@ nkde_worker_bw_sel <- function(lines, quad_events, events_loc, events, w, kernel
                                         events2$vertex_id, events2$wid, w,
                                         bws_net,
                                         kernel_name, graph_result$linelist, max_depth,
-                                        .Machine$double.xmin, cvl
-  )
-
-  ## at that point, we have a list of numeric vectors or a list of dataframes, one for each bw
+                                        .Machine$double.xmin, cvl)
   return(kernel_values)
 }

@@ -99,14 +99,14 @@ to keep in the calculus. For large datasets, it may be useful to limit the
 bandwidth evaluation and thus reduce calculation time.}
 
 \item{verbose}{A Boolean, indicating if the function should print messages
-about process.}
+about the process.}
 
 \item{check}{A Boolean indicating if the geometry checks must be run before
 the operation. This might take some times, but it will ensure that the CRS
 of the provided objects are valid and identical, and that geometries are valid.}
 }
 \value{
-A matrix with the cross validation score.  Each row correspond to a network
+A matrix with the cross validation score.  Each row corresponds to a network
 bandwidth and each column to a time bandwidth (the higher the better).
 }
 \description{
@@ -116,7 +116,7 @@ select an appropriate bandwidth in a data-driven approach
 \details{
 The function calculates the likelihood cross validation score for several time and network
 bandwidths in order to find the most appropriate one. The general idea is to find the pair of
-bandwidths that would produce the most similar results if one event was removed from
+bandwidths that would produce the most similar results if one event is removed from
 the dataset (leave one out cross validation). We use here the shortcut formula as
 described by the package spatstat \insertCite{spatstatpkg}{spNetwork}.
 
@@ -126,10 +126,10 @@ Where the sum is taken for all events x[i] and where lambda[-i](x[i]) is the lea
 estimate at x[i] for a bandwidth h. A lower value indicates a better bandwidth.
 }
 \examples{
+\donttest{
 # loading the data
 networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
 eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
-#eventsgpkg <- "C:/Users/gelbj/OneDrive/Documents/R/dev-packages/sauvetage_spNetwork/spNetwork/inst/extdata/events.gpkg"
 mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
 bike_accidents <- rgdal::readOGR(eventsgpkg,layer="bike_accidents", verbose=FALSE)
 
@@ -162,6 +162,7 @@ cv_scores <- bws_tnkde_cv_likelihood_calc(
   sub_sample=1,
   verbose = FALSE,
   check = TRUE)
+}
 }
 \references{
 {

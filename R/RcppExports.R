@@ -392,7 +392,10 @@ NULL
 #' @param method a string, one of "simple", "continuous", "discontinuous"
 #' @param neighbour_list a List, giving for each node an IntegerVector with
 #' its neighbours
+#' @param sel_events a Numeric vector indicating the selected events (id of nodes)
+#' @param sel_events_wid a Numeric Vector indicating the unique if of the selected events
 #' @param events a NumericVector indicating the nodes in graph beeing events
+#' @param events_wid a NumericVector indicating the unique id of all the events
 #' @param weights a matrix with the weights associated with each events (row) for each
 #' bws_net (cols).
 #' @param bws_net an arma::vec with the network bandwidths to consider
@@ -401,7 +404,7 @@ NULL
 #' @param max_depth the maximum recursion depth
 #' @param min_tol a double indicating by how much 0 in densities values must be replaced
 #' @param cvl a boolean indicating if the Cronie (TRUE) or CV likelihood (FALSE) must be used
-#' @return a matrix with the CV score for each pair of bandiwdths
+#' @return a vector with the CV score for each bandwidth and the densities if required
 #' @export
 #' @examples
 #' # no example provided, this is an internal function
@@ -472,7 +475,11 @@ NULL
 #' @param method a string, one of "simple", "continuous", "discontinuous"
 #' @param neighbour_list a List, giving for each node an IntegerVector with
 #' its neighbours
+#' @param sel_events a Numeric vector indicating the selected events (id of nodes)
+#' @param sel_events_wid a Numeric Vector indicating the unique if of the selected events
+#' @param sel_events_time a Numeric Vector indicating the time of the selected events
 #' @param events a NumericVector indicating the nodes in graph beeing events
+#' @param events_wid a NumericVector indicating the unique id of all the events
 #' @param events_time a NumericVector indicating the timestamp of each event
 #' @param weights a cube with the weights associated with each events for each
 #' bws_net and bws_time.
@@ -481,7 +488,7 @@ NULL
 #' @param kernel_name a string with the name of the kernel to use
 #' @param line_list a DataFrame describing the lines
 #' @param max_depth the maximum recursion depth
-#' @param min_til a double indicating by how much 0 in densities values must be replaced
+#' @param min_tol a double indicating by how much 0 in densities values must be replaced
 #' @return a matrix with the CV score for each pair of bandiwdths
 #' @export
 #' @examples
@@ -512,6 +519,10 @@ split_lines_at_points_cpp <- function(Xmat, lines, nearest_lines_idx, mindist) {
 
 lixelize_lines_cpp <- function(lines, lx_length, mindist) {
     .Call('_spNetwork_lixelize_lines_cpp', PACKAGE = 'spNetwork', lines, lx_length, mindist)
+}
+
+points_along_lines_cpp <- function(lines, dist) {
+    .Call('_spNetwork_points_along_lines_cpp', PACKAGE = 'spNetwork', lines, dist)
 }
 
 #' @title The worker function to calculate continuous NKDE (with ARMADILLO and sparse matrix)

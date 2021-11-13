@@ -1008,17 +1008,16 @@ nkde_worker <- function(lines, events, samples, kernel_name,bw, bws, method, div
 #' }
 #'
 #' @template nkde_params-arg
+#' @template diggle_corr-arg
 #' @param samples A SpatialPointsDataFrame representing the locations for
 #' which the densities will be estimated.
 #' @template nkde_params2-arg
 #' @template nkde_geoms-args
 #' @template sparse-arg
 #' @template grid_shape-arg
-#' @param verbose A Boolean, indicating if the function should print messages
-#' about the process.
+#' @template verbose-arg
 #' @template check-arg
-#' @return A vector of values, they are the density estimates at samplings
-#' points
+#' @return A vector of values, they are the density estimates at sampling points
 #' @export
 #' @examples
 #' \donttest{
@@ -1155,6 +1154,7 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, tri
 #' @details For more details, see help(nkde)
 #'
 #' @template nkde_params-arg
+#' @template diggle_corr-arg
 #' @param samples A SpatialPointsDataFrame representing the locations for
 #' which the densities will be estimated.
 #' @template nkde_params2-arg

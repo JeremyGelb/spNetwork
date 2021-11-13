@@ -3,6 +3,21 @@
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
+#' @title Check function for parameters in bandwidth selection methods
+#'
+#' @description A check function for bandwidth selection methods raising an error if a parameter is not valid
+#'
+#' @param check A boolean indicating if the geometries must be checked
+#' @param lines A SpatialLinesDataFrame representing the underlying network
+#' @param samples A SpatialPointsDataFrame representing the sample location
+#' @param events a SpatialPointsDataFrame representing the events
+#' @param kernel_name The name of the kernel to use
+#' @param method The name of the NKDE to use
+#' @template bw_tnkde_selection-args
+#' @template diggle_corr-arg
+#' @keywords internal
+#' @examples
+#' # no example provided, this is an internal function
 bw_checks <- function(check,lines,samples,events,
                       kernel_name, method, bw_net_range = NULL, bw_time_range = NULL,
                       bw_net_step = NULL, bw_time_step = NULL,
@@ -16,7 +31,7 @@ bw_checks <- function(check,lines,samples,events,
     stop('the method must be one of c("simple","continuous","discontinuous"')
   }
   if(method == "continuous" & kernel_name == "gaussian"){
-    stop("using the continuous NKDE and the gaussian kernel function can yield negative values for densities because the gaussian kernel does not integrate to 1 within the bandiwdth, please consider using the quartic kernel instead")
+    stop("using the continuous NKDE and the gaussian kernel function can yield negative values for densities because the gaussian kernel does not integrate to 1 within the bandwidth, please consider using the quartic kernel instead")
   }
 
   if(is.null(bw_net_range) == FALSE){
@@ -49,8 +64,34 @@ bw_checks <- function(check,lines,samples,events,
   }
 }
 
-bw_tnkde_corr_factor <- function(net_bws, time_bws, diggle_correction, events, events_loc, lines,
-                                 method, kernel_name, tol, digits, max_depts, sparse){
+
+#' @title Time and Network bandwidth correction calculation
+#'
+#' @description Caclulating the border correction factor for both time and network bandwidths
+#'
+#' @param net_bws A vector of network bandwidths
+#' @param time_bws A vector of time bandwidths
+#' @template diggle_corr-arg
+#' @param events A SpatialPointsDataFrame representing the events
+#' @param events_loc A SpatialPointsDataFrame representing the unique location of events
+#' @param lines A SpatialLinesDataFrame representing the underlying lines of the network
+#' @param method The name of a NKDE method
+#' @param kernel_name The name of the kernel to use
+#' @param samples A SpatialPointsDataFrame representing the sample location
+#' @param events A SpatialPointsDataFrame representing the events
+#' @param kernel_name The name of the kernel to use
+#' @param method The name of the NKDE to use
+#' @param tol  float indicating the minimum distance between the events and the
+#'   lines' extremities when adding the point to the network. When points are
+#'   closer, they are added at the extremity of the lines.
+#' @param digits An integer, the number of digits to keep for the spatial coordinates
+#' @param max_depth The maximal depth for continuous or discontinuous NKDE
+#' @template sparse-arg
+#' @keywords internal
+#' @examples
+#' # no example provided, this is an internal function
+bw_tnkde_corr_factor <- function(net_bws, time_bws, diggle_correction, study_area, events, events_loc, lines,
+                                 method, kernel_name, tol, digits, max_depth, sparse){
   net_bws_corr <- lapply(net_bws, function(bw){
     if(diggle_correction){
       bws <- rep(bw,nrow(events_loc))
@@ -92,7 +133,7 @@ bw_tnkde_corr_factor <- function(net_bws, time_bws, diggle_correction, events, e
 #'
 #' @details  The function calculates the likelihood cross validation score for several time and network
 #' bandwidths in order to find the most appropriate one. The general idea is to find the pair of
-#' bandwidths that would produce the most similar results if one event was removed from
+#' bandwidths that would produce the most similar results if one event is removed from
 #' the dataset (leave one out cross validation). We use here the shortcut formula as
 #' described by the package spatstat \insertCite{spatstatpkg}{spNetwork}.
 #'
@@ -107,6 +148,7 @@ bw_tnkde_corr_factor <- function(net_bws, time_bws, diggle_correction, events, e
 #'
 #' @template bw_tnkde_selection-args
 #' @template nkde_params-arg
+#' @template diggle_corr-arg
 #' @template nkde_geoms-args
 #' @param time_field The name of the field in events indicating when the events occurred. It must be a numeric field
 #' @template sparse-arg
@@ -114,17 +156,16 @@ bw_tnkde_corr_factor <- function(net_bws, time_bws, diggle_correction, events, e
 #' @param sub_sample A float between 0 and 1 indicating the percentage of quadra
 #' to keep in the calculus. For large datasets, it may be useful to limit the
 #' bandwidth evaluation and thus reduce calculation time.
-#' @param verbose A Boolean, indicating if the function should print messages
-#' about process.
+#' @template verbose-arg
 #' @template check-arg
-#' @return A matrix with the cross validation score.  Each row correspond to a network
+#' @return A matrix with the cross validation score.  Each row corresponds to a network
 #' bandwidth and each column to a time bandwidth (the higher the better).
 #' @export
 #' @examples
+#' \donttest{
 #' # loading the data
 #' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
 #' eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
-#' #eventsgpkg <- "C:/Users/gelbj/OneDrive/Documents/R/dev-packages/sauvetage_spNetwork/spNetwork/inst/extdata/events.gpkg"
 #' mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network", verbose=FALSE)
 #' bike_accidents <- rgdal::readOGR(eventsgpkg,layer="bike_accidents", verbose=FALSE)
 #'
@@ -157,6 +198,7 @@ bw_tnkde_corr_factor <- function(net_bws, time_bws, diggle_correction, events, e
 #'   sub_sample=1,
 #'   verbose = FALSE,
 #'   check = TRUE)
+#'}
 bws_tnkde_cv_likelihood_calc <- function(bw_net_range, bw_net_step,
                                          bw_time_range, bw_time_step,
                                          lines, events, time_field,
@@ -202,8 +244,8 @@ bws_tnkde_cv_likelihood_calc <- function(bw_net_range, bw_net_step,
   }
 
   ## calculating network corr_factors
-  corr_factors <- bw_tnkde_corr_factor(net_bws, time_bws, diggle_correction, events, events_loc, lines,
-                                   method, kernel_name, tol, digits, max_depts, sparse)
+  corr_factors <- bw_tnkde_corr_factor(net_bws, time_bws, diggle_correction, study_area, events, events_loc, lines,
+                                   method, kernel_name, tol, digits, max_depth, sparse)
   net_bws_corr <- corr_factors[[1]]
   time_bws_corr <- corr_factors[[2]]
 
@@ -298,6 +340,7 @@ bws_tnkde_cv_likelihood_calc <- function(bw_net_range, bw_net_step,
 #'
 #' @template bw_tnkde_selection-args
 #' @template nkde_params-arg
+#' @template diggle_corr-arg
 #' @template nkde_geoms-args
 #' @param time_field The name of the field in events indicating when the events occurred. It must be a numeric field
 #' @template sparse-arg
@@ -305,13 +348,13 @@ bws_tnkde_cv_likelihood_calc <- function(bw_net_range, bw_net_step,
 #' @param sub_sample A float between 0 and 1 indicating the percentage of quadra
 #' to keep in the calculus. For large datasets, it may be useful to limit the
 #' bandwidth evaluation and thus reduce calculation time.
-#' @param verbose A Boolean, indicating if the function should print messages
-#' about process.
+#' @template verbose-arg
 #' @template check-arg
 #' @return A matrix with the cross validation score.  Each row correspond to a network
 #' bandwidth and each column to a time bandwidth (the higher the better).
 #' @export
 #' @examples
+#' \donttest{
 #' # loading the data
 #' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
 #' eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
@@ -323,6 +366,8 @@ bws_tnkde_cv_likelihood_calc <- function(bw_net_range, bw_net_step,
 #' bike_accidents$Time <- difftime(bike_accidents$Time, min(bike_accidents$Time), units = "days")
 #' bike_accidents$Time <- as.numeric(bike_accidents$Time)
 #' bike_accidents <- subset(bike_accidents, bike_accidents$Time>=89)
+#'
+#' future::plan(future::multisession(workers=2))
 #'
 #' # calculating the cross validation values
 #' cv_scores <- bws_tnkde_cv_likelihood_calc.mc(
@@ -347,6 +392,10 @@ bws_tnkde_cv_likelihood_calc <- function(bw_net_range, bw_net_step,
 #'   sub_sample=1,
 #'   verbose = FALSE,
 #'   check = TRUE)
+#'
+#' ## make sure any open connections are closed afterward
+#' if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
+#'}
 bws_tnkde_cv_likelihood_calc.mc <- function(bw_net_range, bw_net_step,
                                          bw_time_range, bw_time_step,
                                          lines, events, time_field,
@@ -392,8 +441,8 @@ bws_tnkde_cv_likelihood_calc.mc <- function(bw_net_range, bw_net_step,
   }
 
   ## calculating network corr_factors
-  corr_factors <- bw_tnkde_corr_factor(net_bws, time_bws, diggle_correction, events, events_loc, lines,
-                                       method, kernel_name, tol, digits, max_depts, sparse)
+  corr_factors <- bw_tnkde_corr_factor(net_bws, time_bws, diggle_correction, study_area, events, events_loc, lines,
+                                       method, kernel_name, tol, digits, max_depth, sparse)
   net_bws_corr <- corr_factors[[1]]
   time_bws_corr <- corr_factors[[2]]
 
@@ -539,6 +588,8 @@ tnkde_worker_bw_sel <- function(lines, quad_events, events_loc, events, w, kerne
   quad_events2 <- quad_events@data
 
   #first a join for all the events in the bw
+  vertex_id <- NULL # avoid a NOTE
+  i.vertex_id <- NULL # avoid a NOTE
   setDT(events2)[events_loc2, on = "goid", vertex_id := i.vertex_id]
 
   #and a second join for the quad_events

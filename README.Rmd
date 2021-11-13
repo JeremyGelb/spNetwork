@@ -42,6 +42,7 @@ The package's website is available [here](https://jeremygelb.github.io/spNetwork
 This package can be used to perform several types of analysis on geographical networks. This type of network have spatial coordinates associated with their nodes. They can be directed or undirected. In the actual development version the implemented methods are: 
 
 * Network Kernel Density Estimate, a method estimating density of a point pattern constrained on a network (see the vignettes [Network Kernel Density Estimate](https://jeremygelb.github.io/spNetwork/articles/NKDE.html) and [Details about NKDE](https://jeremygelb.github.io/spNetwork/articles/NKDEdetailed.html)).
+* Temporal Network Kernel Density Estimate, a temporal extension of the previous methods [Temporal Network Kernel Density Estimate](https://jeremygelb.github.io/spNetwork/articles/TNKDE.html).
 * Spatial weight matrices based on network distances, which can be used in a great number of traditional methods in spatial analysis (see the vignette [Spatial Weight Matrices](https://jeremygelb.github.io/spNetwork/articles/SpatialWeightMatrices.html)).
 * Network k Functions, used to investigate the spatial distribution of a set of points on a network at several scales (see the vignette [Network k Functions](https://jeremygelb.github.io/spNetwork/articles/KNetworkFunctions.html)).
 * K nearest neighbours, to calculate for each point on a network its K nearest neighbour (see the function `network_knn`).
@@ -119,13 +120,18 @@ densities <- nkde(mtl_network,
 densities <- densities*1000
 samples$density <- densities
 
-
-
 tm_shape(samples) + 
   tm_dots(col = "density", size = 0.05, palette = "viridis",
           n = 7, style = "kmeans")
 
 ```
+
+An extension for spatio-temporal dataset is also available [Temporal Network Kernel Density Estimate](https://jeremygelb.github.io/spNetwork/articles/TNKDE.html)
+
+```{r echo=FALSE, fig.align='center', message=FALSE, warning=FALSE, out.width="75%"}
+knitr::include_graphics("vignettes/images/animated_map.gif")
+```
+
 * Building a spatial matrix based on network distance
 
 ```{r eval = TRUE, warning = FALSE, message=FALSE}
@@ -194,6 +200,7 @@ Features that will be added to the package in the future:
 
 * temporal NKDE, a two dimensional kernel density estimation in network space and time
 * accessibility measures based on distance matrix between population locations and services
+* rework for using `sf` objects rather than `sp` (`rgeos` and `maptools` will be deprecated in 2023)
 
 ## Authors
 

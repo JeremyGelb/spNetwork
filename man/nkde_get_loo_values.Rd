@@ -26,7 +26,13 @@ nkde_get_loo_values(
 \item{neighbour_list}{a List, giving for each node an IntegerVector with
 its neighbours}
 
+\item{sel_events}{a Numeric vector indicating the selected events (id of nodes)}
+
+\item{sel_events_wid}{a Numeric Vector indicating the unique if of the selected events}
+
 \item{events}{a NumericVector indicating the nodes in graph beeing events}
+
+\item{events_wid}{a NumericVector indicating the unique id of all the events}
 
 \item{weights}{a matrix with the weights associated with each events (row) for each
 bws_net (cols).}
@@ -44,7 +50,7 @@ bws_net (cols).}
 \item{cvl}{a boolean indicating if the Cronie (TRUE) or CV likelihood (FALSE) must be used}
 }
 \value{
-a matrix with the CV score for each pair of bandiwdths
+a vector with the CV score for each bandwidth and the densities if required
 }
 \description{
 The exposed function to calculate NKDE likelihood cv

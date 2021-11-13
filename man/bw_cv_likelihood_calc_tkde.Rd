@@ -17,7 +17,7 @@ bw_cv_likelihood_calc_tkde(events, w, bws, kernel_name)
 }
 \description{
 Calculate the likelihood cross validation score for several bandwidths for the
-Temporal Kernel density estimatation
+Temporal Kernel density
 }
 \examples{
 eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)

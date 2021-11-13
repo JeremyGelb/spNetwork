@@ -9,7 +9,7 @@
 
 [![R-CMD-check](https://github.com/JeremyGelb/spNetwork/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/JeremyGelb/spNetwork/actions/workflows/R-CMD-check.yaml)
 
-[![](https://img.shields.io/badge/devel%20version-0.2.1-green.svg)](https://jeremygelb.github.io/spNetwork/)
+[![](https://img.shields.io/badge/devel%20version-0.2.1.9000-green.svg)](https://jeremygelb.github.io/spNetwork/)
 [![](https://www.r-pkg.org/badges/version/spNetwork?color=blue)](https://cran.r-project.org/package=spNetwork)
 [![](http://cranlogs.r-pkg.org/badges/grand-total/spNetwork?color=blue)](https://cran.r-project.org/package=spNetwork)
 [![](http://cranlogs.r-pkg.org/badges/last-month/spNetwork?color=green)](https://cran.r-project.org/package=spNetwork)
@@ -33,6 +33,9 @@ actual development version the implemented methods are:
     Estimate](https://jeremygelb.github.io/spNetwork/articles/NKDE.html)
     and [Details about
     NKDE](https://jeremygelb.github.io/spNetwork/articles/NKDEdetailed.html)).
+-   Temporal Network Kernel Density Estimate, a temporal extension of
+    the previous methods [Temporal Network Kernel Density
+    Estimate](https://jeremygelb.github.io/spNetwork/articles/TNKDE.html).
 -   Spatial weight matrices based on network distances, which can be
     used in a great number of traditional methods in spatial analysis
     (see the vignette [Spatial Weight
@@ -126,15 +129,20 @@ densities <- nkde(mtl_network,
 densities <- densities*1000
 samples$density <- densities
 
-
-
 tm_shape(samples) + 
   tm_dots(col = "density", size = 0.05, palette = "viridis",
           n = 7, style = "kmeans")
 ```
 
-<img src="man/figures/unnamed-chunk-4-1.png" width="100%" /> \* Building
-a spatial matrix based on network distance
+<img src="man/figures/unnamed-chunk-4-1.png" width="100%" />
+
+An extension for spatio-temporal dataset is also available [Temporal
+Network Kernel Density
+Estimate](https://jeremygelb.github.io/spNetwork/articles/TNKDE.html)
+
+<img src="vignettes/images/animated_map.gif" width="75%" style="display: block; margin: auto;" />
+
+-   Building a spatial matrix based on network distance
 
 ``` r
 library(spdep)
@@ -169,7 +177,7 @@ tm_shape(mtl_network) +
           palette = c("isolated" = "red","not isolated" = "blue"))
 ```
 
-<img src="man/figures/unnamed-chunk-5-1.png" width="100%" />
+<img src="man/figures/unnamed-chunk-6-1.png" width="100%" />
 
 Note that you can use this in every spatial analysis you would like to
 perform. With the converter function of spdep (like listw2mat), you can
@@ -195,7 +203,7 @@ kfun_theatre <- kfunctions(main_network_mtl, mtl_theatres,
 kfun_theatre$plotg
 ```
 
-<img src="man/figures/unnamed-chunk-6-1.png" width="100%" />
+<img src="man/figures/unnamed-chunk-7-1.png" width="100%" />
 
 ### Work in progress
 
@@ -210,6 +218,8 @@ Features that will be added to the package in the future:
     network space and time
 -   accessibility measures based on distance matrix between population
     locations and services
+-   rework for using `sf` objects rather than `sp` (`rgeos` and
+    `maptools` will be deprecated in 2023)
 
 ## Authors
 

@@ -18,6 +18,15 @@ reference:
   - gaussian_kernel_scaled
   - quartic_kernel
   - triangle_kernel
+- title: "Temporal Network Kernel Density"
+  desc: >
+    Functions to perform Temporal Network Kernel Density estimation.
+- contents:
+  - tnkde
+  - tnkde.mc
+  - bws_tnkde_cv_likelihood_calc
+  - bws_tnkde_cv_likelihood_calc.mc
+  - tkde
 - title: "Spatial weight matrices on networks"
   desc: >
     Functions to calculate spatial weight matrices on networks.
@@ -46,6 +55,7 @@ reference:
   - build_graph_directed
   - graph_checking
   - simplify_network
+  - split_graph_components
 - title: "Isochrones"
   desc: >
     Functions to calculate isochrones.
