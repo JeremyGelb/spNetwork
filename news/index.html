@@ -71,7 +71,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0.9000</span>
       </span>
     </div>
 
@@ -111,6 +111,9 @@
     <li>
       <a href="../articles/SpatialWeightMatrices.html">Spatial Weight Matrices</a>
     </li>
+    <li>
+      <a href="../articles/TNKDE.html">Temporal Network Kernel Density Estimate</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -141,6 +144,33 @@
       <small>Source: <a href='https://github.com/JeremyGelb/spNetwork/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
+    <div id="spnetwork-0309000" class="section level1">
+<h1 class="page-header" data-toc-text="0.3.0.9000">
+<a href="#spnetwork-0309000" class="anchor"></a>spNetwork 0.3.0.9000<small> Unreleased </small>
+</h1>
+<div id="new-features" class="section level2">
+<h2 class="hasAnchor">
+<a href="#new-features" class="anchor"></a>New Features</h2>
+<ul>
+<li>Added a set of functions to perform Temporal Network Kernel Density Estimation (see vignette TNKDE)</li>
+</ul>
+</div>
+<div id="documentation" class="section level2">
+<h2 class="hasAnchor">
+<a href="#documentation" class="anchor"></a>documentation</h2>
+<ul>
+<li>A new vignette is presenting the Temporal Network Kernel Density Estimation</li>
+</ul>
+</div>
+<div id="performance" class="section level2">
+<h2 class="hasAnchor">
+<a href="#performance" class="anchor"></a>performance</h2>
+<ul>
+<li>Performance was improved for data driven bandwidth selection for NKDE</li>
+<li>The function <em>lines_points_along</em> has been reworked with c++ and is now way faster</li>
+</ul>
+</div>
+</div>
     <div id="spnetwork-021" class="section level1">
 <h1 class="page-header" data-toc-text="0.2.1">
 <a href="#spnetwork-021" class="anchor"></a>spNetwork 0.2.1<small> 2021-10-30 </small>
@@ -151,9 +181,9 @@
 <h1 class="page-header" data-toc-text="0.2.0">
 <a href="#spnetwork-020" class="anchor"></a>spNetwork 0.2.0<small> 2021-10-09 </small>
 </h1>
-<div id="new-features" class="section level2">
+<div id="new-features-1" class="section level2">
 <h2 class="hasAnchor">
-<a href="#new-features" class="anchor"></a>New Features</h2>
+<a href="#new-features-1" class="anchor"></a>New Features</h2>
 <ul>
 <li>Added two function for data-driven bandwidth selection (see vignette NKDE)</li>
 <li>Added a function to simplify network before processing (<em>simplify_network</em>), reducing network complexity by removing useless edges or merge continuous edge can improve performance. This function is still experimental and must be used only for undirected networks.</li>
@@ -163,9 +193,9 @@
 <li>Making some internal functions visible for the user to allow graph analysis on networks, see the new vignette <em>Building networks</em>.</li>
 </ul>
 </div>
-<div id="documentation" class="section level2">
+<div id="documentation-1" class="section level2">
 <h2 class="hasAnchor">
-<a href="#documentation" class="anchor"></a>documentation</h2>
+<a href="#documentation-1" class="anchor"></a>documentation</h2>
 <p>Several vignettes were added to present the new features. A pkgdown website was also built to give a more attractive way to browse the documentation.</p>
 <p>We follow now the code coverage. We want to reach 70% coverage before the next CRAN release.</p>
 </div>
@@ -181,9 +211,9 @@
 <li>In the nkde function, when using an integer matrix, an error was crashing the R session in some case. This has been corrected.</li>
 </ul>
 </div>
-<div id="performance" class="section level2">
+<div id="performance-1" class="section level2">
 <h2 class="hasAnchor">
-<a href="#performance" class="anchor"></a>performance</h2>
+<a href="#performance-1" class="anchor"></a>performance</h2>
 <ul>
 <li>Performance was improved for functions <em>listw_network</em>, <em>listw_network.mc</em>, <em>kfunctions</em>, <em>kfunctions.mc</em>, <em>cross_kfunctions</em> and <em>cross_kfunctions.mc</em>, by reducing the complexity of the network with no loss of accuracy.</li>
 <li>Several geometrical functions have been accelerated by c++ code using the boost library</li>

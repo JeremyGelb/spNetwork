@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Worker function for bandwidth selection by likelihood cross validation — nkde_worker_bw_sel • spNetwork</title>
+<title>Bandwidth selection by likelihood cross validation worker function — nkde_worker_bw_sel • spNetwork</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,9 @@
 
 
 
-<meta property="og:title" content="Worker function for bandwidth selection by likelihood cross validation — nkde_worker_bw_sel" />
-<meta property="og:description" content="The worker function for bandwidth selection by likelihood cross validation" />
+<meta property="og:title" content="Bandwidth selection by likelihood cross validation worker function — nkde_worker_bw_sel" />
+<meta property="og:description" content="worker function for calculating for multiple bandwidth the cross validation likelihood to
+select an appropriate bandwidth in a data-driven approach" />
 
 
 
@@ -72,7 +73,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0.9000</span>
       </span>
     </div>
 
@@ -112,6 +113,9 @@
     <li>
       <a href="../articles/SpatialWeightMatrices.html">Spatial Weight Matrices</a>
     </li>
+    <li>
+      <a href="../articles/TNKDE.html">Temporal Network Kernel Density Estimate</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -138,28 +142,32 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Worker function for bandwidth selection by likelihood cross validation</h1>
+    <h1>Bandwidth selection by likelihood cross validation worker function</h1>
     <small class="dont-index">Source: <a href='https://github.com/JeremyGelb/spNetwork/blob/master/R/bandwidth_selection_cv.R'><code>R/bandwidth_selection_cv.R</code></a></small>
     <div class="hidden name"><code>nkde_worker_bw_sel.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>The worker function for bandwidth selection by likelihood cross validation</p>
+    <p>worker function for calculating for multiple bandwidth the cross validation likelihood to
+select an appropriate bandwidth in a data-driven approach</p>
     </div>
 
     <pre class="usage"><span class='fu'>nkde_worker_bw_sel</span><span class='op'>(</span>
   <span class='va'>lines</span>,
+  <span class='va'>quad_events</span>,
+  <span class='va'>events_loc</span>,
   <span class='va'>events</span>,
-  <span class='va'>samples</span>,
+  <span class='va'>w</span>,
   <span class='va'>kernel_name</span>,
-  <span class='va'>bws</span>,
+  <span class='va'>bws_net</span>,
   <span class='va'>method</span>,
   <span class='va'>div</span>,
   <span class='va'>digits</span>,
   <span class='va'>tol</span>,
   <span class='va'>sparse</span>,
   <span class='va'>max_depth</span>,
-  verbose <span class='op'>=</span> <span class='cn'>FALSE</span>
+  verbose <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  cvl <span class='op'>=</span> <span class='cn'>FALSE</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -167,86 +175,78 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>lines</th>
-      <td><p>A SpatialLinesDataFrame representing the underlying network. The
-geometries must be a SpatialLinesDataFrame (may crash if some geometries
- are invalid)</p></td>
+      <td><p>A SpatialLinesDataFrame representing the underlying network</p></td>
+    </tr>
+    <tr>
+      <th>quad_events</th>
+      <td><p>a SpatialPointsDataFrame indicating for which events the densities must be calculated</p></td>
+    </tr>
+    <tr>
+      <th>events_loc</th>
+      <td><p>A SpatialPointsDataFrame representing the location of the events</p></td>
     </tr>
     <tr>
       <th>events</th>
-      <td><p>A SpatialPointsDataFrame representing the events on the
-network.</p></td>
+      <td><p>A SpatialPointsDataFrame representing the events. Multiple events can share
+the same location. They are linked by the goid column</p></td>
     </tr>
     <tr>
-      <th>samples</th>
-      <td><p>A SpatialPointsDataFrame representing the samples on the
-network.</p></td>
+      <th>w</th>
+      <td><p>A numeric matrix with the weight of the events for each bandwdith</p></td>
     </tr>
     <tr>
       <th>kernel_name</th>
-      <td><p>The name of the kernel to use. Must be one of triangle,
-gaussian, tricube, cosine ,triweight, quartic, epanechnikov or uniform.</p></td>
+      <td><p>The name of the kernel to use (string)</p></td>
     </tr>
     <tr>
-      <th>bws</th>
-      <td><p>A vector with all the bandiwdths to test.</p></td>
+      <th>bws_net</th>
+      <td><p>A numeric vector with the network bandwidths</p></td>
     </tr>
     <tr>
       <th>method</th>
-      <td><p>The method to use when calculating the NKDE, must be one of
-simple / discontinuous / continuous (see details for more information)</p></td>
-    </tr>
-    <tr>
-      <th>div</th>
-      <td><p>The divisor to use (should always be dist here).</p></td>
+      <td><p>The type of NKDE to use (string)</p></td>
     </tr>
     <tr>
       <th>digits</th>
-      <td><p>The number of digits to retain in the spatial coordinates. It
-ensures that topology is good when building the network. Default is 3</p></td>
+      <td><p>The number of digits to retain from the spatial coordinates. It
+ensures that topology is good when building the network. Default is 3. Too high a
+precision (high number of digits) might break some connections</p></td>
     </tr>
     <tr>
       <th>tol</th>
-      <td><p>When adding the events and the sampling points to the network,
-the minimum distance between these points and the lines' extremities. When
-points are closer, they are added at the extremity of the lines.</p></td>
+      <td><p>A float indicating the minimum distance between the events and the
+lines' extremities when adding the point to the network. When points are
+closer, they are added at the extremity of the lines.</p></td>
     </tr>
     <tr>
       <th>sparse</th>
-      <td><p>A Boolean indicating if sparse or regular matrix should be
-used by the Rcpp functions. Regular matrix are faster, but require more
-memory and could lead to error, in particular with multiprocessing. Sparse
-matrix are slower, but require much less memory (not used for the moment).</p></td>
-    </tr>
-    <tr>
-      <th>max_depth</th>
-      <td><p>when using the continuous and discontinuous methods, the
-calculation time and memory use can go wild  if the network has many
-small edges (area with many of intersections and many events). To
-avoid it, it is possible to set here a maximum depth. Considering that the
-kernel is divided at intersections, a value of 10 should yield good
-estimates in most cases. A larger value can be used without a problem for the
-discontinuous method. For the continuous method, a larger value will
-strongly impact calculation speed.</p></td>
+      <td><p>A Boolean indicating if sparse or regular matrices should be
+used by the Rcpp functions. These matrices are used to store edge indices
+between two nodes in a graph. Regular matrices are faster, but require more
+memory, in particular with multiprocessing. Sparse matrices are slower (a
+bit), but require much less memory.</p></td>
     </tr>
     <tr>
       <th>verbose</th>
-      <td><p>A Boolean, indicating if the function should print messages
-about process.</p></td>
+      <td><p>A boolean</p></td>
+    </tr>
+    <tr>
+      <th>cvl</th>
+      <td><p>A boolean indicating if the cvl method (TRUE) or the loo (FALSE) method must be used</p></td>
     </tr>
     <tr>
       <th>agg</th>
-      <td><p>A double indicating if the events must be aggregated within a distance.
-If NULL, the events are aggregated by rounding the coordinates.</p></td>
+      <td><p>A double indicating if the events must be aggregated within a
+distance. If NULL, the events are aggregated only by rounding the
+coordinates.</p></td>
     </tr>
     </table>
 
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p>A list of dataframes (continuous kernel) or a list of numeric vectors (other kernels).</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'>#This is an internal function, no example provided</span>
-</div></pre>
+    <pre class="examples"><span class='r-in'><span class='co'># no example provided, this is an internal function</span></span>
+<span class='r-in'></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
