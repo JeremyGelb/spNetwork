@@ -126,13 +126,13 @@ test_that("Testing the correction_factor function for a discontinuous NKDE", {
   observed <- correction_factor(polygons,event,all_lines,
                                 "discontinuous", c(3,3,3), "uniform", 0.1, 2, 8, sparse=TRUE)
 
-  # observed2 <- correction_factor(polygons,event,all_lines,
-  #                               "discontinuous", c(3,3,3), "quartic", 0.1, 2, 8, sparse=FALSE)
+  observed2 <- correction_factor(polygons,event,all_lines,
+                                "discontinuous", c(3,3,3), "uniform", 0.1, 2, 8, sparse=FALSE)
 
   test1 <- round(sum(expected_vals - observed),10) == 0
-  #test2 <- round(sum(expected_vals - observed2),10) == 0
+  test2 <- round(sum(expected_vals - observed2),10) == 0
 
-  expect_true(test1)
+  expect_true(test1 & test2)
 
 })
 
@@ -208,11 +208,11 @@ test_that("Testing the correction_factor function for a continuous NKDE", {
   observed <- correction_factor(polygons,event,all_lines,
                                 "continuous", c(3,3,3), "cosine", 0.1, 2, 8, sparse=TRUE)
 
-  # observed2 <- correction_factor(polygons,event,all_lines,
-  #                               "continuous", c(3,3,3), "quartic", 0.1, 2, 8, sparse=FALSE)
+  observed2 <- correction_factor(polygons,event,all_lines,
+                                "continuous", c(3,3,3), "quartic", 0.1, 2, 8, sparse=FALSE)
 
   test1 <- round(sum(expected_vals - observed),10) == 0
-  # test2 <- round(sum(expected_vals - observed2),10) == 0
+  test2 <- round(sum(expected_vals - observed2),10) == 0
 
   expect_true(test1)
 

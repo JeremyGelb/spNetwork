@@ -287,63 +287,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// get_loo_values_continuous
-DataFrame get_loo_values_continuous(List neighbour_list, NumericVector samples, NumericVector sweights, NumericVector events, NumericVector weights, NumericVector bws, std::string kernel_name, DataFrame line_list, int max_depth);
-RcppExport SEXP _spNetwork_get_loo_values_continuous(SEXP neighbour_listSEXP, SEXP samplesSEXP, SEXP sweightsSEXP, SEXP eventsSEXP, SEXP weightsSEXP, SEXP bwsSEXP, SEXP kernel_nameSEXP, SEXP line_listSEXP, SEXP max_depthSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< List >::type neighbour_list(neighbour_listSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type samples(samplesSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type sweights(sweightsSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type events(eventsSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type weights(weightsSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type bws(bwsSEXP);
-    Rcpp::traits::input_parameter< std::string >::type kernel_name(kernel_nameSEXP);
-    Rcpp::traits::input_parameter< DataFrame >::type line_list(line_listSEXP);
-    Rcpp::traits::input_parameter< int >::type max_depth(max_depthSEXP);
-    rcpp_result_gen = Rcpp::wrap(get_loo_values_continuous(neighbour_list, samples, sweights, events, weights, bws, kernel_name, line_list, max_depth));
-    return rcpp_result_gen;
-END_RCPP
-}
-// get_loo_values_discontinuous
-NumericVector get_loo_values_discontinuous(List neighbour_list, NumericVector samples, NumericVector sweights, NumericVector events, NumericVector weights, NumericVector bws, std::string kernel_name, DataFrame line_list, int max_depth);
-RcppExport SEXP _spNetwork_get_loo_values_discontinuous(SEXP neighbour_listSEXP, SEXP samplesSEXP, SEXP sweightsSEXP, SEXP eventsSEXP, SEXP weightsSEXP, SEXP bwsSEXP, SEXP kernel_nameSEXP, SEXP line_listSEXP, SEXP max_depthSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< List >::type neighbour_list(neighbour_listSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type samples(samplesSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type sweights(sweightsSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type events(eventsSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type weights(weightsSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type bws(bwsSEXP);
-    Rcpp::traits::input_parameter< std::string >::type kernel_name(kernel_nameSEXP);
-    Rcpp::traits::input_parameter< DataFrame >::type line_list(line_listSEXP);
-    Rcpp::traits::input_parameter< int >::type max_depth(max_depthSEXP);
-    rcpp_result_gen = Rcpp::wrap(get_loo_values_discontinuous(neighbour_list, samples, sweights, events, weights, bws, kernel_name, line_list, max_depth));
-    return rcpp_result_gen;
-END_RCPP
-}
-// get_loo_values_simple
-NumericVector get_loo_values_simple(List neighbour_list, NumericVector samples, NumericVector sweights, NumericVector events, NumericVector weights, NumericVector bws, std::string kernel_name, DataFrame line_list, int max_depth);
-RcppExport SEXP _spNetwork_get_loo_values_simple(SEXP neighbour_listSEXP, SEXP samplesSEXP, SEXP sweightsSEXP, SEXP eventsSEXP, SEXP weightsSEXP, SEXP bwsSEXP, SEXP kernel_nameSEXP, SEXP line_listSEXP, SEXP max_depthSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< List >::type neighbour_list(neighbour_listSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type samples(samplesSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type sweights(sweightsSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type events(eventsSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type weights(weightsSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type bws(bwsSEXP);
-    Rcpp::traits::input_parameter< std::string >::type kernel_name(kernel_nameSEXP);
-    Rcpp::traits::input_parameter< DataFrame >::type line_list(line_listSEXP);
-    Rcpp::traits::input_parameter< int >::type max_depth(max_depthSEXP);
-    rcpp_result_gen = Rcpp::wrap(get_loo_values_simple(neighbour_list, samples, sweights, events, weights, bws, kernel_name, line_list, max_depth));
-    return rcpp_result_gen;
-END_RCPP
-}
 // nkde_get_loo_values
 arma::colvec nkde_get_loo_values(std::string method, List neighbour_list, NumericVector sel_events, NumericVector sel_events_wid, NumericVector events, NumericVector events_wid, arma::mat weights, arma::vec bws_net, std::string kernel_name, DataFrame line_list, int max_depth, double min_tol, bool cvl);
 RcppExport SEXP _spNetwork_nkde_get_loo_values(SEXP methodSEXP, SEXP neighbour_listSEXP, SEXP sel_eventsSEXP, SEXP sel_events_widSEXP, SEXP eventsSEXP, SEXP events_widSEXP, SEXP weightsSEXP, SEXP bws_netSEXP, SEXP kernel_nameSEXP, SEXP line_listSEXP, SEXP max_depthSEXP, SEXP min_tolSEXP, SEXP cvlSEXP) {
@@ -690,9 +633,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_spNetwork_corrfactor_discontinuous", (DL_FUNC) &_spNetwork_corrfactor_discontinuous, 5},
     {"_spNetwork_corrfactor_continuous_sparse", (DL_FUNC) &_spNetwork_corrfactor_continuous_sparse, 5},
     {"_spNetwork_corrfactor_continuous", (DL_FUNC) &_spNetwork_corrfactor_continuous, 5},
-    {"_spNetwork_get_loo_values_continuous", (DL_FUNC) &_spNetwork_get_loo_values_continuous, 9},
-    {"_spNetwork_get_loo_values_discontinuous", (DL_FUNC) &_spNetwork_get_loo_values_discontinuous, 9},
-    {"_spNetwork_get_loo_values_simple", (DL_FUNC) &_spNetwork_get_loo_values_simple, 9},
     {"_spNetwork_nkde_get_loo_values", (DL_FUNC) &_spNetwork_nkde_get_loo_values, 13},
     {"_spNetwork_tnkde_get_loo_values", (DL_FUNC) &_spNetwork_tnkde_get_loo_values, 15},
     {"_spNetwork_find_nearest_object_in_line_rtree", (DL_FUNC) &_spNetwork_find_nearest_object_in_line_rtree, 4},
