@@ -68,7 +68,7 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           install.packages('remotes')
-          remotes::install_github("igraph/rigraph@master")
+          install.packages("igraph", type = "binary")
         shell: Rscript {0}
 
       - name: Restore R package cache
