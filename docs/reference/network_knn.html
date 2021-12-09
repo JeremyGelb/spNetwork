@@ -241,6 +241,14 @@ closer, they are added at the extremity of the lines.</p></td>
 
     <p>A list with two matrices, one with the index of the neighbours and
 one with the distances.</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>The k nearest neighbours of each point are found by using the network distance.
+The results could not be exact if some points share the exact same location. As an example,
+consider the following case. If A and B are two points at the exact same location, and C is
+a third point close to A and B. If the 1 nearest neighbour is requested for C, the function
+could return either A or B but not both. When such situation happens, a warning is raised by
+the function.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><span class='co'># \donttest{</span>

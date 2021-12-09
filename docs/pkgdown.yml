@@ -1,4 +1,4 @@
-pandoc: 2.11.4
+pandoc: 2.14.0.3
 pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
@@ -9,5 +9,5 @@ articles:
   NKDEdetailed: NKDEdetailed.html
   SpatialWeightMatrices: SpatialWeightMatrices.html
   TNKDE: TNKDE.html
-last_built: 2021-11-13T22:35Z
+last_built: 2021-12-09T15:15Z
 

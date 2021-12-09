@@ -70,6 +70,14 @@ one with the distances.
 \description{
 Calculate the K-nearest points for a set of points on a network.
 }
+\details{
+The k nearest neighbours of each point are found by using the network distance.
+The results could not be exact if some points share the exact same location. As an example,
+consider the following case. If A and B are two points at the exact same location, and C is
+a third point close to A and B. If the 1 nearest neighbour is requested for C, the function
+could return either A or B but not both. When such situation happens, a warning is raised by
+the function.
+}
 \examples{
 \donttest{
     networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)

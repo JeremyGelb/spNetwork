@@ -13,6 +13,10 @@
 * Performance was improved for data driven bandwidth selection for NKDE
 * The function *lines_points_along* has been reworked with c++ and is now way faster
 
+## corrected bugs
+
+* An error was raised when points were sharing the exact same locations in the function *network_knn*. It has been corrected an a warning was added to clarify the situation.
+
 # spNetwork 0.2.1
 
 Minor release to fix a bug on SOLARIS for CRAN

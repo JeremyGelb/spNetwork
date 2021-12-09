@@ -83,7 +83,9 @@ network_knn_worker <- function(points, lines, k, direction = NULL, use_dest = FA
   points$ch_vertex <- as.character(points$vertex)
 
   ## step5 find for each observation its n nearest neighbours
-  ok_points <- subset(points, points$type == "origin")
+  ok_points <- subset(points, points$type == "origin" & points$pttype == "start")
+  raiseWarning <- FALSE
+
   values <- lapply(1:nrow(ok_points), function(i){
     row <- ok_points@data[i,]
     vert <- row$ch_vertex
@@ -99,9 +101,18 @@ network_knn_worker <- function(points, lines, k, direction = NULL, use_dest = FA
       fids <- c(fids, rep(NA,(k-n-1)))
       distsf <- c(distsf, rep(NA,(k-n-1)))
     }
+    if(n>k){
+      raiseWarning <<- TRUE
+      fids <- fids[1:k]
+      distsf <- distsf[1:k]
+    }
 
     return(list(fids, distsf))
   })
+
+  if(raiseWarning){
+    warning("Several points share the exact same location, see details of the function network_knn for more information")
+  }
 
   ## creating matrices
   matdists <- do.call(rbind,lapply(values, function(l){
@@ -124,6 +135,13 @@ network_knn_worker <- function(points, lines, k, direction = NULL, use_dest = FA
 #' @description Calculate the K-nearest points for a set of points on a network.
 #'
 #' @template knn-args
+#'
+#' @details The k nearest neighbours of each point are found by using the network distance.
+#' The results could not be exact if some points share the exact same location. As an example,
+#' consider the following case. If A and B are two points at the exact same location, and C is
+#' a third point close to A and B. If the 1 nearest neighbour is requested for C, the function
+#' could return either A or B but not both. When such situation happens, a warning is raised by
+#' the function.
 #'
 #' @return A list with two matrices, one with the index of the neighbours and
 #' one with the distances.

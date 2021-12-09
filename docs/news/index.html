@@ -170,6 +170,13 @@
 <li>The function <em>lines_points_along</em> has been reworked with c++ and is now way faster</li>
 </ul>
 </div>
+<div id="corrected-bugs" class="section level2">
+<h2 class="hasAnchor">
+<a href="#corrected-bugs" class="anchor"></a>corrected bugs</h2>
+<ul>
+<li>An error was raised when points were sharing the exact same locations in the function <em>network_knn</em>. It has been corrected an a warning was added to clarify the situation.</li>
+</ul>
+</div>
 </div>
     <div id="spnetwork-021" class="section level1">
 <h1 class="page-header" data-toc-text="0.2.1">
@@ -199,9 +206,9 @@
 <p>Several vignettes were added to present the new features. A pkgdown website was also built to give a more attractive way to browse the documentation.</p>
 <p>We follow now the code coverage. We want to reach 70% coverage before the next CRAN release.</p>
 </div>
-<div id="corrected-bugs" class="section level2">
+<div id="corrected-bugs-1" class="section level2">
 <h2 class="hasAnchor">
-<a href="#corrected-bugs" class="anchor"></a>corrected bugs</h2>
+<a href="#corrected-bugs-1" class="anchor"></a>corrected bugs</h2>
 <ul>
 <li>issue 1 fixed by changing the function maptools::snapPointsToLines for a home made function. The package BH including the c++ boost library is used to realize fast spatial query.</li>
 <li>issue 2 fixed by handling the special case of lines of length 0.</li>
