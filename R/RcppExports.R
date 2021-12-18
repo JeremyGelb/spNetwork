@@ -410,6 +410,10 @@ points_along_lines_cpp <- function(lines, dist) {
     .Call('_spNetwork_points_along_lines_cpp', PACKAGE = 'spNetwork', lines, dist)
 }
 
+points_at_lines_centers_cpp <- function(lines) {
+    .Call('_spNetwork_points_at_lines_centers_cpp', PACKAGE = 'spNetwork', lines)
+}
+
 #' @title The worker function to calculate continuous NKDE (with ARMADILLO and sparse matrix)
 #' @name continuousWorker_sparse
 #' @param kernel_func a cpp pointer function (selected with the kernel name)

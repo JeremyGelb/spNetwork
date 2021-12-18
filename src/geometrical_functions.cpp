@@ -800,3 +800,46 @@ NumericMatrix points_along_lines_cpp(List lines, double dist){
 }
 
 
+// *********************************************************************
+// Points at the center of lines
+// *********************************************************************
+
+/*
+ *
+ * A function to create some points at the center of some lines
+ *
+ */
+// [[Rcpp::export]]
+NumericMatrix points_at_lines_centers_cpp(List lines){
+
+  //creating the containers (a list for the points and a vector for the lines indices)
+  std::vector<double> new_X;
+  std::vector<double> new_Y;
+  point_t p(0,0);
+
+  // starting the iterations
+  int i,j;
+  for(i=0; i<lines.length(); i++){
+    NumericMatrix line = lines(i);
+    linestring_t line_geom = line_from_coords(line);
+    double line_length = bg::length(line_geom);
+
+    float d = line_length/2.0;
+    bg::line_interpolate(line_geom, d, p);
+    new_X.push_back(p.x());
+    new_Y.push_back(p.y());
+  }
+
+  // creating the final matrix
+  NumericMatrix pts_coords(new_X.size(),2);
+
+  NumericVector vec1 = wrap(new_X);
+  pts_coords(_,0) = vec1;
+  NumericVector vec2 = wrap(new_Y);
+  pts_coords(_,1) = vec2;
+
+  return pts_coords;
+
+}
+
+

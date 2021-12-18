@@ -1,0 +1,30 @@
+citHeader("To cite spNetwork for NKDE in publications use:")
+
+citEntry(entry = "Article",
+  title        = "spNetwork, a package for network kernel density estimation",
+  author       = personList(as.person("Jérémy Gelb")),
+  journal      = "The R Journal",
+  year         = "2021",
+  url          = "https://journal.r-project.org/archive/2021/RJ-2021-102/index.html",
+  doi          = "10.32614/RJ-2021-102",
+
+  textVersion  =
+  paste("Gelb Jérémy (2021).",
+        "spNetwork, a package for network kernel density estimation.",
+        "The R Journal.",
+        "https://journal.r-project.org/archive/2021/RJ-2021-102/index.html.")
+)
+
+citHeader("To cite spNetwork as a package use:")
+
+citEntry(entry = "manual",
+  title        = "spNetwork: Spatial Analysis on Network",
+  author       = personList(as.person("Jérémy Gelb")),
+  year         = "2021",
+  url          = "https://jeremygelb.github.io/spNetwork/",
+
+  textVersion  =
+  paste("Gelb Jérémy (2021).",
+        "spNetwork: Spatial Analysis on Network.",
+        "https://jeremygelb.github.io/spNetwork/.")
+)

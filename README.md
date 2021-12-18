@@ -113,7 +113,7 @@ bike_accidents <- readOGR(eventsgpkg,layer="bike_accidents", verbose = FALSE)
 samples <- lines_points_along(mtl_network, 50)
 
 # calculating densities
-densities <- nkde(mtl_network,
+densities <- nkde(lines = mtl_network,
                  events = bike_accidents,
                  w = rep(1,nrow(bike_accidents)),
                  samples = samples,
@@ -235,9 +235,23 @@ Code of
 Conduct](https://github.com/JeremyGelb/spNetwork/blob/master/CONDUCT.md).
 By contributing to this project, you agree to abide by its terms.
 
+## Citation
+
+An article presenting `spNetwork` and NKDE has been accepted in the
+RJournal!
+
+Gelb Jérémy (2021). spNetwork, a package for network kernel density
+estimation. The R Journal.
+<https://journal.r-project.org/archive/2021/RJ-2021-102/index.html>.
+
+You can also cite the package for other methods:
+
+Gelb Jérémy (2021). spNetwork: Spatial Analysis on Network.
+<https://jeremygelb.github.io/spNetwork/>.
+
 ## License
 
-`spNetwork` version 0.1.1 is licensed under [GPL2
+`spNetwork` is licensed under [GPL2
 License](https://github.com/JeremyGelb/spNetwork/blob/master/LICENSE.txt).
 
 ## Acknowledgments

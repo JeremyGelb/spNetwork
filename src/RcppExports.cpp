@@ -425,6 +425,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// points_at_lines_centers_cpp
+NumericMatrix points_at_lines_centers_cpp(List lines);
+RcppExport SEXP _spNetwork_points_at_lines_centers_cpp(SEXP linesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type lines(linesSEXP);
+    rcpp_result_gen = Rcpp::wrap(points_at_lines_centers_cpp(lines));
+    return rcpp_result_gen;
+END_RCPP
+}
 // continuous_nkde_cpp_arma_sparse
 DataFrame continuous_nkde_cpp_arma_sparse(List neighbour_list, NumericVector events, NumericVector weights, DataFrame samples, NumericVector bws, std::string kernel_name, DataFrame nodes, DataFrame line_list, int max_depth, bool verbose);
 RcppExport SEXP _spNetwork_continuous_nkde_cpp_arma_sparse(SEXP neighbour_listSEXP, SEXP eventsSEXP, SEXP weightsSEXP, SEXP samplesSEXP, SEXP bwsSEXP, SEXP kernel_nameSEXP, SEXP nodesSEXP, SEXP line_listSEXP, SEXP max_depthSEXP, SEXP verboseSEXP) {
@@ -642,6 +653,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_spNetwork_split_lines_at_points_cpp", (DL_FUNC) &_spNetwork_split_lines_at_points_cpp, 4},
     {"_spNetwork_lixelize_lines_cpp", (DL_FUNC) &_spNetwork_lixelize_lines_cpp, 3},
     {"_spNetwork_points_along_lines_cpp", (DL_FUNC) &_spNetwork_points_along_lines_cpp, 2},
+    {"_spNetwork_points_at_lines_centers_cpp", (DL_FUNC) &_spNetwork_points_at_lines_centers_cpp, 1},
     {"_spNetwork_continuous_nkde_cpp_arma_sparse", (DL_FUNC) &_spNetwork_continuous_nkde_cpp_arma_sparse, 10},
     {"_spNetwork_continuous_nkde_cpp_arma", (DL_FUNC) &_spNetwork_continuous_nkde_cpp_arma, 10},
     {"_spNetwork_continuous_tnkde_cpp_arma_sparse", (DL_FUNC) &_spNetwork_continuous_tnkde_cpp_arma_sparse, 16},

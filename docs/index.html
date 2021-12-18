@@ -180,7 +180,7 @@
 <span class="va">samples</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/lines_points_along.html">lines_points_along</a></span><span class="op">(</span><span class="va">mtl_network</span>, <span class="fl">50</span><span class="op">)</span>
 
 <span class="co"># calculating densities</span>
-<span class="va">densities</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/nkde.html">nkde</a></span><span class="op">(</span><span class="va">mtl_network</span>,
+<span class="va">densities</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/nkde.html">nkde</a></span><span class="op">(</span>lines <span class="op">=</span> <span class="va">mtl_network</span>,
                  events <span class="op">=</span> <span class="va">bike_accidents</span>,
                  w <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">)</span><span class="op">)</span>,
                  samples <span class="op">=</span> <span class="va">samples</span>,
@@ -285,10 +285,18 @@
 <p>To contribute to <code>spNetwork</code>, please follow these <a href="https://github.com/JeremyGelb/spNetwork/blob/master/CONTRIBUTING.md">guidelines</a>.</p>
 <p>Please note that the <code>spNetwork</code> project is released with a <a href="https://github.com/JeremyGelb/spNetwork/blob/master/CONDUCT.md">Contributor Code of Conduct</a>. By contributing to this project, you agree to abide by its terms.</p>
 </div>
+<div id="citation" class="section level2">
+<h2 class="hasAnchor">
+<a href="#citation" class="anchor"></a>Citation</h2>
+<p>An article presenting <code>spNetwork</code> and NKDE has been accepted in the RJournal!</p>
+<p>Gelb Jérémy (2021). spNetwork, a package for network kernel density estimation. The R Journal. <a href="https://journal.r-project.org/archive/2021/RJ-2021-102/index.html" class="uri">https://journal.r-project.org/archive/2021/RJ-2021-102/index.html</a>.</p>
+<p>You can also cite the package for other methods:</p>
+<p>Gelb Jérémy (2021). spNetwork: Spatial Analysis on Network. <a href="https://jeremygelb.github.io/spNetwork/" class="uri">https://jeremygelb.github.io/spNetwork/</a>.</p>
+</div>
 <div id="license" class="section level2">
 <h2 class="hasAnchor">
 <a href="#license" class="anchor"></a>License</h2>
-<p><code>spNetwork</code> version 0.1.1 is licensed under <a href="https://github.com/JeremyGelb/spNetwork/blob/master/LICENSE.txt">GPL2 License</a>.</p>
+<p><code>spNetwork</code> is licensed under <a href="https://github.com/JeremyGelb/spNetwork/blob/master/LICENSE.txt">GPL2 License</a>.</p>
 </div>
 <div id="acknowledgments" class="section level2">
 <h2 class="hasAnchor">
@@ -324,6 +332,12 @@
 <h2>Community</h2>
 <ul class="list-unstyled">
 <li><a href="CONTRIBUTING.html">Contributing guide</a></li>
+</ul>
+</div>
+<div class="citation">
+<h2>Citation</h2>
+<ul class="list-unstyled">
+<li><a href="authors.html">Citing spNetwork</a></li>
 </ul>
 </div>
 <div class="developers">

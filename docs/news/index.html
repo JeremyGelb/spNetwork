@@ -160,6 +160,7 @@
 <a href="#documentation" class="anchor"></a>documentation</h2>
 <ul>
 <li>A new vignette is presenting the Temporal Network Kernel Density Estimation</li>
+<li>Adding a CITATION file</li>
 </ul>
 </div>
 <div id="performance" class="section level2">
@@ -168,13 +169,15 @@
 <ul>
 <li>Performance was improved for data driven bandwidth selection for NKDE</li>
 <li>The function <em>lines_points_along</em> has been reworked with c++ and is now way faster</li>
+<li>The function <em>lines_center</em> has been reworked with c++ and is now way faster</li>
 </ul>
 </div>
 <div id="corrected-bugs" class="section level2">
 <h2 class="hasAnchor">
 <a href="#corrected-bugs" class="anchor"></a>corrected bugs</h2>
 <ul>
-<li>An error was raised when points were sharing the exact same locations in the function <em>network_knn</em>. It has been corrected an a warning was added to clarify the situation.</li>
+<li><p>An error was raised when points were sharing the exact same locations in the function <em>network_knn</em>. It has been corrected an a warning was added to clarify the situation.</p></li>
+<li><p>A clearer error message is now raised when multiple geometries are passed to the <em>nkde</em> and <em>nkde.mc</em> functions.</p></li>
 </ul>
 </div>
 </div>

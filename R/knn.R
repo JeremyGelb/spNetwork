@@ -491,6 +491,9 @@ sanity_check_knn <- function(origins, destinations, lines, k, maxdistance, snap_
   if(length(grid_shape)!=2){
     stop("grid_shape must be a vector with a length of 2")
   }
+  if(sum(grid_shape) > 2 & maxdistance == 0){
+    stop("When a grid is used (grid_shape != c(1,1)), a maxdistance > 0 must be provided. It is used to ensure that neighbours under that distance are not missed even if the study area is split")
+  }
 
   ## check the final parameters
   if(verbose %in% c(TRUE,FALSE) == FALSE){

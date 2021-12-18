@@ -4,7 +4,7 @@
 std::vector<double> seq_num(double start, double end, double step){
 
   std::vector<double> values;
-  double cumul = 0;
+  double cumul = 0 - step;
   while(cumul+step < end){
     cumul+=step;
     values.push_back(cumul);

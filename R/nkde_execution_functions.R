@@ -28,7 +28,7 @@ check_geometries <- function(lines,samples,events, study_area){ # nocov start
     obj_name <- obj_names[[i]]
     if(any(gIsSimple(obj,byid = TRUE)==FALSE)){
       stop(paste("the ",obj_name," must be simple geometries,
-                 considere using the function sp::disaggregate",sep=""))
+                 considere using the function sp::disaggregate. You can also check which geometries are not simple with the fuction rgeos::gIsSimple.",sep=""))
     }
     if(any(gIsValid(obj,byid = TRUE)==FALSE)){
       stop(paste("the ",obj_name," must be valid geometries",sep=""))

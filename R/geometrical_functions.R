@@ -494,26 +494,47 @@ simple_lines <- function(lines) {
 lines_center <- function(lines) {
 
     lines$baseorder <- 1:nrow(lines)
+
     all_lengths <- rgeos::gLength(lines, byid = TRUE)
     no_length <- subset(lines, all_lengths == 0)
     with_length <- subset(lines, all_lengths>0)
 
-    pts1 <- maptools::SpatialLinesMidPoints(with_length)
-    pts1$Ind <- NULL
-    coords1 <- sp::coordinates(pts1)
-    data1 <- pts1@data
+    test1 <- FALSE
+    if(nrow(with_length) > 0){
+      data1 <- with_length@data
+      coords <- unlist(sp::coordinates(with_length), recursive = FALSE)
+      coords1 <- points_at_lines_centers_cpp(coords)
+      test1 <- TRUE
+    }
 
-    coords <- sp::coordinates(no_length)
-    coords2 <- do.call(rbind,lapply(coords, function(i){
+    test2 <- FALSE
+    if(nrow(no_length) > 0){
+      coords <- sp::coordinates(no_length)
+      coords2 <- do.call(rbind,lapply(coords, function(i){
         return(i[[1]][1,])
-    }))
-    data2 <- no_length@data
+      }))
+      test2 <- TRUE
+      data2 <- no_length@data
+    }
 
-    alldata <- rbind(data1,data2)
-    allcoords <- rbind(coords1,coords2)
+    if(test1 & test2){
+      alldata <- rbind(data1,data2)
+      allcoords <- rbind(coords1,coords2)
+    }else if(test1 & test2 == FALSE){
+      alldata <- data1
+      allcoords <- coords1
+    }else if(test2 & test1 == FALSE){
+      alldata <- data2
+      allcoords <- coords2
+    }else{
+      stop("There is no line in this dataset ?")
+    }
+
     sp::coordinates(alldata) <- allcoords
+
     raster::crs(alldata) <- raster::crs(lines)
     alldata <- alldata[order(alldata$baseorder),]
+
     alldata$baseorder <- NULL
 
     return(alldata)
@@ -573,25 +594,25 @@ lines_points_along <- function(lines,dist){
     return(all_pts)
 }
 
-lines_points_along <- function(lines,dist){
-    lenghts <- gLength(lines, byid = TRUE)
-    list_pts <- lapply(1:nrow(lines),function(i){
-        line <- lines[i,]
-        line_lenght <- lenghts[i]
-        distances <- seq(0,line_lenght,dist)
-        pts <- gInterpolate(line,distances)
-        return(pts)
-    })
-    oids <- lapply(1:length(list_pts),function(i){rep(i,length(list_pts[[i]]))})
-    oids <- do.call("c",oids)
-    all_pts <- do.call(rbind,list_pts)
-    # adding a useless column to avoid a bug when lines has only one column
-    lines$tmpOID <- 1:nrow(lines)
-    data <- lines@data[oids,]
-    all_pts <- sp::SpatialPointsDataFrame(all_pts,data)
-    all_pts$tmpOID <- NULL
-    return(all_pts)
-}
+# lines_points_along <- function(lines,dist){
+#     lenghts <- gLength(lines, byid = TRUE)
+#     list_pts <- lapply(1:nrow(lines),function(i){
+#         line <- lines[i,]
+#         line_lenght <- lenghts[i]
+#         distances <- seq(0,line_lenght,dist)
+#         pts <- gInterpolate(line,distances)
+#         return(pts)
+#     })
+#     oids <- lapply(1:length(list_pts),function(i){rep(i,length(list_pts[[i]]))})
+#     oids <- do.call("c",oids)
+#     all_pts <- do.call(rbind,list_pts)
+#     # adding a useless column to avoid a bug when lines has only one column
+#     lines$tmpOID <- 1:nrow(lines)
+#     data <- lines@data[oids,]
+#     all_pts <- sp::SpatialPointsDataFrame(all_pts,data)
+#     all_pts$tmpOID <- NULL
+#     return(all_pts)
+# }
 
 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -661,6 +682,8 @@ build_grid <- function(grid_shape, spatial) {
     v1 <- as.numeric(c(min(boxes[1,]),max(boxes[1,])))
     v2 <- as.numeric(c(min(boxes[2,]),max(boxes[2,])))
     box <- rbind(v1,v2)
+    box[,1] <- box[,1] - 5
+    box[,2] <- box[,2] + 5
     if(prod(grid_shape)==1){
         #ext <- raster::extent(spatial)
         ext <- raster::extent(box[1,1],box[1,2],box[2,1],box[2,2])
