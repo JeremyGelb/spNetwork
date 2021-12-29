@@ -97,8 +97,8 @@ networkgpkg <- system.file("extdata", "networks.gpkg",
                            package = "spNetwork", mustWork = TRUE)
 eventsgpkg <- system.file("extdata", "events.gpkg",
                           package = "spNetwork", mustWork = TRUE)
-mtl_network <- st_read(networkgpkg,layer="mtl_network")
-bike_accidents <- st_read(eventsgpkg,layer="bike_accidents")
+mtl_network <- st_read(networkgpkg,layer="mtl_network", quiet = TRUE)
+bike_accidents <- st_read(eventsgpkg,layer="bike_accidents", quiet = TRUE)
 
 
 # generating sampling points at the middle of lixels
@@ -180,8 +180,8 @@ networkgpkg <- system.file("extdata", "networks.gpkg",
 eventsgpkg <- system.file("extdata", "events.gpkg",
                           package = "spNetwork", mustWork = TRUE)
 
-main_network_mtl <- st_read(networkgpkg,layer="main_network_mtl")
-mtl_theatres <- st_read(eventsgpkg,layer="mtl_theatres")
+main_network_mtl <- st_read(networkgpkg,layer="main_network_mtl", quiet = TRUE)
+mtl_theatres <- st_read(eventsgpkg,layer="mtl_theatres", quiet = TRUE)
 
 # calculating the k function
 kfun_theatre <- kfunctions(main_network_mtl, mtl_theatres,

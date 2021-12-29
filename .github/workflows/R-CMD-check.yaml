@@ -65,7 +65,6 @@ jobs:
           install.packages("extrafont")
           library(extrafont)
           font_import()
-
         shell: Rscript {0}
 
       - name: Query igraph for windows

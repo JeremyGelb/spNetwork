@@ -132,15 +132,7 @@
 <span class="va">networkgpkg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"networks.gpkg"</span>,
                            package <span class="op">=</span> <span class="st">"spNetwork"</span>, mustWork <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 
-<span class="va">mtl_network</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html">st_read</a></span><span class="op">(</span><span class="va">networkgpkg</span>,layer<span class="op">=</span><span class="st">"mtl_network"</span><span class="op">)</span>
-<span class="co">#&gt; Reading layer `mtl_network' from data source </span>
-<span class="co">#&gt;   `C:\Users\gelbj\OneDrive\Documents\R\win-library\4.2\spNetwork\extdata\networks.gpkg' </span>
-<span class="co">#&gt;   using driver `GPKG'</span>
-<span class="co">#&gt; Simple feature collection with 2945 features and 1 field</span>
-<span class="co">#&gt; Geometry type: LINESTRING</span>
-<span class="co">#&gt; Dimension:     XY</span>
-<span class="co">#&gt; Bounding box:  xmin: 295675.9 ymin: 5039320 xmax: 301783.9 ymax: 5044799</span>
-<span class="co">#&gt; Projected CRS: NAD83 / MTM zone 8</span>
+<span class="va">mtl_network</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html">st_read</a></span><span class="op">(</span><span class="va">networkgpkg</span>,layer<span class="op">=</span><span class="st">"mtl_network"</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 
 <span class="co"># calculating the length of each segment</span>
 <span class="va">mtl_network</span><span class="op">$</span><span class="va">length</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_measures.html">st_length</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span><span class="op">)</span>

@@ -151,15 +151,7 @@
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/">sf</a></span><span class="op">)</span>
 
 <span class="va">eventsgpkg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"events.gpkg"</span>, package <span class="op">=</span> <span class="st">"spNetwork"</span>, mustWork <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="va">bike_accidents</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html">st_read</a></span><span class="op">(</span><span class="va">eventsgpkg</span>,layer<span class="op">=</span><span class="st">"bike_accidents"</span><span class="op">)</span>
-<span class="co">#&gt; Reading layer `bike_accidents' from data source </span>
-<span class="co">#&gt;   `C:\Users\gelbj\OneDrive\Documents\R\win-library\4.2\spNetwork\extdata\events.gpkg' </span>
-<span class="co">#&gt;   using driver `GPKG'</span>
-<span class="co">#&gt; Simple feature collection with 347 features and 3 fields</span>
-<span class="co">#&gt; Geometry type: POINT</span>
-<span class="co">#&gt; Dimension:     XY</span>
-<span class="co">#&gt; Bounding box:  xmin: 295848.2 ymin: 5039795 xmax: 300721.7 ymax: 5044643</span>
-<span class="co">#&gt; Projected CRS: NAD83 / MTM zone 8</span>
+<span class="va">bike_accidents</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html">st_read</a></span><span class="op">(</span><span class="va">eventsgpkg</span>,layer<span class="op">=</span><span class="st">"bike_accidents"</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 
 <span class="co"># converting the Date field to a numeric field (counting days)</span>
 <span class="va">bike_accidents</span><span class="op">$</span><span class="va">Time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html">as.POSIXct</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">$</span><span class="va">Date</span>, format <span class="op">=</span> <span class="st">"%Y/%m/%d"</span><span class="op">)</span>
@@ -239,15 +231,7 @@
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># loading the road network</span>
 <span class="va">networkgpkg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"networks.gpkg"</span>, package <span class="op">=</span> <span class="st">"spNetwork"</span>, mustWork <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="va">mtl_network</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html">st_read</a></span><span class="op">(</span><span class="va">networkgpkg</span>,layer<span class="op">=</span><span class="st">"mtl_network"</span><span class="op">)</span>
-<span class="co">#&gt; Reading layer `mtl_network' from data source </span>
-<span class="co">#&gt;   `C:\Users\gelbj\OneDrive\Documents\R\win-library\4.2\spNetwork\extdata\networks.gpkg' </span>
-<span class="co">#&gt;   using driver `GPKG'</span>
-<span class="co">#&gt; Simple feature collection with 2945 features and 1 field</span>
-<span class="co">#&gt; Geometry type: LINESTRING</span>
-<span class="co">#&gt; Dimension:     XY</span>
-<span class="co">#&gt; Bounding box:  xmin: 295675.9 ymin: 5039320 xmax: 301783.9 ymax: 5044799</span>
-<span class="co">#&gt; Projected CRS: NAD83 / MTM zone 8</span>
+<span class="va">mtl_network</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html">st_read</a></span><span class="op">(</span><span class="va">networkgpkg</span>,layer<span class="op">=</span><span class="st">"mtl_network"</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 
 <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span> <span class="op">+</span> 
   <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_lines.html">tm_lines</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"black"</span><span class="op">)</span> <span class="op">+</span> 

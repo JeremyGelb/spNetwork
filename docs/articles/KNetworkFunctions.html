@@ -140,33 +140,9 @@
 <span class="va">eventsgpkg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"events.gpkg"</span>,
                           package <span class="op">=</span> <span class="st">"spNetwork"</span>, mustWork <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 
-<span class="va">main_network_mtl</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html">st_read</a></span><span class="op">(</span><span class="va">networkgpkg</span>,layer<span class="op">=</span><span class="st">"main_network_mtl"</span><span class="op">)</span>
-<span class="co">#&gt; Reading layer `main_network_mtl' from data source </span>
-<span class="co">#&gt;   `C:\Users\gelbj\OneDrive\Documents\R\win-library\4.2\spNetwork\extdata\networks.gpkg' </span>
-<span class="co">#&gt;   using driver `GPKG'</span>
-<span class="co">#&gt; Simple feature collection with 16188 features and 1 field</span>
-<span class="co">#&gt; Geometry type: LINESTRING</span>
-<span class="co">#&gt; Dimension:     XY</span>
-<span class="co">#&gt; Bounding box:  xmin: 266279.3 ymin: 5029291 xmax: 306087 ymax: 5062652</span>
-<span class="co">#&gt; Projected CRS: NAD83 / MTM zone 8</span>
-<span class="va">mtl_libraries</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html">st_read</a></span><span class="op">(</span><span class="va">eventsgpkg</span>,layer<span class="op">=</span><span class="st">"mtl_libraries"</span><span class="op">)</span>
-<span class="co">#&gt; Reading layer `mtl_libraries' from data source </span>
-<span class="co">#&gt;   `C:\Users\gelbj\OneDrive\Documents\R\win-library\4.2\spNetwork\extdata\events.gpkg' </span>
-<span class="co">#&gt;   using driver `GPKG'</span>
-<span class="co">#&gt; Simple feature collection with 55 features and 2 fields</span>
-<span class="co">#&gt; Geometry type: POINT</span>
-<span class="co">#&gt; Dimension:     XY</span>
-<span class="co">#&gt; Bounding box:  xmin: 269500.4 ymin: 5029590 xmax: 305197.4 ymax: 5058664</span>
-<span class="co">#&gt; Projected CRS: NAD83 / MTM zone 8</span>
-<span class="va">mtl_theatres</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html">st_read</a></span><span class="op">(</span><span class="va">eventsgpkg</span>,layer<span class="op">=</span><span class="st">"mtl_theatres"</span><span class="op">)</span>
-<span class="co">#&gt; Reading layer `mtl_theatres' from data source </span>
-<span class="co">#&gt;   `C:\Users\gelbj\OneDrive\Documents\R\win-library\4.2\spNetwork\extdata\events.gpkg' </span>
-<span class="co">#&gt;   using driver `GPKG'</span>
-<span class="co">#&gt; Simple feature collection with 54 features and 2 fields</span>
-<span class="co">#&gt; Geometry type: POINT</span>
-<span class="co">#&gt; Dimension:     XY</span>
-<span class="co">#&gt; Bounding box:  xmin: 276043.5 ymin: 5032306 xmax: 302121.4 ymax: 5053006</span>
-<span class="co">#&gt; Projected CRS: NAD83 / MTM zone 8</span>
+<span class="va">main_network_mtl</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html">st_read</a></span><span class="op">(</span><span class="va">networkgpkg</span>,layer<span class="op">=</span><span class="st">"main_network_mtl"</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+<span class="va">mtl_libraries</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html">st_read</a></span><span class="op">(</span><span class="va">eventsgpkg</span>,layer<span class="op">=</span><span class="st">"mtl_libraries"</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+<span class="va">mtl_theatres</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html">st_read</a></span><span class="op">(</span><span class="va">eventsgpkg</span>,layer<span class="op">=</span><span class="st">"mtl_theatres"</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 
 <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">main_network_mtl</span><span class="op">)</span> <span class="op">+</span> 
   <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_lines.html">tm_lines</a></span><span class="op">(</span><span class="st">"black"</span><span class="op">)</span> <span class="op">+</span> 
