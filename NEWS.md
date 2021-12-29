@@ -1,3 +1,9 @@
+# spNetwork 0.4.0.9000
+
+## New Features
+
+* the package has been reworked to use sf rather than rgeos, maptools and sp. All the test passed and the documentation has been modified.
+
 # spNetwork 0.3.0.9000
 
 ## New Features
