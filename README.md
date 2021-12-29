@@ -22,10 +22,20 @@ The package’s website is available
 
 ## Breaking news
 
-Considering that rgeos and maptools will be deprecated soon, we are
+Considering that `rgeos` and `maptools` will be deprecated soon, we are
 moving to sf! This requires some adjustment in the code and the
-documentation. The development version 0.4.9000 is now using sf. Please,
-report any bug or error in the documentation.
+documentation. The development version 0.4.9000 is now using `sf`.
+Please, report any bug or error in the documentation.
+
+To install the previous version using `sp`, `rgeos` and `maptools`, you
+can run the following command:
+
+``` r
+devtools::install_github("JeremyGelb/spNetwork", ref = "a3bc982")
+```
+
+Note that all the new developments will use `sf` and you should switch
+as soon as possible.
 
 ## What is this package ?
 
@@ -138,7 +148,7 @@ tm_shape(samples) +
           n = 7, style = "kmeans")
 ```
 
-<img src="man/figures/unnamed-chunk-4-1.png" width="100%" />
+<img src="man/figures/unnamed-chunk-5-1.png" width="100%" />
 
 An extension for spatio-temporal dataset is also available [Temporal
 Network Kernel Density
@@ -181,7 +191,7 @@ tm_shape(mtl_network) +
           palette = c("isolated" = "red","not isolated" = "blue"))
 ```
 
-<img src="man/figures/unnamed-chunk-6-1.png" width="100%" />
+<img src="man/figures/unnamed-chunk-7-1.png" width="100%" />
 
 Note that you can use this in every spatial analysis you would like to
 perform. With the converter function of spdep (like listw2mat), you can
@@ -207,7 +217,7 @@ kfun_theatre <- kfunctions(main_network_mtl, mtl_theatres,
 kfun_theatre$plotg
 ```
 
-<img src="man/figures/unnamed-chunk-7-1.png" width="100%" />
+<img src="man/figures/unnamed-chunk-8-1.png" width="100%" />
 
 ### Work in progress
 

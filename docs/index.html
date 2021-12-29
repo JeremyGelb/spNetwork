@@ -119,7 +119,11 @@
 <div id="breaking-news" class="section level2">
 <h2 class="hasAnchor">
 <a href="#breaking-news" class="anchor"></a>Breaking news</h2>
-<p>Considering that rgeos and maptools will be deprecated soon, we are moving to sf! This requires some adjustment in the code and the documentation. The development version 0.4.9000 is now using sf. Please, report any bug or error in the documentation.</p>
+<p>Considering that <code>rgeos</code> and <code>maptools</code> will be deprecated soon, we are moving to sf! This requires some adjustment in the code and the documentation. The development version 0.4.9000 is now using <code>sf</code>. Please, report any bug or error in the documentation.</p>
+<p>To install the previous version using <code>sp</code>, <code>rgeos</code> and <code>maptools</code>, you can run the following command:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/remote-reexports.html">install_github</a></span><span class="op">(</span><span class="st">"JeremyGelb/spNetwork"</span>, ref <span class="op">=</span> <span class="st">"a3bc982"</span><span class="op">)</span></code></pre></div>
+<p>Note that all the new developments will use <code>sf</code> and you should switch as soon as possible.</p>
 </div>
 <div id="what-is-this-package-" class="section level2">
 <h2 class="hasAnchor">
@@ -140,10 +144,10 @@
 <h2 class="hasAnchor">
 <a href="#installing" class="anchor"></a>Installing</h2>
 <p>you can install the CRAN version of this package with the following code in R.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"spNetwork"</span><span class="op">)</span></code></pre></div>
 <p>To use all the new features before they are available in the CRAN version, you can download the development version.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/remote-reexports.html">install_github</a></span><span class="op">(</span><span class="st">"JeremyGelb/spNetwork"</span><span class="op">)</span></code></pre></div>
 <p>The packages uses mainly the following packages in its internal structure :</p>
 <ul>
@@ -164,7 +168,7 @@
 <ul>
 <li>realizing a kernel network density estimate</li>
 </ul>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://jeremygelb.github.io/spNetwork/">spNetwork</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mtennekes/tmap">tmap</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/">sf</a></span><span class="op">)</span>
@@ -201,13 +205,13 @@
 <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">samples</span><span class="op">)</span> <span class="op">+</span> 
   <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_symbols.html">tm_dots</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"density"</span>, size <span class="op">=</span> <span class="fl">0.05</span>, palette <span class="op">=</span> <span class="st">"viridis"</span>,
           n <span class="op">=</span> <span class="fl">7</span>, style <span class="op">=</span> <span class="st">"kmeans"</span><span class="op">)</span></code></pre></div>
-<p><img src="reference/figures/unnamed-chunk-4-1.png" width="100%"></p>
+<p><img src="reference/figures/unnamed-chunk-5-1.png" width="100%"></p>
 <p>An extension for spatio-temporal dataset is also available <a href="https://jeremygelb.github.io/spNetwork/articles/TNKDE.html">Temporal Network Kernel Density Estimate</a></p>
 <p><img src="articles/images/animated_map.gif" width="75%" style="display: block; margin: auto;"></p>
 <ul>
 <li>Building a spatial matrix based on network distance</li>
 </ul>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-spatial/spdep/">spdep</a></span><span class="op">)</span>
 
 <span class="co"># creating a spatial weight matrix for the accidents</span>
@@ -238,12 +242,12 @@
   <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">)</span> <span class="op">+</span> 
   <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_symbols.html">tm_dots</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"isolated"</span>, size <span class="op">=</span> <span class="fl">0.1</span>,
           palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"isolated"</span> <span class="op">=</span> <span class="st">"red"</span>,<span class="st">"not isolated"</span> <span class="op">=</span> <span class="st">"blue"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<p><img src="reference/figures/unnamed-chunk-6-1.png" width="100%"></p>
+<p><img src="reference/figures/unnamed-chunk-7-1.png" width="100%"></p>
 <p>Note that you can use this in every spatial analysis you would like to perform. With the converter function of spdep (like listw2mat), you can convert the listw object into regular matrix if needed</p>
 <ul>
 <li>Calculating k function</li>
 </ul>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># loading the data</span>
 <span class="va">networkgpkg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"networks.gpkg"</span>,
                            package <span class="op">=</span> <span class="st">"spNetwork"</span>, mustWork <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
@@ -259,7 +263,7 @@
                            width <span class="op">=</span> <span class="fl">1000</span>, nsim <span class="op">=</span> <span class="fl">50</span>, resolution <span class="op">=</span> <span class="fl">50</span>,
                            verbose <span class="op">=</span> <span class="cn">FALSE</span>, conf_int <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span>
 <span class="va">kfun_theatre</span><span class="op">$</span><span class="va">plotg</span></code></pre></div>
-<p><img src="reference/figures/unnamed-chunk-7-1.png" width="100%"></p>
+<p><img src="reference/figures/unnamed-chunk-8-1.png" width="100%"></p>
 <div id="work-in-progress" class="section level3">
 <h3 class="hasAnchor">
 <a href="#work-in-progress" class="anchor"></a>Work in progress</h3>
