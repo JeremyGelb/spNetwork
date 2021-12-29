@@ -39,7 +39,7 @@ The package's website is available [here](https://jeremygelb.github.io/spNetwork
 
 ## Breaking news
 
-Considering that rgeos and maptools will be deprecated soon, we are moving to sf! This requires some adjustment in the code and the documentation. The development version 0.4.9000 is now using completely using sf. Please, report any bug or error in the documentation.
+Considering that rgeos and maptools will be deprecated soon, we are moving to sf! This requires some adjustment in the code and the documentation. The development version 0.4.9000 is now using sf. Please, report any bug or error in the documentation.
 
 ## What is this package ?
 
