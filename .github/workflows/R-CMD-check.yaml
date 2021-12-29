@@ -62,6 +62,10 @@ jobs:
           install.packages('remotes')
           remotes::install_github('rspatial/terra')
           remotes::install_github('rspatial/raster')
+          install.packages("extrafont")
+          library(extrafont)
+          font_import()
+
         shell: Rscript {0}
 
       - name: Query igraph for windows
