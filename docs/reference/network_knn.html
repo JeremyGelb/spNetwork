@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0.9000</span>
       </span>
     </div>
 
@@ -142,7 +142,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>K-nearest points on network</h1>
-    <small class="dont-index">Source: <a href='https://github.com/JeremyGelb/spNetwork/blob/master/R/knn.R'><code>R/knn.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/JeremyGelb/spNetwork/blob/master/R/knn_sf.R'><code>R/knn_sf.R</code></a></small>
     <div class="hidden name"><code>network_knn.Rd</code></div>
     </div>
 
@@ -170,12 +170,12 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>origins</th>
-      <td><p>A SpatialPointsDataFrame, for each point, its k nearest
+      <td><p>A feature collection of points, for each point, its k nearest
 neighbours will be found on the network.</p></td>
     </tr>
     <tr>
       <th>lines</th>
-      <td><p>A SpatialLinesDataFrame representing the underlying network</p></td>
+      <td><p>A feature collection of linestrings representing the underlying network</p></td>
     </tr>
     <tr>
       <th>k</th>
@@ -183,7 +183,7 @@ neighbours will be found on the network.</p></td>
     </tr>
     <tr>
       <th>destinations</th>
-      <td><p>A SpatialPointsDataFrame, might be used if the neighbours
+      <td><p>A feature collection of points, might be used if the neighbours
 must be found in a separate set of points NULL if the neighbours must be found in
 origins.</p></td>
     </tr>
@@ -254,8 +254,8 @@ the function.</p>
     <pre class="examples"><span class='co'># \donttest{</span>
     <span class='va'>networkgpkg</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>, <span class='st'>"networks.gpkg"</span>, package <span class='op'>=</span> <span class='st'>"spNetwork"</span>, mustWork <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
     <span class='va'>eventsgpkg</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>, <span class='st'>"events.gpkg"</span>, package <span class='op'>=</span> <span class='st'>"spNetwork"</span>, mustWork <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
-    <span class='va'>main_network_mtl</span> <span class='op'>&lt;-</span> <span class='fu'>rgdal</span><span class='fu'>::</span><span class='fu'><a href='http://rgdal.r-forge.r-project.org/reference/readOGR.html'>readOGR</a></span><span class='op'>(</span><span class='va'>networkgpkg</span>,layer<span class='op'>=</span><span class='st'>"main_network_mtl"</span>, verbose<span class='op'>=</span><span class='cn'>FALSE</span><span class='op'>)</span>
-    <span class='va'>mtl_libraries</span> <span class='op'>&lt;-</span> <span class='fu'>rgdal</span><span class='fu'>::</span><span class='fu'><a href='http://rgdal.r-forge.r-project.org/reference/readOGR.html'>readOGR</a></span><span class='op'>(</span><span class='va'>eventsgpkg</span>,layer<span class='op'>=</span><span class='st'>"mtl_libraries"</span>, verbose<span class='op'>=</span><span class='cn'>FALSE</span><span class='op'>)</span>
+    <span class='va'>main_network_mtl</span> <span class='op'>&lt;-</span> <span class='fu'>sf</span><span class='fu'>::</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_read.html'>st_read</a></span><span class='op'>(</span><span class='va'>networkgpkg</span>,layer<span class='op'>=</span><span class='st'>"main_network_mtl"</span><span class='op'>)</span>
+    <span class='va'>mtl_libraries</span> <span class='op'>&lt;-</span> <span class='fu'>sf</span><span class='fu'>::</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_read.html'>st_read</a></span><span class='op'>(</span><span class='va'>eventsgpkg</span>,layer<span class='op'>=</span><span class='st'>"mtl_libraries"</span><span class='op'>)</span>
     <span class='va'>results</span> <span class='op'>&lt;-</span> <span class='fu'>network_knn</span><span class='op'>(</span><span class='va'>mtl_libraries</span>, <span class='va'>main_network_mtl</span>,
         k <span class='op'>=</span> <span class='fl'>3</span>, maxdistance <span class='op'>=</span> <span class='fl'>1000</span>, line_weight <span class='op'>=</span> <span class='st'>"length"</span>,
         grid_shape<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>1</span><span class='op'>)</span>, verbose <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>

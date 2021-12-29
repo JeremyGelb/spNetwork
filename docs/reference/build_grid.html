@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0.9000</span>
       </span>
     </div>
 
@@ -142,7 +142,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Spatial grid</h1>
-    <small class="dont-index">Source: <a href='https://github.com/JeremyGelb/spNetwork/blob/master/R/geometrical_functions.R'><code>R/geometrical_functions.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/JeremyGelb/spNetwork/blob/master/R/geometrical_functions_sf.R'><code>R/geometrical_functions_sf.R</code></a></small>
     <div class="hidden name"><code>build_grid.Rd</code></div>
     </div>
 
@@ -162,13 +162,13 @@ of rows and the numbers of columns of the grid</p></td>
     </tr>
     <tr>
       <th>spatial</th>
-      <td><p>A list of SpatialDataFrames objects (package sp)</p></td>
+      <td><p>A list of spatial feature collections objects (package sf)</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A SpatialPolygonsDataFrame representing the grid</p>
+    <p>A feature collection of polygons representing the grid</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><span class='co'>#This is an internal function, no example provided</span>

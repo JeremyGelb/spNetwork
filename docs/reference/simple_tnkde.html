@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0.9000</span>
       </span>
     </div>
 
@@ -142,7 +142,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Simple TNKDE algorithm</h1>
-    <small class="dont-index">Source: <a href='https://github.com/JeremyGelb/spNetwork/blob/master/R/temporal_nkde.R'><code>R/temporal_nkde.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/JeremyGelb/spNetwork/blob/master/R/temporal_nkde_sf.R'><code>R/temporal_nkde_sf.R</code></a></small>
     <div class="hidden name"><code>simple_tnkde.Rd</code></div>
     </div>
 
@@ -174,13 +174,13 @@
     </tr>
     <tr>
       <th>events</th>
-      <td><p>a SpatialPointsDataFrame representing the events. It must be
+      <td><p>a feature collection of points representing the events. It must be
 snapped on the network, and be nodes of the network. A column vertex_id
 must indicate for each event its corresponding node</p></td>
     </tr>
     <tr>
       <th>samples</th>
-      <td><p>a SpatialPointsDataFrame representing the sampling points.
+      <td><p>a feature collection of points representing the sampling points.
 The samples must be snapped on the network. A column edge_id must indicate
 for each sample on which edge it is snapped.</p></td>
     </tr>
@@ -215,11 +215,11 @@ event</p></td>
     </tr>
     <tr>
       <th>nodes</th>
-      <td><p>a SpatialPointsDataFrame representing the nodes of the network</p></td>
+      <td><p>a feature collection of points representing the nodes of the network</p></td>
     </tr>
     <tr>
       <th>edges</th>
-      <td><p>a SpatialLinesDataFrame representing the edges of the network</p></td>
+      <td><p>a feature collection of linestrings representing the edges of the network</p></td>
     </tr>
     <tr>
       <th>div</th>

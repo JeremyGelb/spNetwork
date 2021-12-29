@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0.9000</span>
       </span>
     </div>
 
@@ -142,7 +142,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Time and Network bandwidth correction calculation</h1>
-    <small class="dont-index">Source: <a href='https://github.com/JeremyGelb/spNetwork/blob/master/R/bandwidth_selection_cv_tnkde.R'><code>R/bandwidth_selection_cv_tnkde.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/JeremyGelb/spNetwork/blob/master/R/bandwidth_selection_cv_tnkde_sf.R'><code>R/bandwidth_selection_cv_tnkde_sf.R</code></a></small>
     <div class="hidden name"><code>bw_tnkde_corr_factor.Rd</code></div>
     </div>
 
@@ -184,20 +184,20 @@ for edge effect must be used.</p></td>
     </tr>
     <tr>
       <th>study_area</th>
-      <td><p>A SpatialPolygonsDataFrame or a SpatialPolygon
+      <td><p>A feature collection of polygons 
 representing the limits of the study area.</p></td>
     </tr>
     <tr>
       <th>events</th>
-      <td><p>A SpatialPointsDataFrame representing the events</p></td>
+      <td><p>A feature collection of points representing the events</p></td>
     </tr>
     <tr>
       <th>events_loc</th>
-      <td><p>A SpatialPointsDataFrame representing the unique location of events</p></td>
+      <td><p>A feature collection of points representing the unique location of events</p></td>
     </tr>
     <tr>
       <th>lines</th>
-      <td><p>A SpatialLinesDataFrame representing the underlying lines of the network</p></td>
+      <td><p>A feature collection of linestrings representing the underlying lines of the network</p></td>
     </tr>
     <tr>
       <th>method</th>
@@ -231,7 +231,7 @@ bit), but require much less memory.</p></td>
     </tr>
     <tr>
       <th>samples</th>
-      <td><p>A SpatialPointsDataFrame representing the sample location</p></td>
+      <td><p>A feature collection of points representing the sample location</p></td>
     </tr>
     </table>
 

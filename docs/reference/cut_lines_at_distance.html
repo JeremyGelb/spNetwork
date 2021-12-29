@@ -40,7 +40,7 @@
 
 
 <meta property="og:title" content="Cut lines at a specified distance — cut_lines_at_distance" />
-<meta property="og:description" content="Cut lines (SpatialLines) at a specified distance from the
+<meta property="og:description" content="Cut lines in a feature collection of linestrings at a specified distance from the
 begining of the lines." />
 
 
@@ -73,7 +73,7 @@ begining of the lines." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0.9000</span>
       </span>
     </div>
 
@@ -143,12 +143,12 @@ begining of the lines." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Cut lines at a specified distance</h1>
-    <small class="dont-index">Source: <a href='https://github.com/JeremyGelb/spNetwork/blob/master/R/geometrical_functions.R'><code>R/geometrical_functions.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/JeremyGelb/spNetwork/blob/master/R/geometrical_functions_sf.R'><code>R/geometrical_functions_sf.R</code></a></small>
     <div class="hidden name"><code>cut_lines_at_distance.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Cut lines (SpatialLines) at a specified distance from the
+    <p>Cut lines in a feature collection of linestrings at a specified distance from the
 begining of the lines.</p>
     </div>
 
@@ -159,7 +159,7 @@ begining of the lines.</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>lines</th>
-      <td><p>The SpatialLinesDataframe to cut</p></td>
+      <td><p>The feature collection of linestrings to cut</p></td>
     </tr>
     <tr>
       <th>dists</th>
@@ -170,7 +170,7 @@ each line will be cut at that distance.</p></td>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>An object of class SpatialLinesDataFrame (package sp)</p>
+    <p>A feature collection of linestrings</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><span class='co'># This is an interal function, no example provided</span>

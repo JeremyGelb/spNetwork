@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0.9000</span>
       </span>
     </div>
 
@@ -142,7 +142,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>network_listw worker</h1>
-    <small class="dont-index">Source: <a href='https://github.com/JeremyGelb/spNetwork/blob/master/R/neighbouring.R'><code>R/neighbouring.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/JeremyGelb/spNetwork/blob/master/R/neighbouring_sf.R'><code>R/neighbouring_sf.R</code></a></small>
     <div class="hidden name"><code>network_listw_worker.Rd</code></div>
     </div>
 
@@ -168,12 +168,12 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>points</th>
-      <td><p>A SpatialPointsDataFrame corresponding to start and end
+      <td><p>A feature collection of points corresponding to start and end
 points. It must have a column fid, grouping the points if necessary.</p></td>
     </tr>
     <tr>
       <th>lines</th>
-      <td><p>A SpatialLinesDataFrame representing the network</p></td>
+      <td><p>A feature collection of lines representing the network</p></td>
     </tr>
     <tr>
       <th>maxdistance</th>

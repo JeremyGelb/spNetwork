@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0.9000</span>
       </span>
     </div>
 
@@ -142,7 +142,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Snap points to lines</h1>
-    <small class="dont-index">Source: <a href='https://github.com/JeremyGelb/spNetwork/blob/master/R/geometrical_functions.R'><code>R/geometrical_functions.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/JeremyGelb/spNetwork/blob/master/R/geometrical_functions_sf.R'><code>R/geometrical_functions_sf.R</code></a></small>
     <div class="hidden name"><code>snapPointsToLines2.Rd</code></div>
     </div>
 
@@ -157,11 +157,11 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>points</th>
-      <td><p>A SpatialPointsDataFrame</p></td>
+      <td><p>A feature collection of points</p></td>
     </tr>
     <tr>
       <th>lines</th>
-      <td><p>A SpatialLinesDataFrame</p></td>
+      <td><p>A feature collection of linestrings</p></td>
     </tr>
     <tr>
       <th>idField</th>
@@ -185,14 +185,14 @@ point. At each iteration, the snap_dist is doubled to find candidates.</p></td>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A SpatialPointsDataFrame with the projected geometries</p>
+    <p>A feature collection of points with the projected geometries</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><span class='co'># reading the data</span>
 <span class='va'>networkgpkg</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>, <span class='st'>"networks.gpkg"</span>, package <span class='op'>=</span> <span class='st'>"spNetwork"</span>, mustWork <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
-<span class='va'>mtl_network</span> <span class='op'>&lt;-</span> <span class='fu'>rgdal</span><span class='fu'>::</span><span class='fu'><a href='http://rgdal.r-forge.r-project.org/reference/readOGR.html'>readOGR</a></span><span class='op'>(</span><span class='va'>networkgpkg</span>,layer<span class='op'>=</span><span class='st'>"mtl_network"</span>, verbose<span class='op'>=</span><span class='cn'>FALSE</span><span class='op'>)</span>
+<span class='va'>mtl_network</span> <span class='op'>&lt;-</span> <span class='fu'>sf</span><span class='fu'>::</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_read.html'>st_read</a></span><span class='op'>(</span><span class='va'>networkgpkg</span>,layer<span class='op'>=</span><span class='st'>"mtl_network"</span><span class='op'>)</span>
 <span class='va'>eventsgpkg</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>, <span class='st'>"events.gpkg"</span>, package <span class='op'>=</span> <span class='st'>"spNetwork"</span>, mustWork <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
-<span class='va'>bike_accidents</span> <span class='op'>&lt;-</span> <span class='fu'>rgdal</span><span class='fu'>::</span><span class='fu'><a href='http://rgdal.r-forge.r-project.org/reference/readOGR.html'>readOGR</a></span><span class='op'>(</span><span class='va'>eventsgpkg</span>,layer<span class='op'>=</span><span class='st'>"bike_accidents"</span>, verbose<span class='op'>=</span><span class='cn'>FALSE</span><span class='op'>)</span>
+<span class='va'>bike_accidents</span> <span class='op'>&lt;-</span> <span class='fu'>sf</span><span class='fu'>::</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_read.html'>st_read</a></span><span class='op'>(</span><span class='va'>eventsgpkg</span>,layer<span class='op'>=</span><span class='st'>"bike_accidents"</span><span class='op'>)</span>
 <span class='va'>mtl_network</span><span class='op'>$</span><span class='va'>LineID</span> <span class='op'>&lt;-</span> <span class='fl'>1</span><span class='op'>:</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='va'>mtl_network</span><span class='op'>)</span>
 <span class='co'># snapping point to lines</span>
 <span class='va'>snapped_points</span> <span class='op'>&lt;-</span> <span class='fu'>snapPointsToLines2</span><span class='op'>(</span><span class='va'>bike_accidents</span>,

@@ -40,8 +40,8 @@
 
 
 <meta property="og:title" content="Find closest points — closest_points" />
-<meta property="og:description" content="Solve the nearest neighbour problem for two SpatialPointsDataFrame.
-This is a simple wrap-up of the FNN::knnx.index function" />
+<meta property="og:description" content="Solve the nearest neighbour problem for two feature collection of points
+This is a simple wrap-up of the dbscan::kNN function" />
 
 
 
@@ -73,7 +73,7 @@ This is a simple wrap-up of the FNN::knnx.index function" />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0.9000</span>
       </span>
     </div>
 
@@ -143,13 +143,13 @@ This is a simple wrap-up of the FNN::knnx.index function" />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Find closest points</h1>
-    <small class="dont-index">Source: <a href='https://github.com/JeremyGelb/spNetwork/blob/master/R/spatial_indexing.R'><code>R/spatial_indexing.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/JeremyGelb/spNetwork/blob/master/R/spatial_indexing_sf.R'><code>R/spatial_indexing_sf.R</code></a></small>
     <div class="hidden name"><code>closest_points.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Solve the nearest neighbour problem for two SpatialPointsDataFrame.
-This is a simple wrap-up of the FNN::knnx.index function</p>
+    <p>Solve the nearest neighbour problem for two feature collection of points
+This is a simple wrap-up of the dbscan::kNN function</p>
     </div>
 
     <pre class="usage"><span class='fu'>closest_points</span><span class='op'>(</span><span class='va'>origins</span>, <span class='va'>targets</span><span class='op'>)</span></pre>
@@ -159,11 +159,11 @@ This is a simple wrap-up of the FNN::knnx.index function</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>origins</th>
-      <td><p>a SpatialPointsDataFrame</p></td>
+      <td><p>a feature collection of points</p></td>
     </tr>
     <tr>
       <th>targets</th>
-      <td><p>a SpatialPointsDataFrame</p></td>
+      <td><p>a feature collection of points</p></td>
     </tr>
     </table>
 
@@ -174,8 +174,8 @@ This is a simple wrap-up of the FNN::knnx.index function</p>
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><span class='co'>#This is an internal function, no example provided</span>
 <span class='va'>eventsgpkg</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>, <span class='st'>"events.gpkg"</span>, package <span class='op'>=</span> <span class='st'>"spNetwork"</span>, mustWork <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
-<span class='va'>mtl_libraries</span> <span class='op'>&lt;-</span> <span class='fu'>rgdal</span><span class='fu'>::</span><span class='fu'><a href='http://rgdal.r-forge.r-project.org/reference/readOGR.html'>readOGR</a></span><span class='op'>(</span><span class='va'>eventsgpkg</span>,layer<span class='op'>=</span><span class='st'>"mtl_libraries"</span>, verbose<span class='op'>=</span><span class='cn'>FALSE</span><span class='op'>)</span>
-<span class='va'>mtl_theatres</span> <span class='op'>&lt;-</span> <span class='fu'>rgdal</span><span class='fu'>::</span><span class='fu'><a href='http://rgdal.r-forge.r-project.org/reference/readOGR.html'>readOGR</a></span><span class='op'>(</span><span class='va'>eventsgpkg</span>,layer<span class='op'>=</span><span class='st'>"mtl_theatres"</span>, verbose<span class='op'>=</span><span class='cn'>FALSE</span><span class='op'>)</span>
+<span class='va'>mtl_libraries</span> <span class='op'>&lt;-</span> <span class='fu'>sf</span><span class='fu'>::</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_read.html'>st_read</a></span><span class='op'>(</span><span class='va'>eventsgpkg</span>,layer<span class='op'>=</span><span class='st'>"mtl_libraries"</span><span class='op'>)</span>
+<span class='va'>mtl_theatres</span> <span class='op'>&lt;-</span> <span class='fu'>sf</span><span class='fu'>::</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_read.html'>st_read</a></span><span class='op'>(</span><span class='va'>eventsgpkg</span>,layer<span class='op'>=</span><span class='st'>"mtl_theatres"</span><span class='op'>)</span>
 <span class='va'>close_libs</span> <span class='op'>&lt;-</span> <span class='fu'>closest_points</span><span class='op'>(</span><span class='va'>mtl_theatres</span>, <span class='va'>mtl_libraries</span><span class='op'>)</span>
 </pre>
   </div>

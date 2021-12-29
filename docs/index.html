@@ -36,7 +36,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0.9000</span>
       </span>
     </div>
 
@@ -113,8 +113,13 @@
 <a href="#a-r-package-to-perform-spatial-analysis-on-networks" class="anchor"></a>A R package to perform spatial analysis on networks.</h2>
 <!-- badges: start -->
 
-<p><a href="https://jeremygelb.github.io/spNetwork/"><img src="https://img.shields.io/badge/devel%20version-0.3.0.9000-green.svg"></a> <a href="https://cran.r-project.org/package=spNetwork"><img src="https://www.r-pkg.org/badges/version/spNetwork?color=blue"></a> <a href="https://cran.r-project.org/package=spNetwork"><img src="http://cranlogs.r-pkg.org/badges/grand-total/spNetwork?color=blue"></a> <a href="https://cran.r-project.org/package=spNetwork"><img src="http://cranlogs.r-pkg.org/badges/last-month/spNetwork?color=green"></a> <a href="https://app.codecov.io/gh/JeremyGelb/spNetwork?branch=master"><img src="https://codecov.io/gh/JeremyGelb/spNetwork/branch/master/graph/badge.svg" alt="Codecov test coverage"></a> <!-- badges: end --></p>
+<p><a href="https://jeremygelb.github.io/spNetwork/"><img src="https://img.shields.io/badge/devel%20version-0.4.0.9000-green.svg"></a> <a href="https://cran.r-project.org/package=spNetwork"><img src="https://www.r-pkg.org/badges/version/spNetwork?color=blue"></a> <a href="https://cran.r-project.org/package=spNetwork"><img src="http://cranlogs.r-pkg.org/badges/grand-total/spNetwork?color=blue"></a> <a href="https://cran.r-project.org/package=spNetwork"><img src="http://cranlogs.r-pkg.org/badges/last-month/spNetwork?color=green"></a> <a href="https://app.codecov.io/gh/JeremyGelb/spNetwork?branch=master"><img src="https://codecov.io/gh/JeremyGelb/spNetwork/branch/master/graph/badge.svg" alt="Codecov test coverage"></a> <!-- badges: end --></p>
 <p>The package’s website is available <a href="https://jeremygelb.github.io/spNetwork/">here</a></p>
+</div>
+<div id="breaking-news" class="section level2">
+<h2 class="hasAnchor">
+<a href="#breaking-news" class="anchor"></a>Breaking news</h2>
+<p>Considering that rgeos and maptools will be deprecated soon, we are moving to sf! This requires some adjustment in the code and the documentation. The development version 0.4.9000 is now using completely using sf. Please, report any bug or error in the documentation.</p>
 </div>
 <div id="what-is-this-package-" class="section level2">
 <h2 class="hasAnchor">
@@ -143,10 +148,7 @@
 <p>The packages uses mainly the following packages in its internal structure :</p>
 <ul>
 <li>igraph</li>
-<li>sp</li>
-<li>rgeos</li>
-<li>maptools</li>
-<li>raster</li>
+<li>sf</li>
 <li>future</li>
 <li>future.apply</li>
 <li>data.table</li>
@@ -165,15 +167,31 @@
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://jeremygelb.github.io/spNetwork/">spNetwork</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mtennekes/tmap">tmap</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://rgdal.r-forge.r-project.org">rgdal</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/">sf</a></span><span class="op">)</span>
 
 <span class="co"># loading the dataset</span>
 <span class="va">networkgpkg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"networks.gpkg"</span>,
                            package <span class="op">=</span> <span class="st">"spNetwork"</span>, mustWork <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 <span class="va">eventsgpkg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"events.gpkg"</span>,
                           package <span class="op">=</span> <span class="st">"spNetwork"</span>, mustWork <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="va">mtl_network</span> <span class="op">&lt;-</span> <span class="fu"><a href="http://rgdal.r-forge.r-project.org/reference/readOGR.html">readOGR</a></span><span class="op">(</span><span class="va">networkgpkg</span>,layer<span class="op">=</span><span class="st">"mtl_network"</span>,verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
-<span class="va">bike_accidents</span> <span class="op">&lt;-</span> <span class="fu"><a href="http://rgdal.r-forge.r-project.org/reference/readOGR.html">readOGR</a></span><span class="op">(</span><span class="va">eventsgpkg</span>,layer<span class="op">=</span><span class="st">"bike_accidents"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
+<span class="va">mtl_network</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html">st_read</a></span><span class="op">(</span><span class="va">networkgpkg</span>,layer<span class="op">=</span><span class="st">"mtl_network"</span><span class="op">)</span>
+<span class="co">#&gt; Reading layer `mtl_network' from data source </span>
+<span class="co">#&gt;   `C:\Users\gelbj\AppData\Local\Temp\RtmpewqGTj\temp_libpath4a8817f72bca\spNetwork\extdata\networks.gpkg' </span>
+<span class="co">#&gt;   using driver `GPKG'</span>
+<span class="co">#&gt; Simple feature collection with 2945 features and 1 field</span>
+<span class="co">#&gt; Geometry type: LINESTRING</span>
+<span class="co">#&gt; Dimension:     XY</span>
+<span class="co">#&gt; Bounding box:  xmin: 295675.9 ymin: 5039320 xmax: 301783.9 ymax: 5044799</span>
+<span class="co">#&gt; Projected CRS: NAD83 / MTM zone 8</span>
+<span class="va">bike_accidents</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html">st_read</a></span><span class="op">(</span><span class="va">eventsgpkg</span>,layer<span class="op">=</span><span class="st">"bike_accidents"</span><span class="op">)</span>
+<span class="co">#&gt; Reading layer `bike_accidents' from data source </span>
+<span class="co">#&gt;   `C:\Users\gelbj\AppData\Local\Temp\RtmpewqGTj\temp_libpath4a8817f72bca\spNetwork\extdata\events.gpkg' </span>
+<span class="co">#&gt;   using driver `GPKG'</span>
+<span class="co">#&gt; Simple feature collection with 347 features and 3 fields</span>
+<span class="co">#&gt; Geometry type: POINT</span>
+<span class="co">#&gt; Dimension:     XY</span>
+<span class="co">#&gt; Bounding box:  xmin: 295848.2 ymin: 5039795 xmax: 300721.7 ymax: 5044643</span>
+<span class="co">#&gt; Projected CRS: NAD83 / MTM zone 8</span>
 
 
 <span class="co"># generating sampling points at the middle of lixels</span>
@@ -248,8 +266,24 @@
 <span class="va">eventsgpkg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"events.gpkg"</span>,
                           package <span class="op">=</span> <span class="st">"spNetwork"</span>, mustWork <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 
-<span class="va">main_network_mtl</span> <span class="op">&lt;-</span> <span class="fu">rgdal</span><span class="fu">::</span><span class="fu"><a href="http://rgdal.r-forge.r-project.org/reference/readOGR.html">readOGR</a></span><span class="op">(</span><span class="va">networkgpkg</span>,layer<span class="op">=</span><span class="st">"main_network_mtl"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
-<span class="va">mtl_theatres</span> <span class="op">&lt;-</span> <span class="fu">rgdal</span><span class="fu">::</span><span class="fu"><a href="http://rgdal.r-forge.r-project.org/reference/readOGR.html">readOGR</a></span><span class="op">(</span><span class="va">eventsgpkg</span>,layer<span class="op">=</span><span class="st">"mtl_theatres"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
+<span class="va">main_network_mtl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html">st_read</a></span><span class="op">(</span><span class="va">networkgpkg</span>,layer<span class="op">=</span><span class="st">"main_network_mtl"</span><span class="op">)</span>
+<span class="co">#&gt; Reading layer `main_network_mtl' from data source </span>
+<span class="co">#&gt;   `C:\Users\gelbj\AppData\Local\Temp\RtmpewqGTj\temp_libpath4a8817f72bca\spNetwork\extdata\networks.gpkg' </span>
+<span class="co">#&gt;   using driver `GPKG'</span>
+<span class="co">#&gt; Simple feature collection with 16188 features and 1 field</span>
+<span class="co">#&gt; Geometry type: LINESTRING</span>
+<span class="co">#&gt; Dimension:     XY</span>
+<span class="co">#&gt; Bounding box:  xmin: 266279.3 ymin: 5029291 xmax: 306087 ymax: 5062652</span>
+<span class="co">#&gt; Projected CRS: NAD83 / MTM zone 8</span>
+<span class="va">mtl_theatres</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html">st_read</a></span><span class="op">(</span><span class="va">eventsgpkg</span>,layer<span class="op">=</span><span class="st">"mtl_theatres"</span><span class="op">)</span>
+<span class="co">#&gt; Reading layer `mtl_theatres' from data source </span>
+<span class="co">#&gt;   `C:\Users\gelbj\AppData\Local\Temp\RtmpewqGTj\temp_libpath4a8817f72bca\spNetwork\extdata\events.gpkg' </span>
+<span class="co">#&gt;   using driver `GPKG'</span>
+<span class="co">#&gt; Simple feature collection with 54 features and 2 fields</span>
+<span class="co">#&gt; Geometry type: POINT</span>
+<span class="co">#&gt; Dimension:     XY</span>
+<span class="co">#&gt; Bounding box:  xmin: 276043.5 ymin: 5032306 xmax: 302121.4 ymax: 5053006</span>
+<span class="co">#&gt; Projected CRS: NAD83 / MTM zone 8</span>
 
 <span class="co"># calculating the k function</span>
 <span class="va">kfun_theatre</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/kfunctions.html">kfunctions</a></span><span class="op">(</span><span class="va">main_network_mtl</span>, <span class="va">mtl_theatres</span>,
@@ -266,7 +300,7 @@
 <ul>
 <li>temporal NKDE, a two dimensional kernel density estimation in network space and time</li>
 <li>accessibility measures based on distance matrix between population locations and services</li>
-<li>rework for using <code>sf</code> objects rather than <code>sp</code> (<code>rgeos</code> and <code>maptools</code> will be deprecated in 2023)</li>
+<li>rework for using <code>sf</code> objects rather than <code>sp</code> (<code>rgeos</code> and <code>maptools</code> will be deprecated in 2023). This work is undergoing, please report any bug or error in the new documentation.</li>
 </ul>
 </div>
 </div>

@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0.9000</span>
       </span>
     </div>
 
@@ -142,7 +142,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Clean events geometries</h1>
-    <small class="dont-index">Source: <a href='https://github.com/JeremyGelb/spNetwork/blob/master/R/nkde_execution_functions.R'><code>R/nkde_execution_functions.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/JeremyGelb/spNetwork/blob/master/R/nkde_execution_functions_sf.R'><code>R/nkde_execution_functions_sf.R</code></a></small>
     <div class="hidden name"><code>clean_events.Rd</code></div>
     </div>
 
@@ -157,7 +157,7 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>events</th>
-      <td><p>The SpatialPointsDataFrame to contract (must have a weight column)</p></td>
+      <td><p>The feature collection of points to contract (must have a weight column)</p></td>
     </tr>
     <tr>
       <th>digits</th>
@@ -172,7 +172,7 @@ if NULL, then the points are aggregated by rounding the coordinates.</p></td>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A new SpatialPointsDataFrame</p>
+    <p>A new feature collection of points</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><span class='co'>#This is an internal function, no example provided</span>

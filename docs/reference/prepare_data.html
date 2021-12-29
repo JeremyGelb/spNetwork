@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0.9000</span>
       </span>
     </div>
 
@@ -142,7 +142,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Prior data preparation</h1>
-    <small class="dont-index">Source: <a href='https://github.com/JeremyGelb/spNetwork/blob/master/R/nkde_execution_functions.R'><code>R/nkde_execution_functions.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/JeremyGelb/spNetwork/blob/master/R/nkde_execution_functions_sf.R'><code>R/nkde_execution_functions_sf.R</code></a></small>
     <div class="hidden name"><code>prepare_data.Rd</code></div>
     </div>
 
@@ -157,15 +157,15 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>samples</th>
-      <td><p>A spatialPointsDataFrame of the samples points</p></td>
+      <td><p>A feature collection of points representing the samples points</p></td>
     </tr>
     <tr>
       <th>lines</th>
-      <td><p>A SpatialLinesDataFrame representing the network</p></td>
+      <td><p>A feature collection of Linestrings representing the network</p></td>
     </tr>
     <tr>
       <th>events</th>
-      <td><p>A spatialPointsDataFrame of the events points</p></td>
+      <td><p>A feature collection of points representing the events points</p></td>
     </tr>
     <tr>
       <th>w</th>

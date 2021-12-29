@@ -143,6 +143,7 @@ library(ggplot2)
 library(reshape2)
 library(kableExtra)
 library(spNetwork)
+library(RColorBrewer)
 
 x <- seq(-15.01,15.01,by = 0.01)
 df <- data.frame(
@@ -311,23 +312,23 @@ To avoid this, the first solution provided in **spNetwork** is a gridded applica
 
 ```{r message=FALSE, warning=FALSE}
 # first load data and packages
-library(sp)
-library(maptools)
-library(rgeos)
+library(sf)
 library(spNetwork)
-library(raster)
+library(tmap)
 
 networkgpkg <- system.file("extdata", "networks.gpkg",
                            package = "spNetwork", mustWork = TRUE)
 eventsgpkg <- system.file("extdata", "events.gpkg",
                           package = "spNetwork", mustWork = TRUE)
 
-mtl_network <- rgdal::readOGR(networkgpkg,layer="mtl_network",verbose = FALSE)
-bike_accidents <- rgdal::readOGR(eventsgpkg,layer="bike_accidents", verbose = FALSE)
+mtl_network <- sf::st_read(networkgpkg,layer="mtl_network")
+bike_accidents <- sf::st_read(eventsgpkg,layer="bike_accidents")
 
 # then plotting the data
-plot(mtl_network)
-plot(bike_accidents,add=T,col='red',pch = 19)
+tm_shape(mtl_network) + 
+  tm_lines("black") + 
+  tm_shape(bike_accidents) + 
+  tm_dots("red", size = 0.2)
 
 # then calculating some lixels to use as sampling points
 lixels <- lixelize_lines(mtl_network,200,mindist = 50)
@@ -357,50 +358,24 @@ samples$density <- densities
 We can now map the density values estimated for each lixel centre:
 
 ```{r message=FALSE, warning=FALSE}
-library(ggplot2)
-library(dplyr)
-library(RColorBrewer)
-library(classInt)
 
 # rescaling to help the mapping
 samples$density <- samples$density*1000
 
-# using a discretization method
-breaks <- classIntervals(samples$density, n = 7, style = "jenks", intervalClosure = "right")
+samples2 <- samples[order(samples$density),]
 
 colorRamp <- brewer.pal(n = 7, name = "Spectral")
 colorRamp <- rev(colorRamp)
 
-samples$class <- as.character(cut(samples$density,breaks$brks,colorRamp,include.lowest =TRUE))
+title <- paste0("bike accident density by kilometres in 2016,",
+                "\nwithin a radius of 300 metres")
 
-xy <- coordinates(samples)
-samples$x <- xy[,1]
-samples$y <- xy[,2]
-
-# and finally map with ggplot
-labels <- names(print(breaks))
-mtl_network$line_id <- 1:nrow(mtl_network)
-Mapnetwork <- fortify(mtl_network,id="line_id")
-
-df <- samples@data[order(samples@data$density),]
-
-ggplot() + 
-  geom_path(data = Mapnetwork, mapping = aes(x=long,y=lat,group=group), color="black")+
-  geom_point(data = df, mapping = aes(x=x,y=y,color=class))+
-  scale_color_manual("density",
-    breaks = colorRamp, values = colorRamp, 
-    label = labels)+
-  theme(axis.title.x=element_blank(),
-        axis.text.x=element_blank(),
-        axis.ticks.x=element_blank(),
-        axis.title.y=element_blank(),
-        axis.text.y=element_blank(),
-        axis.ticks.y=element_blank()) +
-  coord_fixed()+
-  labs(title = "bike accident density by kilometres in 2016",
-          subtitle = "within a radius of 300 metres",
-          caption = "using the quartic kernel")
-  
+tm_shape(mtl_network) + 
+  tm_lines("black") + 
+  tm_shape(samples2) + 
+  tm_dots("density", style = "kmeans", palette = colorRamp, n = 7, size = 0.1) + 
+  tm_layout(legend.outside = TRUE, 
+            main.title = title , main.title.size = 1)
 
 ```
 
@@ -415,7 +390,6 @@ The calculus of the NKDE for each cell could be done by several cores. To do so,
 
 The following code will produce the same results as before but split the work between two cores.
 ```{r message=FALSE, warning=FALSE, eval = FALSE}
-
 # setting the multisession plan
 future::plan(future::multisession(workers=2))
 
@@ -488,13 +462,17 @@ samples$density <- adapt_densities$k
 
 We can now map some of the bandwidths
 ```{r message=FALSE, warning=FALSE}
-circles <- gBuffer(adapt_densities$events,byid = TRUE,width = adapt_densities$events$bw)
+circles <- st_buffer(adapt_densities$events,
+                     dist = adapt_densities$events$bw)
 
 ids <- c(1,52,20,86,14,75,126,200,177)
 
-plot(mtl_network)
-plot(bike_accidents,add=T,col='red',pch = 19,cex=0.5)
-plot(circles[ids,],add=T,border='blue',lwd=2)
+tm_shape(mtl_network) + 
+  tm_lines("black") + 
+  tm_shape(bike_accidents) + 
+  tm_dots("red", size = 0.2) + 
+  tm_shape(circles[ids,]) + 
+  tm_borders("blue", lwd = 2)
 ```
 
 And map the new densities with the same code as before.
@@ -503,41 +481,19 @@ And map the new densities with the same code as before.
 # rescaling to help the mapping
 samples$density <- samples$density*1000
 
-# using a discretization method
-breaks <- classIntervals(samples$density, n = 7, style = "jenks", intervalClosure = "right")
-
 colorRamp <- brewer.pal(n = 7, name = "Spectral")
 colorRamp <- rev(colorRamp)
 
-samples$class <- as.character(cut(samples$density,breaks$brks,colorRamp,include.lowest =TRUE))
+samples2 <- samples[order(samples$density),]
+title <- paste0("bike accident density by kilometres in 2016,",
+                "\nwithin a radius of 300 metres (adaptive bandiwdth)")
 
-xy <- coordinates(samples)
-samples$x <- xy[,1]
-samples$y <- xy[,2]
-
-# and finally map with ggplot
-labels <- names(print(breaks))
-mtl_network$line_id <- 1:nrow(mtl_network)
-Mapnetwork <- fortify(mtl_network,id="line_id")
-
-df <- samples@data[order(samples@data$density),]
-
-ggplot() + 
-  geom_path(data = Mapnetwork, mapping = aes(x=long,y=lat,group=group), color="black")+
-  geom_point(data = df, mapping = aes(x=x,y=y,color=class))+
-  scale_color_manual("density",
-    breaks = colorRamp, values = colorRamp, 
-    label = labels)+
-  theme(axis.title.x=element_blank(),
-        axis.text.x=element_blank(),
-        axis.ticks.x=element_blank(),
-        axis.title.y=element_blank(),
-        axis.text.y=element_blank(),
-        axis.ticks.y=element_blank()) +
-  coord_fixed()+
-  labs(title = "bike accident density by kilometres in 2016",
-          subtitle = "within a radius of 300 metres (adaptive bandiwdth)",
-          caption = "using the quartic kernel")
+tm_shape(mtl_network) + 
+  tm_lines("black") + 
+  tm_shape(samples2) + 
+  tm_dots("density", style = "kmeans", palette = colorRamp, n = 7, size = 0.1) + 
+  tm_layout(legend.outside = TRUE, 
+            main.title = title, main.title.size = 1)
 
 ```
 
@@ -554,21 +510,23 @@ Let us illustrate it here by using a sub part of the same data
 ```{r message=FALSE, warning=FALSE}
 # selecting the events in a subset of the data
 center_event <- bike_accidents[125,]
-study_area <- rgeos::gBuffer(center_event,width = 800)
-events_sel <- as.vector(rgeos::gIntersects(bike_accidents, study_area,byid=TRUE))
+study_area <- st_buffer(center_event, dist = 800)
+events_sel <- as.vector(st_intersects(bike_accidents, study_area, sparse = FALSE))
 events <- subset(bike_accidents,events_sel)
 
 # generating the sampling points
-lines_sel <- as.vector(rgeos::gIntersects(mtl_network, study_area,byid=TRUE))
+lines_sel <- as.vector(st_intersects(mtl_network, study_area, sparse = FALSE))
 lines <- subset(mtl_network,lines_sel)
 
 lixels <- lixelize_lines(lines,200,mindist = 50)
 samples <- lines_center(lixels)
 
-
-sp::plot(study_area,col="white")
-sp::plot(mtl_network,add=TRUE)
-sp::plot(events,add=TRUE, col="red")
+tm_shape(study_area) + 
+  tm_borders("black", lwd = 2) + 
+  tm_shape(lines) + 
+  tm_lines("black") +
+  tm_shape(events) + 
+  tm_dots("red", size = 0.2)
 ```
 
 ```{r message=FALSE, warning=FALSE, eval = FALSE}
@@ -591,56 +549,25 @@ samples$density <- adjusted_densities
 ```
 
 ```{r message=FALSE, warning=FALSE}
-samples$density <- adjusted_densities
+samples$density <- adjusted_densities * 1000
 ```
 
 And again, we can map the results.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-extent <- sp::bbox(study_area)
-extent[,1] <- extent[,1]-500
-extent[,2] <- extent[,2]+500
-
-# rescaling to help the mapping
-samples$density <- samples$density*1000
-
-# using a discretization method
-breaks <- classIntervals(samples$density, n = 7, style = "jenks", intervalClosure = "right")
-
 colorRamp <- brewer.pal(n = 7, name = "Spectral")
 colorRamp <- rev(colorRamp)
 
-samples$class <- as.character(cut(samples$density,breaks$brks,colorRamp,include.lowest =TRUE))
+title <- paste0("bike accident density by kilometres in 2016", 
+                "\nwithin a radius of 150 metres")
 
-xy <- coordinates(samples)
-samples$x <- xy[,1]
-samples$y <- xy[,2]
-
-# and finally map with ggplot
-labels <- names(print(breaks))
-mtl_network$line_id <- 1:nrow(mtl_network)
-Mapnetwork <- fortify(mtl_network,id="line_id")
-
-df <- samples@data[order(samples@data$density),]
-
-ggplot() + 
-  geom_path(data = Mapnetwork, mapping = aes(x=long,y=lat,group=group), color="black")+
-  geom_point(data = df, mapping = aes(x=x,y=y,color=class))+
-  scale_color_manual("density",
-    breaks = colorRamp, values = colorRamp, 
-    label = labels)+
-  theme(axis.title.x=element_blank(),
-        axis.text.x=element_blank(),
-        axis.ticks.x=element_blank(),
-        axis.title.y=element_blank(),
-        axis.text.y=element_blank(),
-        axis.ticks.y=element_blank()) +
-  coord_fixed()+
-  xlim(extent[1,])+
-  ylim(extent[2,])+
-  labs(title = "bike accident density by kilometres in 2016",
-          subtitle = "within a radius of 150 metres")
-
+tm_shape(lines) + 
+  tm_lines("black") + 
+  tm_shape(samples) + 
+  tm_dots("density", palette = colorRamp, style = "kmeans", n = 7, size = 0.1) + 
+  tm_layout(legend.outside = TRUE, 
+            main.title = title, main.title.size = 1)
+  
 ```
 
 ## Bandwidth selection
@@ -665,7 +592,7 @@ bws_selection_cv <- bw_cv_likelihood_calc(
   verbose=FALSE, check=TRUE)
 
 bws_selection_cvl <- bw_cvl_calc(
-  bw_range = c(200,700),bw_step = 50,
+  bw_range = c(50,700),bw_step = 50,
   lines = mtl_network, events = bike_accidents,
   w = rep(1,nrow(bike_accidents)),
   kernel_name = "quartic", method = "discontinuous",
@@ -682,10 +609,10 @@ cv_values <- data.frame(
 )
 ```
 ```{r echo=FALSE}
-knitr::kable(cv_values,digits = 2,row.names = FALSE)
+knitr::kable(cv_values, digits = 2,row.names = FALSE)
 ```
 
-As one can see here, the cross-validation approach suggests a value between 400 and 500 metres, while the Cronie and Van Lieshout's Criterion recommend a value between 250 and 300 metres.
+As one can see here, the cross-validation approach suggests a value between 500 and 600 metres, while the Cronie and Van Lieshout's Criterion would suggest a bandwidth inferior to 50 metres and is probably not adapted for this dataset.
 
 
 ## Complementary functions

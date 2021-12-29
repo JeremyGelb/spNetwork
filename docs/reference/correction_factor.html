@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0.9000</span>
       </span>
     </div>
 
@@ -142,7 +142,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Border correction for NKDE</h1>
-    <small class="dont-index">Source: <a href='https://github.com/JeremyGelb/spNetwork/blob/master/R/border_correction.R'><code>R/border_correction.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/JeremyGelb/spNetwork/blob/master/R/border_correction_sf.R'><code>R/border_correction_sf.R</code></a></small>
     <div class="hidden name"><code>correction_factor.Rd</code></div>
     </div>
 
@@ -168,12 +168,12 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>study_area</th>
-      <td><p>A SpatialPolygonsDataFrame or a SpatialPolygons, the limit
+      <td><p>A feature collection of polygons or a polygon, the limit
 of the study area.</p></td>
     </tr>
     <tr>
       <th>events</th>
-      <td><p>A SpatialPointsDataFrame representing the events on the
+      <td><p>A feature collection of points representing the events on the
 network.</p></td>
     </tr>
     <tr>

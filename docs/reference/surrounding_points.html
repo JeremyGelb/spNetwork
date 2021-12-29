@@ -40,8 +40,8 @@
 
 
 <meta property="og:title" content="Points along polygon boundary — surrounding_points" />
-<meta property="og:description" content="Generate a SpatialPointsDataFrame by placing points along the border of
-polygons of a SpatialPolygonsDataFrame." />
+<meta property="og:description" content="Generate a feature collection of points by placing points along the border of
+polygons of a feature collection." />
 
 
 
@@ -73,7 +73,7 @@ polygons of a SpatialPolygonsDataFrame." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0.9000</span>
       </span>
     </div>
 
@@ -143,13 +143,13 @@ polygons of a SpatialPolygonsDataFrame." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Points along polygon boundary</h1>
-    <small class="dont-index">Source: <a href='https://github.com/JeremyGelb/spNetwork/blob/master/R/geometrical_functions.R'><code>R/geometrical_functions.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/JeremyGelb/spNetwork/blob/master/R/geometrical_functions_sf.R'><code>R/geometrical_functions_sf.R</code></a></small>
     <div class="hidden name"><code>surrounding_points.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Generate a SpatialPointsDataFrame by placing points along the border of
-polygons of a SpatialPolygonsDataFrame.</p>
+    <p>Generate a feature collection of points by placing points along the border of
+polygons of a feature collection.</p>
     </div>
 
     <pre class="usage"><span class='fu'>surrounding_points</span><span class='op'>(</span><span class='va'>polygons</span>, <span class='va'>dist</span><span class='op'>)</span></pre>
@@ -159,7 +159,7 @@ polygons of a SpatialPolygonsDataFrame.</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>polygons</th>
-      <td><p>A SpatialPolygonsDataFrame</p></td>
+      <td><p>A feature collection of polygons</p></td>
     </tr>
     <tr>
       <th>dist</th>
@@ -169,7 +169,7 @@ polygons of a SpatialPolygonsDataFrame.</p>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A SpatialPolygonsDataFrame representing the grid</p>
+    <p>A feature collection of points representing the points arrond the polygond</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><span class='co'>#This is an internal function, no example provided</span>

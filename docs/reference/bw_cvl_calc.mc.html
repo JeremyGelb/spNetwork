@@ -77,7 +77,7 @@ displays the progression for the cells." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0.9000</span>
       </span>
     </div>
 
@@ -147,7 +147,7 @@ displays the progression for the cells." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Bandwidth selection by Cronie and Van Lieshout's Criterion (multicore version)</h1>
-    <small class="dont-index">Source: <a href='https://github.com/JeremyGelb/spNetwork/blob/master/R/bandwidth_selection_cvl.R'><code>R/bandwidth_selection_cvl.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/JeremyGelb/spNetwork/blob/master/R/bandwidth_selection_cvl_sf.R'><code>R/bandwidth_selection_cvl_sf.R</code></a></small>
     <div class="hidden name"><code>bw_cvl_calc.mc.Rd</code></div>
     </div>
 
@@ -195,13 +195,13 @@ vector of two values: c(bandwidth_min, bandwidth_max)</p></td>
     </tr>
     <tr>
       <th>lines</th>
-      <td><p>A SpatialLinesDataFrame representing the underlying network. The
-geometries must be a SpatialLinesDataFrame (may crash if some geometries
+      <td><p>A feature collection of linestrings representing the underlying network. The
+geometries must be simple Linestrings (may crash if some geometries
  are invalid) without MultiLineSring.</p></td>
     </tr>
     <tr>
       <th>events</th>
-      <td><p>events A SpatialPointsDataFrame representing the events on the
+      <td><p>events A feature collection of points representing the events on the
 network. The points will be snapped on the network to their closest line.</p></td>
     </tr>
     <tr>
@@ -225,7 +225,7 @@ for edge effect must be used.</p></td>
     </tr>
     <tr>
       <th>study_area</th>
-      <td><p>A SpatialPolygonsDataFrame or a SpatialPolygon
+      <td><p>A feature collection of polygons 
 representing the limits of the study area.</p></td>
     </tr>
     <tr>
@@ -303,8 +303,8 @@ the Cronie and Van Lieshout's Criterion.</p>
     <pre class="examples"><span class='co'># \donttest{</span>
 <span class='va'>networkgpkg</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>, <span class='st'>"networks.gpkg"</span>, package <span class='op'>=</span> <span class='st'>"spNetwork"</span>, mustWork <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
 <span class='va'>eventsgpkg</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>, <span class='st'>"events.gpkg"</span>, package <span class='op'>=</span> <span class='st'>"spNetwork"</span>, mustWork <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
-<span class='va'>mtl_network</span> <span class='op'>&lt;-</span> <span class='fu'>rgdal</span><span class='fu'>::</span><span class='fu'><a href='http://rgdal.r-forge.r-project.org/reference/readOGR.html'>readOGR</a></span><span class='op'>(</span><span class='va'>networkgpkg</span>,layer<span class='op'>=</span><span class='st'>"mtl_network"</span>, verbose<span class='op'>=</span><span class='cn'>FALSE</span><span class='op'>)</span>
-<span class='va'>bike_accidents</span> <span class='op'>&lt;-</span> <span class='fu'>rgdal</span><span class='fu'>::</span><span class='fu'><a href='http://rgdal.r-forge.r-project.org/reference/readOGR.html'>readOGR</a></span><span class='op'>(</span><span class='va'>eventsgpkg</span>,layer<span class='op'>=</span><span class='st'>"bike_accidents"</span>, verbose<span class='op'>=</span><span class='cn'>FALSE</span><span class='op'>)</span>
+<span class='va'>mtl_network</span> <span class='op'>&lt;-</span> <span class='fu'>sf</span><span class='fu'>::</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_read.html'>st_read</a></span><span class='op'>(</span><span class='va'>networkgpkg</span>,layer<span class='op'>=</span><span class='st'>"mtl_network"</span><span class='op'>)</span>
+<span class='va'>bike_accidents</span> <span class='op'>&lt;-</span><span class='fu'>sf</span><span class='fu'>::</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_read.html'>st_read</a></span><span class='op'>(</span><span class='va'>eventsgpkg</span>,layer<span class='op'>=</span><span class='st'>"bike_accidents"</span><span class='op'>)</span>
 <span class='fu'>future</span><span class='fu'>::</span><span class='fu'><a href='https://future.futureverse.org/reference/plan.html'>plan</a></span><span class='op'>(</span><span class='fu'>future</span><span class='fu'>::</span><span class='fu'><a href='https://future.futureverse.org/reference/multisession.html'>multisession</a></span><span class='op'>(</span>workers<span class='op'>=</span><span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span>
 <span class='va'>cv_scores</span> <span class='op'>&lt;-</span> <span class='fu'>bw_cvl_calc.mc</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>200</span>,<span class='fl'>400</span><span class='op'>)</span>,<span class='fl'>50</span>,
                                <span class='va'>mtl_network</span>, <span class='va'>bike_accidents</span>,

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Split lines at vertices in a SpatialLinesDataFrame — split_lines_at_vertex • spNetwork</title>
+<title>Split lines at vertices in a feature collection of linestrings — split_lines_at_vertex • spNetwork</title>
 
 
 <!-- jquery -->
@@ -39,9 +39,9 @@
 
 
 
-<meta property="og:title" content="Split lines at vertices in a SpatialLinesDataFrame — split_lines_at_vertex" />
-<meta property="og:description" content="Split lines (SpatialLines) at their nearest vertices
-(SpatialPoints), may fail if the line geometries are self intersecting." />
+<meta property="og:title" content="Split lines at vertices in a feature collection of linestrings — split_lines_at_vertex" />
+<meta property="og:description" content="Split lines (feature collection of linestrings) at their nearest vertices
+(feature collection of points), may fail if the line geometries are self intersecting." />
 
 
 
@@ -73,7 +73,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0.9000</span>
       </span>
     </div>
 
@@ -142,14 +142,14 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Split lines at vertices in a SpatialLinesDataFrame</h1>
-    <small class="dont-index">Source: <a href='https://github.com/JeremyGelb/spNetwork/blob/master/R/geometrical_functions.R'><code>R/geometrical_functions.R</code></a></small>
+    <h1>Split lines at vertices in a feature collection of linestrings</h1>
+    <small class="dont-index">Source: <a href='https://github.com/JeremyGelb/spNetwork/blob/master/R/geometrical_functions_sf.R'><code>R/geometrical_functions_sf.R</code></a></small>
     <div class="hidden name"><code>split_lines_at_vertex.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Split lines (SpatialLines) at their nearest vertices
-(SpatialPoints), may fail if the line geometries are self intersecting.</p>
+    <p>Split lines (feature collection of linestrings) at their nearest vertices
+(feature collection of points), may fail if the line geometries are self intersecting.</p>
     </div>
 
     <pre class="usage"><span class='fu'>split_lines_at_vertex</span><span class='op'>(</span><span class='va'>lines</span>, <span class='va'>points</span>, <span class='va'>nearest_lines_idx</span>, <span class='va'>mindist</span><span class='op'>)</span></pre>
@@ -159,11 +159,11 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>lines</th>
-      <td><p>The SpatialLinesDataframe to split</p></td>
+      <td><p>The feature collection of linestrings to split</p></td>
     </tr>
     <tr>
       <th>points</th>
-      <td><p>The SpatialPoints to add to as vertex to the lines</p></td>
+      <td><p>The feature collection of point to add to as vertex to the lines</p></td>
     </tr>
     <tr>
       <th>nearest_lines_idx</th>
@@ -178,15 +178,15 @@ the line to add the point as a vertex.</p></td>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>An object of class SpatialLinesDataFrame (package sp)</p>
+    <p>A feature collection of linestrings</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><span class='co'># \donttest{</span>
 <span class='co'># reading the data</span>
 <span class='va'>networkgpkg</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>, <span class='st'>"networks.gpkg"</span>, package <span class='op'>=</span> <span class='st'>"spNetwork"</span>, mustWork <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
-<span class='va'>mtl_network</span> <span class='op'>&lt;-</span> <span class='fu'>rgdal</span><span class='fu'>::</span><span class='fu'><a href='http://rgdal.r-forge.r-project.org/reference/readOGR.html'>readOGR</a></span><span class='op'>(</span><span class='va'>networkgpkg</span>,layer<span class='op'>=</span><span class='st'>"mtl_network"</span>, verbose<span class='op'>=</span><span class='cn'>FALSE</span><span class='op'>)</span>
+<span class='va'>mtl_network</span> <span class='op'>&lt;-</span> <span class='fu'>sf</span><span class='fu'>::</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_read.html'>st_read</a></span><span class='op'>(</span><span class='va'>networkgpkg</span>,layer<span class='op'>=</span><span class='st'>"mtl_network"</span><span class='op'>)</span>
 <span class='va'>eventsgpkg</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>, <span class='st'>"events.gpkg"</span>, package <span class='op'>=</span> <span class='st'>"spNetwork"</span>, mustWork <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
-<span class='va'>bike_accidents</span> <span class='op'>&lt;-</span> <span class='fu'>rgdal</span><span class='fu'>::</span><span class='fu'><a href='http://rgdal.r-forge.r-project.org/reference/readOGR.html'>readOGR</a></span><span class='op'>(</span><span class='va'>eventsgpkg</span>,layer<span class='op'>=</span><span class='st'>"bike_accidents"</span>, verbose<span class='op'>=</span><span class='cn'>FALSE</span><span class='op'>)</span>
+<span class='va'>bike_accidents</span> <span class='op'>&lt;-</span> <span class='fu'>sf</span><span class='fu'>::</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_read.html'>st_read</a></span><span class='op'>(</span><span class='va'>eventsgpkg</span>,layer<span class='op'>=</span><span class='st'>"bike_accidents"</span><span class='op'>)</span>
 <span class='co'># aggregating points within a 5 metres radius</span>
 <span class='va'>bike_accidents</span><span class='op'>$</span><span class='va'>weight</span> <span class='op'>&lt;-</span> <span class='fl'>1</span>
 <span class='va'>agg_points</span> <span class='op'>&lt;-</span> <span class='fu'><a href='aggregate_points.html'>aggregate_points</a></span><span class='op'>(</span><span class='va'>bike_accidents</span>, <span class='fl'>5</span><span class='op'>)</span>

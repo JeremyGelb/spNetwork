@@ -9,7 +9,7 @@
 
 [![R-CMD-check](https://github.com/JeremyGelb/spNetwork/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/JeremyGelb/spNetwork/actions/workflows/R-CMD-check.yaml)
 
-[![](https://img.shields.io/badge/devel%20version-0.3.0.9000-green.svg)](https://jeremygelb.github.io/spNetwork/)
+[![](https://img.shields.io/badge/devel%20version-0.4.0.9000-green.svg)](https://jeremygelb.github.io/spNetwork/)
 [![](https://www.r-pkg.org/badges/version/spNetwork?color=blue)](https://cran.r-project.org/package=spNetwork)
 [![](http://cranlogs.r-pkg.org/badges/grand-total/spNetwork?color=blue)](https://cran.r-project.org/package=spNetwork)
 [![](http://cranlogs.r-pkg.org/badges/last-month/spNetwork?color=green)](https://cran.r-project.org/package=spNetwork)
@@ -19,6 +19,13 @@ coverage](https://codecov.io/gh/JeremyGelb/spNetwork/branch/master/graph/badge.s
 
 The package’s website is available
 [here](https://jeremygelb.github.io/spNetwork/)
+
+## Breaking news
+
+Considering that rgeos and maptools will be deprecated soon, we are
+moving to sf! This requires some adjustment in the code and the
+documentation. The development version 0.4.9000 is now using completely
+using sf. Please, report any bug or error in the documentation.
 
 ## What is this package ?
 
@@ -77,10 +84,7 @@ The packages uses mainly the following packages in its internal
 structure :
 
 -   igraph
--   sp
--   rgeos
--   maptools
--   raster
+-   sf
 -   future
 -   future.apply
 -   data.table
@@ -98,15 +102,31 @@ the vignettes for more details.
 ``` r
 library(spNetwork)
 library(tmap)
-library(rgdal)
+library(sf)
 
 # loading the dataset
 networkgpkg <- system.file("extdata", "networks.gpkg",
                            package = "spNetwork", mustWork = TRUE)
 eventsgpkg <- system.file("extdata", "events.gpkg",
                           package = "spNetwork", mustWork = TRUE)
-mtl_network <- readOGR(networkgpkg,layer="mtl_network",verbose = FALSE)
-bike_accidents <- readOGR(eventsgpkg,layer="bike_accidents", verbose = FALSE)
+mtl_network <- st_read(networkgpkg,layer="mtl_network")
+#> Reading layer `mtl_network' from data source 
+#>   `C:\Users\gelbj\AppData\Local\Temp\RtmpewqGTj\temp_libpath4a8817f72bca\spNetwork\extdata\networks.gpkg' 
+#>   using driver `GPKG'
+#> Simple feature collection with 2945 features and 1 field
+#> Geometry type: LINESTRING
+#> Dimension:     XY
+#> Bounding box:  xmin: 295675.9 ymin: 5039320 xmax: 301783.9 ymax: 5044799
+#> Projected CRS: NAD83 / MTM zone 8
+bike_accidents <- st_read(eventsgpkg,layer="bike_accidents")
+#> Reading layer `bike_accidents' from data source 
+#>   `C:\Users\gelbj\AppData\Local\Temp\RtmpewqGTj\temp_libpath4a8817f72bca\spNetwork\extdata\events.gpkg' 
+#>   using driver `GPKG'
+#> Simple feature collection with 347 features and 3 fields
+#> Geometry type: POINT
+#> Dimension:     XY
+#> Bounding box:  xmin: 295848.2 ymin: 5039795 xmax: 300721.7 ymax: 5044643
+#> Projected CRS: NAD83 / MTM zone 8
 
 
 # generating sampling points at the middle of lixels
@@ -192,8 +212,24 @@ networkgpkg <- system.file("extdata", "networks.gpkg",
 eventsgpkg <- system.file("extdata", "events.gpkg",
                           package = "spNetwork", mustWork = TRUE)
 
-main_network_mtl <- rgdal::readOGR(networkgpkg,layer="main_network_mtl", verbose = FALSE)
-mtl_theatres <- rgdal::readOGR(eventsgpkg,layer="mtl_theatres", verbose = FALSE)
+main_network_mtl <- st_read(networkgpkg,layer="main_network_mtl")
+#> Reading layer `main_network_mtl' from data source 
+#>   `C:\Users\gelbj\AppData\Local\Temp\RtmpewqGTj\temp_libpath4a8817f72bca\spNetwork\extdata\networks.gpkg' 
+#>   using driver `GPKG'
+#> Simple feature collection with 16188 features and 1 field
+#> Geometry type: LINESTRING
+#> Dimension:     XY
+#> Bounding box:  xmin: 266279.3 ymin: 5029291 xmax: 306087 ymax: 5062652
+#> Projected CRS: NAD83 / MTM zone 8
+mtl_theatres <- st_read(eventsgpkg,layer="mtl_theatres")
+#> Reading layer `mtl_theatres' from data source 
+#>   `C:\Users\gelbj\AppData\Local\Temp\RtmpewqGTj\temp_libpath4a8817f72bca\spNetwork\extdata\events.gpkg' 
+#>   using driver `GPKG'
+#> Simple feature collection with 54 features and 2 fields
+#> Geometry type: POINT
+#> Dimension:     XY
+#> Bounding box:  xmin: 276043.5 ymin: 5032306 xmax: 302121.4 ymax: 5053006
+#> Projected CRS: NAD83 / MTM zone 8
 
 # calculating the k function
 kfun_theatre <- kfunctions(main_network_mtl, mtl_theatres,
@@ -219,7 +255,8 @@ Features that will be added to the package in the future:
 -   accessibility measures based on distance matrix between population
     locations and services
 -   rework for using `sf` objects rather than `sp` (`rgeos` and
-    `maptools` will be deprecated in 2023)
+    `maptools` will be deprecated in 2023). This work is undergoing,
+    please report any bug or error in the new documentation.
 
 ## Authors
 

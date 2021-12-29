@@ -37,6 +37,10 @@ cat(
 
 The package's website is available [here](https://jeremygelb.github.io/spNetwork/)
 
+## Breaking news
+
+Considering that rgeos and maptools will be deprecated soon, we are moving to sf! This requires some adjustment in the code and the documentation. The development version 0.4.9000 is now using completely using sf. Please, report any bug or error in the documentation.
+
 ## What is this package ?
 
 This package can be used to perform several types of analysis on geographical networks. This type of network have spatial coordinates associated with their nodes. They can be directed or undirected. In the actual development version the implemented methods are: 
@@ -69,10 +73,7 @@ devtools::install_github("JeremyGelb/spNetwork")
 The packages uses mainly the following packages in its internal structure :
 
 * igraph
-* sp
-* rgeos
-* maptools
-* raster
+* sf
 * future
 * future.apply
 * data.table
@@ -89,15 +90,15 @@ We provide here some short examples of several features. Please, check the vigne
 ```{r warning=FALSE, message=FALSE}
 library(spNetwork)
 library(tmap)
-library(rgdal)
+library(sf)
 
 # loading the dataset
 networkgpkg <- system.file("extdata", "networks.gpkg",
                            package = "spNetwork", mustWork = TRUE)
 eventsgpkg <- system.file("extdata", "events.gpkg",
                           package = "spNetwork", mustWork = TRUE)
-mtl_network <- readOGR(networkgpkg,layer="mtl_network",verbose = FALSE)
-bike_accidents <- readOGR(eventsgpkg,layer="bike_accidents", verbose = FALSE)
+mtl_network <- st_read(networkgpkg,layer="mtl_network")
+bike_accidents <- st_read(eventsgpkg,layer="bike_accidents")
 
 
 # generating sampling points at the middle of lixels
@@ -179,8 +180,8 @@ networkgpkg <- system.file("extdata", "networks.gpkg",
 eventsgpkg <- system.file("extdata", "events.gpkg",
                           package = "spNetwork", mustWork = TRUE)
 
-main_network_mtl <- rgdal::readOGR(networkgpkg,layer="main_network_mtl", verbose = FALSE)
-mtl_theatres <- rgdal::readOGR(eventsgpkg,layer="mtl_theatres", verbose = FALSE)
+main_network_mtl <- st_read(networkgpkg,layer="main_network_mtl")
+mtl_theatres <- st_read(eventsgpkg,layer="mtl_theatres")
 
 # calculating the k function
 kfun_theatre <- kfunctions(main_network_mtl, mtl_theatres,
@@ -200,7 +201,7 @@ Features that will be added to the package in the future:
 
 * temporal NKDE, a two dimensional kernel density estimation in network space and time
 * accessibility measures based on distance matrix between population locations and services
-* rework for using `sf` objects rather than `sp` (`rgeos` and `maptools` will be deprecated in 2023)
+* rework for using `sf` objects rather than `sp` (`rgeos` and `maptools` will be deprecated in 2023). This work is undergoing, please report any bug or error in the new documentation.
 
 ## Authors
 

@@ -54,22 +54,25 @@ load(system.file("extdata", "results_vignette_kfunc.rda",
                            package = "spNetwork", mustWork = TRUE))
 ```
 
-```{r, fig.show='hold', fig.align = 'center'}
+```{r, fig.show='hold', fig.align = 'center', warning=FALSE, message=FALSE}
 library(spNetwork)
+library(tmap)
 
 networkgpkg <- system.file("extdata", "networks.gpkg",
                            package = "spNetwork", mustWork = TRUE)
 eventsgpkg <- system.file("extdata", "events.gpkg",
                           package = "spNetwork", mustWork = TRUE)
 
-main_network_mtl <- rgdal::readOGR(networkgpkg,layer="main_network_mtl", verbose = FALSE)
-mtl_libraries <- rgdal::readOGR(eventsgpkg,layer="mtl_libraries", verbose = FALSE)
-mtl_theatres <- rgdal::readOGR(eventsgpkg,layer="mtl_theatres", verbose = FALSE)
+main_network_mtl <- sf::st_read(networkgpkg,layer="main_network_mtl")
+mtl_libraries <- sf::st_read(eventsgpkg,layer="mtl_libraries")
+mtl_theatres <- sf::st_read(eventsgpkg,layer="mtl_theatres")
 
-par(mar = c(0, 0, 0, 0))
-sp::plot(main_network_mtl)
-sp::plot(mtl_libraries, col = "blue", add=T, pch = 20)
-sp::plot(mtl_theatres, col = "red", add=T, pch = 20)
+tm_shape(main_network_mtl) + 
+  tm_lines("black") + 
+  tm_shape(mtl_libraries) + 
+  tm_dots(col = "red", size = 0.2) +
+  tm_shape(mtl_theatres) + 
+  tm_dots(col = "blue", size = 0.2)
 ```
 
 As one can see, the theatres seems to be more clustered than the libraries.

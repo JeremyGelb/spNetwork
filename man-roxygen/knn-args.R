@@ -1,8 +1,8 @@
-#' @param origins A SpatialPointsDataFrame, for each point, its k nearest
+#' @param origins A feature collection of points, for each point, its k nearest
 #' neighbours will be found on the network.
-#' @param lines A SpatialLinesDataFrame representing the underlying network
+#' @param lines A feature collection of linestrings representing the underlying network
 #' @param k An integer indicating the number of neighbours to find.
-#' @param destinations A SpatialPointsDataFrame, might be used if the neighbours
+#' @param destinations A feature collection of points, might be used if the neighbours
 #' must be found in a separate set of points NULL if the neighbours must be found in
 #' origins.
 #' @param maxdistance The maximum distance between two observations to

@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0.9000</span>
       </span>
     </div>
 
@@ -142,7 +142,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Sanity check for the knn functions</h1>
-    <small class="dont-index">Source: <a href='https://github.com/JeremyGelb/spNetwork/blob/master/R/knn.R'><code>R/knn.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/JeremyGelb/spNetwork/blob/master/R/knn_sf.R'><code>R/knn_sf.R</code></a></small>
     <div class="hidden name"><code>sanity_check_knn.Rd</code></div>
     </div>
 
@@ -170,18 +170,18 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>origins</th>
-      <td><p>A SpatialPointsDataFrame, for each point, its k nearest
+      <td><p>A a feature collection of points, for each point, its k nearest
 neighbours will be found on the network.</p></td>
     </tr>
     <tr>
       <th>destinations</th>
-      <td><p>A SpatialPointsDataFrame, might be used if the neighbours
+      <td><p>A a feature collection of points, might be used if the neighbours
 must be found in a separate dataset. NULL if the neighbours must be found in
 origins.</p></td>
     </tr>
     <tr>
       <th>lines</th>
-      <td><p>A SpatialLinesDataFrame representing the network</p></td>
+      <td><p>A a feature collection of linestrings representing the network</p></td>
     </tr>
     <tr>
       <th>k</th>

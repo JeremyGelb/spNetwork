@@ -73,7 +73,7 @@ select an appropriate bandwidth in a data-driven approach" />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0.9000</span>
       </span>
     </div>
 
@@ -143,7 +143,7 @@ select an appropriate bandwidth in a data-driven approach" />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Bandwidth selection by likelihood cross validation worker function</h1>
-    <small class="dont-index">Source: <a href='https://github.com/JeremyGelb/spNetwork/blob/master/R/bandwidth_selection_cv.R'><code>R/bandwidth_selection_cv.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/JeremyGelb/spNetwork/blob/master/R/bandwidth_selection_cv_sf.R'><code>R/bandwidth_selection_cv_sf.R</code></a></small>
     <div class="hidden name"><code>nkde_worker_bw_sel.Rd</code></div>
     </div>
 
@@ -175,19 +175,19 @@ select an appropriate bandwidth in a data-driven approach</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>lines</th>
-      <td><p>A SpatialLinesDataFrame representing the underlying network</p></td>
+      <td><p>A feature collection of linestrings representing the underlying network</p></td>
     </tr>
     <tr>
       <th>quad_events</th>
-      <td><p>a SpatialPointsDataFrame indicating for which events the densities must be calculated</p></td>
+      <td><p>a feature collection of points indicating for which events the densities must be calculated</p></td>
     </tr>
     <tr>
       <th>events_loc</th>
-      <td><p>A SpatialPointsDataFrame representing the location of the events</p></td>
+      <td><p>A feature collection of points representing the location of the events</p></td>
     </tr>
     <tr>
       <th>events</th>
-      <td><p>A SpatialPointsDataFrame representing the events. Multiple events can share
+      <td><p>A feature collection of points representing the events. Multiple events can share
 the same location. They are linked by the goid column</p></td>
     </tr>
     <tr>

@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0.9000</span>
       </span>
     </div>
 
@@ -142,7 +142,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>worker function for K-nearest points on network</h1>
-    <small class="dont-index">Source: <a href='https://github.com/JeremyGelb/spNetwork/blob/master/R/knn.R'><code>R/knn.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/JeremyGelb/spNetwork/blob/master/R/knn_sf.R'><code>R/knn_sf.R</code></a></small>
     <div class="hidden name"><code>network_knn_worker.Rd</code></div>
     </div>
 
@@ -166,12 +166,12 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>points</th>
-      <td><p>A SpatialPointsDataFrame, for each point, its k nearest
+      <td><p>A feature collection of points, for each point, its k nearest
 neighbours will be found on the network.</p></td>
     </tr>
     <tr>
       <th>lines</th>
-      <td><p>A SpatialLinesDataFrame representing the network</p></td>
+      <td><p>A feature collection of lines representing the network</p></td>
     </tr>
     <tr>
       <th>k</th>

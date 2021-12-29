@@ -73,7 +73,7 @@ select an appropriate bandwidth in a data-driven approach" />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0.9000</span>
       </span>
     </div>
 
@@ -143,7 +143,7 @@ select an appropriate bandwidth in a data-driven approach" />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Bandwidth selection by likelihood cross validation for temporal NKDE</h1>
-    <small class="dont-index">Source: <a href='https://github.com/JeremyGelb/spNetwork/blob/master/R/bandwidth_selection_cv_tnkde.R'><code>R/bandwidth_selection_cv_tnkde.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/JeremyGelb/spNetwork/blob/master/R/bandwidth_selection_cv_tnkde_sf.R'><code>R/bandwidth_selection_cv_tnkde_sf.R</code></a></small>
     <div class="hidden name"><code>bws_tnkde_cv_likelihood_calc.Rd</code></div>
     </div>
 
@@ -199,13 +199,13 @@ vector of two values: c(bandwidth_min, bandwidth_max)</p></td>
     </tr>
     <tr>
       <th>lines</th>
-      <td><p>A SpatialLinesDataFrame representing the underlying network. The
-geometries must be a SpatialLinesDataFrame (may crash if some geometries
+      <td><p>A feature collection of linestrings representing the underlying network. The
+geometries must be simple Linestrings (may crash if some geometries
  are invalid) without MultiLineSring.</p></td>
     </tr>
     <tr>
       <th>events</th>
-      <td><p>events A SpatialPointsDataFrame representing the events on the
+      <td><p>events A feature collection of points representing the events on the
 network. The points will be snapped on the network to their closest line.</p></td>
     </tr>
     <tr>
@@ -233,7 +233,7 @@ for edge effect must be used.</p></td>
     </tr>
     <tr>
       <th>study_area</th>
-      <td><p>A SpatialPolygonsDataFrame or a SpatialPolygon
+      <td><p>A feature collection of polygons 
 representing the limits of the study area.</p></td>
     </tr>
     <tr>
@@ -325,8 +325,8 @@ R package version 2.1-0, <a href='https://CRAN.R-project.org/package=spatstat'>h
 <span class='co'># loading the data</span>
 <span class='va'>networkgpkg</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>, <span class='st'>"networks.gpkg"</span>, package <span class='op'>=</span> <span class='st'>"spNetwork"</span>, mustWork <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
 <span class='va'>eventsgpkg</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>, <span class='st'>"events.gpkg"</span>, package <span class='op'>=</span> <span class='st'>"spNetwork"</span>, mustWork <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
-<span class='va'>mtl_network</span> <span class='op'>&lt;-</span> <span class='fu'>rgdal</span><span class='fu'>::</span><span class='fu'><a href='http://rgdal.r-forge.r-project.org/reference/readOGR.html'>readOGR</a></span><span class='op'>(</span><span class='va'>networkgpkg</span>,layer<span class='op'>=</span><span class='st'>"mtl_network"</span>, verbose<span class='op'>=</span><span class='cn'>FALSE</span><span class='op'>)</span>
-<span class='va'>bike_accidents</span> <span class='op'>&lt;-</span> <span class='fu'>rgdal</span><span class='fu'>::</span><span class='fu'><a href='http://rgdal.r-forge.r-project.org/reference/readOGR.html'>readOGR</a></span><span class='op'>(</span><span class='va'>eventsgpkg</span>,layer<span class='op'>=</span><span class='st'>"bike_accidents"</span>, verbose<span class='op'>=</span><span class='cn'>FALSE</span><span class='op'>)</span>
+<span class='va'>mtl_network</span> <span class='op'>&lt;-</span> <span class='fu'>sf</span><span class='fu'>::</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_read.html'>st_read</a></span><span class='op'>(</span><span class='va'>networkgpkg</span>,layer<span class='op'>=</span><span class='st'>"mtl_network"</span><span class='op'>)</span>
+<span class='va'>bike_accidents</span> <span class='op'>&lt;-</span> <span class='fu'>sf</span><span class='fu'>::</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_read.html'>st_read</a></span><span class='op'>(</span><span class='va'>eventsgpkg</span>,layer<span class='op'>=</span><span class='st'>"bike_accidents"</span><span class='op'>)</span>
 
 <span class='co'># converting the Date field to a numeric field (counting days)</span>
 <span class='va'>bike_accidents</span><span class='op'>$</span><span class='va'>Time</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/as.POSIXlt.html'>as.POSIXct</a></span><span class='op'>(</span><span class='va'>bike_accidents</span><span class='op'>$</span><span class='va'>Date</span>, format <span class='op'>=</span> <span class='st'>"%Y/%m/%d"</span><span class='op'>)</span>
@@ -343,7 +343,7 @@ R package version 2.1-0, <a href='https://CRAN.R-project.org/package=spatstat'>h
   lines <span class='op'>=</span> <span class='va'>mtl_network</span>,
   events <span class='op'>=</span> <span class='va'>bike_accidents</span>,
   time_field <span class='op'>=</span> <span class='st'>"Time"</span>,
-  w <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>bike_accidents</span><span class='op'>)</span><span class='op'>)</span>,
+  w <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='va'>bike_accidents</span><span class='op'>)</span><span class='op'>)</span>,
   kernel_name <span class='op'>=</span> <span class='st'>"quartic"</span>,
   method <span class='op'>=</span> <span class='st'>"discontinuous"</span>,
   diggle_correction <span class='op'>=</span> <span class='cn'>FALSE</span>,

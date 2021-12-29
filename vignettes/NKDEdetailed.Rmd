@@ -39,11 +39,10 @@ Let us start with the definition of a simple situation with one event and a smal
 ```{r message=FALSE, warning=FALSE, fig.height = 3, fig.width  = 3}
 options(rgl.useNULL=TRUE)
 library(spNetwork)
-library(rgeos)
-library(sp)
-library(maptools)
+library(sf)
 library(rgl)
-library(FNN)
+library(tmap)
+library(dbscan)
 
 # we define a set of lines
 wkt_lines <- c(
@@ -61,47 +60,44 @@ wkt_lines <- c(
 linesdf <- data.frame(wkt = wkt_lines,
                       id = paste("l",1:length(wkt_lines),sep=""))
 
-geoms <- do.call(rbind,lapply(1:nrow(linesdf),function(i){
-  txt <- as.character(linesdf[i,]$wkt)
-  geom <- rgeos::readWKT(txt,id=i)
-  return(geom)
-}))
-
-all_lines <- sp::SpatialLinesDataFrame(geoms, linesdf,match.ID = F)
+all_lines <- st_as_sf(linesdf, wkt = "wkt")
 
 # we define now one event
 event <- data.frame(x=c(1),
                     y=c(1.5))
-sp::coordinates(event) <- cbind(event$x,event$y)
+event <- st_as_sf(event, coords = c("x","y"))
 
 # and map the situation
-par(mar=c(0.1,0.1,0.1,0.1))
-sp::plot(all_lines)
-sp::plot(event,add=T,col="red",pch = 19)
+tm_shape(all_lines) + 
+  tm_lines("black") + 
+  tm_shape(event) + 
+  tm_dots("red", size = 0.2)
 ```
 ```{r message=FALSE, warning=FALSE, echo = FALSE}
 d3_plot_situation <- function(lines, events, pt_samples, densities, scales){
   
   open3d(scale=scales)
   
-  densities < round(densities,7)
+  densities <- round(densities,7)
   
   ## finding for each event its closest samples
-  XY1 <- coordinates(pt_samples)
-  XY2 <- coordinates(events)
-  idx <- knnx.index(XY1, query = XY2, k = 1)
+  XY1 <- st_coordinates(pt_samples)
+  XY2 <- st_coordinates(events)
+  idx <- dbscan::kNN(x = XY1, query = XY2, k = 1)$id
+  #idx <- knnx.index(XY1, query = XY2, k = 1)
   
   events$dens <- densities[idx]
   events$x <- XY2[,1]
   events$y <- XY2[,2]
   eidx <- do.call(c,lapply(1:nrow(events), function(i){c(i,i)}))
-  vert_lines <- events@data[eidx,]
+  vert_lines <- st_drop_geometry(events[eidx,])
   vert_lines$dens <- ifelse(1:nrow(vert_lines)%%2 == 0, vert_lines$dens,0)
   
   
   ## plotting the situation
-  line_coords <- do.call(rbind,unlist(coordinates(lines), recursive = FALSE))
-  sample_coords <- coordinates(pt_samples)
+  #line_coords <- do.call(rbind,unlist(coordinates(lines), recursive = FALSE))
+  line_coords <- st_coordinates(lines)
+  sample_coords <- st_coordinates(pt_samples)
   
   segments3d(x=line_coords[,1],
              y=line_coords[,2],
@@ -112,7 +108,7 @@ d3_plot_situation <- function(lines, events, pt_samples, densities, scales){
              z=vert_lines$dens,
              col = "red")
   
-  coords_events <- coordinates(events)
+  coords_events <- st_coordinates(events)
   
   points3d(
     x = coords_events[,1],
@@ -247,7 +243,7 @@ If we add a second event, their mass will add up when they share some range.
 # we define now two events
 events <- data.frame(x=c(1,2),
                     y=c(1.5,1.5))
-sp::coordinates(events) <- cbind(events$x,events$y)
+events <- st_as_sf(events, coords = c("x","y"))
 
 continuous_kernel <- nkde(all_lines, events, w = 1,
                   samples = samples_pts, kernel_name = "quartic",

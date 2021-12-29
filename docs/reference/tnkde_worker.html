@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0.9000</span>
       </span>
     </div>
 
@@ -142,7 +142,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>TNKDE worker</h1>
-    <small class="dont-index">Source: <a href='https://github.com/JeremyGelb/spNetwork/blob/master/R/temporal_nkde.R'><code>R/temporal_nkde.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/JeremyGelb/spNetwork/blob/master/R/temporal_nkde_sf.R'><code>R/temporal_nkde_sf.R</code></a></small>
     <div class="hidden name"><code>tnkde_worker.Rd</code></div>
     </div>
 
@@ -175,23 +175,23 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>lines</th>
-      <td><p>A SpatialLinesDataFrame with the sampling points. The
-geometries must be a SpatialLinesDataFrame (may crash if some geometries
+      <td><p>A feature collection of linestrings with the sampling points. The
+geometries must be simple Linestrings (may crash if some geometries
  are invalid)</p></td>
     </tr>
     <tr>
       <th>events_loc</th>
-      <td><p>A SpatialPointsDataFrame representing the aggergated events on the
+      <td><p>A feature collection of points representing the aggergated events on the
 network. The points will be snapped on the network.</p></td>
     </tr>
     <tr>
       <th>events</th>
-      <td><p>A SpatialPointsDataFrame representing the base events on the
+      <td><p>A feature collection of points representing the base events on the
 network</p></td>
     </tr>
     <tr>
       <th>samples_loc</th>
-      <td><p>A SpatialPointsDataFrame representing the locations for
+      <td><p>A feature collection of points representing the locations for
 which the densities will be estimated.</p></td>
     </tr>
     <tr>

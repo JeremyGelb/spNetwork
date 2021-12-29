@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0.9000</span>
       </span>
     </div>
 
@@ -103,7 +103,7 @@
       <h1 data-toc-skip>Calculating isochrones</h1>
                         <h4 class="author">Jeremy Gelb</h4>
             
-            <h4 class="date">2021-12-17</h4>
+            <h4 class="date">2021-12-28</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/JeremyGelb/spNetwork/blob/master/vignettes/Isochrones.Rmd"><code>vignettes/Isochrones.Rmd</code></a></small>
       <div class="hidden name"><code>Isochrones.Rmd</code></div>
@@ -125,31 +125,39 @@
 <p>The first step is to load (or create) a geographical network and to have some starting points.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># first load data and packages</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/edzer/sp/">sp</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://maptools.r-forge.r-project.org/">maptools</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-forge.r-project.org/projects/rgeos/">rgeos</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/">sf</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://jeremygelb.github.io/spNetwork/">spNetwork</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mtennekes/tmap">tmap</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://rspatial.org/raster">raster</a></span><span class="op">)</span>
 
 <span class="va">networkgpkg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"networks.gpkg"</span>,
                            package <span class="op">=</span> <span class="st">"spNetwork"</span>, mustWork <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 
-<span class="va">mtl_network</span> <span class="op">&lt;-</span> <span class="fu">rgdal</span><span class="fu">::</span><span class="fu"><a href="http://rgdal.r-forge.r-project.org/reference/readOGR.html">readOGR</a></span><span class="op">(</span><span class="va">networkgpkg</span>,layer<span class="op">=</span><span class="st">"mtl_network"</span>,verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
+<span class="va">mtl_network</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html">st_read</a></span><span class="op">(</span><span class="va">networkgpkg</span>,layer<span class="op">=</span><span class="st">"mtl_network"</span><span class="op">)</span>
+<span class="co">#&gt; Reading layer `mtl_network' from data source </span>
+<span class="co">#&gt;   `C:\Users\gelbj\OneDrive\Documents\R\win-library\4.2\spNetwork\extdata\networks.gpkg' </span>
+<span class="co">#&gt;   using driver `GPKG'</span>
+<span class="co">#&gt; Simple feature collection with 2945 features and 1 field</span>
+<span class="co">#&gt; Geometry type: LINESTRING</span>
+<span class="co">#&gt; Dimension:     XY</span>
+<span class="co">#&gt; Bounding box:  xmin: 295675.9 ymin: 5039320 xmax: 301783.9 ymax: 5044799</span>
+<span class="co">#&gt; Projected CRS: NAD83 / MTM zone 8</span>
 
 <span class="co"># calculating the length of each segment</span>
-<span class="va">mtl_network</span><span class="op">$</span><span class="va">length</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/rgeos/man/misc-gLength.html">gLength</a></span><span class="op">(</span><span class="va">mtl_network</span>, byid <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+<span class="va">mtl_network</span><span class="op">$</span><span class="va">length</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_measures.html">st_length</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span><span class="op">)</span>
 
 <span class="co"># extracting the coordinates in one matrix</span>
-<span class="va">coords</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span><span class="op">(</span><span class="fu">sp</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/sp/man/coordinates.html">coordinates</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span>, recursive <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span>
-<span class="va">center</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span><span class="op">(</span><span class="va">coords</span>, <span class="fl">2</span>, <span class="va">mean</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>
-<span class="va">df_center</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span><span class="st">"OID"</span> <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>
-<span class="fu">sp</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/sp/man/coordinates.html">coordinates</a></span><span class="op">(</span><span class="va">df_center</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">center</span>
-<span class="fu">raster</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/raster/man/projection.html">crs</a></span><span class="op">(</span><span class="va">df_center</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu">raster</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/raster/man/projection.html">crs</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span>
+<span class="va">coords</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_coordinates.html">st_coordinates</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span>
+<span class="va">center</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html">colMeans</a></span><span class="op">(</span><span class="va">coords</span><span class="op">)</span>
+<span class="va">df_center</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span><span class="st">"OID"</span> <span class="op">=</span> <span class="fl">1</span>,
+                        <span class="st">"x"</span> <span class="op">=</span> <span class="va">center</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,
+                        <span class="st">"y"</span> <span class="op">=</span> <span class="va">center</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span>
+<span class="va">df_center</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op">(</span><span class="va">df_center</span>, coords <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"x"</span>,<span class="st">"y"</span><span class="op">)</span>, crs <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html">st_crs</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span><span class="op">)</span>
 
 <span class="co"># then plotting the data</span>
-<span class="fu"><a href="https://rdrr.io/pkg/raster/man/plot.html">plot</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/pkg/raster/man/plot.html">plot</a></span><span class="op">(</span><span class="va">df_center</span>, add <span class="op">=</span> <span class="cn">TRUE</span>, col <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_lines.html">tm_lines</a></span><span class="op">(</span><span class="st">"black"</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">df_center</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_symbols.html">tm_dots</a></span><span class="op">(</span><span class="st">"red"</span>, size <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></code></pre></div>
 <p><img src="Isochrones_files/figure-html/unnamed-chunk-1-1.png" width="700"></p>
 <p>The second step is to calculate the isochrones with the function <code>calc_isochrones</code>. In this example, we use the length of a segment as the weight but other values could be used. We also consider that all the roads can be used in both directions (see parameter <code>direction</code>)</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
@@ -161,7 +169,7 @@
 <p>The results are reported as lines, which can be mapped.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># creating a factor and changing order for better vizualisation</span>
-<span class="va">iso_results</span><span class="op">$</span><span class="va">fac_dist</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/raster/man/factor.html">as.factor</a></span><span class="op">(</span><span class="va">iso_results</span><span class="op">$</span><span class="va">distance</span><span class="op">)</span>
+<span class="va">iso_results</span><span class="op">$</span><span class="va">fac_dist</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">as.factor</a></span><span class="op">(</span><span class="va">iso_results</span><span class="op">$</span><span class="va">distance</span><span class="op">)</span>
 <span class="va">iso_results</span> <span class="op">&lt;-</span> <span class="va">iso_results</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span><span class="op">*</span><span class="va">iso_results</span><span class="op">$</span><span class="va">distance</span><span class="op">)</span>,<span class="op">]</span>
 
 <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span> <span class="op">+</span> 
@@ -188,32 +196,29 @@
                              sep <span class="op">=</span> <span class="st">"_"</span><span class="op">)</span>
 
 <span class="co"># creating the polygons for each isochrone</span>
-<span class="va">polygons</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/raster/man/unique.html">unique</a></span><span class="op">(</span><span class="va">iso_results</span><span class="op">$</span><span class="va">iso_oid</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">oid</span><span class="op">)</span><span class="op">{</span>
+<span class="va">polygons</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">iso_results</span><span class="op">$</span><span class="va">iso_oid</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">oid</span><span class="op">)</span><span class="op">{</span>
   
   <span class="co"># subseting the required lines</span>
-  <span class="va">lines</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/raster/man/subset.html">subset</a></span><span class="op">(</span><span class="va">iso_results</span>, <span class="va">iso_results</span><span class="op">$</span><span class="va">iso_oid</span> <span class="op">==</span> <span class="va">oid</span><span class="op">)</span>
+  <span class="va">lines</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html">subset</a></span><span class="op">(</span><span class="va">iso_results</span>, <span class="va">iso_results</span><span class="op">$</span><span class="va">iso_oid</span> <span class="op">==</span> <span class="va">oid</span><span class="op">)</span>
   
   <span class="co"># extracting the coordinates of the lines</span>
-  <span class="va">coords</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span><span class="op">(</span><span class="fu">sp</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/sp/man/coordinates.html">coordinates</a></span><span class="op">(</span><span class="va">lines</span><span class="op">)</span>,
-                                  recursive <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span>
+  <span class="va">coords</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_coordinates.html">st_coordinates</a></span><span class="op">(</span><span class="va">lines</span><span class="op">)</span>
   <span class="va">poly_coords</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://joelgombin.github.io/concaveman/reference/concaveman.html">concaveman</a></span><span class="op">(</span>points <span class="op">=</span> <span class="va">coords</span>, concavity <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>
-  <span class="va">poly</span> <span class="op">&lt;-</span> <span class="fu">sp</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/sp/man/SpatialPolygons.html">Polygons</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="fu">sp</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/sp/man/SpatialPolygons.html">Polygon</a></span><span class="op">(</span><span class="va">poly_coords</span><span class="op">)</span><span class="op">)</span>, ID <span class="op">=</span> <span class="va">oid</span><span class="op">)</span>
+  <span class="va">poly</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html">st_polygon</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="va">poly_coords</span><span class="op">[</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>
   <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">poly</span><span class="op">)</span>
 <span class="op">}</span><span class="op">)</span>
 
 <span class="co"># creating a SpatialPolygonsDataFrame</span>
-<span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>
-  iso_oid <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/raster/man/unique.html">unique</a></span><span class="op">(</span><span class="va">iso_results</span><span class="op">$</span><span class="va">iso_oid</span><span class="op">)</span>,
-  distance <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/raster/man/unique.html">unique</a></span><span class="op">(</span><span class="va">iso_results</span><span class="op">$</span><span class="va">distance</span><span class="op">)</span>
-<span class="op">)</span>
-
-<span class="va">iso_sp</span> <span class="op">&lt;-</span> <span class="fu">sp</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/sp/man/SpatialPolygons.html">SpatialPolygonsDataFrame</a></span><span class="op">(</span><span class="fu">sp</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/sp/man/SpatialPolygons.html">SpatialPolygons</a></span><span class="op">(</span><span class="va">polygons</span><span class="op">)</span>,
-                                       <span class="va">df</span>, match.ID <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
-<span class="fu">raster</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/raster/man/projection.html">crs</a></span><span class="op">(</span><span class="va">iso_sp</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu">raster</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/raster/man/projection.html">crs</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span></code></pre></div>
+<span class="va">iso_sp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sf.html">st_sf</a></span><span class="op">(</span>
+  iso_oid <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">iso_results</span><span class="op">$</span><span class="va">iso_oid</span><span class="op">)</span>,
+  distance <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">iso_results</span><span class="op">$</span><span class="va">distance</span><span class="op">)</span>,
+  geometry <span class="op">=</span> <span class="va">polygons</span>,
+  crs <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html">st_crs</a></span><span class="op">(</span><span class="va">iso_results</span><span class="op">)</span>
+<span class="op">)</span></code></pre></div>
 <p>We can now map the obtained polygons.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># creating a factor and changing order for better vizualisation</span>
-<span class="va">iso_sp</span><span class="op">$</span><span class="va">fac_dist</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/raster/man/factor.html">as.factor</a></span><span class="op">(</span><span class="va">iso_sp</span><span class="op">$</span><span class="va">distance</span><span class="op">)</span>
+<span class="va">iso_sp</span><span class="op">$</span><span class="va">fac_dist</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">as.factor</a></span><span class="op">(</span><span class="va">iso_sp</span><span class="op">$</span><span class="va">distance</span><span class="op">)</span>
 <span class="va">iso_sp</span> <span class="op">&lt;-</span> <span class="va">iso_sp</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span><span class="op">*</span><span class="va">iso_sp</span><span class="op">$</span><span class="va">distance</span><span class="op">)</span>,<span class="op">]</span>
 
 <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">iso_results</span><span class="op">)</span> <span class="op">+</span> 
@@ -225,17 +230,14 @@
   <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">df_center</span><span class="op">)</span> <span class="op">+</span> 
   <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_symbols.html">tm_dots</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"black"</span>, size <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></code></pre></div>
 <p><img src="Isochrones_files/figure-html/unnamed-chunk-5-1.png" width="700"></p>
-<p>This is more similar to classical isochrone maps. Another possible enhancement would be to simplify and smooth the limits of the polygons. To do so, we will use the functions <code>gSimplify</code> from <strong>rgeos</strong> and <code>smooth</code> from <code>smoothr</code>.</p>
+<p>This is more similar to classical isochrone maps. Another possible enhancement would be to simplify and smooth the limits of the polygons. To do so, we will use the functions <code>st_simplify</code> from <code>sf</code> and <code>smooth</code> from <code>smoothr</code>.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://strimas.com/smoothr/">smoothr</a></span><span class="op">)</span>
 
-<span class="va">simple_polygons</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/rgeos/man/topo-unary-gSimplify.html">gSimplify</a></span><span class="op">(</span><span class="va">iso_sp</span>, tol <span class="op">=</span> <span class="fl">50</span><span class="op">)</span>
-<span class="va">smoothed_polygons</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://strimas.com/smoothr/reference/smooth.html">smooth</a></span><span class="op">(</span><span class="va">simple_polygons</span>, method <span class="op">=</span> <span class="st">"chaikin"</span>, 
+<span class="va">simple_polygons</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_unary.html">st_simplify</a></span><span class="op">(</span><span class="va">iso_sp</span>, dTolerance <span class="op">=</span> <span class="fl">50</span><span class="op">)</span>
+<span class="va">smooth_iso</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://strimas.com/smoothr/reference/smooth.html">smooth</a></span><span class="op">(</span><span class="va">simple_polygons</span>, method <span class="op">=</span> <span class="st">"chaikin"</span>, 
                             refinements <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>
 
-<span class="va">smooth_iso</span> <span class="op">&lt;-</span> <span class="fu">sp</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/sp/man/SpatialPolygons.html">SpatialPolygonsDataFrame</a></span><span class="op">(</span><span class="va">smoothed_polygons</span>,
-                                           <span class="va">iso_sp</span><span class="op">@</span><span class="va">data</span>,
-                                           match.ID <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">iso_results</span><span class="op">)</span> <span class="op">+</span> 
   <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_lines.html">tm_lines</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"black"</span><span class="op">)</span><span class="op">+</span>
   <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">smooth_iso</span><span class="op">)</span> <span class="op">+</span>
