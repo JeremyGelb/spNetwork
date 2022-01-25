@@ -25,7 +25,9 @@
 
 * An error was raised when points were sharing the exact same locations in the function *network_knn*. It has been corrected an a warning was added to clarify the situation.
 
-* A clearer error message is now raised when multiple geometries are passed to the  *nkde* and *nkde.mc* functions. 
+* A clearer error message is now raised when multiple geometries are passed to the  *nkde* and *nkde.mc* functions.
+
+* When using the discontinuous NKDE, NA values were returned if an event was located exactly at the extremity of an edge with no connexions. This has been corrected.
 
 # spNetwork 0.2.1
 

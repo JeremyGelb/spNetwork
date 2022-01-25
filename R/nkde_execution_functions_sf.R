@@ -1116,7 +1116,11 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, tri
 
   events$bw <- bws
   max_bw <- max(bws)
+
   ## step3 splitting the dataset with each rectangle
+  if(verbose){
+    print("Splitting the data with the spatial grid ...")
+  }
   selections <- split_by_grid(grid,samples,events,lines,max_bw, tol, digits)
 
   ## step 4 calculating the values

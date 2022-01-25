@@ -334,6 +334,9 @@ bw_cv_likelihood_calc <- function(bw_range,bw_step,lines, events, w, kernel_name
   max_bw <- max(bw_range)
 
   ## step3 splitting the dataset with each rectangle
+  if(verbose){
+    print("Splittig the dataset within the grid ...")
+  }
   # NB : here we select the events in the quadra (samples) and the events locations in the buffer (events_loc)
   selections <- split_by_grid(grid, events, events_loc, lines,max_bw, tol, digits, split_all = FALSE)
 
@@ -371,7 +374,6 @@ bw_cv_likelihood_calc <- function(bw_range,bw_step,lines, events, w, kernel_name
                                   kernel_name, all_bws,
                                   method, div, digits,
                                   tol,sparse, max_depth, verbose)
-
 
     if(verbose){
       setTxtProgressBar(pb, i)
@@ -641,6 +643,10 @@ nkde_worker_bw_sel <- function(lines, quad_events, events_loc, events, w, kernel
   ## step3 starting the calculations !
   neighbour_list <- adjacent_vertices(graph,nodes$id,mode="out")
   neighbour_list <- lapply(neighbour_list,function(x){return (as.numeric(x))})
+
+  if(nrow(events2) == 1){
+    w <- matrix(w, ncol = length(bws_net))
+  }
 
   kernel_values <- spNetwork::nkde_get_loo_values(method,
                                         neighbour_list,

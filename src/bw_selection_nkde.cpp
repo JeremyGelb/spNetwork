@@ -167,7 +167,6 @@ arma::mat esd_kernel_loo_nkde(fptros kernel_func, arma::sp_mat& edge_mat,
     double alpha = cas["alpha"];
     int prev_node = cas["prev_node"];
 
-
     //step1 : find all the neighbours
     IntegerVector neighbours = neighbour_list[v-1];
 
@@ -184,6 +183,8 @@ arma::mat esd_kernel_loo_nkde(fptros kernel_func, arma::sp_mat& edge_mat,
     double new_alpha;
     if((prev_node < 0)  && (cnt_n > 2)){
       new_alpha = 2.0/(cnt_n);
+    }else if((prev_node < 0)  && (cnt_n == 1)){
+      new_alpha = 1;
     }else{
       new_alpha = alpha * (1.0/(cnt_n-1.0));
     }
@@ -416,7 +417,6 @@ arma::colvec nkde_get_loo_values(std::string method, List neighbour_list,
   //step2 : iterer sur chaque event de la zone d'etude
   int cnt_e = events.length()-1;
   for(int i=0; i <= cnt_e; ++i){
-    //Rcout << "Iterating on event "<<i<<"\n";
     //preparer les differentes valeurs de departs pour l'event y
     int y = events[i];
     int wid = events_wid[i];
@@ -442,6 +442,9 @@ arma::colvec nkde_get_loo_values(std::string method, List neighbour_list,
                                bws_net,
                                line_weights, max_depth);
     }
+    // error at observation 33
+    //Rcout << "Here is the k vector value : \n\n" << k <<"\n\n";
+    //Rcout << "for the observation : \n\n" << i <<"\n\n";
     // NOTE : the scaling by bws is applied above
     // and we must now add the weight of the event
     // this weight can change according to the bw

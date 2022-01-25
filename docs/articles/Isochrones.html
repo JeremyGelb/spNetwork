@@ -19,6 +19,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -31,18 +33,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.0.9000</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="../index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
@@ -82,7 +78,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/JeremyGelb/spNetwork/">
+  <a href="https://github.com/JeremyGelb/spNetwork/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -97,150 +93,150 @@
 
       
 
-      </header><script src="Isochrones_files/header-attrs-2.11/header-attrs.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Calculating isochrones</h1>
-                        <h4 class="author">Jeremy Gelb</h4>
+                        <h4 data-toc-skip class="author">Jeremy Gelb</h4>
             
-            <h4 class="date">2021-12-29</h4>
+            <h4 data-toc-skip class="date">2022-01-25</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/JeremyGelb/spNetwork/blob/master/vignettes/Isochrones.Rmd"><code>vignettes/Isochrones.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/JeremyGelb/spNetwork/blob/HEAD/vignettes/Isochrones.Rmd" class="external-link"><code>vignettes/Isochrones.Rmd</code></a></small>
       <div class="hidden name"><code>Isochrones.Rmd</code></div>
 
     </div>
 
     
     
-<div id="introduction" class="section level1">
-<h1 class="hasAnchor">
-<a href="#introduction" class="anchor"></a>Introduction</h1>
+<div class="section level2">
+<h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
+</h2>
 <p>An isochrone is a geometrical representation of the area that can be reached for a starting on a network within a given distance (in time or space units).</p>
 <p>There are already several libraries to build isochrones with R (<code>opentripplanner</code>, <code>osrm</code>, <code>rmapzen</code>, etc.), but they are all based on OpenStreetMap data or on external API. We propose here a simple implementation that can be used on a geographical network read as <em>SpatialLinesDataFrame</em>.</p>
 <p>We give here a simple example with the Montreal network dataset and calculate several isochrones from the centre of the dataset.</p>
 </div>
-<div id="calculating-the-isochrones" class="section level1">
-<h1 class="hasAnchor">
-<a href="#calculating-the-isochrones" class="anchor"></a>calculating the isochrones</h1>
+<div class="section level2">
+<h2 id="calculating-the-isochrones">calculating the isochrones<a class="anchor" aria-label="anchor" href="#calculating-the-isochrones"></a>
+</h2>
 <p>The first step is to load (or create) a geographical network and to have some starting points.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># first load data and packages</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/">sf</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://jeremygelb.github.io/spNetwork/">spNetwork</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mtennekes/tmap">tmap</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://jeremygelb.github.io/spNetwork/" class="external-link">spNetwork</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mtennekes/tmap" class="external-link">tmap</a></span><span class="op">)</span>
 
-<span class="va">networkgpkg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"networks.gpkg"</span>,
+<span class="va">networkgpkg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"networks.gpkg"</span>,
                            package <span class="op">=</span> <span class="st">"spNetwork"</span>, mustWork <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 
-<span class="va">mtl_network</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html">st_read</a></span><span class="op">(</span><span class="va">networkgpkg</span>,layer<span class="op">=</span><span class="st">"mtl_network"</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+<span class="va">mtl_network</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">st_read</a></span><span class="op">(</span><span class="va">networkgpkg</span>,layer<span class="op">=</span><span class="st">"mtl_network"</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 
 <span class="co"># calculating the length of each segment</span>
-<span class="va">mtl_network</span><span class="op">$</span><span class="va">length</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_measures.html">st_length</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span><span class="op">)</span>
+<span class="va">mtl_network</span><span class="op">$</span><span class="va">length</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_measures.html" class="external-link">st_length</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span><span class="op">)</span>
 
 <span class="co"># extracting the coordinates in one matrix</span>
-<span class="va">coords</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_coordinates.html">st_coordinates</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span>
-<span class="va">center</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html">colMeans</a></span><span class="op">(</span><span class="va">coords</span><span class="op">)</span>
-<span class="va">df_center</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span><span class="st">"OID"</span> <span class="op">=</span> <span class="fl">1</span>,
+<span class="va">coords</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_coordinates.html" class="external-link">st_coordinates</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span>
+<span class="va">center</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colMeans</a></span><span class="op">(</span><span class="va">coords</span><span class="op">)</span>
+<span class="va">df_center</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="st">"OID"</span> <span class="op">=</span> <span class="fl">1</span>,
                         <span class="st">"x"</span> <span class="op">=</span> <span class="va">center</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,
                         <span class="st">"y"</span> <span class="op">=</span> <span class="va">center</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span>
-<span class="va">df_center</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op">(</span><span class="va">df_center</span>, coords <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"x"</span>,<span class="st">"y"</span><span class="op">)</span>, crs <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html">st_crs</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span><span class="op">)</span>
+<span class="va">df_center</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="va">df_center</span>, coords <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>,<span class="st">"y"</span><span class="op">)</span>, crs <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html" class="external-link">st_crs</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span><span class="op">)</span>
 
 <span class="co"># then plotting the data</span>
-<span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_lines.html">tm_lines</a></span><span class="op">(</span><span class="st">"black"</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">df_center</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_symbols.html">tm_dots</a></span><span class="op">(</span><span class="st">"red"</span>, size <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html" class="external-link">tm_shape</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_lines.html" class="external-link">tm_lines</a></span><span class="op">(</span><span class="st">"black"</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html" class="external-link">tm_shape</a></span><span class="op">(</span><span class="va">df_center</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_symbols.html" class="external-link">tm_dots</a></span><span class="op">(</span><span class="st">"red"</span>, size <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></code></pre></div>
 <p><img src="Isochrones_files/figure-html/unnamed-chunk-1-1.png" width="700"></p>
 <p>The second step is to calculate the isochrones with the function <code>calc_isochrones</code>. In this example, we use the length of a segment as the weight but other values could be used. We also consider that all the roads can be used in both directions (see parameter <code>direction</code>)</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">iso_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc_isochrones.html">calc_isochrones</a></span><span class="op">(</span>lines <span class="op">=</span> <span class="va">mtl_network</span>,
                                start_points <span class="op">=</span> <span class="va">df_center</span>,
-                               dists <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">500</span>,<span class="fl">1000</span>,<span class="fl">2000</span><span class="op">)</span>,
+                               dists <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">500</span>,<span class="fl">1000</span>,<span class="fl">2000</span><span class="op">)</span>,
                                weight <span class="op">=</span> <span class="st">"length"</span>
                                <span class="op">)</span></code></pre></div>
 <p>The results are reported as lines, which can be mapped.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># creating a factor and changing order for better vizualisation</span>
-<span class="va">iso_results</span><span class="op">$</span><span class="va">fac_dist</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">as.factor</a></span><span class="op">(</span><span class="va">iso_results</span><span class="op">$</span><span class="va">distance</span><span class="op">)</span>
-<span class="va">iso_results</span> <span class="op">&lt;-</span> <span class="va">iso_results</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span><span class="op">*</span><span class="va">iso_results</span><span class="op">$</span><span class="va">distance</span><span class="op">)</span>,<span class="op">]</span>
+<span class="va">iso_results</span><span class="op">$</span><span class="va">fac_dist</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">iso_results</span><span class="op">$</span><span class="va">distance</span><span class="op">)</span>
+<span class="va">iso_results</span> <span class="op">&lt;-</span> <span class="va">iso_results</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span><span class="op">*</span><span class="va">iso_results</span><span class="op">$</span><span class="va">distance</span><span class="op">)</span>,<span class="op">]</span>
 
-<span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_lines.html">tm_lines</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"grey"</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">iso_results</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_lines.html">tm_lines</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"fac_dist"</span>,title.col <span class="op">=</span> <span class="st">"distance (m)"</span>,
-           palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"500"</span><span class="op">=</span><span class="st">"#005f73"</span>, <span class="st">"1000"</span><span class="op">=</span><span class="st">"#ca6702"</span>, <span class="st">"2000"</span><span class="op">=</span><span class="st">"#9b2226"</span><span class="op">)</span><span class="op">)</span><span class="op">+</span>
-  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_layout.html">tm_layout</a></span><span class="op">(</span>legend.outside <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">df_center</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_symbols.html">tm_dots</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"black"</span>, size <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html" class="external-link">tm_shape</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_lines.html" class="external-link">tm_lines</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"grey"</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html" class="external-link">tm_shape</a></span><span class="op">(</span><span class="va">iso_results</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_lines.html" class="external-link">tm_lines</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"fac_dist"</span>,title.col <span class="op">=</span> <span class="st">"distance (m)"</span>,
+           palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"500"</span><span class="op">=</span><span class="st">"#005f73"</span>, <span class="st">"1000"</span><span class="op">=</span><span class="st">"#ca6702"</span>, <span class="st">"2000"</span><span class="op">=</span><span class="st">"#9b2226"</span><span class="op">)</span><span class="op">)</span><span class="op">+</span>
+  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_layout.html" class="external-link">tm_layout</a></span><span class="op">(</span>legend.outside <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html" class="external-link">tm_shape</a></span><span class="op">(</span><span class="va">df_center</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_symbols.html" class="external-link">tm_dots</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"black"</span>, size <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></code></pre></div>
 <p><img src="Isochrones_files/figure-html/unnamed-chunk-3-1.png" width="700"></p>
 </div>
-<div id="from-lines-to-polygons" class="section level1">
-<h1 class="hasAnchor">
-<a href="#from-lines-to-polygons" class="anchor"></a>From lines to polygons</h1>
+<div class="section level2">
+<h2 id="from-lines-to-polygons">From lines to polygons<a class="anchor" aria-label="anchor" href="#from-lines-to-polygons"></a>
+</h2>
 <p>The lines are the most exact form of an isochrone because they depict exactly what parts of the network can be reached. However, isochrones are represented as polygons most of the time. We propose here some approaches to build some meaningful polygons for isochrones.</p>
 <p>The best starting point is probably to calculate for each set of points a concave hull. This is different from the traditional convex hull and is more adapted to the irregular geometry of an isochrone. To do so, we use the library <code>concaveman</code></p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://joelgombin.github.io/concaveman/">concaveman</a></span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://joelgombin.github.io/concaveman/" class="external-link">concaveman</a></span><span class="op">)</span>
 
 <span class="co"># identifying each isochrone</span>
-<span class="va">iso_results</span><span class="op">$</span><span class="va">iso_oid</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="va">iso_results</span><span class="op">$</span><span class="va">point_id</span>,
+<span class="va">iso_results</span><span class="op">$</span><span class="va">iso_oid</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">iso_results</span><span class="op">$</span><span class="va">point_id</span>,
                              <span class="va">iso_results</span><span class="op">$</span><span class="va">distance</span>,
                              sep <span class="op">=</span> <span class="st">"_"</span><span class="op">)</span>
 
 <span class="co"># creating the polygons for each isochrone</span>
-<span class="va">polygons</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">iso_results</span><span class="op">$</span><span class="va">iso_oid</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">oid</span><span class="op">)</span><span class="op">{</span>
+<span class="va">polygons</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">iso_results</span><span class="op">$</span><span class="va">iso_oid</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">oid</span><span class="op">)</span><span class="op">{</span>
   
   <span class="co"># subseting the required lines</span>
-  <span class="va">lines</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html">subset</a></span><span class="op">(</span><span class="va">iso_results</span>, <span class="va">iso_results</span><span class="op">$</span><span class="va">iso_oid</span> <span class="op">==</span> <span class="va">oid</span><span class="op">)</span>
+  <span class="va">lines</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">iso_results</span>, <span class="va">iso_results</span><span class="op">$</span><span class="va">iso_oid</span> <span class="op">==</span> <span class="va">oid</span><span class="op">)</span>
   
   <span class="co"># extracting the coordinates of the lines</span>
-  <span class="va">coords</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_coordinates.html">st_coordinates</a></span><span class="op">(</span><span class="va">lines</span><span class="op">)</span>
-  <span class="va">poly_coords</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://joelgombin.github.io/concaveman/reference/concaveman.html">concaveman</a></span><span class="op">(</span>points <span class="op">=</span> <span class="va">coords</span>, concavity <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>
-  <span class="va">poly</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html">st_polygon</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="va">poly_coords</span><span class="op">[</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>
-  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">poly</span><span class="op">)</span>
+  <span class="va">coords</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_coordinates.html" class="external-link">st_coordinates</a></span><span class="op">(</span><span class="va">lines</span><span class="op">)</span>
+  <span class="va">poly_coords</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://joelgombin.github.io/concaveman/reference/concaveman.html" class="external-link">concaveman</a></span><span class="op">(</span>points <span class="op">=</span> <span class="va">coords</span>, concavity <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>
+  <span class="va">poly</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_polygon</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">poly_coords</span><span class="op">[</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>
+  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">poly</span><span class="op">)</span>
 <span class="op">}</span><span class="op">)</span>
 
 <span class="co"># creating a SpatialPolygonsDataFrame</span>
-<span class="va">iso_sp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sf.html">st_sf</a></span><span class="op">(</span>
-  iso_oid <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">iso_results</span><span class="op">$</span><span class="va">iso_oid</span><span class="op">)</span>,
-  distance <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">iso_results</span><span class="op">$</span><span class="va">distance</span><span class="op">)</span>,
+<span class="va">iso_sp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sf.html" class="external-link">st_sf</a></span><span class="op">(</span>
+  iso_oid <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">iso_results</span><span class="op">$</span><span class="va">iso_oid</span><span class="op">)</span>,
+  distance <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">iso_results</span><span class="op">$</span><span class="va">distance</span><span class="op">)</span>,
   geometry <span class="op">=</span> <span class="va">polygons</span>,
-  crs <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html">st_crs</a></span><span class="op">(</span><span class="va">iso_results</span><span class="op">)</span>
+  crs <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html" class="external-link">st_crs</a></span><span class="op">(</span><span class="va">iso_results</span><span class="op">)</span>
 <span class="op">)</span></code></pre></div>
 <p>We can now map the obtained polygons.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># creating a factor and changing order for better vizualisation</span>
-<span class="va">iso_sp</span><span class="op">$</span><span class="va">fac_dist</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">as.factor</a></span><span class="op">(</span><span class="va">iso_sp</span><span class="op">$</span><span class="va">distance</span><span class="op">)</span>
-<span class="va">iso_sp</span> <span class="op">&lt;-</span> <span class="va">iso_sp</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span><span class="op">*</span><span class="va">iso_sp</span><span class="op">$</span><span class="va">distance</span><span class="op">)</span>,<span class="op">]</span>
+<span class="va">iso_sp</span><span class="op">$</span><span class="va">fac_dist</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">iso_sp</span><span class="op">$</span><span class="va">distance</span><span class="op">)</span>
+<span class="va">iso_sp</span> <span class="op">&lt;-</span> <span class="va">iso_sp</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span><span class="op">*</span><span class="va">iso_sp</span><span class="op">$</span><span class="va">distance</span><span class="op">)</span>,<span class="op">]</span>
 
-<span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">iso_results</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_lines.html">tm_lines</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"black"</span><span class="op">)</span><span class="op">+</span>
-  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">iso_sp</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_polygons</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"fac_dist"</span>,title.col <span class="op">=</span> <span class="st">"distance (m)"</span>,
-           palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"500"</span><span class="op">=</span><span class="st">"#005f73"</span>, <span class="st">"1000"</span><span class="op">=</span><span class="st">"#ca6702"</span>, <span class="st">"2000"</span><span class="op">=</span><span class="st">"#9b2226"</span><span class="op">)</span>,
+<span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html" class="external-link">tm_shape</a></span><span class="op">(</span><span class="va">iso_results</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_lines.html" class="external-link">tm_lines</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"black"</span><span class="op">)</span><span class="op">+</span>
+  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html" class="external-link">tm_shape</a></span><span class="op">(</span><span class="va">iso_sp</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html" class="external-link">tm_polygons</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"fac_dist"</span>,title.col <span class="op">=</span> <span class="st">"distance (m)"</span>,
+           palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"500"</span><span class="op">=</span><span class="st">"#005f73"</span>, <span class="st">"1000"</span><span class="op">=</span><span class="st">"#ca6702"</span>, <span class="st">"2000"</span><span class="op">=</span><span class="st">"#9b2226"</span><span class="op">)</span>,
            alpha <span class="op">=</span> <span class="fl">0.6</span>, border.col <span class="op">=</span> <span class="st">"white"</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">df_center</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_symbols.html">tm_dots</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"black"</span>, size <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></code></pre></div>
+  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html" class="external-link">tm_shape</a></span><span class="op">(</span><span class="va">df_center</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_symbols.html" class="external-link">tm_dots</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"black"</span>, size <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></code></pre></div>
 <p><img src="Isochrones_files/figure-html/unnamed-chunk-5-1.png" width="700"></p>
 <p>This is more similar to classical isochrone maps. Another possible enhancement would be to simplify and smooth the limits of the polygons. To do so, we will use the functions <code>st_simplify</code> from <code>sf</code> and <code>smooth</code> from <code>smoothr</code>.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://strimas.com/smoothr/">smoothr</a></span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://strimas.com/smoothr/" class="external-link">smoothr</a></span><span class="op">)</span>
 
-<span class="va">simple_polygons</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_unary.html">st_simplify</a></span><span class="op">(</span><span class="va">iso_sp</span>, dTolerance <span class="op">=</span> <span class="fl">50</span><span class="op">)</span>
-<span class="va">smooth_iso</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://strimas.com/smoothr/reference/smooth.html">smooth</a></span><span class="op">(</span><span class="va">simple_polygons</span>, method <span class="op">=</span> <span class="st">"chaikin"</span>, 
+<span class="va">simple_polygons</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_unary.html" class="external-link">st_simplify</a></span><span class="op">(</span><span class="va">iso_sp</span>, dTolerance <span class="op">=</span> <span class="fl">50</span><span class="op">)</span>
+<span class="va">smooth_iso</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://strimas.com/smoothr/reference/smooth.html" class="external-link">smooth</a></span><span class="op">(</span><span class="va">simple_polygons</span>, method <span class="op">=</span> <span class="st">"chaikin"</span>, 
                             refinements <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>
 
-<span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">iso_results</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_lines.html">tm_lines</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"black"</span><span class="op">)</span><span class="op">+</span>
-  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">smooth_iso</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_polygons</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"fac_dist"</span>,
+<span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html" class="external-link">tm_shape</a></span><span class="op">(</span><span class="va">iso_results</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_lines.html" class="external-link">tm_lines</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"black"</span><span class="op">)</span><span class="op">+</span>
+  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html" class="external-link">tm_shape</a></span><span class="op">(</span><span class="va">smooth_iso</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html" class="external-link">tm_polygons</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"fac_dist"</span>,
            title.col <span class="op">=</span> <span class="st">"distance (m)"</span>,
-           palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"500"</span><span class="op">=</span><span class="st">"#005f73"</span>, <span class="st">"1000"</span><span class="op">=</span><span class="st">"#ca6702"</span>, <span class="st">"2000"</span><span class="op">=</span><span class="st">"#9b2226"</span><span class="op">)</span>,
+           palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"500"</span><span class="op">=</span><span class="st">"#005f73"</span>, <span class="st">"1000"</span><span class="op">=</span><span class="st">"#ca6702"</span>, <span class="st">"2000"</span><span class="op">=</span><span class="st">"#9b2226"</span><span class="op">)</span>,
            border.col <span class="op">=</span> <span class="st">"white"</span>,
            alpha <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">df_center</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_symbols.html">tm_dots</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"black"</span>, size <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_layout.html">tm_layout</a></span><span class="op">(</span>legend.outside <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html" class="external-link">tm_shape</a></span><span class="op">(</span><span class="va">df_center</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_symbols.html" class="external-link">tm_dots</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"black"</span>, size <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_layout.html" class="external-link">tm_layout</a></span><span class="op">(</span>legend.outside <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 <p><img src="Isochrones_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
 <p>The shapes are cleaner for mapping but the results are not exact anymore.</p>
 </div>
@@ -257,11 +253,13 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Jeremy Gelb.</p>
+  <p></p>
+<p>Developed by Jeremy Gelb.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
 </div>
 
       </footer>
@@ -269,6 +267,8 @@
 
   
 
+
+  
 
   </body>
 </html>

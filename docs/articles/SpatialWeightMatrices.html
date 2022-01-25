@@ -19,6 +19,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -31,18 +33,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.0.9000</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="../index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
@@ -82,7 +78,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/JeremyGelb/spNetwork/">
+  <a href="https://github.com/JeremyGelb/spNetwork/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -97,15 +93,15 @@
 
       
 
-      </header><script src="SpatialWeightMatrices_files/header-attrs-2.11/header-attrs.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Spatial Weight Matrices</h1>
-                        <h4 class="author">Jeremy Gelb</h4>
+                        <h4 data-toc-skip class="author">Jeremy Gelb</h4>
             
-            <h4 class="date">2021-12-29</h4>
+            <h4 data-toc-skip class="date">2022-01-25</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/JeremyGelb/spNetwork/blob/master/vignettes/SpatialWeightMatrices.Rmd"><code>vignettes/SpatialWeightMatrices.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/JeremyGelb/spNetwork/blob/HEAD/vignettes/SpatialWeightMatrices.Rmd" class="external-link"><code>vignettes/SpatialWeightMatrices.Rmd</code></a></small>
       <div class="hidden name"><code>SpatialWeightMatrices.Rmd</code></div>
 
     </div>
@@ -113,9 +109,9 @@
     
     
 <p>This vignette is a short introduction to the spatial weight matrices feature of the <strong>spNetwork</strong> package.</p>
-<div id="quick-introduction-to-spatial-weight-matrices" class="section level1">
-<h1 class="hasAnchor">
-<a href="#quick-introduction-to-spatial-weight-matrices" class="anchor"></a>Quick introduction to spatial weight matrices</h1>
+<div class="section level2">
+<h2 id="quick-introduction-to-spatial-weight-matrices">Quick introduction to spatial weight matrices<a class="anchor" aria-label="anchor" href="#quick-introduction-to-spatial-weight-matrices"></a>
+</h2>
 <p>A vast number of spatial analysis methods are based on a spatial matrix W<sub>ij</sub> of size <em>n</em> x <em>n</em> with <em>i</em> an observation and <em>j</em> the neighbours of that observation. W<sub>ij</sub> represents the degree of spatial relationship between <em>i</em> and <em>j</em>.</p>
 <p>Classically one can define :</p>
 <ul>
@@ -128,36 +124,36 @@
 <p><strong>spNetwork</strong> makes it possible to create <code>listw</code> objects based on network distance. Let us give an example here: calculating the Moran autocorrelation index for the number of bike accidents recorded on the Montreal road network in 2016.</p>
 <p>First, we want to load data:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span><span class="op">(</span><span class="st">"rgdal_show_exportToProj4_warnings"</span><span class="op">=</span><span class="st">"none"</span><span class="op">)</span>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span><span class="st">"rgdal_show_exportToProj4_warnings"</span><span class="op">=</span><span class="st">"none"</span><span class="op">)</span>
 
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://jeremygelb.github.io/spNetwork/">spNetwork</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/">sf</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-spatial/spdep/">spdep</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://jeremygelb.github.io/spNetwork/" class="external-link">spNetwork</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-spatial/spdep/" class="external-link">spdep</a></span><span class="op">)</span>
 
-<span class="va">networkgpkg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"networks.gpkg"</span>,
+<span class="va">networkgpkg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"networks.gpkg"</span>,
                            package <span class="op">=</span> <span class="st">"spNetwork"</span>, mustWork <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="va">eventsgpkg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"events.gpkg"</span>,
+<span class="va">eventsgpkg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"events.gpkg"</span>,
                           package <span class="op">=</span> <span class="st">"spNetwork"</span>, mustWork <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 
-<span class="va">mtl_network</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html">st_read</a></span><span class="op">(</span><span class="va">networkgpkg</span>,layer<span class="op">=</span><span class="st">"small_mtl_network"</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="va">bike_accidents</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html">st_read</a></span><span class="op">(</span><span class="va">eventsgpkg</span>,layer<span class="op">=</span><span class="st">"bike_accidents_small"</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<span class="va">mtl_network</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">st_read</a></span><span class="op">(</span><span class="va">networkgpkg</span>,layer<span class="op">=</span><span class="st">"small_mtl_network"</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+<span class="va">bike_accidents</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">st_read</a></span><span class="op">(</span><span class="va">eventsgpkg</span>,layer<span class="op">=</span><span class="st">"bike_accidents_small"</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 <p>then we want to split lines into lixels and calculate for each lixel the number of events on that lixel.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">lixels</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/lixelize_lines.html">lixelize_lines</a></span><span class="op">(</span><span class="va">mtl_network</span>,<span class="fl">200</span>,mindist <span class="op">=</span> <span class="fl">50</span><span class="op">)</span>
 
 <span class="co"># defining and oid for the lixels</span>
-<span class="va">lixels</span><span class="op">$</span><span class="va">oid</span> <span class="op">&lt;-</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">lixels</span><span class="op">)</span>
+<span class="va">lixels</span><span class="op">$</span><span class="va">oid</span> <span class="op">&lt;-</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">lixels</span><span class="op">)</span>
 
 <span class="co"># snapping the points on the lines and counting</span>
 <span class="va">snapped_acc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/snapPointsToLines2.html">snapPointsToLines2</a></span><span class="op">(</span><span class="va">bike_accidents</span>,<span class="va">lixels</span>, idField <span class="op">=</span><span class="st">"oid"</span><span class="op">)</span>
-<span class="va">counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="va">snapped_acc</span><span class="op">$</span><span class="va">nearest_line_id</span><span class="op">)</span>
-<span class="va">counts_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span><span class="st">"oid"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">counts</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,
-                        <span class="st">"count"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="va">counts</span><span class="op">)</span><span class="op">)</span>
+<span class="va">counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">snapped_acc</span><span class="op">$</span><span class="va">nearest_line_id</span><span class="op">)</span>
+<span class="va">counts_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="st">"oid"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">counts</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,
+                        <span class="st">"count"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">counts</span><span class="op">)</span><span class="op">)</span>
 
 <span class="co"># merging the results</span>
-<span class="va">lixels</span><span class="op">$</span><span class="va">nbAccident</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">lixels</span>,<span class="va">counts_df</span>, by<span class="op">=</span><span class="st">"oid"</span><span class="op">)</span><span class="op">$</span><span class="va">count</span>
-<span class="va">nbAccident</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">lixels</span><span class="op">$</span><span class="va">nbAccident</span><span class="op">)</span>,<span class="fl">0</span>,<span class="va">lixels</span><span class="op">$</span><span class="va">nbAccident</span><span class="op">)</span></code></pre></div>
+<span class="va">lixels</span><span class="op">$</span><span class="va">nbAccident</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">lixels</span>,<span class="va">counts_df</span>, by<span class="op">=</span><span class="st">"oid"</span><span class="op">)</span><span class="op">$</span><span class="va">count</span>
+<span class="va">nbAccident</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">lixels</span><span class="op">$</span><span class="va">nbAccident</span><span class="op">)</span>,<span class="fl">0</span>,<span class="va">lixels</span><span class="op">$</span><span class="va">nbAccident</span><span class="op">)</span></code></pre></div>
 <p>We use here the function <em>network_listw</em> the create a <code>listw</code> object representing the spatial weight matrix. The distances can be calculated from the centroids of the lixels, from the extremities of the lixels or from evenly spaced points on the lixels. We use here the second approach and specify it with the parameter <code>method = "ends"</code>.</p>
 <p>Let us consider that above 300 metres two segments are not neighbours anymore, and convert the distances between the observations into spatial weights by using the inverse of the squared distance.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
@@ -168,12 +164,12 @@
                            dist_func <span class="op">=</span> <span class="st">"squared inverse"</span>,
                            line_weight <span class="op">=</span> <span class="st">'length'</span>,
                            matrice_type <span class="op">=</span> <span class="st">'W'</span>,
-                           grid_shape <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span>,
+                           grid_shape <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span>,
                            verbose<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
 <p>With that matrix, we can calculate the Moran I for the number of accidents on a lixel.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">Test</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/spdep/man/moran.test.html">moran.test</a></span><span class="op">(</span><span class="va">nbAccident</span>, <span class="va">netlistw</span>, zero.policy <span class="op">=</span> <span class="cn">T</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">Test</span><span class="op">$</span><span class="va">estimate</span>,<span class="fl">4</span><span class="op">)</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">Test</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/spdep/reference/moran.test.html" class="external-link">moran.test</a></span><span class="op">(</span><span class="va">nbAccident</span>, <span class="va">netlistw</span>, zero.policy <span class="op">=</span> <span class="cn">T</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">Test</span><span class="op">$</span><span class="va">estimate</span>,<span class="fl">4</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt; Moran I statistic       Expectation          Variance </span>
 <span class="co">#&gt;            0.0051           -0.0008            0.0003</span></code></pre></div>
 <p>The autocorrelation is weak, this is due to the large distance used and the fact that the analyzed variable is a counting variable (number of accidents). Indeed, the Moran I is supposed to be used on continuous variables.</p>
@@ -181,9 +177,9 @@
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">my_conv_func</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">{</span>
   <span class="kw">if</span> <span class="op">(</span><span class="va">x</span><span class="op">&gt;=</span><span class="fl">300</span><span class="op">)</span><span class="op">{</span>
-    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>
+    <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>
   <span class="op">}</span><span class="kw">else</span><span class="op">{</span>
-    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="va">x</span><span class="op">**</span><span class="fl">3</span><span class="op">)</span>
+    <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="va">x</span><span class="op">**</span><span class="fl">3</span><span class="op">)</span>
   <span class="op">}</span>
 <span class="op">}</span>
 
@@ -194,12 +190,12 @@
                              dist_func <span class="op">=</span> <span class="va">my_conv_func</span>,
                              line_weight <span class="op">=</span> <span class="st">'length'</span>,
                              matrice_type <span class="op">=</span> <span class="st">'W'</span>,
-                             grid_shape <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span>,
+                             grid_shape <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span>,
                              verbose<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
 <p>To speed up calculation, one could use a multiprocessing plan defined with the package ‘future’. To do so, the study area is divided into rectangles (according to the parameter <em>grid_shape</em>), and each rectangle is treated separately. A buffer is applied around the rectangles to avoid edge effects.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># setting the multiprocess plan</span>
-<span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html">plan</a></span><span class="op">(</span><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/multisession.html">multisession</a></span><span class="op">(</span>workers<span class="op">=</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span>
+<span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/multisession.html" class="external-link">multisession</a></span><span class="op">(</span>workers<span class="op">=</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span>
 
 <span class="va">netlistw3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/network_listw.mc.html">network_listw.mc</a></span><span class="op">(</span><span class="va">lixels</span>,<span class="va">lixels</span>,
                              method <span class="op">=</span> <span class="st">"ends"</span>,
@@ -208,14 +204,14 @@
                              dist_func <span class="op">=</span> <span class="va">my_conv_func</span>,
                              line_weight <span class="op">=</span> <span class="st">'length'</span>,
                              matrice_type <span class="op">=</span> <span class="st">'W'</span>,
-                             grid_shape <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span>,
+                             grid_shape <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span>,
                              verbose<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span>
 
-<span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/class.html">inherits</a></span><span class="op">(</span><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html">plan</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"sequential"</span><span class="op">)</span><span class="op">)</span> <span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html">plan</a></span><span class="op">(</span><span class="fu">future</span><span class="fu">::</span><span class="va"><a href="https://future.futureverse.org/reference/sequential.html">sequential</a></span><span class="op">)</span></code></pre></div>
+<span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">inherits</a></span><span class="op">(</span><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"sequential"</span><span class="op">)</span><span class="op">)</span> <span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="fu">future</span><span class="fu">::</span><span class="va"><a href="https://future.futureverse.org/reference/sequential.html" class="external-link">sequential</a></span><span class="op">)</span></code></pre></div>
 </div>
-<div id="other-features" class="section level1">
-<h1 class="hasAnchor">
-<a href="#other-features" class="anchor"></a>Other features</h1>
+<div class="section level2">
+<h2 id="other-features">Other features<a class="anchor" aria-label="anchor" href="#other-features"></a>
+</h2>
 <ul>
 <li>A spatial matrix could be calculated for every type of geometries not only lines. Points can directly be used. For polygons, it is possible to use the centres of the geometries as starting points. One can also choose a distance and equally spaced starting points will be defined on the border of the polygons according to that distance.</li>
 <li>The cost of travelling on an edge could be set to something else than “length”.</li>
@@ -235,11 +231,13 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Jeremy Gelb.</p>
+  <p></p>
+<p>Developed by Jeremy Gelb.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
 </div>
 
       </footer>
@@ -247,6 +245,8 @@
 
   
 
+
+  
 
   </body>
 </html>

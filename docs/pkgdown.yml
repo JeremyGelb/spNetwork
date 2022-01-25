@@ -1,5 +1,5 @@
 pandoc: 2.14.0.3
-pkgdown: 1.6.1
+pkgdown: 2.0.2
 pkgdown_sha: ~
 articles:
   Isochrones: Isochrones.html
@@ -9,5 +9,5 @@ articles:
   NKDEdetailed: NKDEdetailed.html
   SpatialWeightMatrices: SpatialWeightMatrices.html
   TNKDE: TNKDE.html
-last_built: 2021-12-29T14:45Z
+last_built: 2022-01-25T19:44Z
 
