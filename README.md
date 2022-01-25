@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# spNetwork <img src='man/figures/spNetwork_logo.png' align="right" height="138.5" />
+# spNetwork <img src='man/figures/spNetwork_logo.png' align="right" style = 'height:138px;'/>
 
 ## A R package to perform spatial analysis on networks.
 
