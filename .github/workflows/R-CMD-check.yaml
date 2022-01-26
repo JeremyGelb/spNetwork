@@ -62,9 +62,16 @@ jobs:
           install.packages('remotes')
           remotes::install_github('rspatial/terra')
           remotes::install_github('rspatial/raster')
+        shell: Rscript {0}
+
+      - name: install Fonts on macOS
+        if: runner.os == 'macOS'
+        run: |
+          remotes::install_version("Rttf2pt1", version = "1.3.8")
           install.packages("extrafont")
           library(extrafont)
           font_import(prompt = FALSE)
+          loadfonts()
         shell: Rscript {0}
 
       - name: Query igraph for windows
@@ -103,6 +110,7 @@ jobs:
         run: |
           options(crayon.enabled = TRUE)
           extrafont::font_import(prompt = FALSE)
+          extrafont::loadfonts()
           rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "warning", check_dir = "check")
         shell: Rscript {0}
 
