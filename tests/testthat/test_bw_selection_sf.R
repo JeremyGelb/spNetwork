@@ -32,9 +32,8 @@ test_that("Testing the bw selection function with CV likelihood and simple kerne
   # the network distance between two points is 6
   s1 <- (quartic_kernel(6,10) + quartic_kernel(6,10)) *(1/10)
 
-  #so the CV likelihood is the sum for each point loo
-  #in other words, three times the sum of two kerneffect
-  total <- 3*log(s1)
+  #so the CV likelihood is the mean of the loo
+  total <- log(s1)
 
 
   #let us calculate the value with our function
@@ -51,8 +50,58 @@ test_that("Testing the bw selection function with CV likelihood and simple kerne
 })
 
 
+test_that("Testing the bw selection function with CV likelihood and simple kernel and a 0 density discarded", {
+  ## creating the simple situation
+
+  # start with de definition of some lines
+  wkt_lines <- c(
+    "LINESTRING (0 5, 0 0)",
+    "LINESTRING (-5 0, 0 0)",
+    "LINESTRING (0 -5, 0 0)",
+    "LINESTRING (5 0, 0 0)")
+
+  linesdf <- data.frame(wkt = wkt_lines,
+                        id = paste("l",1:length(wkt_lines),sep=""))
+
+  all_lines <- st_as_sf(linesdf, wkt = "wkt")
+
+  # definition of three events
+  event <- data.frame(x=c(0,3,0),
+                      y=c(3,0,-5),
+                      id = c(1,2,3))
+
+  event <- st_as_sf(event, coords = c("x","y"))
+
+
+  # we can admit a bw of 7 here
+  # the network distance between two points is 6
+  bw <- 7
+  s1 <- quartic_kernel(6,bw) *(1/bw)
+  s2 <- quartic_kernel(6,bw) *(1/bw)
+
+  # NOTE s3 is discared because too far
+
+  #so the CV likelihood is the mean of the loo
+  total <- (log(s1) + log(s2)) / 2
+
+
+  #let us calculate the value with our function
+  obs_value <- bw_cv_likelihood_calc(bw_range = c(6,8),1,
+                                     lines = all_lines,
+                                     events = event, w = c(1,1,1),
+                                     check = F,
+                                     kernel_name = "quartic",
+                                     method = "simple",
+                                     digits = 1, zero_strat = "remove",
+                                     agg = NULL, verbose = F,tol = 0.00001
+  )
+  expect_equal(obs_value[2,2], total)
+})
+
+
 
 test_that("Testing the bw selection function with CV likelihood and discontinuous kernel", {
+
   ## creating the simple situation
   # start with de definition of some lines
   wkt_lines <- c(
@@ -81,7 +130,7 @@ test_that("Testing the bw selection function with CV likelihood and discontinuou
 
   #so the CV likelihood is the sum for each point loo
   #in other words, three times the sum of two kerneffect
-  total <- 3*log(s1)
+  total <- log(s1)
 
 
   #let us calculate the value with our function
@@ -131,7 +180,7 @@ test_that("Testing the bw selection function with CV likelihood and continuous k
 
   #so the CV likelihood is the sum for each point loo
   #in other words, three times the sum of two kerneffect
-  total <- 3*log(s1)
+  total <- log(s1)
 
 
   #let us calculate the value with our function
@@ -205,7 +254,7 @@ test_that("Testing the bw selection function with CV likelihood and continuous k
 
   #so the CV likelihood is the sum for each point loo
   #in other words, three times the sum of two kerneffect
-  total <- loo1 + loo2 + loo3
+  total <- (loo1 + loo2 + loo3) / 3
 
 
   #let us calculate the value with our function

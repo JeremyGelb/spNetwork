@@ -15,6 +15,7 @@ tnkde(
   bw_net,
   bw_time,
   adaptive = FALSE,
+  adaptive_separate = TRUE,
   trim_bw_net = NULL,
   trim_bw_time = NULL,
   method,
@@ -39,7 +40,8 @@ geometries must be simple Linestrings (may crash if some geometries
 \item{events}{events A feature collection of points representing the events on the
 network. The points will be snapped on the network to their closest line.}
 
-\item{time_field}{The name of the field in events indicating when the events occurred. It must be a numeric field}
+\item{time_field}{The name of the field in events indicating when the events
+occurred. It must be a numeric field}
 
 \item{w}{A vector representing the weight of each event}
 
@@ -51,12 +53,19 @@ which the densities will be estimated.}
 \item{kernel_name}{The name of the kernel to use. Must be one of triangle,
 gaussian, tricube, cosine ,triweight, quartic, epanechnikov or uniform.}
 
-\item{bw_net}{The network kernel bandwidth (using the scale of the lines)}
+\item{bw_net}{The network kernel bandwidth (using the scale of the lines),
+can be a single float or a numeric vector if a different bandwidth must be
+used for each event.}
 
-\item{bw_time}{The time kernel bandwidth}
+\item{bw_time}{The time kernel bandwidth, can be a single float or a numeric
+vector if a different bandwidth must be used for each event.}
 
-\item{adaptive}{A Boolean, indicating if an adaptive bandwidth must be
-used. Both spatial and temporal bandwidths are adapted but separately.}
+\item{adaptive}{A Boolean, indicating if an adaptive bandwidth must be used.
+Both spatial and temporal bandwidths are adapted but separately.}
+
+\item{adaptive_separate}{A boolean indicating if the adaptive bandwidths
+for the time and the network dimensions must be calculated separately (TRUE) or in
+interaction (FALSE)}
 
 \item{trim_bw_net}{A float, indicating the maximum value for the adaptive
 network bandwidth}
@@ -136,22 +145,31 @@ thus dnet(E,S) * dtime(E,S). If one of the two densities is 0, then the total
 density is 0 because the sampling point is out of the covered area by the
 event in time or in the network space.
 \cr\cr
+
 **adaptive bandwidth**\cr
 It is possible to use an adaptive bandwidth both on the network and in time.
 Adaptive bandwidths are calculated using the Abramson’s smoothing regimen
 \insertCite{abramson1982bandwidth}{spNetwork}. To do so, the original fixed
-bandwidths must be specified (bw_net and bw_time parameters). They are used
-to estimate the priory density at event locations and time, separately. These
-densities are then used to calculate local bandwidths. Isolated events in
-time or on the network will receive larger bandwidths. The maximum size of
-the two local bandwidths can be limited with the parameters trim_bw_net and
-trim_bw_time. #' \cr\cr **Diggle correction factor**\cr A set of events can
-be limited in both space (limits of the study area) and time ( beginning and
-ending of the data collection period). These limits induce lower densities at
-the border of the set of events, because they are not sampled outside the
-limits. It is possible to apply the Diggle correction factor
-\insertCite{diggle1985kernel}{spNetwork} in both the network and time spaces
-to minimize this effect.
+bandwidths must be specified (bw_net and bw_time parameters). There are two
+available methods. The first one (default) calculate the local bandwidth in
+space and time separately (adaptative_separate = FALSE). So, the network and
+temporal densities at each event location are calculate separately and used
+to calculate the local bandwidth. Isolated events on the network will obtain
+larger network bandwidth and isolated events in time will obtain larger time
+bandwidth. The second one calculate the temporal-network density at each
+event location and use it to adjust both bandwidths simultaneously. The
+second method will always leads to stronger variation in the local
+bandwidths. The maximum size of the two local bandwidths can be limited with
+the parameters trim_bw_net and trim_bw_time.
+\cr\cr
+
+**Diggle correction factor**\cr
+A set of events can be limited in both space (limits of the study
+area) and time ( beginning and ending of the data collection period). These
+limits induce lower densities at the border of the set of events, because
+they are not sampled outside the limits. It is possible to apply the Diggle
+correction factor \insertCite{diggle1985kernel}{spNetwork} in both the
+network and time spaces to minimize this effect.
 }
 \examples{
 \donttest{

@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.1.9000</span>
       </span>
     </div>
 
@@ -51,6 +51,9 @@
     </li>
     <li>
       <a href="../articles/TNKDE.html">Temporal Network Kernel Density Estimate</a>
+    </li>
+    <li>
+      <a href="../articles/web_vignettes/AdaptiveBW.html">K-nearest neighbour adaptive bandwidth</a>
     </li>
   </ul></li>
 <li>
@@ -86,9 +89,7 @@
   <span class="va">events</span>,
   <span class="va">samples</span>,
   <span class="va">samples_time</span>,
-  <span class="va">obw_net</span>,
   <span class="va">bws_net</span>,
-  <span class="va">obw_time</span>,
   <span class="va">bws_time</span>,
   <span class="va">kernel_func</span>,
   <span class="va">nodes</span>,
@@ -112,15 +113,9 @@ for each sample on which edge it is snapped.</p></dd>
 <dt>samples_time</dt>
 <dd><p>a numeric vector indicating when the densities must be
 sampled</p></dd>
-<dt>obw_net</dt>
-<dd><p>a float, the overall network bandwidth, used to standardize densities if
-div = "bw"</p></dd>
 <dt>bws_net</dt>
 <dd><p>a vector indicating the network kernel bandwidth (in meters) for each
 event</p></dd>
-<dt>obw_time</dt>
-<dd><p>a float, the overall time bandwidth, used to standardize densities if
-div = "bw"</p></dd>
 <dt>bws_time</dt>
 <dd><p>a vector indicating the time kernel bandwidth for each
 event</p></dd>

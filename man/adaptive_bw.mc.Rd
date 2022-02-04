@@ -49,7 +49,8 @@ lines}
 A vector with the local bandwidths
 }
 \description{
-Function to calculate Adaptive bandwidths according to Abramson’s smoothing regimen with multicore support
+Function to calculate Adaptive bandwidths according to
+  Abramson’s smoothing regimen with multicore support
 }
 \examples{
 #This is an internal function, no example provided

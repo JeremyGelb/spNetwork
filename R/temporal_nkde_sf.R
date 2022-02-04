@@ -18,12 +18,8 @@
 #' sampled
 #' @param bws_net a vector indicating the network kernel bandwidth (in meters) for each
 #' event
-#' @param obw_net a float, the overall network bandwidth, used to standardize densities if
-#' div = "bw"
 #' @param bws_time a vector indicating the time kernel bandwidth for each
 #' event
-#' @param obw_time a float, the overall time bandwidth, used to standardize densities if
-#' div = "bw"
 #' @param kernel_func a function obtained with the function select_kernel
 #' @param nodes a feature collection of points representing the nodes of the network
 #' @param edges a feature collection of linestrings representing the edges of the network
@@ -36,7 +32,7 @@
 #' @keywords internal
 #' @examples
 #' #This is an internal function, no example provided
-simple_tnkde <- function(graph, events, samples, samples_time, obw_net, bws_net, obw_time, bws_time, kernel_func, nodes, edges, div){
+simple_tnkde <- function(graph, events, samples, samples_time, bws_net, bws_time, kernel_func, nodes, edges, div){
 
   ## step 1 set all values to 0
   base_k <- matrix(0, nrow = nrow(samples), ncol = length(samples_time))
@@ -91,8 +87,8 @@ simple_tnkde <- function(graph, events, samples, samples_time, obw_net, bws_net,
 
     # applying the scaling if we are applying a bw scaling
     if(div == "bw"){
-      time_k <- time_k/obw_time
-      samples_k <- samples_k/obw_net
+      time_k <- time_k/bw_time
+      samples_k <- samples_k/bw_net
     }
 
     # creating the matrix of density values
@@ -219,9 +215,9 @@ tnkde_worker <- function(lines, events_loc, events, samples_loc, samples_time, k
     # the cas of the simple method, no c++ here
     kernel_func <- select_kernel(kernel_name)
     if(verbose){
-      values <- simple_tnkde(graph, events, samples_loc, samples_time, bw_net, bws_net, bw_time, bws_time, kernel_func, nodes, edges, div)
+      values <- simple_tnkde(graph, events, samples_loc, samples_time, bws_net, bws_time, kernel_func, nodes, edges, div)
     }else{
-      invisible(capture.output(values <- simple_tnkde(graph, events, samples_loc, samples_time, bw_net, bws_net, bw_time, bws_time, kernel_func, nodes, edges, div)))
+      invisible(capture.output(values <- simple_tnkde(graph, events, samples_loc, samples_time, bws_net, bws_time, kernel_func, nodes, edges, div)))
     }
 
   }else{
@@ -241,8 +237,8 @@ tnkde_worker <- function(lines, events_loc, events, samples_loc, samples_time, k
                                                               events_time = events$time,
                                                               samples = st_drop_geometry(samples_loc),
                                                               samples_time = samples_time,
-                                                              obw_net = bw_net, bws_net = bws_net,
-                                                              obw_time = bw_time, bws_time = bws_time,
+                                                              bws_net = bws_net,
+                                                              bws_time = bws_time,
                                                               kernel_name = kernel_name,
                                                               nodes = st_drop_geometry(nodes), line_list = graph_result$linelist,
                                                               max_depth = max_depth, verbose = verbose,
@@ -254,8 +250,8 @@ tnkde_worker <- function(lines, events_loc, events, samples_loc, samples_time, k
                                                        events_time = events$time,
                                                        samples = st_drop_geometry(samples_loc),
                                                        samples_time = samples_time,
-                                                       obw_net = bw_net, bws_net = bws_net,
-                                                       obw_time = bw_time, bws_time = bws_time,
+                                                       bws_net = bws_net,
+                                                       bws_time = bws_time,
                                                        kernel_name = kernel_name,
                                                        nodes = st_drop_geometry(nodes),
                                                        line_list = graph_result$linelist,
@@ -273,8 +269,8 @@ tnkde_worker <- function(lines, events_loc, events, samples_loc, samples_time, k
                                                                  events_time = events$time,
                                                                  samples = st_drop_geometry(samples_loc),
                                                                  samples_time = samples_time,
-                                                                 obw_net = bw_net, bws_net = bws_net,
-                                                                 obw_time = bw_time, bws_time = bws_time,
+                                                                 bws_net = bws_net,
+                                                                 bws_time = bws_time,
                                                                  kernel_name = kernel_name,
                                                                  nodes = st_drop_geometry(nodes),
                                                                  line_list = graph_result$linelist,
@@ -287,8 +283,8 @@ tnkde_worker <- function(lines, events_loc, events, samples_loc, samples_time, k
                                                           events_time = events$time,
                                                           samples = st_drop_geometry(samples_loc),
                                                           samples_time = samples_time,
-                                                          obw_net = bw_net, bws_net = bws_net,
-                                                          obw_time = bw_time, bws_time = bws_time,
+                                                          bws_net = bws_net,
+                                                          bws_time = bws_time,
                                                           kernel_name = kernel_name,
                                                           nodes = st_drop_geometry(nodes), line_list = graph_result$linelist,
                                                           max_depth = max_depth, verbose = verbose,
@@ -332,22 +328,31 @@ tnkde_worker <- function(lines, events_loc, events, samples_loc, samples_time, k
 #' density is 0 because the sampling point is out of the covered area by the
 #' event in time or in the network space.
 #' \cr\cr
+#'
 #' **adaptive bandwidth**\cr
 #' It is possible to use an adaptive bandwidth both on the network and in time.
 #' Adaptive bandwidths are calculated using the Abramson’s smoothing regimen
 #' \insertCite{abramson1982bandwidth}{spNetwork}. To do so, the original fixed
-#' bandwidths must be specified (bw_net and bw_time parameters). They are used
-#' to estimate the priory density at event locations and time, separately. These
-#' densities are then used to calculate local bandwidths. Isolated events in
-#' time or on the network will receive larger bandwidths. The maximum size of
-#' the two local bandwidths can be limited with the parameters trim_bw_net and
-#' trim_bw_time. #' \cr\cr **Diggle correction factor**\cr A set of events can
-#' be limited in both space (limits of the study area) and time ( beginning and
-#' ending of the data collection period). These limits induce lower densities at
-#' the border of the set of events, because they are not sampled outside the
-#' limits. It is possible to apply the Diggle correction factor
-#' \insertCite{diggle1985kernel}{spNetwork} in both the network and time spaces
-#' to minimize this effect.
+#' bandwidths must be specified (bw_net and bw_time parameters). There are two
+#' available methods. The first one (default) calculate the local bandwidth in
+#' space and time separately (adaptative_separate = FALSE). So, the network and
+#' temporal densities at each event location are calculate separately and used
+#' to calculate the local bandwidth. Isolated events on the network will obtain
+#' larger network bandwidth and isolated events in time will obtain larger time
+#' bandwidth. The second one calculate the temporal-network density at each
+#' event location and use it to adjust both bandwidths simultaneously. The
+#' second method will always leads to stronger variation in the local
+#' bandwidths. The maximum size of the two local bandwidths can be limited with
+#' the parameters trim_bw_net and trim_bw_time.
+#' \cr\cr
+#'
+#' **Diggle correction factor**\cr
+#' A set of events can be limited in both space (limits of the study
+#' area) and time ( beginning and ending of the data collection period). These
+#' limits induce lower densities at the border of the set of events, because
+#' they are not sampled outside the limits. It is possible to apply the Diggle
+#' correction factor \insertCite{diggle1985kernel}{spNetwork} in both the
+#' network and time spaces to minimize this effect.
 #'
 #' @template nkde_params-arg
 #' @template diggle_corr-arg
@@ -360,6 +365,9 @@ tnkde_worker <- function(lines, events_loc, events, samples_loc, samples_time, k
 #' @template sparse-arg
 #' @template check-arg
 #' @template verbose-arg
+#' @param adaptive_separate A boolean indicating if the adaptive bandwidths
+#'   for the time and the network dimensions must be calculated separately (TRUE) or in
+#'   interaction (FALSE)
 #' @export
 #' @examples
 #' \donttest{
@@ -396,7 +404,7 @@ tnkde_worker <- function(lines, events_loc, events, samples_loc, samples_time, k
 #'     agg = 15, grid_shape = c(1,1),
 #'     verbose  = FALSE)
 #'}
-tnkde <- function(lines, events, time_field, w, samples_loc, samples_time, kernel_name, bw_net, bw_time, adaptive=FALSE, trim_bw_net=NULL, trim_bw_time=NULL, method, div="bw", diggle_correction = FALSE, study_area = NULL, max_depth = 15, digits=5, tol=0.1, agg=NULL, sparse=TRUE, grid_shape=c(1,1), verbose=TRUE, check=TRUE){
+tnkde <- function(lines, events, time_field, w, samples_loc, samples_time, kernel_name, bw_net, bw_time, adaptive=FALSE, adaptive_separate = TRUE, trim_bw_net=NULL, trim_bw_time=NULL, method, div="bw", diggle_correction = FALSE, study_area = NULL, max_depth = 15, digits=5, tol=0.1, agg=NULL, sparse=TRUE, grid_shape=c(1,1), verbose=TRUE, check=TRUE){
 
   ## step0 basic checks
   if(verbose){
@@ -413,8 +421,12 @@ tnkde <- function(lines, events, time_field, w, samples_loc, samples_time, kerne
     stop("using the continuous NKDE and the gaussian kernel function can yield negative values for densities because the gaussian kernel does not integrate to 1 within the bandiwdth, please consider using the quartic kernel instead")
   }
 
-  if(bw_net<=0 | bw_time <= 0){
+  if(min(bw_net)<=0 | min(bw_time) <= 0){
     stop("the network and time bandwidths for the kernel must be superior to 0")
+  }
+
+  if(adaptive & (length(bw_net) > 1 | length(bw_time) > 1)){
+    stop("When adaptive is TRUE, only a global bandwidth must be given for bw_net and bw_time")
   }
 
   if(adaptive & (is.null(trim_bw_net) | is.null(trim_bw_time))){
@@ -428,6 +440,7 @@ tnkde <- function(lines, events, time_field, w, samples_loc, samples_time, kerne
   }
 
   events$time <- events[[time_field]]
+  events$wid <- 1:nrow(events)
 
 
   ## step1 : preparing the data
@@ -443,6 +456,8 @@ tnkde <- function(lines, events, time_field, w, samples_loc, samples_time, kerne
   samples_loc <- data$samples
   events_loc <- data$events
   events$weight <- w
+  events$bws_net <- bw_net
+  events$bws_time <- bw_time
 
   # I must find for each original event, which new location it matches (after aggregation)
   #idx <- FNN::knnx.index(st_coordinates(events_loc),st_coordinates(events), k = 1)
@@ -454,14 +469,24 @@ tnkde <- function(lines, events, time_field, w, samples_loc, samples_time, kerne
 
   ## adaptive bandwidth !
   if(adaptive==FALSE){
-    bws_net <- rep(bw_net,nrow(events))
-    bws_time <- rep(bw_time,nrow(events))
+    bws_net <- events$bws_net
+    bws_time <- events$bws_time
   }else{
-    ## we want to use an adaptive bw in the network space
-    bws_net <- adaptive_bw(grid, events_loc, lines, bw_net, trim_bw_net, method,
-                          kernel_name, max_depth, tol, digits, sparse, verbose)
-    ## and in the time space
-    bws_time <- adaptive_bw_1d(events$time, w, bw_time, kernel_name)
+    if(adaptive_separate == TRUE){
+      ## we want to use an adaptive bw in the network space
+      bws_net <- adaptive_bw(grid, events_loc, lines, bw_net, trim_bw_net, method,
+                             kernel_name, max_depth, tol, digits, sparse, verbose)
+      ## and in the time space
+      bws_time <- adaptive_bw_1d(events$time, w, bw_time, kernel_name)
+      bws_net <- bws_net[events$goid]
+    }else{
+      interaction_bws <- adaptive_bw_tnkde(grid, events_loc, events, lines,
+                                           bw_net, bw_time ,trim_bw_net, trim_bw_time,
+                                           method, kernel_name, max_depth, div,
+                                           tol, digits, sparse, verbose)
+      bws_time <- interaction_bws$bws_time
+      bws_net <- interaction_bws$bws_net
+    }
   }
 
   ## calculating the correction factor
@@ -478,7 +503,6 @@ tnkde <- function(lines, events, time_field, w, samples_loc, samples_time, kerne
     corr_factor <- rep(1,nrow(events))
   }
   ## duplicating the bws and correction factor if needed for aggregated events
-  bws_net <- bws_net[events$goid]
   corr_factor <- corr_factor[events$goid]
 
   events$weight <- events$weight * corr_factor
@@ -506,15 +530,15 @@ tnkde <- function(lines, events, time_field, w, samples_loc, samples_time, kerne
     # in selection we have the events location, but I also need the base events
     sel_events <- subset(events, events$goid %in% sel$events$goid)
 
-    # TODO : a nice tnkde worker function !
+    # nice tnkde worker function !
     values <- tnkde_worker(lines = sel$lines,
                           events_loc = sel$events,
                           events = sel_events,
                           samples_loc = sel$samples,
                           samples_time = samples_time,
                           kernel_name = kernel_name,
-                          bw_net = bw_net,
-                          bw_time = bw_time,
+                          bw_net = max(bw_net),
+                          bw_time = max(bw_time),
                           bws_net = sel_events$bw_net,
                           bws_time = sel_events$bw_time,
                           method = method,
@@ -571,6 +595,9 @@ tnkde <- function(lines, events, time_field, w, samples_loc, samples_time, kerne
 #' @template sparse-arg
 #' @template check-arg
 #' @template verbose-arg
+#' @param adaptive_separate A boolean indicating if the adaptive bandwidths
+#'   for the time and the network dimensions must be calculated separately (TRUE) or in
+#'   interaction (FALSE)
 #' @export
 #' @examples
 #' \donttest{
@@ -612,7 +639,7 @@ tnkde <- function(lines, events, time_field, w, samples_loc, samples_time, kerne
 #' ## make sure any open connections are closed afterward
 #' if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
 #'}
-tnkde.mc <- function(lines, events, time_field, w, samples_loc, samples_time, kernel_name, bw_net, bw_time, adaptive=FALSE, trim_bw_net=NULL, trim_bw_time=NULL, method, div="bw", diggle_correction = FALSE, study_area = NULL, max_depth = 15, digits=5, tol=0.1, agg=NULL, sparse=TRUE, grid_shape=c(1,1), verbose=TRUE, check=TRUE){
+tnkde.mc <- function(lines, events, time_field, w, samples_loc, samples_time, kernel_name, bw_net, bw_time, adaptive=FALSE, adaptive_separate = TRUE, trim_bw_net=NULL, trim_bw_time=NULL, method, div="bw", diggle_correction = FALSE, study_area = NULL, max_depth = 15, digits=5, tol=0.1, agg=NULL, sparse=TRUE, grid_shape=c(1,1), verbose=TRUE, check=TRUE){
 
   ## step0 basic checks
   if(verbose){
@@ -629,8 +656,12 @@ tnkde.mc <- function(lines, events, time_field, w, samples_loc, samples_time, ke
     stop("using the continuous NKDE and the gaussian kernel function can yield negative values for densities because the gaussian kernel does not integrate to 1 within the bandiwdth, please consider using the quartic kernel instead")
   }
 
-  if(bw_net<=0 | bw_time <= 0){
+  if(min(bw_net)<=0 | min(bw_time) <= 0){
     stop("the network and time bandwidths for the kernel must be superior to 0")
+  }
+
+  if(adaptive & (length(bw_net) > 1 | length(bw_time) > 1)){
+    stop("When adaptive is TRUE, only a global bandwidth must be given for bw_net and bw_time")
   }
 
   if(adaptive & (is.null(trim_bw_net) | is.null(trim_bw_time))){
@@ -644,7 +675,7 @@ tnkde.mc <- function(lines, events, time_field, w, samples_loc, samples_time, ke
   }
 
   events$time <- events[[time_field]]
-
+  events$wid <- 1:nrow(events)
 
   ## step1 : preparing the data
   if(verbose){
@@ -659,6 +690,8 @@ tnkde.mc <- function(lines, events, time_field, w, samples_loc, samples_time, ke
   samples_loc <- data$samples
   events_loc <- data$events
   events$weight <- w
+  events$bws_net <- bw_net
+  events$bws_time <- bw_time
 
   # I must find for each original event, which new location it matches (after aggregation)
   #idx <- FNN::knnx.index(st_coordinates(events_loc),st_coordinates(events), k = 1)
@@ -670,15 +703,26 @@ tnkde.mc <- function(lines, events, time_field, w, samples_loc, samples_time, ke
 
   ## adaptive bandwidth !
   if(adaptive==FALSE){
-    bws_net <- rep(bw_net,nrow(events))
-    bws_time <- rep(bw_time,nrow(events))
+    bws_net <- events$bws_net
+    bws_time <- events$bws_time
   }else{
-    ## we want to use an adaptive bw in the network space
-    bws_net <- adaptive_bw.mc(grid, events_loc, lines, bw_net, trim_bw_net, method,
-                           kernel_name, max_depth, tol, digits, sparse, verbose)
-    ## and in the time space
-    bws_time <- adaptive_bw_1d(events$time, w, bw_time, kernel_name)
+    if(adaptive_separate  == TRUE){
+      ## we want to use an adaptive bw in the network space
+      bws_net <- adaptive_bw.mc(grid, events_loc, lines, bw_net, trim_bw_net, method,
+                                kernel_name, max_depth, tol, digits, sparse, verbose)
+      ## and in the time space
+      bws_time <- adaptive_bw_1d(events$time, w, bw_time, kernel_name)
+      bws_net <- bws_net[events$goid]
+    }else{
+      interaction_bws <- adaptive_bw_tnkde.mc(grid, events_loc, events, lines,
+                                           bw_net, bw_time ,trim_bw_net, trim_bw_time,
+                                           method, kernel_name, max_depth, div,
+                                           tol, digits, sparse, verbose)
+      bws_time <- interaction_bws$bws_time
+      bws_net <- interaction_bws$bws_net
+    }
   }
+
 
   ## calculating the correction factor
   if(diggle_correction){
@@ -694,7 +738,6 @@ tnkde.mc <- function(lines, events, time_field, w, samples_loc, samples_time, ke
     corr_factor <- rep(1,nrow(events))
   }
   ## duplicating the bws and correction factor if needed for aggregated events
-  bws_net <- bws_net[events$goid]
   corr_factor <- corr_factor[events$goid]
 
   events$weight <- events$weight * corr_factor
@@ -793,3 +836,5 @@ tnkde.mc <- function(lines, events, time_field, w, samples_loc, samples_time, ke
     return(tot_df[,2:ncol(tot_df)])
   }
 }
+
+

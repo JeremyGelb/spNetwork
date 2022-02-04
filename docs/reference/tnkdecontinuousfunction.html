@@ -18,7 +18,7 @@ The main function to calculate continuous TNKDE (with ARMADILO and integer matri
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.1.9000</span>
       </span>
     </div>
 
@@ -52,6 +52,9 @@ The main function to calculate continuous TNKDE (with ARMADILO and integer matri
     </li>
     <li>
       <a href="../articles/TNKDE.html">Temporal Network Kernel Density Estimate</a>
+    </li>
+    <li>
+      <a href="../articles/web_vignettes/AdaptiveBW.html">K-nearest neighbour adaptive bandwidth</a>
     </li>
   </ul></li>
 <li>
@@ -90,9 +93,7 @@ The main function to calculate continuous TNKDE (with ARMADILO and integer matri
   <span class="va">weights</span>,
   <span class="va">samples</span>,
   <span class="va">samples_time</span>,
-  <span class="va">obw_net</span>,
   <span class="va">bws_net</span>,
-  <span class="va">obw_time</span>,
   <span class="va">bws_time</span>,
   <span class="va">kernel_name</span>,
   <span class="va">nodes</span>,
@@ -109,9 +110,7 @@ The main function to calculate continuous TNKDE (with ARMADILO and integer matri
   <span class="va">weights</span>,
   <span class="va">samples</span>,
   <span class="va">samples_time</span>,
-  <span class="va">obw_net</span>,
   <span class="va">bws_net</span>,
-  <span class="va">obw_time</span>,
   <span class="va">bws_time</span>,
   <span class="va">kernel_name</span>,
   <span class="va">nodes</span>,
@@ -136,14 +135,8 @@ The main function to calculate continuous TNKDE (with ARMADILO and integer matri
 <dd><p>a DataFrame of the samples (with spatial coordinates and belonging edge)</p></dd>
 <dt>samples_time</dt>
 <dd><p>a NumericVector indicating when to do the samples</p></dd>
-<dt>obw_net</dt>
-<dd><p>a float giving the overall network bandwidth, used to standardize the densities
-if div = "bw"</p></dd>
 <dt>bws_net</dt>
 <dd><p>the network kernel bandwidths for each event</p></dd>
-<dt>obw_time</dt>
-<dd><p>a float giving the overall time bandwidth, used to standardize the densities
-if div = "bw"</p></dd>
 <dt>bws_time</dt>
 <dd><p>the time kernel bandwidths for each event</p></dd>
 <dt>kernel_name</dt>

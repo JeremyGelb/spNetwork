@@ -18,7 +18,7 @@ The main function to calculate continuous NKDE (with ARMADILO and integer matrix
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.1.9000</span>
       </span>
     </div>
 
@@ -52,6 +52,9 @@ The main function to calculate continuous NKDE (with ARMADILO and integer matrix
     </li>
     <li>
       <a href="../articles/TNKDE.html">Temporal Network Kernel Density Estimate</a>
+    </li>
+    <li>
+      <a href="../articles/web_vignettes/AdaptiveBW.html">K-nearest neighbour adaptive bandwidth</a>
     </li>
   </ul></li>
 <li>
@@ -93,7 +96,8 @@ The main function to calculate continuous NKDE (with ARMADILO and integer matrix
   <span class="va">nodes</span>,
   <span class="va">line_list</span>,
   <span class="va">max_depth</span>,
-  <span class="va">verbose</span>
+  <span class="va">verbose</span>,
+  div <span class="op">=</span> <span class="st">"bw"</span>
 <span class="op">)</span>
 
 <span class="fu">continuous_nkde_cpp_arma</span><span class="op">(</span>
@@ -106,7 +110,8 @@ The main function to calculate continuous NKDE (with ARMADILO and integer matrix
   <span class="va">nodes</span>,
   <span class="va">line_list</span>,
   <span class="va">max_depth</span>,
-  <span class="va">verbose</span>
+  <span class="va">verbose</span>,
+  div <span class="op">=</span> <span class="st">"bw"</span>
 <span class="op">)</span></code></pre></div>
     </div>
 
@@ -132,6 +137,8 @@ The main function to calculate continuous NKDE (with ARMADILO and integer matrix
 <dd><p>the maximum recursion depth (after which recursion is stopped)</p></dd>
 <dt>verbose</dt>
 <dd><p>a boolean indicating if the function must print its progress</p></dd>
+<dt>div</dt>
+<dd><p>The divisor to use for the kernel. Must be "n" (the number of events within the radius around each sampling point), "bw" (the bandwidth) "none" (the simple sum).</p></dd>
 </dl></div>
     <div id="value">
     <h2>Value</h2>

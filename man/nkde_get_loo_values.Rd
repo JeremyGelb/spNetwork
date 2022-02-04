@@ -16,7 +16,6 @@ nkde_get_loo_values(
   kernel_name,
   line_list,
   max_depth,
-  min_tol,
   cvl
 )
 }
@@ -44,8 +43,6 @@ bws_net (cols).}
 \item{line_list}{a DataFrame describing the lines}
 
 \item{max_depth}{the maximum recursion depth}
-
-\item{min_tol}{a double indicating by how much 0 in densities values must be replaced}
 
 \item{cvl}{a boolean indicating if the Cronie (TRUE) or CV likelihood (FALSE) must be used}
 }

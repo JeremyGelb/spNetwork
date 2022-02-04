@@ -270,11 +270,16 @@ arma::vec esd_kernel_rcpp_arma(fptr kernel_func, IntegerMatrix& edge_mat,
 //' @param line_list a DataFrame representing the lines of the graph
 //' @param max_depth the maximum recursion depth (after which recursion is stopped)
 //' @param verbose a boolean indicating if the function must print its progress
+//' @param div The divisor to use for the kernel. Must be "n" (the number of events within the radius around each sampling point), "bw" (the bandwidth) "none" (the simple sum).
 //' @return a DataFrame with two columns : the kernel values (sum_k) and the number of events for each sample (n)
 //' @export
 //' @keywords internal
 // [[Rcpp::export]]
-DataFrame discontinuous_nkde_cpp_arma_sparse(List neighbour_list, NumericVector events, NumericVector weights, DataFrame samples, NumericVector bws, std::string kernel_name, DataFrame nodes, DataFrame line_list, int max_depth, bool verbose){
+DataFrame discontinuous_nkde_cpp_arma_sparse(List neighbour_list, NumericVector events,
+                                             NumericVector weights, DataFrame samples,
+                                             NumericVector bws, std::string kernel_name,
+                                             DataFrame nodes, DataFrame line_list,
+                                             int max_depth, bool verbose, std::string div = "bw"){
 
   //selecting the kernel function
   fptr kernel_func = select_kernel(kernel_name);
@@ -311,9 +316,13 @@ DataFrame discontinuous_nkde_cpp_arma_sparse(List neighbour_list, NumericVector 
     double bw = bws[i];
     // launching recursion
     //NumericVector k = esd_kernel_rcpp(samples_k, edge_dict, neighbour_list ,y,prev_node,d,alpha,bw,kernel_func, line_weights, samples_edgeid, samples_x, samples_y, samples_oid, nodes_x, nodes_y, depth,max_depth);
-    arma::vec k = esd_kernel_rcpp_arma_sparse(kernel_func,edge_mat, neighbour_list ,y,bw, line_weights, samples_edgeid, samples_x, samples_y, nodes_x, nodes_y, depth,max_depth);
+    arma::vec k = esd_kernel_rcpp_arma_sparse(kernel_func,edge_mat, neighbour_list ,y, bw, line_weights, samples_edgeid, samples_x, samples_y, nodes_x, nodes_y, depth,max_depth);
     // getting the actual base_k values (summed at each iteration)
-    base_k += (k*w);
+    if(div == "bw"){
+      base_k += ((k*w))/bw;
+    }else{
+      base_k += (k*w);
+    }
     // calculating the new value
     count.fill(0.0);
     arma::uvec ids = arma::find(k>0);
@@ -340,11 +349,16 @@ DataFrame discontinuous_nkde_cpp_arma_sparse(List neighbour_list, NumericVector 
 //' @param line_list a DataFrame representing the lines of the graph
 //' @param max_depth the maximum recursion depth (after which recursion is stopped)
 //' @param verbose a boolean indicating if the function must print its progress
+//' @param div The divisor to use for the kernel. Must be "n" (the number of events within the radius around each sampling point), "bw" (the bandwidth) "none" (the simple sum).
 //' @return a DataFrame with two columns : the kernel values (sum_k) and the number of events for each sample (n)
 //' @export
 //' @keywords internal
 // [[Rcpp::export]]
-DataFrame discontinuous_nkde_cpp_arma(List neighbour_list, NumericVector events, NumericVector weights, DataFrame samples, NumericVector bws, std::string kernel_name, DataFrame nodes, DataFrame line_list, int max_depth, bool verbose){
+DataFrame discontinuous_nkde_cpp_arma(List neighbour_list, NumericVector events,
+                                      NumericVector weights, DataFrame samples,
+                                      NumericVector bws, std::string kernel_name,
+                                      DataFrame nodes, DataFrame line_list,
+                                      int max_depth, bool verbose, std::string div = "bw"){
 
   //selecting the kernel function
   fptr kernel_func = select_kernel(kernel_name);
@@ -382,7 +396,11 @@ DataFrame discontinuous_nkde_cpp_arma(List neighbour_list, NumericVector events,
     //NumericVector k = esd_kernel_rcpp(samples_k, edge_dict, neighbour_list ,y,prev_node,d,alpha,bw,kernel_func, line_weights, samples_edgeid, samples_x, samples_y, samples_oid, nodes_x, nodes_y, depth,max_depth);
     arma::vec k = esd_kernel_rcpp_arma(kernel_func,edge_mat, neighbour_list ,y,bw, line_weights, samples_edgeid, samples_x, samples_y, nodes_x, nodes_y, depth,max_depth);
     // getting the actual base_k values (summed at each iteration)
-    base_k += (k*w);
+    if(div == "bw"){
+      base_k += ((k*w))/bw;
+    }else{
+      base_k += (k*w);
+    }
     // calculating the new value
     count.fill(0.0);
     arma::uvec ids = arma::find(k>0);
@@ -409,11 +427,7 @@ DataFrame discontinuous_nkde_cpp_arma(List neighbour_list, NumericVector events,
 //' @param weights a numeric vector of the weight of each event
 //' @param samples a DataFrame of the samples (with spatial coordinates and belonging edge)
 //' @param samples_time a NumericVector indicating when to do the samples
-//' @param obw_net a float giving the overall network bandwidth, used to standardize the densities
-//' if div = "bw"
 //' @param bws_net the network kernel bandwidths for each event
-//' @param obw_time a float giving the overall time bandwidth, used to standardize the densities
-//' if div = "bw"
 //' @param kernel_name the name of the kernel function to use
 //' @param nodes a DataFrame representing the nodes of the graph (with spatial coordinates)
 //' @param line_list a DataFrame representing the lines of the graph
@@ -427,10 +441,10 @@ DataFrame discontinuous_nkde_cpp_arma(List neighbour_list, NumericVector events,
 List discontinuous_tnkde_cpp_arma_sparse(List neighbour_list,
                                          IntegerVector events, NumericVector weights, NumericVector events_time,
                                          DataFrame samples, arma::vec samples_time,
-                                         float obw_net, NumericVector bws_net,
-                                         float obw_time, NumericVector bws_time,
+                                         NumericVector bws_net,
+                                         NumericVector bws_time,
                                          std::string kernel_name, DataFrame nodes, DataFrame line_list,
-                                         int max_depth, bool verbose, std::string div){
+                                         int max_depth, bool verbose, std::string div = "bw"){
 
   //selecting the kernel function
   fptr kernel_func = select_kernel(kernel_name);
@@ -472,7 +486,7 @@ List discontinuous_tnkde_cpp_arma_sparse(List neighbour_list,
     arma::vec k;
     // calculating the density value on the network
     if(event_counter[y] > 1){
-      // here we have a dupplicated event, we must either use the savec nkde or calculate it and save it latter
+      // here we have a dupplicated event, we must either use the saved nkde or calculate it and save it latter
       if(map_contains_key(saved_values,y)){
         // we already have the value !
         k = saved_values[y];
@@ -490,8 +504,8 @@ List discontinuous_tnkde_cpp_arma_sparse(List neighbour_list,
 
     //applying the scaling here if required
     if(div == "bw"){
-      k = k / obw_net;
-      temporal_density = temporal_density / obw_time;
+      k = k / bw_net;
+      temporal_density = temporal_density / bw_time;
     }
 
     // and create an awesome spatio-temporal matrix
@@ -530,11 +544,7 @@ List discontinuous_tnkde_cpp_arma_sparse(List neighbour_list,
 //' @param weights a numeric vector of the weight of each event
 //' @param samples a DataFrame of the samples (with spatial coordinates and belonging edge)
 //' @param samples_time a NumericVector indicating when to do the samples
-//' @param obw_net a float giving the overall network bandwidth, used to standardize the densities
-//' if div = "bw"
 //' @param bws_net the network kernel bandwidths for each event
-//' @param obw_time a float giving the overall time bandwidth, used to standardize the densities
-//' if div = "bw"
 //' @param kernel_name the name of the kernel function to use
 //' @param nodes a DataFrame representing the nodes of the graph (with spatial coordinates)
 //' @param line_list a DataFrame representing the lines of the graph
@@ -548,10 +558,10 @@ List discontinuous_tnkde_cpp_arma_sparse(List neighbour_list,
 List discontinuous_tnkde_cpp_arma(List neighbour_list,
                                   IntegerVector events, NumericVector weights, NumericVector events_time,
                                   DataFrame samples, arma::vec samples_time,
-                                  float obw_net, NumericVector bws_net,
-                                  float obw_time, NumericVector bws_time,
+                                  NumericVector bws_net,
+                                  NumericVector bws_time,
                                   std::string kernel_name, DataFrame nodes, DataFrame line_list,
-                                  int max_depth, bool verbose, std::string div){
+                                  int max_depth, bool verbose, std::string div = "bw"){
 
   //selecting the kernel function
   fptr kernel_func = select_kernel(kernel_name);
@@ -613,8 +623,8 @@ List discontinuous_tnkde_cpp_arma(List neighbour_list,
 
     //applying the scaling here if required
     if(div == "bw"){
-      k = k / obw_net;
-      temporal_density = temporal_density / obw_time;
+      k = k / bw_net;
+      temporal_density = temporal_density / bw_time;
     }
 
     // and create an awesome spatio-temporal matrix

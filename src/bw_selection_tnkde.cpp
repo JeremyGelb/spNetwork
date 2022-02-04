@@ -195,6 +195,8 @@ arma::cube esd_kernel_loo_tnkde(fptros kernel_func, arma::sp_mat& edge_mat,
     double new_alpha;
     if((prev_node < 0)  && (cnt_n > 2)){
       new_alpha = 2.0/(cnt_n);
+    }else if((prev_node < 0) && (cnt_n == 1)){
+      new_alpha = 1.0;
     }else{
       new_alpha = alpha * (1.0/(cnt_n-1.0));
     }
@@ -423,7 +425,7 @@ arma::cube esc_kernel_loo_tnkde(fptros kernel_func, arma::sp_mat& edge_mat,
 //' @examples
 //' # no example provided, this is an internal function
 // [[Rcpp::export]]
-arma::mat tnkde_get_loo_values(std::string method, List neighbour_list,
+arma::cube tnkde_get_loo_values(std::string method, List neighbour_list,
                                NumericVector sel_events, NumericVector sel_events_wid, NumericVector sel_events_time,
                                NumericVector events, NumericVector events_wid, NumericVector events_time,
                                arma::cube weights,
@@ -489,19 +491,127 @@ arma::mat tnkde_get_loo_values(std::string method, List neighbour_list,
     // and summing the values at each iteration (% is the element wise product)
     base_k += k;
   };
+
+  return base_k;
+  // // and calculate the final values
+  // arma::mat result;
+  //
+  // arma::uvec neg_elems = arma::find(base_k <= 0);
+  // base_k.elem(neg_elems).fill(min_tol);
+  //
+  //
+  // result = arma::sum(arma::log(base_k),2);
+  //
+  //
+  // return result;
+}
+
+//// DEVELOPMENT /////
+
+
+
+//' @title The exposed function to calculate adaptive bandwidth with space-time
+//' interaction for TNKDE
+//' @name adaptive_bw_tnkde_cpp
+//' @param method a string, one of "simple", "continuous", "discontinuous"
+//' @param neighbour_list a List, giving for each node an IntegerVector with
+//' its neighbours
+//' @param sel_events a Numeric vector indicating the selected events (id of nodes)
+//' @param sel_events_wid a Numeric Vector indicating the unique if of the selected events
+//' @param sel_events_time a Numeric Vector indicating the time of the selected events
+//' @param events a NumericVector indicating the nodes in graph beeing events
+//' @param events_wid a NumericVector indicating the unique id of all the events
+//' @param events_time a NumericVector indicating the timestamp of each event
+//' @param weights a cube with the weights associated with each events for each
+//' bws_net and bws_time.
+//' @param bws_net an arma::vec with the network bandwidths to consider
+//' @param bws_time an arma::vec with the time bandwidths to consider
+//' @param kernel_name a string with the name of the kernel to use
+//' @param line_list a DataFrame describing the lines
+//' @param max_depth the maximum recursion depth
+//' @param min_tol a double indicating by how much 0 in densities values must be replaced
+//' @return a vector witht the estimated density at each event location
+//' @export
+//' @examples
+//' # no example provided, this is an internal function
+// [[Rcpp::export]]
+arma::rowvec adaptive_bw_tnkde_cpp(std::string method,
+                               List neighbour_list,
+                                NumericVector sel_events,
+                                NumericVector sel_events_wid,
+                                NumericVector sel_events_time,
+                                NumericVector events,
+                                NumericVector events_wid,
+                                NumericVector events_time,
+                                arma::vec weights,
+                                arma::vec bws_net,
+                                arma::vec bws_time,
+                                std::string kernel_name,
+                                DataFrame line_list,
+                                int max_depth,
+                                double min_tol){
+
+  //selecting the kernel function
+  fptros kernel_func = select_kernelos(kernel_name);
+
+  //step0 extract the columns of the dataframe
+  NumericVector line_weights = line_list["weight"];
+
+  //step 1 : mettre toutes les valeurs a 0 (bw_net 0 et bw_time 0)
+  // NOTE WE calculate the values only for the events in sel_events
+  arma::cube base_k(1, 1, sel_events.length());
+
+  //calculer la matrice des lignes
+  //IntegerMatrix edge_mat = make_matrix(line_list,neighbour_list);
+  arma::sp_mat edge_mat = make_matrix_sparse(line_list,neighbour_list);
+  arma::cube k;
+  //step2 : iterer sur chaque event de la zone d'etude
+  int cnt_e = events.length()-1;
+  for(int i=0; i <= cnt_e; ++i){
+    //preparer les differentes valeurs de departs pour l'event y
+    int y = events[i];
+    int wid = events_wid[i];
+    double v_time = events_time[i];
+    // launching recursion
+    // here we got the the influences of the vertex y on each other selected event in quadra
+    if(method == "simple"){
+      k = ess_kernel_loo_tnkde(kernel_func, edge_mat, sel_events,sel_events_wid,
+                               sel_events_time, neighbour_list,
+                               y, wid, v_time,
+                               bws_net, bws_time,
+                               line_weights, max_depth);
+
+    }else if (method == "discontinuous"){
+      k = esd_kernel_loo_tnkde(kernel_func, edge_mat, sel_events,sel_events_wid,
+                               sel_events_time, neighbour_list,
+                               y, wid, v_time,
+                               bws_net, bws_time,
+                               line_weights, max_depth);
+    }else{
+      k = esc_kernel_loo_tnkde(kernel_func, edge_mat, sel_events,sel_events_wid,
+                               sel_events_time, neighbour_list,
+                               y, wid, v_time,
+                               bws_net, bws_time,
+                               line_weights, max_depth);
+    }
+    // NOTE : the scaling by bws is applied above
+    float w = weights(i);
+    for(int ii = 0; ii < sel_events.length(); ii++){
+      k.slice(ii) = k.slice(ii) * w;
+    }
+
+    // and summing the values at each iteration (% is the element wise product)
+    base_k += k;
+  };
   // and calculate the final values
-  arma::mat result;
 
   arma::uvec neg_elems = arma::find(base_k <= 0);
   base_k.elem(neg_elems).fill(min_tol);
 
-  result = arma::sum(arma::log(base_k),2);
-
+  arma::rowvec result = base_k(arma::span(0), arma::span(0), arma::span::all);
 
   return result;
 }
-
-
 
 
 

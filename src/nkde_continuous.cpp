@@ -411,12 +411,17 @@ arma::vec esc_kernel_rcpp_arma(fptr kernel_func, List& neighbour_list, IntegerMa
 //' @param line_list a DataFrame representing the lines of the graph
 //' @param max_depth the maximum recursion depth (after which recursion is stopped)
 //' @param verbose a boolean indicating if the function must print its progress
+//' @param div The divisor to use for the kernel. Must be "n" (the number of events within the radius around each sampling point), "bw" (the bandwidth) "none" (the simple sum).
 //' @return a DataFrame with two columns : the kernel values (sum_k) and the number of events for each sample (n)
 //' @export
 //' @keywords internal
 //'
 // [[Rcpp::export]]
-DataFrame continuous_nkde_cpp_arma_sparse(List neighbour_list, NumericVector events, NumericVector weights, DataFrame samples, NumericVector bws, std::string kernel_name, DataFrame nodes, DataFrame line_list, int max_depth, bool verbose){
+DataFrame continuous_nkde_cpp_arma_sparse(List neighbour_list, NumericVector events,
+                                          NumericVector weights, DataFrame samples,
+                                          NumericVector bws, std::string kernel_name,
+                                          DataFrame nodes, DataFrame line_list,
+                                          int max_depth, bool verbose, std::string div = "bw"){
 
   //continuous_nkde_cpp_arma_sparse(neighbour_list,events$vertex_id, events$weight, samples@data, bws, kernel_name, nodes@data, graph_result$linelist, max_depth, tol, verbose)
   //selecting the kernel function
@@ -455,7 +460,11 @@ DataFrame continuous_nkde_cpp_arma_sparse(List neighbour_list, NumericVector eve
 
     // on peut maintenant calculer la densite emanant de l'event y
     samples_k = esc_kernel_rcpp_arma_sparse(kernel_func, neighbour_list, edge_mat, y, bw, line_weights, samples_edgeid, samples_x, samples_y, nodes_x, nodes_y, max_depth);
-    base_k += samples_k*w;
+    if(div == "bw"){
+      base_k += (samples_k*w) / bw;
+    }else{
+      base_k += samples_k*w;
+    }
     // calculating the new value
     count.fill(0.0);
     arma::uvec ids = arma::find(samples_k>0);
@@ -549,12 +558,17 @@ DataFrame continuous_nkde_cpp_arma_sparse(List neighbour_list, NumericVector eve
 //' @param line_list a DataFrame representing the lines of the graph
 //' @param max_depth the maximum recursion depth (after which recursion is stopped)
 //' @param verbose a boolean indicating if the function must print its progress
+//' @param div The divisor to use for the kernel. Must be "n" (the number of events within the radius around each sampling point), "bw" (the bandwidth) "none" (the simple sum).
 //' @return a DataFrame with two columns : the kernel values (sum_k) and the number of events for each sample (n)
 //' @export
 //' @keywords internal
 //'
 // [[Rcpp::export]]
-DataFrame continuous_nkde_cpp_arma(List neighbour_list, NumericVector events, NumericVector weights, DataFrame samples, NumericVector bws, std::string kernel_name, DataFrame nodes, DataFrame line_list, int max_depth, bool verbose){
+DataFrame continuous_nkde_cpp_arma(List neighbour_list, NumericVector events,
+                                   NumericVector weights, DataFrame samples,
+                                   NumericVector bws, std::string kernel_name,
+                                   DataFrame nodes, DataFrame line_list,
+                                   int max_depth, bool verbose, std::string div = "bw"){
 
   //continuous_nkde_cpp_arma_sparse(neighbour_list,events$vertex_id, events$weight, samples@data, bws, kernel_name, nodes@data, graph_result$linelist, max_depth, tol, verbose)
   //selecting the kernel function
@@ -593,7 +607,11 @@ DataFrame continuous_nkde_cpp_arma(List neighbour_list, NumericVector events, Nu
 
     // on peut maintenant calculer la densite emanant de l'event y
     samples_k = esc_kernel_rcpp_arma(kernel_func, neighbour_list, edge_mat ,y,bw, line_weights, samples_edgeid, samples_x, samples_y, nodes_x, nodes_y, max_depth);
-    base_k += samples_k*w;
+    if(div == "bw"){
+      base_k += (samples_k*w) / bw;
+    }else{
+      base_k += samples_k*w;
+    }
     // calculating the new value
     count.fill(0.0);
     arma::uvec ids = arma::find(samples_k>0);
@@ -685,11 +703,7 @@ DataFrame continuous_nkde_cpp_arma(List neighbour_list, NumericVector events, Nu
 //' @param weights a numeric vector of the weight of each event
 //' @param samples a DataFrame of the samples (with spatial coordinates and belonging edge)
 //' @param samples_time a NumericVector indicating when to do the samples
-//' @param obw_net a float giving the overall network bandwidth, used to standardize the densities
-//' if div = "bw"
 //' @param bws_net the network kernel bandwidths for each event
-//' @param obw_time a float giving the overall time bandwidth, used to standardize the densities
-//' if div = "bw"
 //' @param bws_time the time kernel bandwidths for each event
 //' @param kernel_name the name of the kernel to use
 //' @param nodes a DataFrame representing the nodes of the graph (with spatial coordinates)
@@ -705,8 +719,8 @@ DataFrame continuous_nkde_cpp_arma(List neighbour_list, NumericVector events, Nu
 List continuous_tnkde_cpp_arma_sparse(List neighbour_list,
                                      IntegerVector events, NumericVector events_time,NumericVector weights,
                                      DataFrame samples, arma::vec samples_time,
-                                     float obw_net, NumericVector bws_net,
-                                     float obw_time,  NumericVector bws_time,
+                                     NumericVector bws_net,
+                                     NumericVector bws_time,
                                      std::string kernel_name, DataFrame nodes, DataFrame line_list,
                                      int max_depth, bool verbose, std::string div){
 
@@ -770,8 +784,8 @@ List continuous_tnkde_cpp_arma_sparse(List neighbour_list,
 
     // and standardize by bw if required
     if(div == "bw"){
-      temporal_density = temporal_density / obw_time;
-      samples_k = samples_k / obw_net;
+      temporal_density = temporal_density / bw_time;
+      samples_k = samples_k / bw_net;
     }
 
     // and create an awesome spatio-temporal matrix
@@ -812,11 +826,7 @@ List continuous_tnkde_cpp_arma_sparse(List neighbour_list,
 //' @param weights a numeric vector of the weight of each event
 //' @param samples a DataFrame of the samples (with spatial coordinates and belonging edge)
 //' @param samples_time a NumericVector indicating when to do the samples
-//' @param obw_net a float giving the overall network bandwidth, used to standardize the densities
-//' if div = "bw"
 //' @param bws_net the network kernel bandwidths for each event
-//' @param obw_time a float giving the overall time bandwidth, used to standardize the densities
-//' if div = "bw"
 //' @param kernel_name the name of the kernel to use
 //' @param nodes a DataFrame representing the nodes of the graph (with spatial coordinates)
 //' @param line_list a DataFrame representing the lines of the graph
@@ -831,8 +841,8 @@ List continuous_tnkde_cpp_arma_sparse(List neighbour_list,
 List continuous_tnkde_cpp_arma(List neighbour_list,
                               IntegerVector events, NumericVector events_time,NumericVector weights,
                               DataFrame samples, arma::vec samples_time,
-                              float obw_net, NumericVector bws_net,
-                              float obw_time, NumericVector bws_time,
+                              NumericVector bws_net,
+                              NumericVector bws_time,
                               std::string kernel_name, DataFrame nodes, DataFrame line_list,
                               int max_depth, bool verbose, std::string div){
 
@@ -895,8 +905,8 @@ List continuous_tnkde_cpp_arma(List neighbour_list,
 
     // and standardize by bw if required
     if(div == "bw"){
-      temporal_density = temporal_density / obw_time;
-      samples_k = samples_k / obw_net;
+      temporal_density = temporal_density / bw_time;
+      samples_k = samples_k / bw_net;
     }
 
     // and create an awesome spatio-temporal matrix

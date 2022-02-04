@@ -22,6 +22,7 @@ bws_tnkde_cv_likelihood_calc(
   tol = 0.1,
   agg = NULL,
   sparse = TRUE,
+  zero_strat = "min_double",
   grid_shape = c(1, 1),
   sub_sample = 1,
   verbose = TRUE,
@@ -88,6 +89,10 @@ used by the Rcpp functions. These matrices are used to store edge indices
 between two nodes in a graph. Regular matrices are faster, but require more
 memory, in particular with multiprocessing. Sparse matrices are slower (a
 bit), but require much less memory.}
+
+\item{zero_strat}{A string indicating what to do when density is 0 when calculating LOO density estimate for an isolated event.
+"min_double" (default) replace the 0 value by the minimum double possible on the machine. "remove" will remove them from the final
+score. The first approach penalizes more strongly the small bandwidths.}
 
 \item{grid_shape}{A vector of two values indicating how the study area
 must be split when performing the calculus. Default is c(1,1) (no split). A finer grid could

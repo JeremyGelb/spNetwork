@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.1.9000</span>
       </span>
     </div>
 
@@ -51,6 +51,9 @@
     </li>
     <li>
       <a href="../articles/TNKDE.html">Temporal Network Kernel Density Estimate</a>
+    </li>
+    <li>
+      <a href="../articles/web_vignettes/AdaptiveBW.html">K-nearest neighbour adaptive bandwidth</a>
     </li>
   </ul></li>
 <li>
@@ -93,7 +96,6 @@
   <span class="va">kernel_name</span>,
   <span class="va">line_list</span>,
   <span class="va">max_depth</span>,
-  <span class="va">min_tol</span>,
   <span class="va">cvl</span>
 <span class="op">)</span></code></pre></div>
     </div>
@@ -124,8 +126,6 @@ bws_net (cols).</p></dd>
 <dd><p>a DataFrame describing the lines</p></dd>
 <dt>max_depth</dt>
 <dd><p>the maximum recursion depth</p></dd>
-<dt>min_tol</dt>
-<dd><p>a double indicating by how much 0 in densities values must be replaced</p></dd>
 <dt>cvl</dt>
 <dd><p>a boolean indicating if the Cronie (TRUE) or CV likelihood (FALSE) must be used</p></dd>
 </dl></div>

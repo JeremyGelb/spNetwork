@@ -21,6 +21,7 @@ bw_cv_likelihood_calc.mc(
   sparse = TRUE,
   grid_shape = c(1, 1),
   sub_sample = 1,
+  zero_strat = "min_double",
   verbose = TRUE,
   check = TRUE
 )
@@ -87,6 +88,10 @@ multiprocessing, the work in each grid is dispatched between the workers.}
 \item{sub_sample}{A float between 0 and 1 indicating the percentage of quadra
 to keep in the calculus. For large datasets, it may be useful to limit the
 bandwidth evaluation and thus reduce calculation time.}
+
+\item{zero_strat}{A string indicating what to do when density is 0 when calculating LOO density estimate for an isolated event.
+"min_double" (default) replace the 0 value by the minimum double possible on the machine. "remove" will remove them from the final
+score. The first approach penalizes more strongly the small bandwidths.}
 
 \item{verbose}{A Boolean, indicating if the function should print messages
 about process.}

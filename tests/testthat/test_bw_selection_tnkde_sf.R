@@ -50,7 +50,7 @@ test_that("Testing the bw selection function with CV likelihood and simple kerne
 
   #so the CV likelihood is the sum for each point loo
   #in other words, three times the sum of two kerneffect
-  total <- loo1 + loo2 + loo3
+  total <- (loo1 + loo2 + loo3) / 3
 
 
   #let us calculate the value with our function
@@ -71,6 +71,76 @@ test_that("Testing the bw selection function with CV likelihood and simple kerne
                                            tol=0.001,
                                            agg=NULL,
                                            sparse=TRUE,
+                                           grid_shape=c(3,3),
+                                           sub_sample=1,
+                                           verbose=FALSE,
+                                           check=FALSE)
+
+  expect_equal(obs_value[1,1], total)
+})
+
+
+
+test_that("Testing the bw selection function with CV likelihood and simple kernel and a 0 density", {
+  ## creating the simple sf::st_as_sf
+  # start with de definition of some lines
+  wkt_lines <- c(
+    "LINESTRING (0 5, 0 0)",
+    "LINESTRING (-5 0, 0 0)",
+    "LINESTRING (0 -5, 0 0)",
+    "LINESTRING (5 0, 0 0)")
+
+  linesdf <- data.frame(wkt = wkt_lines,
+                        id = paste("l",1:length(wkt_lines),sep=""))
+
+  all_lines <- st_as_sf(linesdf, wkt = "wkt")
+
+  # definition of three events
+  event <- data.frame(x=c(0,3,0),
+                      y=c(3,0,-5))
+  event$Time <- c(5,7,6)
+  event <- st_as_sf(event, coords = c("x","y"))
+
+
+  # we can admit a bw_net of 10 here
+  bw_net <- 7
+  bw_time <- 6
+
+  #at e1, the time distance to e2 is 2, with a bw_time of 6
+  loo1 <- sum(log(
+    (quartic_kernel(2,bw_time) * quartic_kernel(6,bw_net)) * (1/(bw_net*bw_time))
+  ))
+
+  loo2 <- sum(log(
+    (quartic_kernel(2,bw_time) * quartic_kernel(6,bw_net)) * (1/(bw_net*bw_time))
+  ))
+
+
+  #so the CV likelihood is the sum for each point loo
+  #in other words, three times the sum of two kerneffect
+  # but the last event is too far and we set zero_strat to "remove"
+  total <- (loo1 + loo2) / 2
+
+
+  #let us calculate the value with our function
+  obs_value <- bws_tnkde_cv_likelihood_calc(bw_net_range = c(7,15),
+                                           bw_net_step = 5,
+                                           bw_time_range = c(6,7),
+                                           bw_time_step = 1,
+                                           lines = all_lines,
+                                           events = event,
+                                           time_field = "Time",
+                                           w = c(1,1,1),
+                                           kernel_name = "quartic",
+                                           method = "simple",
+                                           diggle_correction = FALSE,
+                                           study_area = NULL,
+                                           max_depth = 15,
+                                           digits=5,
+                                           tol=0.001,
+                                           agg=NULL,
+                                           sparse=TRUE,
+                                           zero_strat = "remove",
                                            grid_shape=c(3,3),
                                            sub_sample=1,
                                            verbose=FALSE,
@@ -125,7 +195,7 @@ test_that("Testing the bw selection function with CV likelihood and discontinuou
 
   #so the CV likelihood is the sum for each point loo
   #in other words, three times the sum of two kerneffect
-  total <- loo1 + loo2 + loo3
+  total <- (loo1 + loo2 + loo3)/3
 
 
   #let us calculate the value with our function
@@ -217,7 +287,7 @@ test_that("Testing the bw selection function with CV likelihood and continuous k
 
   #so the CV likelihood is the sum for each point loo
   #in other words, three times the sum of two kerneffect
-  total <- loo1 + loo2 + loo3
+  total <- (loo1 + loo2 + loo3)/3
 
 
   #let us calculate the value with our function
@@ -310,7 +380,7 @@ test_that("Testing the bw selection function with CV likelihood in multicore and
 
   #so the CV likelihood is the sum for each point loo
   #in other words, three times the sum of two kerneffect
-  total <- loo1 + loo2 + loo3
+  total <- (loo1 + loo2 + loo3)/3
 
 
   #let us calculate the value with our function

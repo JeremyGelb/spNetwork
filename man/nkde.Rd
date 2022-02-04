@@ -43,7 +43,9 @@ which the densities will be estimated.}
 \item{kernel_name}{The name of the kernel to use. Must be one of triangle,
 gaussian, tricube, cosine ,triweight, quartic, epanechnikov or uniform.}
 
-\item{bw}{The kernel bandwidth (using the scale of the lines)}
+\item{bw}{The kernel bandwidth (using the scale of the lines), can be a
+single float or a numeric vector if a different bandwidth must be used
+for each event.}
 
 \item{adaptive}{A Boolean, indicating if an adaptive bandwidth must be
 used}
@@ -113,86 +115,72 @@ sampling points, and events
 \details{
 **The three NKDE methods**\cr
 Estimating the density of a point process is commonly done by using an
-ordinary two-dimensional kernel density function. However, there are
-numerous cases for which the events do not occur in a two-dimensional
-space but on a network (like car crashes, outdoor crimes, leaks in pipelines,
-etc.). New methods were developed to adapt the methodology to networks,
-three of them are available in this package.
-\itemize{
-  \item{method="simple"}{This first method was presented by \insertCite{xie2008kernel}{spNetwork}
-  and proposes an intuitive solution. The distances between events
-  and sampling points are replaced by network distances, and the formula of
-  the kernel is adapted to calculate the density over a linear unit
-  instead of an areal unit.}
-  \item{method="discontinuous"}{The previous method has been criticized by
-  \insertCite{okabe2009kernel}{spNetwork}, arguing that the estimator proposed is biased,
-  leading to an overestimation of density in events hot-spots. More
-  specifically, the simple method does not conserve mass and the induced
-  kernel is not a probability density along the network. They thus
-  proposed a discontinuous version of the kernel function on network, which
-  equally "divides" the mass density of an event at intersections}
-  \item{method="continuous"}{If the discontinuous method is unbiased, it
-  leads to a discontinuous kernel function which is a bit counter-intuitive.
-  \insertCite{okabe2009kernel;textual}{spNetwork} proposed another version of the kernel, that divides
-  the mass of the density at intersections but adjusts the density before the
-  intersection to make the function continuous.}
-}
-The three methods are available because, even though that the simple
-method is less precise statistically speaking, it might be more intuitive.
-From a purely geographical view, it might be seen as a sort of distance decay
-function as used in Geographically Weighted Regression.\cr
-\cr\cr
-**adaptive bandwidth**\cr
-It is possible to use adaptive bandwidth instead of fixed bandwidth.
-Adaptive bandwidths are calculated using the Abramson’s smoothing regimen \insertCite{abramson1982bandwidth}{spNetwork}.
-To do so, an original fixed bandwidth must be specified (bw parameter), and
-is used to estimate the priory densitiy at event locations. These densities
-are then used to calculate local bandwidth. The maximum size of the local
-bandwidth can be limited with the parameter trim_bw. For more details, see
-the vignettes.
-\cr\cr
-**Optimization parameters**\cr
-The grid_shape parameter allows to split the calculus of the NKDE according
-to a grid dividing the study area. It might be necessary for big dataset
-to reduce the memory used. If the grid_shape is c(1,1), then a full network
-is built for the area. If the grid_shape is c(2,2), then the area is
-split in 4 rectangles. For each rectangle, the sample points falling in the
-rectangle are used, the events and the lines in a radius of the bandwidth
-length are used. The results are combined at the end and ordered to match
-the original order of the samples.
-\cr\cr
-The geographical coordinates of the start and end of lines are used to build
-the network. To avoid troubles with digits, we truncate the coordinates
-according to the digit parameter. A minimal loss of precision is expected
-but results in a fast construction of the network.
-\cr\cr
-To calculate the distances on the network, all the events are added as
-vertices. To reduce the size of the network, it is possible to reduce the
-number of vertices by adding the events at the extremity of
-the lines if they are close to them. This is controlled by the parameter tol.
-\cr\cr
-In the same way, it is possible to limit the number of vertices by
-aggregating the events that are close to each other. In that case, the
-weights of the aggregated events are summed. According to an aggregation
-distance, a buffer is drawn around the fist event, all events falling
-in that buffer are aggregated to the first event, forming a new event. The
-coordinates of this new event are the mean of the original events
-coordinates. This procedure is repeated until no events are aggregated. The
-aggregation distance can be fixed with the parameter agg.
-\cr\cr
-When using the continuous and discontinuous kernel, the density is reduced
-at each intersection crossed. In the discontinuous case, after 5
-intersections with four directions each, the density value is divided by
-243 leading to very small values. In the same situation but with the
-continuous NKDE, the density value is divided by approximately 7.6.
-The max_depth parameters allows the user to control the maximum depth of
-these two NKDE. The base value is 15, but a value of 10 would yield
-very close estimates. A lower value might have a critical impact on speed
-when the bandwidth is large
-\cr\cr
-When using the continuous and discontinuous kernel, the connections between
-graph nodes are stored in a matrix. This matrix is typically sparse, and
-so a sparse matrix object is used to limit memory use. If the network is
+ordinary two-dimensional kernel density function. However, there are numerous
+cases for which the events do not occur in a two-dimensional space but on a
+network (like car crashes, outdoor crimes, leaks in pipelines, etc.). New
+methods were developed to adapt the methodology to networks, three of them
+are available in this package. \itemize{ \item{method="simple"}{This first
+method was presented by \insertCite{xie2008kernel}{spNetwork} and proposes an
+intuitive solution. The distances between events and sampling points are
+replaced by network distances, and the formula of the kernel is adapted to
+calculate the density over a linear unit instead of an areal unit.}
+\item{method="discontinuous"}{The previous method has been criticized by
+\insertCite{okabe2009kernel}{spNetwork}, arguing that the estimator proposed
+is biased, leading to an overestimation of density in events hot-spots. More
+specifically, the simple method does not conserve mass and the induced kernel
+is not a probability density along the network. They thus proposed a
+discontinuous version of the kernel function on network, which equally
+"divides" the mass density of an event at intersections}
+\item{method="continuous"}{If the discontinuous method is unbiased, it leads
+to a discontinuous kernel function which is a bit counter-intuitive.
+\insertCite{okabe2009kernel;textual}{spNetwork} proposed another version of
+the kernel, that divides the mass of the density at intersections but adjusts
+the density before the intersection to make the function continuous.} } The
+three methods are available because, even though that the simple method is
+less precise statistically speaking, it might be more intuitive. From a
+purely geographical view, it might be seen as a sort of distance decay
+function as used in Geographically Weighted Regression.\cr \cr\cr **adaptive bandwidth**\cr
+It is possible to use adaptive bandwidth instead of fixed
+bandwidth. Adaptive bandwidths are calculated using the Abramson’s smoothing
+regimen \insertCite{abramson1982bandwidth}{spNetwork}. To do so, an original
+fixed bandwidth must be specified (bw parameter), and is used to estimate the
+priory densitiy at event locations. These densities are then used to
+calculate local bandwidth. The maximum size of the local bandwidth can be
+limited with the parameter trim_bw. For more details, see the vignettes.
+\cr\cr **Optimization parameters**\cr The grid_shape parameter allows to
+split the calculus of the NKDE according to a grid dividing the study area.
+It might be necessary for big dataset to reduce the memory used. If the
+grid_shape is c(1,1), then a full network is built for the area. If the
+grid_shape is c(2,2), then the area is split in 4 rectangles. For each
+rectangle, the sample points falling in the rectangle are used, the events
+and the lines in a radius of the bandwidth length are used. The results are
+combined at the end and ordered to match the original order of the samples.
+\cr\cr The geographical coordinates of the start and end of lines are used to
+build the network. To avoid troubles with digits, we truncate the coordinates
+according to the digit parameter. A minimal loss of precision is expected but
+results in a fast construction of the network. \cr\cr To calculate the
+distances on the network, all the events are added as vertices. To reduce the
+size of the network, it is possible to reduce the number of vertices by
+adding the events at the extremity of the lines if they are close to them.
+This is controlled by the parameter tol. \cr\cr In the same way, it is
+possible to limit the number of vertices by aggregating the events that are
+close to each other. In that case, the weights of the aggregated events are
+summed. According to an aggregation distance, a buffer is drawn around the
+fist event, all events falling in that buffer are aggregated to the first
+event, forming a new event. The coordinates of this new event are the mean of
+the original events coordinates. This procedure is repeated until no events
+are aggregated. The aggregation distance can be fixed with the parameter agg.
+\cr\cr When using the continuous and discontinuous kernel, the density is
+reduced at each intersection crossed. In the discontinuous case, after 5
+intersections with four directions each, the density value is divided by 243
+leading to very small values. In the same situation but with the continuous
+NKDE, the density value is divided by approximately 7.6. The max_depth
+parameters allows the user to control the maximum depth of these two NKDE.
+The base value is 15, but a value of 10 would yield very close estimates. A
+lower value might have a critical impact on speed when the bandwidth is large
+\cr\cr When using the continuous and discontinuous kernel, the connections
+between graph nodes are stored in a matrix. This matrix is typically sparse,
+and so a sparse matrix object is used to limit memory use. If the network is
 small (typically when the grid used to split the data has small rectangles)
 then a classical matrix could be used instead of a sparse one. It
 significantly increases speed, but could lead to memory issues.
@@ -219,7 +207,5 @@ densities <- nkde(mtl_network,
 }
 }
 \references{
-{
-    \insertAllCited{}
-}
+{ \insertAllCited{} }
 }

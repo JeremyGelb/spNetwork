@@ -4,7 +4,7 @@
 \alias{simple_nkde}
 \title{Simple NKDE algorithm}
 \usage{
-simple_nkde(graph, events, samples, bws, kernel_func, nodes, edges)
+simple_nkde(graph, events, samples, bws, kernel_func, nodes, edges, div = "bw")
 }
 \arguments{
 \item{graph}{a graph object from igraph representing the network}
@@ -25,6 +25,8 @@ event}
 \item{nodes}{a a feature collection of points representing the nodes of the network}
 
 \item{edges}{a a feature collection of linestrings representing the edges of the network}
+
+\item{div}{The divisor to use for the kernel. Must be "n" (the number of events within the radius around each sampling point), "bw" (the bandwidth) "none" (the simple sum).}
 }
 \value{
 a dataframe with two columns. sum_k is the sum for each sample point

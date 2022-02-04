@@ -84,7 +84,7 @@ check_geometries <- function(lines,samples,events, study_area){ # nocov start
 }
 
 #defining some global variables (weird felx but ok)
-utils::globalVariables(c("spid", "weight", ".")) # nocov end
+utils::globalVariables(c("spid", "weight", ".", "bws")) # nocov end
 
 
 #' @title Clean events geometries
@@ -104,27 +104,28 @@ utils::globalVariables(c("spid", "weight", ".")) # nocov end
 clean_events <- function(events,digits=5,agg=NULL){
   if(is.null(agg)){
     events$spid <- sp_char_index(st_coordinates(events),digits)
-    edf <- events
-    edf$geometry <- NULL
-    new_events <- data.table(edf[c("weight","spid")])
+    edf <- st_drop_geometry(events)
+    #new_events <- data.table(edf[c("weight","spid","bws")])
+    new_events <- data.table(edf)
+    n1 <- names(new_events)[names(new_events) %in% c("weight","spid") == FALSE]
 
-    agg_events <- new_events[, .(sum(weight)), by = .(spid)]
+    #agg_events <- new_events[, .(sum(weight),sum(bws)), by = .(spid)]
+    agg_events <- new_events[, lapply(.SD, max) , by = .(spid),  .SDcols = n1]
+    agg_events$weight <- new_events[, .(sum(weight)), by = .(spid)][,2]
     agg_events[,  c("X", "Y") := tstrsplit(spid, "_", fixed = TRUE)]
 
     agg_events$X <- as.numeric(agg_events$X)
     agg_events$Y <- as.numeric(agg_events$Y)
-    agg_events$weight <- agg_events$V1
     new_events <- setDF(agg_events)
-    new_events <- new_events[c("weight","spid","X","Y")]
     new_events <- st_as_sf(new_events,
                            coords = c("X", "Y"),
                            crs = st_crs(events))
-    return(new_events)
   }else{
     new_events <- aggregate_points(events,agg)
     new_events$spid <- sp_char_index(st_coordinates(new_events),digits)
-    return(new_events)
   }
+
+  return(new_events)
 
 }
 
@@ -140,7 +141,7 @@ clean_events <- function(events,digits=5,agg=NULL){
 #' @param maxdist The distance to use
 #' @param weight The name of the column to use as weight (default is "weight").
 #' The values of the aggregated points for this column will be summed. For all
-#' the other columns, only the first value is retained.
+#' the other columns, only the max value is retained.
 #' @return A new feature collection of points
 #' @export
 #' @examples
@@ -150,6 +151,9 @@ clean_events <- function(events,digits=5,agg=NULL){
 #' agg_points <- aggregate_points(bike_accidents, 5)
 aggregate_points <- function(points, maxdist, weight = "weight"){
 
+  num_cols <- unlist(lapply(points, is.numeric))
+  num_names <- names(points)[num_cols]
+
   ## reimplementation avec dbscan
   coords <- st_coordinates(points)
   result <- dbscan::dbscan(coords, eps = maxdist, minPts = 2)
@@ -158,18 +162,24 @@ aggregate_points <- function(points, maxdist, weight = "weight"){
     all_pts <- points
   }else{
     old_pts <- pt_list[[1]]
-    mat1 <- cbind(st_coordinates(old_pts), old_pts$weight)
+    #mat1 <- cbind(st_coordinates(old_pts), old_pts$weight)
+    mat1 <- cbind(st_coordinates(old_pts), st_drop_geometry(old_pts))
     new_pts <- data.frame(t(sapply(2:length(pt_list), function(i){
       pts <- pt_list[[i]]
       if(nrow(pts) == 1 ){
-        return(c(st_coordinates(pts), pts[[weight]]))
+        #return(c(st_coordinates(pts), pts[[weight]]))
+        return(c(st_coordinates(pts), st_drop_geometry(pts)))
       }else{
         coords <- colMeans(st_coordinates(pts))
-        return(c(coords, sum(pts[[weight]])))
+        feat_max <- apply(st_drop_geometry(pts), 2, max)
+        feat_max[names(feat_max) == weight] <- sum(pts[[weight]])
+        return(c(coords, feat_max))
       }
     })))
     new_pts <- rbind(mat1, new_pts)
-    names(new_pts) <- c("X","Y","weight")
+    for (coln in c("X","Y", num_names)){
+      new_pts[[coln]] <- as.numeric(new_pts[[coln]])
+    }
     all_pts <- st_as_sf(new_pts, coords = c("X","Y"))
     all_pts[c("X","Y")] <- st_coordinates(all_pts)
     st_crs(all_pts) <- st_crs(points)
@@ -684,7 +694,8 @@ adaptive_bw <- function(grid,events,lines,bw,trim_bw,method,kernel_name,max_dept
 
 #' @title Adaptive bandwidth (multicore)
 #'
-#' @description Function to calculate Adaptive bandwidths according to Abramson’s smoothing regimen with multicore support
+#' @description Function to calculate Adaptive bandwidths according to
+#'   Abramson’s smoothing regimen with multicore support
 #'
 #' @param grid A spatial grid to split the data within
 #' @param events A feature collection of points representing the events
@@ -803,7 +814,7 @@ adaptive_bw.mc <- function(grid,events,lines,bw,trim_bw,method,kernel_name,max_d
 #' @keywords internal
 #' @examples
 #' #This is an internal function, no example provided
-nkde_worker <- function(lines, events, samples, kernel_name,bw, bws, method, div, digits, tol, sparse, max_depth, verbose = FALSE){
+nkde_worker <- function(lines, events, samples, kernel_name, bw, bws, method, div, digits, tol, sparse, max_depth, verbose = FALSE){
 
   # if we do not have event in that space, just return 0 values
   if(nrow(events)==0){
@@ -832,7 +843,7 @@ nkde_worker <- function(lines, events, samples, kernel_name,bw, bws, method, div
     stop(paste("The matrix size will be exceeded (",a," x ",b,"), please consider using a finer grid to split the study area",sep=""))
   }
   #snapped_samples <- maptools::snapPointsToLines(samples,edges,idField = "edge_id")
-  snapped_samples <- snapPointsToLines2(samples,edges, snap_dist = bw, idField = "edge_id")
+  snapped_samples <- snapPointsToLines2(samples,edges, snap_dist = max(bw), idField = "edge_id")
   samples$edge_id <- snapped_samples$nearest_line_id
 
   ## step3 finding for each event, its corresponding node
@@ -863,7 +874,7 @@ nkde_worker <- function(lines, events, samples, kernel_name,bw, bws, method, div
     if(verbose){
       values <- simple_nkde(graph, events, samples, bws, kernel_func, nodes, edges)
     }else{
-      invisible(capture.output(values <- simple_nkde(graph, events, samples, bws, kernel_func, nodes, edges)))
+      invisible(capture.output(values <- simple_nkde(graph, events, samples, bws, kernel_func, nodes, edges, div)))
     }
 
   }else{
@@ -878,10 +889,12 @@ nkde_worker <- function(lines, events, samples, kernel_name,bw, bws, method, div
       ##and finally calculating the values
       if (sparse){
         values <- spNetwork::continuous_nkde_cpp_arma_sparse(neighbour_list, events$vertex_id, events$weight,
-                                                         st_drop_geometry(samples), bws, kernel_name, st_drop_geometry(nodes), graph_result$linelist, max_depth, verbose)
+                                                         st_drop_geometry(samples), bws, kernel_name, st_drop_geometry(nodes),
+                                                         graph_result$linelist, max_depth, verbose, div)
       }else{
         values <- spNetwork::continuous_nkde_cpp_arma(neighbour_list, events$vertex_id, events$weight,
-                                                      st_drop_geometry(samples), bws, kernel_name, st_drop_geometry(nodes), graph_result$linelist, max_depth, verbose)
+                                                      st_drop_geometry(samples), bws, kernel_name, st_drop_geometry(nodes),
+                                                      graph_result$linelist, max_depth, verbose, div)
       }
 
     }
@@ -907,7 +920,9 @@ nkde_worker <- function(lines, events, samples, kernel_name,bw, bws, method, div
   if(div == "n"){
     return(values$sum_k / values$n)
   }else if (div == "bw"){
-    return(values$sum_k * (1/bw))
+    #return(values$sum_k * (1/bw))
+    # NOTE : if div == "bw", then the scaling is done during the estimation
+    return(values$sum_k)
   }else if (div == "none"){
     return(values$sum_k)
   }
@@ -928,98 +943,82 @@ nkde_worker <- function(lines, events, samples, kernel_name,bw, bws, method, div
 #' @details
 #' **The three NKDE methods**\cr
 #' Estimating the density of a point process is commonly done by using an
-#' ordinary two-dimensional kernel density function. However, there are
-#' numerous cases for which the events do not occur in a two-dimensional
-#' space but on a network (like car crashes, outdoor crimes, leaks in pipelines,
-#' etc.). New methods were developed to adapt the methodology to networks,
-#' three of them are available in this package.
-#' \itemize{
-#'   \item{method="simple"}{This first method was presented by \insertCite{xie2008kernel}{spNetwork}
-#'   and proposes an intuitive solution. The distances between events
-#'   and sampling points are replaced by network distances, and the formula of
-#'   the kernel is adapted to calculate the density over a linear unit
-#'   instead of an areal unit.}
-#'   \item{method="discontinuous"}{The previous method has been criticized by
-#'   \insertCite{okabe2009kernel}{spNetwork}, arguing that the estimator proposed is biased,
-#'   leading to an overestimation of density in events hot-spots. More
-#'   specifically, the simple method does not conserve mass and the induced
-#'   kernel is not a probability density along the network. They thus
-#'   proposed a discontinuous version of the kernel function on network, which
-#'   equally "divides" the mass density of an event at intersections}
-#'   \item{method="continuous"}{If the discontinuous method is unbiased, it
-#'   leads to a discontinuous kernel function which is a bit counter-intuitive.
-#'   \insertCite{okabe2009kernel;textual}{spNetwork} proposed another version of the kernel, that divides
-#'   the mass of the density at intersections but adjusts the density before the
-#'   intersection to make the function continuous.}
-#' }
-#' The three methods are available because, even though that the simple
-#' method is less precise statistically speaking, it might be more intuitive.
-#' From a purely geographical view, it might be seen as a sort of distance decay
-#' function as used in Geographically Weighted Regression.\cr
-#' \cr\cr
-#' **adaptive bandwidth**\cr
-#' It is possible to use adaptive bandwidth instead of fixed bandwidth.
-#' Adaptive bandwidths are calculated using the Abramson’s smoothing regimen \insertCite{abramson1982bandwidth}{spNetwork}.
-#' To do so, an original fixed bandwidth must be specified (bw parameter), and
-#' is used to estimate the priory densitiy at event locations. These densities
-#' are then used to calculate local bandwidth. The maximum size of the local
-#' bandwidth can be limited with the parameter trim_bw. For more details, see
-#' the vignettes.
-#' \cr\cr
-#' **Optimization parameters**\cr
-#' The grid_shape parameter allows to split the calculus of the NKDE according
-#' to a grid dividing the study area. It might be necessary for big dataset
-#' to reduce the memory used. If the grid_shape is c(1,1), then a full network
-#' is built for the area. If the grid_shape is c(2,2), then the area is
-#' split in 4 rectangles. For each rectangle, the sample points falling in the
-#' rectangle are used, the events and the lines in a radius of the bandwidth
-#' length are used. The results are combined at the end and ordered to match
-#' the original order of the samples.
-#' \cr\cr
-#' The geographical coordinates of the start and end of lines are used to build
-#' the network. To avoid troubles with digits, we truncate the coordinates
-#' according to the digit parameter. A minimal loss of precision is expected
-#' but results in a fast construction of the network.
-#' \cr\cr
-#' To calculate the distances on the network, all the events are added as
-#' vertices. To reduce the size of the network, it is possible to reduce the
-#' number of vertices by adding the events at the extremity of
-#' the lines if they are close to them. This is controlled by the parameter tol.
-#' \cr\cr
-#' In the same way, it is possible to limit the number of vertices by
-#' aggregating the events that are close to each other. In that case, the
-#' weights of the aggregated events are summed. According to an aggregation
-#' distance, a buffer is drawn around the fist event, all events falling
-#' in that buffer are aggregated to the first event, forming a new event. The
-#' coordinates of this new event are the mean of the original events
-#' coordinates. This procedure is repeated until no events are aggregated. The
-#' aggregation distance can be fixed with the parameter agg.
-#' \cr\cr
-#' When using the continuous and discontinuous kernel, the density is reduced
-#' at each intersection crossed. In the discontinuous case, after 5
-#' intersections with four directions each, the density value is divided by
-#' 243 leading to very small values. In the same situation but with the
-#' continuous NKDE, the density value is divided by approximately 7.6.
-#' The max_depth parameters allows the user to control the maximum depth of
-#' these two NKDE. The base value is 15, but a value of 10 would yield
-#' very close estimates. A lower value might have a critical impact on speed
-#' when the bandwidth is large
-#' \cr\cr
-#' When using the continuous and discontinuous kernel, the connections between
-#' graph nodes are stored in a matrix. This matrix is typically sparse, and
-#' so a sparse matrix object is used to limit memory use. If the network is
+#' ordinary two-dimensional kernel density function. However, there are numerous
+#' cases for which the events do not occur in a two-dimensional space but on a
+#' network (like car crashes, outdoor crimes, leaks in pipelines, etc.). New
+#' methods were developed to adapt the methodology to networks, three of them
+#' are available in this package. \itemize{ \item{method="simple"}{This first
+#' method was presented by \insertCite{xie2008kernel}{spNetwork} and proposes an
+#' intuitive solution. The distances between events and sampling points are
+#' replaced by network distances, and the formula of the kernel is adapted to
+#' calculate the density over a linear unit instead of an areal unit.}
+#' \item{method="discontinuous"}{The previous method has been criticized by
+#' \insertCite{okabe2009kernel}{spNetwork}, arguing that the estimator proposed
+#' is biased, leading to an overestimation of density in events hot-spots. More
+#' specifically, the simple method does not conserve mass and the induced kernel
+#' is not a probability density along the network. They thus proposed a
+#' discontinuous version of the kernel function on network, which equally
+#' "divides" the mass density of an event at intersections}
+#' \item{method="continuous"}{If the discontinuous method is unbiased, it leads
+#' to a discontinuous kernel function which is a bit counter-intuitive.
+#' \insertCite{okabe2009kernel;textual}{spNetwork} proposed another version of
+#' the kernel, that divides the mass of the density at intersections but adjusts
+#' the density before the intersection to make the function continuous.} } The
+#' three methods are available because, even though that the simple method is
+#' less precise statistically speaking, it might be more intuitive. From a
+#' purely geographical view, it might be seen as a sort of distance decay
+#' function as used in Geographically Weighted Regression.\cr \cr\cr **adaptive bandwidth**\cr
+#' It is possible to use adaptive bandwidth instead of fixed
+#' bandwidth. Adaptive bandwidths are calculated using the Abramson’s smoothing
+#' regimen \insertCite{abramson1982bandwidth}{spNetwork}. To do so, an original
+#' fixed bandwidth must be specified (bw parameter), and is used to estimate the
+#' priory densitiy at event locations. These densities are then used to
+#' calculate local bandwidth. The maximum size of the local bandwidth can be
+#' limited with the parameter trim_bw. For more details, see the vignettes.
+#' \cr\cr **Optimization parameters**\cr The grid_shape parameter allows to
+#' split the calculus of the NKDE according to a grid dividing the study area.
+#' It might be necessary for big dataset to reduce the memory used. If the
+#' grid_shape is c(1,1), then a full network is built for the area. If the
+#' grid_shape is c(2,2), then the area is split in 4 rectangles. For each
+#' rectangle, the sample points falling in the rectangle are used, the events
+#' and the lines in a radius of the bandwidth length are used. The results are
+#' combined at the end and ordered to match the original order of the samples.
+#' \cr\cr The geographical coordinates of the start and end of lines are used to
+#' build the network. To avoid troubles with digits, we truncate the coordinates
+#' according to the digit parameter. A minimal loss of precision is expected but
+#' results in a fast construction of the network. \cr\cr To calculate the
+#' distances on the network, all the events are added as vertices. To reduce the
+#' size of the network, it is possible to reduce the number of vertices by
+#' adding the events at the extremity of the lines if they are close to them.
+#' This is controlled by the parameter tol. \cr\cr In the same way, it is
+#' possible to limit the number of vertices by aggregating the events that are
+#' close to each other. In that case, the weights of the aggregated events are
+#' summed. According to an aggregation distance, a buffer is drawn around the
+#' fist event, all events falling in that buffer are aggregated to the first
+#' event, forming a new event. The coordinates of this new event are the mean of
+#' the original events coordinates. This procedure is repeated until no events
+#' are aggregated. The aggregation distance can be fixed with the parameter agg.
+#' \cr\cr When using the continuous and discontinuous kernel, the density is
+#' reduced at each intersection crossed. In the discontinuous case, after 5
+#' intersections with four directions each, the density value is divided by 243
+#' leading to very small values. In the same situation but with the continuous
+#' NKDE, the density value is divided by approximately 7.6. The max_depth
+#' parameters allows the user to control the maximum depth of these two NKDE.
+#' The base value is 15, but a value of 10 would yield very close estimates. A
+#' lower value might have a critical impact on speed when the bandwidth is large
+#' \cr\cr When using the continuous and discontinuous kernel, the connections
+#' between graph nodes are stored in a matrix. This matrix is typically sparse,
+#' and so a sparse matrix object is used to limit memory use. If the network is
 #' small (typically when the grid used to split the data has small rectangles)
 #' then a classical matrix could be used instead of a sparse one. It
 #' significantly increases speed, but could lead to memory issues.
 #'
-#' @references{
-#'     \insertAllCited{}
-#' }
+#' @references{ \insertAllCited{} }
 #'
 #' @template nkde_params-arg
 #' @template diggle_corr-arg
 #' @param samples A feature collection of points representing the locations for
-#' which the densities will be estimated.
+#'   which the densities will be estimated.
 #' @template nkde_params2-arg
 #' @template nkde_geoms-args
 #' @template sparse-arg
@@ -1065,8 +1064,12 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, tri
     stop("using the continuous NKDE and the gaussian kernel function can yield negative values for densities because the gaussian kernel does not integrate to 1 within the bandiwdth, please consider using the quartic kernel instead")
   }
 
-  if(bw<=0){
+  if(min(bw)<=0){
     stop("the bandwidth for the kernel must be superior to 0")
+  }
+
+  if(adaptive & (length(bw) > 1 )){
+    stop("When adaptive is TRUE, only a global bandwidth must be given")
   }
 
   if(adaptive & is.null(trim_bw)){
@@ -1084,7 +1087,8 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, tri
   if(verbose){
     print("prior data preparation ...")
   }
-  data <- prepare_data(samples, lines, events,w,digits,tol,agg)
+  events$bws <- bw
+  data <- prepare_data(samples, lines, events, w, digits, tol, agg)
   lines <- data$lines
   samples <- data$samples
   events <- data$events
@@ -1093,8 +1097,14 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, tri
   grid <- build_grid(grid_shape,list(lines,samples,events))
 
   ## adaptive bandwidth !
-  if(adaptive==FALSE){
-    bws <- rep(bw,nrow(events))
+  if(adaptive == FALSE){
+    # if (length(bw) == 1){
+    #   bws <- rep(bw,nrow(events))
+    # }else{
+    #   bws <- bw
+    # }
+    bws <- events$bws
+
   }else{
     ## we want to use an adaptive bw
     # bws <- adaptive_bw.mc(grid, events, lines, bw, trim_bw, method,
@@ -1128,6 +1138,7 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, tri
     print("start calculating the kernel values ...")
   }
   n_quadra <- length(selections)
+
   dfs <- lapply(1:n_quadra,function(i){
     sel <- selections[[i]]
 
@@ -1221,8 +1232,11 @@ nkde.mc <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, 
   if(method == "continuous" & kernel_name == "gaussian"){
     stop("using the continuous NKDE and the gaussian kernel function can yield negative values for densities because the gaussian kernel does not integrate to 1 within the bandiwdth, please consider using the quartic kernel instead")
   }
-  if(bw<=0){
+  if(min(bw)<=0){
     stop("the bandwidth for the kernel must be superior to 0")
+  }
+  if(adaptive & (length(bw) > 1 )){
+    stop("When adaptive is TRUE, only a global bandwidth must be given")
   }
   if(adaptive & is.null(trim_bw)){
     stop("if adaptive is TRUE, a value for trim_bw must be supplied")
@@ -1239,6 +1253,8 @@ nkde.mc <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, 
   if(verbose){
     print("prior data preparation ...")
   }
+
+  events$bws <- bw
   data <- prepare_data(samples, lines, events,w,digits,tol,agg)
   lines <- data$lines
   samples <- data$samples
@@ -1249,7 +1265,7 @@ nkde.mc <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, 
 
   ## adaptive bandwidth !
   if(adaptive==FALSE){
-    bws <- rep(bw,nrow(events))
+    bws <- events$bws
   }else{
     if(verbose){
       print("calculating the local bandwidth ...")

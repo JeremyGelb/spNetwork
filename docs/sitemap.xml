@@ -28,6 +28,9 @@
     <loc>/articles/TNKDE.html</loc>
   </url>
   <url>
+    <loc>/articles/web_vignettes/AdaptiveBW.html</loc>
+  </url>
+  <url>
     <loc>/authors.html</loc>
   </url>
   <url>
@@ -50,6 +53,15 @@
   </url>
   <url>
     <loc>/reference/adaptive_bw_1d.html</loc>
+  </url>
+  <url>
+    <loc>/reference/adaptive_bw_tnkde.html</loc>
+  </url>
+  <url>
+    <loc>/reference/adaptive_bw_tnkde.mc.html</loc>
+  </url>
+  <url>
+    <loc>/reference/adaptive_bw_tnkde_cpp.html</loc>
   </url>
   <url>
     <loc>/reference/add_center_lines.html</loc>
@@ -512,5 +524,8 @@
   </url>
   <url>
     <loc>/reference/uniform_kernel_cpp.html</loc>
+  </url>
+  <url>
+    <loc>/reference/worker_adaptive_bw_tnkde.html</loc>
   </url>
 </urlset>

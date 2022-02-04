@@ -256,6 +256,9 @@
 #' bandwidth evaluation and thus reduce calculation time.
 #' @param verbose A Boolean, indicating if the function should print messages
 #' about process.
+#' @param zero_strat A string indicating what to do when density is 0 when calculating LOO density estimate for an isolated event.
+#' "min_double" (default) replace the 0 value by the minimum double possible on the machine. "remove" will remove them from the final
+#' score. The first approach penalizes more strongly the small bandwidths.
 #' @template check-arg
 #' @return A dataframe with two columns, one for the bandwidths and the second for
 #' the cross validation score (the lower the better).
@@ -276,7 +279,12 @@
 #'                                sparse=TRUE, grid_shape=c(1,1),
 #'                                sub_sample = 1, verbose=TRUE, check=TRUE)
 #' }
-bw_cv_likelihood_calc <- function(bw_range,bw_step,lines, events, w, kernel_name, method,  diggle_correction = FALSE, study_area = NULL, max_depth = 15, digits=5, tol=0.1, agg=NULL, sparse=TRUE, grid_shape=c(1,1), sub_sample=1, verbose=TRUE, check=TRUE){
+bw_cv_likelihood_calc <- function(bw_range,bw_step,lines, events, w, kernel_name, method,
+                                  diggle_correction = FALSE, study_area = NULL,
+                                  max_depth = 15, digits=5, tol=0.1, agg=NULL,
+                                  sparse=TRUE, grid_shape=c(1,1), sub_sample=1,
+                                  zero_strat = "min_double",
+                                  verbose=TRUE, check=TRUE){
 
   ## step0 basic checks
   samples <- events
@@ -292,6 +300,10 @@ bw_cv_likelihood_calc <- function(bw_range,bw_step,lines, events, w, kernel_name
            kernel_name, method, bw_net_range = bw_range, bw_time_range = NULL,
            bw_net_step = bw_step, bw_time_step = NULL,
            diggle_correction = diggle_correction, study_area = study_area)
+
+  if(zero_strat %in% c("min_double", "remove") == FALSE){
+    stop("zero_strat argument must be one of c('min_double', 'remove')")
+  }
 
 
   ## step1 : preparing the data
@@ -387,9 +399,22 @@ bw_cv_likelihood_calc <- function(bw_range,bw_step,lines, events, w, kernel_name
   # removing NULL elements in list
   dfs[sapply(dfs, is.null)] <- NULL
 
-  add <- function(x) Reduce("+", x)
+  # all the elements are matrices, we must combine them by row
+  all_loo_scores <- do.call(rbind, dfs)
 
-  cv_scores <- add(dfs)
+  # and we can calculate now the scores
+  if(zero_strat == "min_double"){
+    all_loo_scores <- ifelse(all_loo_scores == 0, .Machine$double.xmin, all_loo_scores)
+    cv_scores <- colSums(log(all_loo_scores)) / nrow(all_loo_scores)
+  }else{
+    binary_mat <- all_loo_scores == 0
+    all_loo_scores <- ifelse(binary_mat, 1, all_loo_scores)
+    cv_scores <- colSums(log(all_loo_scores)) / colSums(binary_mat == FALSE)
+  }
+
+  # add <- function(x) Reduce("+", x)
+  #
+  # cv_scores <- add(dfs)
 
 
   finaldf <- data.frame(
@@ -421,6 +446,9 @@ bw_cv_likelihood_calc <- function(bw_range,bw_step,lines, events, w, kernel_name
 #' bandwidth evaluation and thus reduce calculation time.
 #' @param verbose A Boolean, indicating if the function should print messages
 #' about process.
+#' @param zero_strat A string indicating what to do when density is 0 when calculating LOO density estimate for an isolated event.
+#' "min_double" (default) replace the 0 value by the minimum double possible on the machine. "remove" will remove them from the final
+#' score. The first approach penalizes more strongly the small bandwidths.
 #' @template check-arg
 #' @return A dataframe with two columns, one for the bandwidths and the second for
 #' the cross validation score (the lower the better).
@@ -444,7 +472,12 @@ bw_cv_likelihood_calc <- function(bw_range,bw_step,lines, events, w, kernel_name
 #' ## make sure any open connections are closed afterward
 #' if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
 #' }
-bw_cv_likelihood_calc.mc <- function(bw_range,bw_step,lines, events, w, kernel_name, method,  diggle_correction = FALSE, study_area = NULL, max_depth = 15, digits=5, tol=0.1, agg=NULL, sparse=TRUE, grid_shape=c(1,1), sub_sample=1, verbose=TRUE, check=TRUE){
+bw_cv_likelihood_calc.mc <- function(bw_range,bw_step,lines, events, w, kernel_name, method,
+                                     diggle_correction = FALSE, study_area = NULL,
+                                     max_depth = 15, digits=5, tol=0.1, agg=NULL,
+                                     sparse=TRUE, grid_shape=c(1,1), sub_sample=1,
+                                     zero_strat = "min_double",
+                                     verbose=TRUE, check=TRUE){
 
   ## step0 basic checks
   samples <- events
@@ -461,6 +494,9 @@ bw_cv_likelihood_calc.mc <- function(bw_range,bw_step,lines, events, w, kernel_n
                       bw_net_step = bw_step, bw_time_step = NULL,
                       diggle_correction = diggle_correction, study_area = study_area)
 
+  if(zero_strat %in% c("min_double", "remove") == FALSE){
+    stop("zero_strat argument must be one of c('min_double', 'remove')")
+  }
 
   ## step1 : preparing the data
   if(verbose){
@@ -568,12 +604,38 @@ bw_cv_likelihood_calc.mc <- function(bw_range,bw_step,lines, events, w, kernel_n
   }
 
 
+  # # removing NULL elements in list
+  # dfs[sapply(dfs, is.null)] <- NULL
+  #
+  # add <- function(x) Reduce("+", x)
+  #
+  # cv_scores <- add(dfs)
+  #
+  #
+  # finaldf <- data.frame(
+  #   "bw" = all_bws,
+  #   "cv_scores" = cv_scores
+  # )
+
   # removing NULL elements in list
   dfs[sapply(dfs, is.null)] <- NULL
 
-  add <- function(x) Reduce("+", x)
+  # all the elements are matrices, we must combine them by row
+  all_loo_scores <- do.call(rbind, dfs)
 
-  cv_scores <- add(dfs)
+  # and we can calculate now the scores
+  if(zero_strat == "min_double"){
+    all_loo_scores <- ifelse(all_loo_scores == 0, .Machine$double.xmin, all_loo_scores)
+    cv_scores <- colSums(log(all_loo_scores)) / nrow(all_loo_scores)
+  }else{
+    binary_mat <- all_loo_scores == 0
+    all_loo_scores <- ifelse(binary_mat, 1, all_loo_scores)
+    cv_scores <- colSums(log(all_loo_scores)) / colSums(binary_mat == FALSE)
+  }
+
+  # add <- function(x) Reduce("+", x)
+  #
+  # cv_scores <- add(dfs)
 
 
   finaldf <- data.frame(
@@ -601,6 +663,9 @@ bw_cv_likelihood_calc.mc <- function(bw_range,bw_step,lines, events, w, kernel_n
 #' @param kernel_name The name of the kernel to use (string)
 #' @param bws_net A numeric vector with the network bandwidths
 #' @param method The type of NKDE to use (string)
+#' @param zero_strat A string indicating what to do when density is 0 when calculating LOO density estimate for an isolated event.
+#' "min_double" (default) replace the 0 value by the minimum double possible on the machine. "remove" will remove them from the final
+#' score. The first approach penalizes more strongly the small bandwidths.
 #' @template nkde_geoms-args
 #' @template sparse-arg
 #' @param verbose A boolean
@@ -608,7 +673,11 @@ bw_cv_likelihood_calc.mc <- function(bw_range,bw_step,lines, events, w, kernel_n
 #' @keywords internal
 #' @examples
 #' # no example provided, this is an internal function
-nkde_worker_bw_sel <- function(lines, quad_events, events_loc, events, w, kernel_name, bws_net, method, div, digits, tol, sparse, max_depth, verbose = FALSE, cvl = FALSE){
+nkde_worker_bw_sel <- function(lines, quad_events, events_loc, events, w,
+                               kernel_name, bws_net, method, div,
+                               digits, tol, sparse, max_depth,
+                               zero_strat = "min_double",
+                               verbose = FALSE, cvl = FALSE){
 
   # if we do not have event in that space, just return NULL
   if(nrow(events)==0){
@@ -654,6 +723,8 @@ nkde_worker_bw_sel <- function(lines, quad_events, events_loc, events, w, kernel
                                         events2$vertex_id, events2$wid, w,
                                         bws_net,
                                         kernel_name, graph_result$linelist, max_depth,
-                                        .Machine$double.xmin, cvl)
+                                        cvl)
+  # kernel values are a matrix
+
   return(kernel_values)
 }

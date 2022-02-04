@@ -158,6 +158,9 @@ bw_tnkde_corr_factor <- function(net_bws, time_bws, diggle_correction, study_are
 #' bandwidth evaluation and thus reduce calculation time.
 #' @template verbose-arg
 #' @template check-arg
+#' @param zero_strat A string indicating what to do when density is 0 when calculating LOO density estimate for an isolated event.
+#' "min_double" (default) replace the 0 value by the minimum double possible on the machine. "remove" will remove them from the final
+#' score. The first approach penalizes more strongly the small bandwidths.
 #' @return A matrix with the cross validation score.  Each row corresponds to a network
 #' bandwidth and each column to a time bandwidth (the higher the better).
 #' @export
@@ -205,6 +208,7 @@ bws_tnkde_cv_likelihood_calc <- function(bw_net_range, bw_net_step,
                                          w, kernel_name, method,
                                          diggle_correction = FALSE, study_area = NULL,
                                          max_depth = 15, digits=5, tol=0.1, agg=NULL, sparse=TRUE,
+                                         zero_strat = "min_double",
                                          grid_shape=c(1,1), sub_sample=1, verbose=TRUE, check=TRUE){
 
   ## step0 basic checks
@@ -219,6 +223,10 @@ bws_tnkde_cv_likelihood_calc <- function(bw_net_range, bw_net_step,
                   kernel_name, method, bw_net_range = bw_net_range, bw_time_range = bw_time_range,
                   bw_net_step = bw_net_step, bw_time_step = bw_time_step,
                   diggle_correction = diggle_correction, study_area = study_area)
+
+  if(zero_strat %in% c("min_double", "remove") == FALSE){
+    stop("zero_strat argument must be one of c('min_double', 'remove')")
+  }
 
   ## step1 : preparing the data
   if(verbose){
@@ -312,16 +320,28 @@ bws_tnkde_cv_likelihood_calc <- function(bw_net_range, bw_net_step,
       setTxtProgressBar(pb, i)
     }
 
-    # values est une matrice (bw_net, bw_time) avec les sommes de loglikelihood de chaque
+    # (OLD) values est une matrice (bw_net, bw_time) avec les sommes de loglikelihood de chaque
+    # (OLD) values est un cube (bw_net, bw_time, events) avec les densites estimees en mode LOO
     return(values)
   })
 
-  # removing NULL elements in list
+  # removing NULL elements in list of cubes
   dfs[sapply(dfs, is.null)] <- NULL
+  dfs$along <- 3
+  final_array <- do.call(abind::abind, dfs)
+  if(zero_strat == "min_double"){
+    bin_arr <- final_array == 0
+    final_array[bin_arr] <- .Machine$double.xmin
+    final_mat <- rowSums(log(final_array), dims = 2) / dim(final_array)[[3]]
+  }else{
+    bin_arr <- final_array == 0
+    final_array[bin_arr] <- 1
+    final_mat <- rowSums(log(final_array), dims = 2) / rowSums(!bin_arr, dims = 2)
+  }
 
-  add <- function(x) Reduce("+", x)
-
-  final_mat <- add(dfs)
+  # add <- function(x) Reduce("+", x)
+  #
+  # final_mat <- add(dfs)
   colnames(final_mat) <- time_bws
   rownames(final_mat) <- net_bws
 
@@ -351,6 +371,9 @@ bws_tnkde_cv_likelihood_calc <- function(bw_net_range, bw_net_step,
 #' bandwidth evaluation and thus reduce calculation time.
 #' @template verbose-arg
 #' @template check-arg
+#' @param zero_strat A string indicating what to do when density is 0 when calculating LOO density estimate for an isolated event.
+#' "min_double" (default) replace the 0 value by the minimum double possible on the machine. "remove" will remove them from the final
+#' score. The first approach penalizes more strongly the small bandwidths.
 #' @return A matrix with the cross validation score.  Each row correspond to a network
 #' bandwidth and each column to a time bandwidth (the higher the better).
 #' @export
@@ -403,6 +426,7 @@ bws_tnkde_cv_likelihood_calc.mc <- function(bw_net_range, bw_net_step,
                                          w, kernel_name, method,
                                          diggle_correction = FALSE, study_area = NULL,
                                          max_depth = 15, digits=5, tol=0.1, agg=NULL, sparse=TRUE,
+                                         zero_strat = "min_double",
                                          grid_shape=c(1,1), sub_sample=1, verbose=TRUE, check=TRUE){
 
   ## step0 basic checks
@@ -417,6 +441,10 @@ bws_tnkde_cv_likelihood_calc.mc <- function(bw_net_range, bw_net_step,
             kernel_name, method, bw_net_range = bw_net_range, bw_time_range = bw_time_range,
             bw_net_step = bw_net_step, bw_time_step = bw_time_step,
             diggle_correction = diggle_correction, study_area = study_area)
+
+  if(zero_strat %in% c("min_double", "remove") == FALSE){
+    stop("zero_strat argument must be one of c('min_double', 'remove')")
+  }
 
   ## step1 : preparing the data
   if(verbose){
@@ -531,12 +559,24 @@ bws_tnkde_cv_likelihood_calc.mc <- function(bw_net_range, bw_net_step,
     })
   }
 
-  # removing NULL elements in list
+  # removing NULL elements in list of cubes
   dfs[sapply(dfs, is.null)] <- NULL
+  dfs$along <- 3
 
-  add <- function(x) Reduce("+", x)
+  final_array <- do.call(abind::abind, dfs)
+  if(zero_strat == "min_double"){
+    bin_arr <- final_array == 0
+    final_array[bin_arr] <- .Machine$double.xmin
+    final_mat <- rowSums(log(final_array), dims = 2) / dim(final_array)[[3]]
+  }else{
+    bin_arr <- final_array == 0
+    final_array[bin_arr] <- 1
+    final_mat <- rowSums(log(final_array), dims = 2) / rowSums(!bin_arr, dims = 2)
+  }
 
-  final_mat <- add(dfs)
+  # add <- function(x) Reduce("+", x)
+  #
+  # final_mat <- add(dfs)
   colnames(final_mat) <- time_bws
   rownames(final_mat) <- net_bws
 
@@ -585,12 +625,9 @@ tnkde_worker_bw_sel <- function(lines, quad_events, events_loc, events, w, kerne
   ## NOTE : there will be less samples than events most of the time
   events_loc$vertex_id <- closest_points(events_loc, nodes)
 
-  events_loc2 <- events_loc
-  events_loc2$geometry <- NULL
-  events2 <- events
-  events2$geometry <- NULL
-  quad_events2 <- quad_events
-  quad_events2$geometry <- NULL
+  events_loc2 <- st_drop_geometry(events_loc)
+  events2 <- st_drop_geometry(events)
+  quad_events2 <- st_drop_geometry(quad_events)
 
   #first a join for all the events in the bw
   vertex_id <- NULL # avoid a NOTE
@@ -613,6 +650,6 @@ tnkde_worker_bw_sel <- function(lines, quad_events, events_loc, events, w, kerne
                                         .Machine$double.xmin
   )
 
-  ## at that point, we have a list of numeric vectors or a list of dataframes, one for each bw
+  # kernel_values is supposed to be an array (bw_net, bw_time, events)
   return(kernel_values)
 }

@@ -13,9 +13,7 @@ continuous_tnkde_cpp_arma_sparse(
   weights,
   samples,
   samples_time,
-  obw_net,
   bws_net,
-  obw_time,
   bws_time,
   kernel_name,
   nodes,
@@ -32,9 +30,7 @@ continuous_tnkde_cpp_arma(
   weights,
   samples,
   samples_time,
-  obw_net,
   bws_net,
-  obw_time,
   bws_time,
   kernel_name,
   nodes,
@@ -57,13 +53,7 @@ continuous_tnkde_cpp_arma(
 
 \item{samples_time}{a NumericVector indicating when to do the samples}
 
-\item{obw_net}{a float giving the overall network bandwidth, used to standardize the densities
-if div = "bw"}
-
 \item{bws_net}{the network kernel bandwidths for each event}
-
-\item{obw_time}{a float giving the overall time bandwidth, used to standardize the densities
-if div = "bw"}
 
 \item{bws_time}{the time kernel bandwidths for each event}
 

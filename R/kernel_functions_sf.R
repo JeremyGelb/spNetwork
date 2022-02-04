@@ -272,13 +272,14 @@ calc_gamma <- function(k){
 #' @param kernel_func a function obtained with the function select_kernel
 #' @param nodes a a feature collection of points representing the nodes of the network
 #' @param edges a a feature collection of linestrings representing the edges of the network
+#' @param div The divisor to use for the kernel. Must be "n" (the number of events within the radius around each sampling point), "bw" (the bandwidth) "none" (the simple sum).
 #' @return a dataframe with two columns. sum_k is the sum for each sample point
 #'  of the kernel values. n is the number of events influencing each sample
 #' point
 #' @keywords internal
 #' @examples
 #' #This is an internal function, no example provided
-simple_nkde <- function(graph, events, samples, bws, kernel_func, nodes, edges){
+simple_nkde <- function(graph, events, samples, bws, kernel_func, nodes, edges, div = "bw"){
 
   ## step 1 set all values to 0
   base_k <- rep(0,nrow(samples))
@@ -306,7 +307,12 @@ simple_nkde <- function(graph, events, samples, bws, kernel_func, nodes, edges){
                             nodes, edges, sample_tree, edges_tree)
 
     samples_count <- ifelse(samples_k>0,1,0)
-    base_k <- samples_k * w + base_k
+    if(div == "bw"){
+      base_k <- (samples_k * w / bw) + base_k
+    }else{
+      base_k <- samples_k * w + base_k
+    }
+
     base_count <- base_count + (samples_count * w)
   }
   return(data.frame("sum_k"=base_k,

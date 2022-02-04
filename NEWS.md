@@ -1,3 +1,11 @@
+# spNetwork 0.4.1.9000
+
+## New Features
+
+* It is possible now to choose between two strategies to deal with densities at 0 when calculating LOO likelihood for several bandwidths. For more details, see the parameter *zero_strat* in the functions *bw_cvl_calc*, *bw_cvl_calc.mc*, *bw_cv_likelihood_calc*, *bw_cv_likelihood_calc.mc*, *bws_tnkde_cv_likelihood_calc* and *bws_tnkde_cv_likelihood_calc.mc*.
+
+* It is possible now to set directly the size of local bandwidths for the functions *nkde*, *nkde.mc*, *tnkde* and *tnkde.mc*. This feature is currently experimental, please submit an issue if you encounter a bug.
+
 # spNetwork 0.4.0.9000
 
 ## New Features

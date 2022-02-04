@@ -18,6 +18,7 @@ nkde_worker_bw_sel(
   tol,
   sparse,
   max_depth,
+  zero_strat = "min_double",
   verbose = FALSE,
   cvl = FALSE
 )
@@ -53,6 +54,10 @@ used by the Rcpp functions. These matrices are used to store edge indices
 between two nodes in a graph. Regular matrices are faster, but require more
 memory, in particular with multiprocessing. Sparse matrices are slower (a
 bit), but require much less memory.}
+
+\item{zero_strat}{A string indicating what to do when density is 0 when calculating LOO density estimate for an isolated event.
+"min_double" (default) replace the 0 value by the minimum double possible on the machine. "remove" will remove them from the final
+score. The first approach penalizes more strongly the small bandwidths.}
 
 \item{verbose}{A boolean}
 

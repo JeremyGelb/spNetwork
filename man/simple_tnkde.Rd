@@ -9,9 +9,7 @@ simple_tnkde(
   events,
   samples,
   samples_time,
-  obw_net,
   bws_net,
-  obw_time,
   bws_time,
   kernel_func,
   nodes,
@@ -33,14 +31,8 @@ for each sample on which edge it is snapped.}
 \item{samples_time}{a numeric vector indicating when the densities must be
 sampled}
 
-\item{obw_net}{a float, the overall network bandwidth, used to standardize densities if
-div = "bw"}
-
 \item{bws_net}{a vector indicating the network kernel bandwidth (in meters) for each
 event}
-
-\item{obw_time}{a float, the overall time bandwidth, used to standardize densities if
-div = "bw"}
 
 \item{bws_time}{a vector indicating the time kernel bandwidth for each
 event}

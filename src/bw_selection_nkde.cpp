@@ -387,19 +387,18 @@ arma::mat esc_kernel_loo_nkde(fptros kernel_func, arma::sp_mat& edge_mat,
 //' @param kernel_name a string with the name of the kernel to use
 //' @param line_list a DataFrame describing the lines
 //' @param max_depth the maximum recursion depth
-//' @param min_tol a double indicating by how much 0 in densities values must be replaced
 //' @param cvl a boolean indicating if the Cronie (TRUE) or CV likelihood (FALSE) must be used
 //' @return a vector with the CV score for each bandwidth and the densities if required
 //' @export
 //' @examples
 //' # no example provided, this is an internal function
 // [[Rcpp::export]]
-arma::colvec nkde_get_loo_values(std::string method, List neighbour_list,
+arma::mat nkde_get_loo_values(std::string method, List neighbour_list,
                                NumericVector sel_events, NumericVector sel_events_wid,
                                NumericVector events, NumericVector events_wid,
                                arma::mat weights,
                                arma::vec bws_net, std::string kernel_name,
-                               DataFrame line_list, int max_depth, double min_tol, bool cvl){
+                               DataFrame line_list, int max_depth, bool cvl){
 
   //selecting the kernel function
   fptros kernel_func = select_kernelos(kernel_name);
@@ -475,17 +474,23 @@ arma::colvec nkde_get_loo_values(std::string method, List neighbour_list,
   };
 
   // replacing 0 densities by mintol
-  arma::uvec neg_elems = arma::find(base_k <= 0);
-  base_k.elem(neg_elems).fill(min_tol);
+  return base_k;
+
+  // arma::uvec neg_elems = arma::find(base_k <= 0);
+  // if(zero_strat == "min_double"){
+  //   base_k.elem(neg_elems).fill(min_tol);
+  // }else{
+  //   base_k.elem(neg_elems).fill(1);
+  // }
 
   // and calculating the final score
-  arma::colvec result;
-  if(cvl == false){
-    result = arma::sum(arma::log(base_k),0).t();
-  }else{
-    result = arma::sum(arma::pow(base_k,-1.0),0).t();
-  }
-  return result;
+  // arma::colvec result;
+  // if(cvl == false){
+  //   result = arma::sum(arma::log(base_k),0).t();
+  // }else{
+  //   result = arma::sum(arma::pow(base_k,-1.0),0).t();
+  // }
+  // return result;
 }
 
 

@@ -219,6 +219,9 @@
 #' bandwidth evaluation and thus reduce calculation time.
 #' @param verbose A Boolean, indicating if the function should print messages
 #' about the process.
+#' @param zero_strat A string indicating what to do when density is 0 when calculating LOO density estimate for an isolated event.
+#' "min_double" (default) replace the 0 value by the minimum double possible on the machine. "remove" will remove them from the final
+#' score. The first approach penalizes more strongly the small bandwidths.
 #' @template check-arg
 #' @return A dataframe with two columns, one for the bandwidths and the second for
 #' the Cronie and Van Lieshout's Criterion.
@@ -239,7 +242,11 @@
 #'                                sparse=TRUE, grid_shape=c(1,1),
 #'                                sub_sample = 1, verbose=TRUE, check=TRUE)
 #'}
-bw_cvl_calc <- function(bw_range, bw_step,lines, events, w, kernel_name, method,  diggle_correction = FALSE, study_area = NULL, max_depth = 15, digits=5, tol=0.1, agg=NULL, sparse=TRUE, grid_shape=c(1,1), sub_sample=1, verbose=TRUE, check=TRUE){
+bw_cvl_calc <- function(bw_range, bw_step,lines, events, w, kernel_name, method,
+                        diggle_correction = FALSE, study_area = NULL, max_depth = 15,
+                        digits=5, tol=0.1, agg=NULL, sparse=TRUE,
+                        zero_strat = "min_double",
+                        grid_shape=c(1,1), sub_sample=1, verbose=TRUE, check=TRUE){
 
   ## step0 basic checks
   samples <- events
@@ -258,6 +265,9 @@ bw_cvl_calc <- function(bw_range, bw_step,lines, events, w, kernel_name, method,
                       bw_net_step = bw_step, bw_time_step = NULL,
                       diggle_correction = diggle_correction, study_area = study_area)
 
+  if(zero_strat %in% c("min_double", "remove") == FALSE){
+    stop("zero_strat argument must be one of c('min_double', 'remove')")
+  }
 
   ## step1 : preparing the data
   if(verbose){
@@ -336,6 +346,7 @@ bw_cvl_calc <- function(bw_range, bw_step,lines, events, w, kernel_name, method,
                                   kernel_name, all_bws,
                                   method, div, digits,
                                   tol,sparse, max_depth, verbose, cvl = TRUE)
+    # NOTE : values is a matrix
 
     return(values)
 
@@ -345,8 +356,18 @@ bw_cvl_calc <- function(bw_range, bw_step,lines, events, w, kernel_name, method,
   # removing NULL elements in list
   dfs[sapply(dfs, is.null)] <- NULL
 
-  add <- function(x) Reduce("+", x)
-  cv_scores <- (add(dfs) - wl)**2
+  # all the elements are matrices, we must combine them by row
+  all_loo_scores <- do.call(rbind, dfs)
+
+  if(zero_strat == "min_double"){
+    all_loo_scores <- ifelse(all_loo_scores == 0, .Machine$double.xmin, all_loo_scores)
+  }else{
+    all_loo_scores <- ifelse(all_loo_scores == 0, NA, all_loo_scores)
+  }
+
+  part2 <- colSums(all_loo_scores ** (-1), na.rm = TRUE)
+
+  cv_scores <- (part2 - wl)**2
   bw_scores <- data.frame(
     "bw" = all_bws,
     "cvl_scores" = cv_scores
@@ -380,6 +401,9 @@ bw_cvl_calc <- function(bw_range, bw_step,lines, events, w, kernel_name, method,
 #' @param verbose A Boolean, indicating if the function should print messages
 #' about the process.
 #' @template check-arg
+#' @param zero_strat A string indicating what to do when density is 0 when calculating LOO density estimate for an isolated event.
+#' "min_double" (default) replace the 0 value by the minimum double possible on the machine. "remove" will remove them from the final
+#' score. The first approach penalizes more strongly the small bandwidths.
 #' @return A dataframe with two columns, one for the bandwidths and the second for
 #' the Cronie and Van Lieshout's Criterion.
 #' @export
@@ -402,7 +426,11 @@ bw_cvl_calc <- function(bw_range, bw_step,lines, events, w, kernel_name, method,
 #' ## make sure any open connections are closed afterward
 #' if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
 #' }
-bw_cvl_calc.mc <- function(bw_range,bw_step,lines, events, w, kernel_name, method,  diggle_correction = FALSE, study_area = NULL, max_depth = 15, digits=5, tol=0.1, agg=NULL, sparse=TRUE, grid_shape=c(1,1), sub_sample=1, verbose=TRUE, check=TRUE){
+bw_cvl_calc.mc <- function(bw_range,bw_step,lines, events, w, kernel_name, method,
+                           diggle_correction = FALSE, study_area = NULL, max_depth = 15,
+                           digits=5, tol=0.1, agg=NULL, sparse=TRUE,
+                           zero_strat = "min_double",
+                           grid_shape=c(1,1), sub_sample=1, verbose=TRUE, check=TRUE){
 
   ## step0 basic checks
   samples <- events
@@ -527,15 +555,36 @@ bw_cvl_calc.mc <- function(bw_range,bw_step,lines, events, w, kernel_name, metho
   # removing NULL elements in list
   dfs[sapply(dfs, is.null)] <- NULL
 
-  add <- function(x) Reduce("+", x)
+  # all the elements are matrices, we must combine them by row
+  all_loo_scores <- do.call(rbind, dfs)
 
-  cv_scores <- (add(dfs) - wl)**2
+  if(zero_strat == "min_double"){
+    all_loo_scores <- ifelse(all_loo_scores == 0, .Machine$double.xmin, all_loo_scores)
+  }else{
+    all_loo_scores <- ifelse(all_loo_scores == 0, NA, all_loo_scores)
+  }
 
+  part2 <- colSums(all_loo_scores ** (-1), na.rm = TRUE)
+
+  cv_scores <- (part2 - wl)**2
 
   finaldf <- data.frame(
     "bw" = all_bws,
     "cvl_scores" = cv_scores
   )
+
+  # # removing NULL elements in list
+  # dfs[sapply(dfs, is.null)] <- NULL
+  #
+  # add <- function(x) Reduce("+", x)
+  #
+  # cv_scores <- (add(dfs) - wl)**2
+  #
+  #
+  # finaldf <- data.frame(
+  #   "bw" = all_bws,
+  #   "cvl_scores" = cv_scores
+  # )
 
   return(finaldf)
 }

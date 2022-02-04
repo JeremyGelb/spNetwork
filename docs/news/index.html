@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.1.9000</span>
       </span>
     </div>
 
@@ -52,6 +52,9 @@
     <li>
       <a href="../articles/TNKDE.html">Temporal Network Kernel Density Estimate</a>
     </li>
+    <li>
+      <a href="../articles/web_vignettes/AdaptiveBW.html">K-nearest neighbour adaptive bandwidth</a>
+    </li>
   </ul></li>
 <li>
   <a href="../news/index.html">Changelog</a>
@@ -75,6 +78,14 @@
       <small>Source: <a href="https://github.com/JeremyGelb/spNetwork/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.4.1.9000" id="spnetwork-0419000">spNetwork 0.4.1.9000<a class="anchor" aria-label="anchor" href="#spnetwork-0419000"></a></h2>
+<div class="section level3">
+<h3 id="new-features-0-4-1-9000">New Features<a class="anchor" aria-label="anchor" href="#new-features-0-4-1-9000"></a></h3>
+<ul><li><p>It is possible now to choose between two strategies to deal with densities at 0 when calculating LOO likelihood for several bandwidths. For more details, see the parameter <em>zero_strat</em> in the functions <em>bw_cvl_calc</em>, <em>bw_cvl_calc.mc</em>, <em>bw_cv_likelihood_calc</em>, <em>bw_cv_likelihood_calc.mc</em>, <em>bws_tnkde_cv_likelihood_calc</em> and <em>bws_tnkde_cv_likelihood_calc.mc</em>.</p></li>
+<li><p>It is possible now to set directly the size of local bandwidths for the functions <em>nkde</em>, <em>nkde.mc</em>, <em>tnkde</em> and <em>tnkde.mc</em>. This feature is currently experimental, please submit an issue if you encounter a bug.</p></li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.4.0.9000" id="spnetwork-0409000">spNetwork 0.4.0.9000<a class="anchor" aria-label="anchor" href="#spnetwork-0409000"></a></h2>
 <div class="section level3">

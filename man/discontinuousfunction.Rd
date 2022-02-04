@@ -16,7 +16,8 @@ discontinuous_nkde_cpp_arma_sparse(
   nodes,
   line_list,
   max_depth,
-  verbose
+  verbose,
+  div = "bw"
 )
 
 discontinuous_nkde_cpp_arma(
@@ -29,7 +30,8 @@ discontinuous_nkde_cpp_arma(
   nodes,
   line_list,
   max_depth,
-  verbose
+  verbose,
+  div = "bw"
 )
 }
 \arguments{
@@ -52,6 +54,8 @@ discontinuous_nkde_cpp_arma(
 \item{max_depth}{the maximum recursion depth (after which recursion is stopped)}
 
 \item{verbose}{a boolean indicating if the function must print its progress}
+
+\item{div}{The divisor to use for the kernel. Must be "n" (the number of events within the radius around each sampling point), "bw" (the bandwidth) "none" (the simple sum).}
 }
 \value{
 a DataFrame with two columns : the kernel values (sum_k) and the number of events for each sample (n)

@@ -13,7 +13,7 @@ aggregate_points(points, maxdist, weight = "weight")
 
 \item{weight}{The name of the column to use as weight (default is "weight").
 The values of the aggregated points for this column will be summed. For all
-the other columns, only the first value is retained.}
+the other columns, only the max value is retained.}
 }
 \value{
 A new feature collection of points

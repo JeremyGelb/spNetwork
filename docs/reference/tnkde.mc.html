@@ -18,7 +18,7 @@ sampling points in space and times, and events in space and time with multicore 
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.1.9000</span>
       </span>
     </div>
 
@@ -52,6 +52,9 @@ sampling points in space and times, and events in space and time with multicore 
     </li>
     <li>
       <a href="../articles/TNKDE.html">Temporal Network Kernel Density Estimate</a>
+    </li>
+    <li>
+      <a href="../articles/web_vignettes/AdaptiveBW.html">K-nearest neighbour adaptive bandwidth</a>
     </li>
   </ul></li>
 <li>
@@ -94,6 +97,7 @@ sampling points in space and times, and events in space and time with multicore 
   <span class="va">bw_net</span>,
   <span class="va">bw_time</span>,
   adaptive <span class="op">=</span> <span class="cn">FALSE</span>,
+  adaptive_separate <span class="op">=</span> <span class="cn">TRUE</span>,
   trim_bw_net <span class="op">=</span> <span class="cn">NULL</span>,
   trim_bw_time <span class="op">=</span> <span class="cn">NULL</span>,
   <span class="va">method</span>,
@@ -121,7 +125,8 @@ geometries must be simple Linestrings (may crash if some geometries
 <dd><p>events A feature collection of points representing the events on the
 network. The points will be snapped on the network to their closest line.</p></dd>
 <dt>time_field</dt>
-<dd><p>The name of the field in events indicating when the events occurred. It must be a numeric field</p></dd>
+<dd><p>The name of the field in events indicating when the events
+occurred. It must be a numeric field</p></dd>
 <dt>w</dt>
 <dd><p>A vector representing the weight of each event</p></dd>
 <dt>samples_loc</dt>
@@ -133,12 +138,19 @@ which the densities will be estimated.</p></dd>
 <dd><p>The name of the kernel to use. Must be one of triangle,
 gaussian, tricube, cosine ,triweight, quartic, epanechnikov or uniform.</p></dd>
 <dt>bw_net</dt>
-<dd><p>The network kernel bandwidth (using the scale of the lines)</p></dd>
+<dd><p>The network kernel bandwidth (using the scale of the lines),
+can be a single float or a numeric vector if a different bandwidth must be
+used for each event.</p></dd>
 <dt>bw_time</dt>
-<dd><p>The time kernel bandwidth</p></dd>
+<dd><p>The time kernel bandwidth, can be a single float or a numeric
+vector if a different bandwidth must be used for each event.</p></dd>
 <dt>adaptive</dt>
-<dd><p>A Boolean, indicating if an adaptive bandwidth must be
-used. Both spatial and temporal bandwidths are adapted but separately.</p></dd>
+<dd><p>A Boolean, indicating if an adaptive bandwidth must be used.
+Both spatial and temporal bandwidths are adapted but separately.</p></dd>
+<dt>adaptive_separate</dt>
+<dd><p>A boolean indicating if the adaptive bandwidths
+for the time and the network dimensions must be calculated separately (TRUE) or in
+interaction (FALSE)</p></dd>
 <dt>trim_bw_net</dt>
 <dd><p>A float, indicating the maximum value for the adaptive
 network bandwidth</p></dd>

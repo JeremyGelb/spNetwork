@@ -43,7 +43,9 @@ which the densities will be estimated.}
 \item{kernel_name}{The name of the kernel to use. Must be one of triangle,
 gaussian, tricube, cosine ,triweight, quartic, epanechnikov or uniform.}
 
-\item{bw}{The kernel bandwidth (using the scale of the lines)}
+\item{bw}{The kernel bandwidth (using the scale of the lines), can be a
+single float or a numeric vector if a different bandwidth must be used
+for each event.}
 
 \item{adaptive}{A Boolean, indicating if an adaptive bandwidth must be
 used}
