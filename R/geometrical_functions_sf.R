@@ -503,7 +503,7 @@ lines_center <- function(lines) {
       names(data2) <-names(st_drop_geometry(no_length))
       data2$X <- pts_coords2[,1]
       data2$Y <- pts_coords2[,2]
-      pts2 <- st_as_sf(data2, coords = c("X,Y"), crs = st_crs(lines))
+      pts2 <- st_as_sf(data2, coords = c("X","Y"), crs = st_crs(lines))
     }else{
       pts2 <- NULL
     }
@@ -1107,7 +1107,7 @@ remove_mirror_edges <- function(lines, keep_shortest = TRUE, digits = 3, verbose
 #' lines <- sf::st_read(networkgpkg,layer="mtl_network")
 #' edited_lines <- simplify_network(lines, digits = 3, verbose = FALSE)
 #' }
-simplify_network <- function(lines, digits = 3, heal = TRUE, mirror = TRUE, keep_shortest = TRUE, verbose = TRUE){
+simplify_network <- function(lines, digits = 3, heal = TRUE, mirror = TRUE, keep_shortest = TRUE, verbose = TRUE){ # nocov start
 
     if(heal){
         if(verbose){
@@ -1124,7 +1124,7 @@ simplify_network <- function(lines, digits = 3, heal = TRUE, mirror = TRUE, keep
     }
 
     return(lines)
-}
+} # nocov end
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #### Development ####

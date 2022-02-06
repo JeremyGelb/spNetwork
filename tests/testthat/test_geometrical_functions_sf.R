@@ -20,6 +20,7 @@ test_that("formal testing of the sp_char_index function", {
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #### Testing the lines_extremities function ####
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 test_that("formal testing of the lines_extremities function", {
 
   # creating a spatialLinesDataFrame
@@ -54,10 +55,50 @@ test_that("formal testing of the lines_extremities function", {
 })
 
 
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#### Testing the lines_center  function ####
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+test_that("formal testing of the lines_center  function", {
+
+  # creating a spatialLinesDataFrame
+  wkt_lines <- c(
+    "LINESTRING (0 0, 1 0)",
+    "LINESTRING (1 0, 2 0)",
+    "LINESTRING (2 0, 3 0)",
+    "LINESTRING (0 1, 1 1)",
+    "LINESTRING (0 0, 0 0)")
+
+  linesdf <- data.frame(wkt = wkt_lines,
+                        id = paste("l",1:length(wkt_lines),sep=""))
+
+  all_lines <- st_as_sf(linesdf, wkt = "wkt")
+  all_lines <- cbind(linesdf$wkt,all_lines)
+
+  # creating the expected spatialPointsDataFrame
+  expected <- rbind(
+    c(0.5,0),
+    c(1.5,0),
+    c(2.5,0),
+    c(0.5,1),
+    c(0,0)
+  )
+  obtained <- lines_center(all_lines)
+
+  # creating the obtained SpatialPointsDataFrame
+  obtained_mat <- st_coordinates(obtained)
+
+  test <- sum(obtained_mat - expected)
+
+  expect_true(test == 0)
+})
+
+
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #### Testing the remove_loop_lines function ####
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 test_that("formal testing of the remove_loop_lines function", {
 
   # creating a spatialLinesDataFrame
@@ -84,9 +125,42 @@ test_that("formal testing of the remove_loop_lines function", {
 })
 
 
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#### Testing the remove_mirror_edges function ####
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+test_that("formal testing of the remove_mirror_edges function", {
+
+  # creating a spatialLinesDataFrame
+  wkt_lines <- c(
+    "LINESTRING (0 0, 1 0)",
+    "LINESTRING (0 0, 0 5, 1 0)",
+    "LINESTRING (1 0, 2 0)",
+    "LINESTRING (2 0, 3 0)",
+    "LINESTRING (0 1, 1 1)")
+
+  linesdf <- data.frame(wkt = wkt_lines,
+                        id = paste("l",1:length(wkt_lines),sep=""))
+
+  all_lines <- st_as_sf(linesdf, wkt = "wkt")
+
+  # applying the remove loop function
+  new_lines1 <- remove_mirror_edges(all_lines, keep_shortest = TRUE)
+  new_lines2 <- remove_mirror_edges(all_lines, keep_shortest = FALSE, verbose = FALSE)
+
+  # only the line l3 must be missing
+  test1 <- "l2" %in% new_lines1$id == FALSE
+  test2 <- "l1" %in% new_lines2$id == FALSE
+
+  expect_true(test1 & test2)
+})
+
+
+
 # #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # #### Testing the reverse_lines function ####
 # #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 test_that("formal testing of the reverse_lines function", {
 
   # creating a spatialLinesDataFrame
@@ -170,6 +244,7 @@ test_that("formal testing of the add_vertices_lines function", {
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #### Testing the simple_lines function ####
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 test_that("formal testing of the simple_lines function", {
 
   # creating a spatialLinesDataFrame
@@ -321,10 +396,15 @@ test_that("formal testing of the lixelize_lines.mc function", {
   future::plan(future::multisession(workers=1))
 
   lixels <- lixelize_lines.mc(all_lines, 1, 0.5)
+  lixels2 <- lixelize_lines.mc(all_lines, 1, 0.5, verbose = FALSE)
 
   observed <- st_as_text(lixels$geometry, byid = TRUE)
   observed <- gsub("00","",observed, fixed = TRUE)
   observed <- gsub(".","",observed, fixed = TRUE)
+
+  observed2 <- st_as_text(lixels2$geometry, byid = TRUE)
+  observed2 <- gsub("00","",observed2, fixed = TRUE)
+  observed2 <- gsub(".","",observed2, fixed = TRUE)
 
   # noting the expected results
   expected <- c("LINESTRING (0 5, 0 4)",
@@ -348,8 +428,9 @@ test_that("formal testing of the lixelize_lines.mc function", {
                 "LINESTRING (2 0, 1 0)",
                 "LINESTRING (1 0, 0 0)")
 
-  test <- c(expected %in% observed, observed %in% expected)
-  expect_false(any(!test))
+  test1 <- c(expected %in% observed, observed %in% expected)
+  test2 <- c(expected %in% observed, observed %in% expected)
+  expect_false(any(!test1)|any(!test2))
 
 })
 
