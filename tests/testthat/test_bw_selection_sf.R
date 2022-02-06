@@ -467,7 +467,9 @@ test_that("Testing the bw selection function with Van Lieshout's Criterion and c
                             kernel_name = "quartic",
                             method = "continuous",
                             digits = 1,
-                            agg = NULL, verbose = F,tol = 0.00001
+                            zero_strat = "min_double",
+                            agg = NULL, verbose = TRUE,
+                            tol = 0.00001
   )
 
   expect_equal(obs_value[4,2], total)
@@ -504,12 +506,22 @@ test_that("Testing that bw selection by cv-likelihood gives the same score in si
   cv_scores.mc <- bw_cv_likelihood_calc.mc(c(200,400),100,
                                  lines, events,
                                  rep(1,nrow(events)),
-                                 "quartic", "discontinuous",
+                                 "scaled gaussian", "discontinuous",
                                  diggle_correction = FALSE, study_area = NULL,
                                  max_depth = 8,
                                  digits=2, tol=0.1, agg=5,
                                  sparse=TRUE, grid_shape=c(2,2),
                                  sub_sample = 1, verbose=FALSE, check=TRUE)
+
+  cv_scores.mc2 <- bw_cv_likelihood_calc.mc(c(200,400),100,
+                                           lines, events,
+                                           rep(1,nrow(events)),
+                                           "scaled gaussian", "discontinuous",
+                                           diggle_correction = FALSE, study_area = NULL,
+                                           max_depth = 8,
+                                           digits=2, tol=0.1, agg=5,
+                                           sparse=TRUE, grid_shape=c(2,2),
+                                           sub_sample = 1, verbose=TRUE, check=TRUE)
 
   ## single core cv score
   cv_scores <- bw_cv_likelihood_calc(bw_range = c(200,400),
@@ -517,7 +529,7 @@ test_that("Testing that bw selection by cv-likelihood gives the same score in si
                                      lines = lines,
                                      events = events,
                                      w = rep(1,nrow(events)),
-                                     kernel_name = "quartic",
+                                     kernel_name = "scaled gaussian",
                                      method = "discontinuous",
                                      diggle_correction = FALSE,
                                      study_area = NULL,
@@ -530,8 +542,9 @@ test_that("Testing that bw selection by cv-likelihood gives the same score in si
                                      sub_sample = 1,
                                      verbose=TRUE,
                                      check=TRUE)
-  test <- cv_scores == cv_scores.mc
-  expect_false(any(!test))
+  test1 <- cv_scores == cv_scores.mc
+  test2 <- cv_scores.mc2 == cv_scores.mc
+  expect_false(any(!test1) | any(!test2))
 
 })
 
@@ -558,18 +571,28 @@ test_that("Testing that bw selection with Van Lieshout's Criterion gives the sam
   cv_scores.mc <- bw_cvl_calc.mc(c(200,400),100,
                                            lines, events,
                                            rep(1,nrow(events)),
-                                           "quartic", "discontinuous",
+                                           "gaussian", "discontinuous",
                                            diggle_correction = FALSE, study_area = NULL,
                                            max_depth = 8,
                                            digits=2, tol=0.1, agg=5,
                                            sparse=TRUE, grid_shape=c(2,2),
                                            sub_sample = 1, verbose=FALSE, check=TRUE)
 
+  cv_scores.mc2 <- bw_cvl_calc.mc(c(200,400),100,
+                                 lines, events,
+                                 rep(1,nrow(events)),
+                                 "gaussian", "discontinuous",
+                                 diggle_correction = FALSE, study_area = NULL,
+                                 max_depth = 8,
+                                 digits=2, tol=0.1, agg=5,
+                                 sparse=TRUE, grid_shape=c(2,2),
+                                 sub_sample = 1, verbose=TRUE, check=TRUE)
+
   ## single core cv score
   cv_scores <- bw_cvl_calc(c(200,400),100,
                                      lines, events,
                                      rep(1,nrow(events)),
-                                     "quartic", "discontinuous",
+                                     "gaussian", "discontinuous",
                                      diggle_correction = FALSE, study_area = NULL,
                                      max_depth = 8,
                                      digits=2, tol=0.1, agg=5,
@@ -579,7 +602,10 @@ test_that("Testing that bw selection with Van Lieshout's Criterion gives the sam
   diff <- cv_scores[,2]/1000 -  cv_scores.mc[,2]/1000
   s <- sum(abs(diff))
 
-  expect_equal(s,0,0.00001)
+  test1 <- any(!(cv_scores.mc2 == cv_scores.mc))
+  test2 <- s == 0
+
+  expect_true(!test1 & test2)
 
 })
 

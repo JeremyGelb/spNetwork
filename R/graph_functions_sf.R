@@ -292,7 +292,7 @@ direct_lines<-function(lines,direction){
 #' @importFrom utils strcapture
 #' @examples
 #' #This is an internal function, no example provided
-plot_graph <- function(graph) {
+plot_graph <- function(graph) { # nocov start
     N <- data.frame(name = names(igraph::V(graph)), id = as.vector(igraph::V(graph)))
     cols <- strcapture("(.*)_(.*)",N$name,data.frame(x = "", y = ""))
     N$x <- as.numeric(cols$x)
@@ -301,8 +301,7 @@ plot_graph <- function(graph) {
     graphics::plot(graph, vertex.size = 0.01,
                    layout = as.matrix(N[c("x", "y")]),
                    vertex.label.cex = 0.1)
-
-}
+}# nocov end
 
 #' @title Topological error
 #'
@@ -384,7 +383,7 @@ graph_checking <- function(lines,digits, max_search = 5, tol = 0.1){
 #' @keywords internal
 #' @examples
 #' #This is an internal function, no example provided
-dist_mat_dupl <- function(graph, start, end ){
+dist_mat_dupl <- function(graph, start, end ){ # nocov start
   start <- as.numeric(start)
   end <- as.numeric(end)
   final_cols <- lapply(start, function(i){
@@ -431,7 +430,7 @@ dist_mat_dupl <- function(graph, start, end ){
   row.names(mat) <- start
   colnames(mat) <- end
   return(mat)
-}
+} # nocov end
 
 
 #' @title Split graph components
