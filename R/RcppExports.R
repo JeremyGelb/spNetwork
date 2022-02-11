@@ -441,6 +441,113 @@ points_at_lines_centers_cpp <- function(lines) {
     .Call('_spNetwork_points_at_lines_centers_cpp', PACKAGE = 'spNetwork', lines)
 }
 
+#' @title c++ k function
+#' @name kfunc_cpp
+#' @param dist_mat A square matrix with the distances between points
+#' @param start A float, the start value for evaluating the k-function
+#' @param end A float, the last value for evaluating the k-function
+#' @param step A float, the jump between two evaluations of the k-function
+#' @param Lt The total length of the network
+#' @param n The number of points
+#' @param w The weight of the points (coincident points)
+#' @export
+kfunc_cpp <- function(dist_mat, start, end, step, Lt, n, w) {
+    .Call('_spNetwork_kfunc_cpp', PACKAGE = 'spNetwork', dist_mat, start, end, step, Lt, n, w)
+}
+
+#' @title c++ g function
+#' @name gfunc_cpp
+#' @param dist_mat A square matrix with the distances between points
+#' @param start A float, the start value for evaluating the g-function
+#' @param end A float, the last value for evaluating the g-function
+#' @param step A float, the jump between two evaluations of the k-function
+#' @param width The width of each donut
+#' @param Lt The total length of the network
+#' @param n The number of points
+#' @param w The weight of the points (coincident points)
+#' @export
+gfunc_cpp <- function(dist_mat, start, end, step, width, Lt, n, w) {
+    .Call('_spNetwork_gfunc_cpp', PACKAGE = 'spNetwork', dist_mat, start, end, step, width, Lt, n, w)
+}
+
+#' @title c++ cross k function
+#' @name cross_kfunc_cpp
+#' @param dist_mat A square matrix with the distances between points
+#' @param start A float, the start value for evaluating the k-function
+#' @param end A float, the last value for evaluating the k-function
+#' @param step A float, the jump between two evaluations of the k-function
+#' @param Lt The total length of the network
+#' @param na The number of points in set A
+#' @param nb The number of points in set B
+#' @param wa The weight of the points in set A (coincident points)
+#' @param wb The weight of the points in set B (coincident points)
+cross_kfunc_cpp <- function(dist_mat, start, end, step, Lt, na, nb, wa, wb) {
+    .Call('_spNetwork_cross_kfunc_cpp', PACKAGE = 'spNetwork', dist_mat, start, end, step, Lt, na, nb, wa, wb)
+}
+
+#' @title c++ cross g function
+#' @name cross_gfunc_cpp
+#' @param dist_mat A matrix with the distances between points
+#' @param start A float, the start value for evaluating the g-function
+#' @param end A float, the last value for evaluating the g-function
+#' @param step A float, the jump between two evaluations of the k-function
+#' @param width The width of each donut
+#' @param Lt The total length of the network
+#' @param na The number of points in set A
+#' @param nb The number of points in set B
+#' @param wa The weight of the points in set A (coincident points)
+#' @param wb The weight of the points in set B (coincident points)
+cross_gfunc_cpp <- function(dist_mat, start, end, step, width, Lt, na, nb, wa, wb) {
+    .Call('_spNetwork_cross_gfunc_cpp', PACKAGE = 'spNetwork', dist_mat, start, end, step, width, Lt, na, nb, wa, wb)
+}
+
+#' @title c++ k space-time function
+#' @name k_nt_func_cpp
+#' @param dist_mat_net A square matrix with the distances between points (network)
+#' @param dist_mat_time A square matrix with the distances between points (time)
+#' @param start_net A float, the start value for evaluating the k-function (network)
+#' @param end_net A float, the last value for evaluating the k-function (network)
+#' @param step_net A float, the jump between two evaluations of the k-function (network)
+#' @param start_time A float, the start value for evaluating the k-function (time)
+#' @param end_time A float, the last value for evaluating the k-function (time)
+#' @param step_time A float, the jump between two evaluations of the k-function (time)
+#' @param Lt The total length of the network
+#' @param Tt The total duration of study area
+#' @param n The number of points
+#' @param w The weight of the points (coincident points)
+#' @keywords internal
+k_nt_func_cpp <- function(dist_mat_net, dist_mat_time, start_net, end_net, step_net, start_time, end_time, step_time, Lt, Tt, n, w) {
+    .Call('_spNetwork_k_nt_func_cpp', PACKAGE = 'spNetwork', dist_mat_net, dist_mat_time, start_net, end_net, step_net, start_time, end_time, step_time, Lt, Tt, n, w)
+}
+
+#' @title c++ g space-time function
+#' @name g_nt_func_cpp
+#' @param dist_mat A square matrix with the distances between points on the network
+#' @param dist_mat_time A square matrix with the distances between points in time
+#' @param start_net A float, the start value for evaluating the g-function on the network
+#' @param end_net A float, the last value for evaluating the g-function on the network
+#' @param step_net A float, the jump between two evaluations of the g-function on the network
+#' @param width_net The width of each donut on the network
+#' @param start_time A float, the start value for evaluating the g-function in time
+#' @param end_time A float, the last value for evaluating the g-function in time
+#' @param step_time A float, the jump between two evaluations of the g-function in time
+#' @param width_time The width of each donut in time
+#' @param Lt The total length of the network
+#' @param n The number of points
+#' @param w The weight of the points (coincident points)
+#' @keywords internal
+g_nt_func_cpp <- function(dist_mat_net, dist_mat_time, start_net, end_net, step_net, width_net, start_time, end_time, step_time, width_time, Lt, Tt, n, w) {
+    .Call('_spNetwork_g_nt_func_cpp', PACKAGE = 'spNetwork', dist_mat_net, dist_mat_time, start_net, end_net, step_net, width_net, start_time, end_time, step_time, width_time, Lt, Tt, n, w)
+}
+
+seq_num2 <- function(start, end, step) {
+    .Call('_spNetwork_seq_num2', PACKAGE = 'spNetwork', start, end, step)
+}
+
+extend_matrix_by_ids <- function(agg_mat, oids, locids) {
+    .Call('_spNetwork_extend_matrix_by_ids', PACKAGE = 'spNetwork', agg_mat, oids, locids)
+}
+
 #' @title The worker function to calculate continuous NKDE (with ARMADILLO and sparse matrix)
 #' @name continuousWorker_sparse
 #' @param kernel_func a cpp pointer function (selected with the kernel name)

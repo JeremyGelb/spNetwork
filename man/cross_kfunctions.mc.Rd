@@ -18,7 +18,8 @@ cross_kfunctions.mc(
   tol = 0.1,
   resolution = NULL,
   agg = NULL,
-  verbose = TRUE
+  verbose = TRUE,
+  return_sims = FALSE
 )
 }
 \arguments{
@@ -65,6 +66,9 @@ vertices on the new network}
 If NULL, the events are aggregated only by rounding the coordinates}
 
 \item{verbose}{A Boolean indicating if progress messages should be displayed}
+
+\item{return_sims}{a boolean indicating if the simulated k and g values must also
+be returned as matrices}
 }
 \value{
 A list with the following values : \cr \itemize{ \item{plotk}{ A

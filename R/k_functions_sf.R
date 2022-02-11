@@ -2,150 +2,82 @@
 #### base k functions ####
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-#' @title Base k-function
-#'
-#' @description Calculate the base k-function.
-#'
-#' @param dist_mat A square matrix with the distances between points
-#' @param start A float, the start value for evaluating the k-function
-#' @param end A float, the last value for evaluating the k-function
-#' @param step A float, the jump between two evaluations of the k-function
-#' @param Lt The total length of the network
-#' @param n The number of points
-#' @param w The weight of the points (coincident points)
-#'
-#' @return A numeric vector with the values
-#' @keywords internal
-#' @examples
-#' #This is an internal function, no example provided
-kfunc <- function(dist_mat,start,end,step,Lt,n,w){
-  breaks <- seq(start,end,step)
-  #t1 <- Lt/(n*(n-1))
-  t1 <- (n-1)/Lt
-  k_values <- sapply(breaks,function(dist){
-    int_mat <- t(t(dist_mat<=dist) * w)
-    diag(int_mat) <- 0
-    tot <- (rowSums(int_mat))
-    k <- t1 * sum(tot)
-    return(k)
-  })
-  return(k_values)
-}
+# OLDER FUNCTION REPLACED BY SOME C++
+# kfunc <- function(dist_mat,start,end,step,Lt,n,w){
+#   breaks <- seq(start,end,step)
+#   #t1 <- Lt/(n*(n-1))
+#   t1 <- (n-1)/Lt
+#   k_values <- sapply(breaks,function(dist){
+#     int_mat <- t(t(dist_mat<=dist) * w)
+#     diag(int_mat) <- 0
+#     tot <- (rowSums(int_mat))
+#     k <- t1 * sum(tot)
+#     return(k)
+#   })
+#   return(k_values)
+# }
 
-
-#' @title Base g-function
-#'
-#' @description Calculate the base g-function.
-#'
-#' @param dist_mat A square matrix with the distances between points
-#' @param start A float, the start value for evaluating the g-function
-#' @param end A float, the last value for evaluating the g-function
-#' @param step A float, the jump between two evaluations of the k-function
-#' @param width The width of each donut
-#' @param Lt The total length of the network
-#' @param n The number of points
-#' @param w The weight of the points (coincident points)
-#'
-#' @return A numeric vector with the values
-#' @keywords internal
-#' @examples
-#' #This is an internal function, no example provided
-gfunc <- function(dist_mat,start,end,step,width,Lt,n,w){
-  breaks <- seq(start,end,step)
-  width <- width/2
-  #t1 <- Lt/(n*(n-1))
-  t1 <- (n-1)/Lt
-  k_values <- sapply(breaks,function(dist){
-    int_mat <- t(t(dist_mat<=dist+width & dist_mat>=dist-width) * w)
-    diag(int_mat) <- 0
-    tot <- (rowSums(int_mat))
-    k <- t1 * sum(tot)
-    return(k)
-  })
-  return(k_values)
-}
+# OLDER FUNCTION REPLACED BY SOME C++
+# gfunc <- function(dist_mat,start,end,step,width,Lt,n,w){
+#   breaks <- seq(start,end,step)
+#   width <- width/2
+#   #t1 <- Lt/(n*(n-1))
+#   t1 <- (n-1)/Lt
+#   k_values <- sapply(breaks,function(dist){
+#     int_mat <- t(t(dist_mat<=dist+width & dist_mat>=dist-width) * w)
+#     diag(int_mat) <- 0
+#     tot <- (rowSums(int_mat))
+#     k <- t1 * sum(tot)
+#     return(k)
+#   })
+#   return(k_values)
+# }
 
 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #### base cross k functions ####
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-#' @title Base cross k-function
-#'
-#' @description Calculate the base cross  k-function.
-#'
-#' @param dist_mat A square matrix with the distances between points
-#' @param start A float, the start value for evaluating the k-function
-#' @param end A float, the last value for evaluating the k-function
-#' @param step A float, the jump between two evaluations of the k-function
-#' @param Lt The total length of the network
-#' @param na The number of points in set A
-#' @param nb The number of points in set B
-#' @param wa The weight of the points in set A (coincident points)
-#' @param wb The weight of the points in set B (coincident points)
-
-#'
-#' @return A numeric vector with the values
-#' @keywords internal
-#' @examples
-#' #This is an internal function, no example provided
-cross_kfunc <- function(dist_mat,start,end,step,Lt,na,nb,wa,wb){
-  breaks <- seq(start,end,step)
-  #t1 <- Lt/(na*nb)
-  t1 <- (na/Lt)
-
-  # note : in the matrix, the rows are the b points
-  # and the columns are the a points
-  k_values <- sapply(breaks,function(dist){
-    # applying the a weight (row wise)
-    int_mat <- sweep((dist_mat<=dist), MARGIN = 2, FUN = "*", wa)
-    # applying the b weight (col wise)
-    #int_mat <- t(t(int_mat) * wb)
-    int_mat <- sweep(int_mat,MARGIN = 1, FUN = "*", wb)
-    tot <- (rowSums(int_mat))
-    k <- t1 * sum(tot)
-    return(k)
-  })
-  return(k_values)
-}
+# OLDER FUNCTION REPLACED BY SOME C++
+# cross_kfunc <- function(dist_mat,start,end,step,Lt,na,nb,wa,wb){
+#   breaks <- seq(start,end,step)
+#   #t1 <- Lt/(na*nb)
+#   t1 <- (na/Lt)
+#
+#   # note : in the matrix, the rows are the b points
+#   # and the columns are the a points
+#   k_values <- sapply(breaks,function(dist){
+#     # applying the a weight (row wise)
+#     int_mat <- sweep((dist_mat<=dist), MARGIN = 2, FUN = "*", wa)
+#     # applying the b weight (col wise)
+#     #int_mat <- t(t(int_mat) * wb)
+#     int_mat <- sweep(int_mat,MARGIN = 1, FUN = "*", wb)
+#     tot <- (rowSums(int_mat))
+#     k <- t1 * sum(tot)
+#     return(k)
+#   })
+#   return(k_values)
+# }
 
 
-#' @title Base cross g-function
-#'
-#' @description Calculate the base cross g-function.
-#'
-#' @param dist_mat A matrix with the distances between points
-#' @param start A float, the start value for evaluating the g-function
-#' @param end A float, the last value for evaluating the g-function
-#' @param step A float, the jump between two evaluations of the k-function
-#' @param width The width of each donut
-#' @param Lt The total length of the network
-#' @param na The number of points in set A
-#' @param nb The number of points in set B
-#' @param wa The weight of the points in set A (coincident points)
-#' @param wb The weight of the points in set B (coincident points)
-#'
-#' @return A numeric vector with the values
-#' @keywords internal
-#' @examples
-#' #This is an internal function, no example provided
-cross_gfun <- function(dist_mat,start,end,step,width,Lt,na,nb,wa,wb){
-  breaks <- base::seq(from = start,to = end, by = step)
-  width <- width/2
-  #t1 <- Lt/(na*nb)
-  t1 <- (na/Lt)
-  g_values <- sapply(breaks,function(dist){
-    d1 <- dist + width
-    d2 <- dist - width
-    int_mat <- (dist_mat <= d1 & dist_mat >= d2)
-    int_mat <- base::sweep(int_mat, MARGIN = 2, FUN = "*", wa)
-    int_mat <- base::sweep(int_mat,MARGIN = 1, FUN = "*", wb)
-    tot <- rowSums(int_mat)
-    k <- t1 * sum(tot)
-    return(k)
-  })
-  return(g_values)
-}
+# OLDER FUNCTION REPLACED BY SOME C++
+# cross_gfun <- function(dist_mat,start,end,step,width,Lt,na,nb,wa,wb){
+#   breaks <- base::seq(from = start,to = end, by = step)
+#   width <- width/2
+#   #t1 <- Lt/(na*nb)
+#   t1 <- (na/Lt)
+#   g_values <- sapply(breaks,function(dist){
+#     d1 <- dist + width
+#     d2 <- dist - width
+#     int_mat <- (dist_mat <= d1 & dist_mat >= d2)
+#     int_mat <- base::sweep(int_mat, MARGIN = 2, FUN = "*", wa)
+#     int_mat <- base::sweep(int_mat,MARGIN = 1, FUN = "*", wb)
+#     tot <- rowSums(int_mat)
+#     k <- t1 * sum(tot)
+#     return(k)
+#   })
+#   return(g_values)
+# }
 
 
 
@@ -336,6 +268,8 @@ randomize_distmatrix <- function(graph, edge_df, n, start_vert = NULL){
 #'
 #' @template kfunctions-arg
 #' @template common_kfunctions-arg
+#' @param return_sims a boolean indicating if the simulated k and g values must also
+#' be returned as matrices
 #'
 #' @return A list with the following values : \cr \itemize{ \item{plotk}{ A
 #'   ggplot2 object representing the values of the k-function} \item{plotg}{ A
@@ -356,7 +290,12 @@ randomize_distmatrix <- function(graph, edge_df, n, start_vert = NULL){
 #'      conf_int = 0.05, tol = 0.1, agg = NULL,
 #'      verbose = FALSE)
 #' }
-kfunctions <- function(lines, points, start, end, step, width, nsim, conf_int = 0.05, digits = 2, tol = 0.1, resolution = NULL, agg = NULL, verbose = TRUE){
+kfunctions <- function(lines, points,
+                       start, end, step, width,
+                       nsim, conf_int = 0.05,
+                       digits = 2, tol = 0.1,
+                       resolution = NULL, agg = NULL,
+                       verbose = TRUE, return_sims = FALSE){
 
   ## step0 : clean the points
   if (verbose){
@@ -424,8 +363,8 @@ kfunctions <- function(lines, points, start, end, step, width, nsim, conf_int = 
   if (verbose){
     print("Calculating k and g functions ...")
   }
-  k_vals <- kfunc(dist_mat,start,end,step,Lt,n,w = snapped_events$weight)
-  g_vals <- gfunc(dist_mat,start,end,step,width,Lt,n,w = snapped_events$weight)
+  k_vals <- kfunc_cpp(dist_mat,start,end,step,Lt,n,w = snapped_events$weight)
+  g_vals <- gfunc_cpp(dist_mat,start,end,step,width,Lt,n,w = snapped_events$weight)
 
   ## step7 : generate the permutations
   if (verbose){
@@ -446,8 +385,8 @@ kfunctions <- function(lines, points, start, end, step, width, nsim, conf_int = 
 
     all_values <- lapply(1:nsim,function(i){
       dist_mat <- dist_matrices[[i]]
-      k_vals <- kfunc(dist_mat,start,end,step,Lt,n,w = w)
-      g_vals <- gfunc(dist_mat,start,end,step,width,Lt,n,w = w)
+      k_vals <- kfunc_cpp(dist_mat,start,end,step,Lt,n,w = w)
+      g_vals <- gfunc_cpp(dist_mat,start,end,step,width,Lt,n,w = w)
       if(verbose){
         setTxtProgressBar(pb, i)
       }
@@ -458,8 +397,8 @@ kfunctions <- function(lines, points, start, end, step, width, nsim, conf_int = 
     # the case where we can not simplified the situation
     all_values <- lapply(1:nsim,function(i){
       dist_mat <- randomize_distmatrix(graph_result$graph,graph_result$spedges,n)
-      k_vals <- kfunc(dist_mat,start,end,step,Lt,n,w = w)
-      g_vals <- gfunc(dist_mat,start,end,step,width,Lt,n,w = w)
+      k_vals <- kfunc_cpp(dist_mat,start,end,step,Lt,n,w = w)
+      g_vals <- gfunc_cpp(dist_mat,start,end,step,width,Lt,n,w = w)
       if(verbose){
         setTxtProgressBar(pb, i)
       }
@@ -513,11 +452,17 @@ kfunctions <- function(lines, points, start, end, step, width, nsim, conf_int = 
     labs(x = "distances",
          y = "empirical G-function")
 
-  return(list(
+  obj <- list(
     "plotk" = plotk,
     "plotg" = plotg,
     "values" = plot_df
-  ))
+  )
+  if(return_sims){
+    obj$sim_k_values <- k_mat
+    obj$sim_g_values <- g_mat
+  }
+
+  return(obj)
 }
 
 
@@ -531,6 +476,8 @@ kfunctions <- function(lines, points, start, end, step, width, nsim, conf_int = 
 #'
 #' @template kfunctions-arg
 #' @template common_kfunctions-arg
+#' @param return_sims a boolean indicating if the simulated k and g values must also
+#' be returned as matrices
 #'
 #' @return A list with the following values : \cr \itemize{ \item{plotk}{ A
 #'   ggplot2 object representing the values of the k-function} \item{plotg}{ A
@@ -557,7 +504,9 @@ kfunctions <- function(lines, points, start, end, step, width, nsim, conf_int = 
 #' ## make sure any open connections are closed afterward
 #' if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
 #' }
-kfunctions.mc <- function(lines, points, start, end, step, width, nsim, conf_int = 0.05, digits = 2 ,tol = 0.1, resolution = 50, agg = NULL, verbose = TRUE){
+kfunctions.mc <- function(lines, points, start, end, step, width, nsim, conf_int = 0.05,
+                          digits = 2 ,tol = 0.1, resolution = 50, agg = NULL,
+                          verbose = TRUE, return_sims = FALSE){
 
   ## step0 : clean the points
   if(verbose){
@@ -616,8 +565,8 @@ kfunctions.mc <- function(lines, points, start, end, step, width, nsim, conf_int
   if(verbose){
     print("Calculating k and g functions ...")
   }
-  k_vals <- kfunc(dist_mat,start,end,step,Lt,n,w = snapped_events$weight)
-  g_vals <- gfunc(dist_mat,start,end,step,width,Lt,n,w = snapped_events$weight)
+  k_vals <- kfunc_cpp(dist_mat,start,end,step,Lt,n,w = snapped_events$weight)
+  g_vals <- gfunc_cpp(dist_mat,start,end,step,width,Lt,n,w = snapped_events$weight)
 
   ## step7 : generate the permutations
   if(verbose){
@@ -636,16 +585,16 @@ kfunctions.mc <- function(lines, points, start, end, step, width, nsim, conf_int
         p <- progressr::progressor(along = sim_seq)
         all_values <- future.apply::future_lapply(sim_seq, function(i){
           dist_mat <- randomize_distmatrix(graph, edgesdf, n)
-          k_vals <- kfunc(dist_mat,start,end,step,Lt,n,w = w)
-          g_vals <- gfunc(dist_mat,start,end,step,width,Lt,n,w = w)
+          k_vals <- kfunc_cpp(dist_mat,start,end,step,Lt,n,w = w)
+          g_vals <- gfunc_cpp(dist_mat,start,end,step,width,Lt,n,w = w)
           return(cbind(k_vals,g_vals))
         },future.packages = c("igraph"))
       })
     }else{
       all_values <- future.apply::future_lapply(sim_seq, function(i){
         dist_mat <- randomize_distmatrix(graph, edgesdf, n)
-        k_vals <- kfunc(dist_mat,start,end,step,Lt,n,w = w)
-        g_vals <- gfunc(dist_mat,start,end,step,width,Lt,n,w = w)
+        k_vals <- kfunc_cpp(dist_mat,start,end,step,Lt,n,w = w)
+        g_vals <- gfunc_cpp(dist_mat,start,end,step,width,Lt,n,w = w)
         return(cbind(k_vals,g_vals))
       },future.packages = c("igraph"))
 
@@ -663,8 +612,8 @@ kfunctions.mc <- function(lines, points, start, end, step, width, nsim, conf_int
       print("calculating the k and g functions for the randomized matrices..")
     }
     all_values <- future.apply::future_lapply(dist_mats, function(dist_mat){
-      k_vals <- kfunc(dist_mat,start,end,step,Lt,n,w = w)
-      g_vals <- gfunc(dist_mat,start,end,step,width,Lt,n,w = w)
+      k_vals <- kfunc_cpp(dist_mat,start,end,step,Lt,n,w = w)
+      g_vals <- gfunc_cpp(dist_mat,start,end,step,width,Lt,n,w = w)
       return(cbind(k_vals,g_vals))
     },future.packages = c("igraph"))
 
@@ -717,11 +666,18 @@ kfunctions.mc <- function(lines, points, start, end, step, width, nsim, conf_int
     labs(x = "distances",
          y = "empirical G-function")
 
-  return(list(
+  obj <- list(
     "plotk" = plotk,
     "plotg" = plotg,
     "values" = plot_df
-  ))
+  )
+
+  if(return_sims){
+    obj$sim_k_values <- k_mat
+    obj$sim_g_values <- g_mat
+  }
+
+  return(obj)
 }
 
 
@@ -757,6 +713,9 @@ kfunctions.mc <- function(lines, points, start, end, step, width, nsim, conf_int
 #'
 #' @template kross_kfunctions-arg
 #' @template common_kfunctions-arg
+#' @param return_sims a boolean indicating if the simulated k and g values must also
+#' be returned as matrices
+#'
 #'
 #' @return A list with the following values : \cr \itemize{ \item{plotk}{ A
 #'   ggplot2 object representing the values of the cross k-function}
@@ -779,7 +738,12 @@ kfunctions.mc <- function(lines, points, start, end, step, width, nsim, conf_int
 #'                            nsim = 50, conf_int = 0.05, digits = 2,
 #'                            tol = 0.1, agg = NULL, verbose = FALSE)
 #' }
-cross_kfunctions <- function(lines, pointsA, pointsB, start, end, step, width, nsim, conf_int = 0.05, digits = 2, tol = 0.1, resolution = NULL, agg = NULL, verbose = TRUE){
+cross_kfunctions <- function(lines, pointsA, pointsB,
+                             start, end, step, width,
+                             nsim, conf_int = 0.05,
+                             digits = 2, tol = 0.1,
+                             resolution = NULL, agg = NULL,
+                             verbose = TRUE, return_sims = FALSE){
 
   ## step0 : clean the points
   if(verbose){
@@ -853,8 +817,8 @@ cross_kfunctions <- function(lines, pointsA, pointsB, start, end, step, width, n
   if(verbose){
     print("Calculating k and g functions ...")
   }
-  k_vals <- cross_kfunc(dist_mat,start,end,step,Lt,na,nb,snappedA$weight,snappedB$weight)
-  g_vals <- cross_gfun(dist_mat,start,end,step,width,Lt,na,nb,snappedA$weight,snappedB$weight)
+  k_vals <- cross_kfunc_cpp(dist_mat,start,end,step,Lt,na,nb,snappedA$weight,snappedB$weight)
+  g_vals <- cross_gfunc_cpp(dist_mat,start,end,step,width,Lt,na,nb,snappedA$weight,snappedB$weight)
 
   ## step7 : generate the permutations
   if(verbose){
@@ -874,8 +838,8 @@ cross_kfunctions <- function(lines, pointsA, pointsB, start, end, step, width, n
 
     all_values <- lapply(1:nsim,function(i){
       dist_mat <- dist_matrices[[i]]
-      k_vals <- cross_kfunc(dist_mat,start,end,step,Lt,na,nb,w,snappedB$weight)
-      g_vals <- cross_gfun(dist_mat,start,end,step,width,Lt,na,nb,w,snappedB$weight)
+      k_vals <- cross_gkunc_cpp(dist_mat,start,end,step,Lt,na,nb,w,snappedB$weight)
+      g_vals <- cross_gfunc_cpp(dist_mat,start,end,step,width,Lt,na,nb,w,snappedB$weight)
       if(verbose){
         setTxtProgressBar(pb, i)
       }
@@ -887,8 +851,8 @@ cross_kfunctions <- function(lines, pointsA, pointsB, start, end, step, width, n
     all_values <- lapply(1:nsim,function(i){
       dist_mat <- randomize_distmatrix(graph_result$graph,graph_result$spedges,
                                        na,start_vert = snappedB$vertex_id)
-      k_vals <- cross_kfunc(dist_mat,start,end,step,Lt,na,nb,w,snappedB$weight)
-      g_vals <- cross_gfun(dist_mat,start,end,step,width,Lt,na,nb,w,snappedB$weight)
+      k_vals <- cross_kfunc_cpp(dist_mat,start,end,step,Lt,na,nb,w,snappedB$weight)
+      g_vals <- cross_gfunc_cpp(dist_mat,start,end,step,width,Lt,na,nb,w,snappedB$weight)
       if(verbose){
         setTxtProgressBar(pb, i)
       }
@@ -943,11 +907,16 @@ cross_kfunctions <- function(lines, pointsA, pointsB, start, end, step, width, n
     labs(x = "distances",
          y = "empirical cross-G-function")
 
-  return(list(
+  obj <- list(
     "plotk" = plotk,
     "plotg" = plotg,
     "values" = plot_df
-  ))
+  )
+  if(return_sims){
+    obj$sim_k_values <- k_mat
+    obj$sim_g_values <- g_mat
+  }
+  return(obj)
 }
 
 
@@ -958,6 +927,8 @@ cross_kfunctions <- function(lines, pointsA, pointsB, start, end, step, width, n
 #'
 #' @template kross_kfunctions-arg
 #' @template common_kfunctions-arg
+#' @param return_sims a boolean indicating if the simulated k and g values must also
+#' be returned as matrices
 #'
 #' @return A list with the following values : \cr \itemize{ \item{plotk}{ A
 #'   ggplot2 object representing the values of the cross k-function}
@@ -983,7 +954,12 @@ cross_kfunctions <- function(lines, pointsA, pointsB, start, end, step, width, n
 #' ## make sure any open connections are closed afterward
 #' if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
 #' }
-cross_kfunctions.mc <- function(lines, pointsA, pointsB, start, end, step, width, nsim, conf_int = 0.05, digits = 2, tol = 0.1, resolution = NULL, agg = NULL, verbose = TRUE){
+cross_kfunctions.mc <- function(lines, pointsA, pointsB,
+                                start, end, step, width,
+                                nsim, conf_int = 0.05,
+                                digits = 2, tol = 0.1,
+                                resolution = NULL, agg = NULL,
+                                verbose = TRUE, return_sims = FALSE){
 
   ## step0 : clean the points
   if(verbose){
@@ -1057,9 +1033,9 @@ cross_kfunctions.mc <- function(lines, pointsA, pointsB, start, end, step, width
   if(verbose){
     print("Calculating k and g functions ...")
   }
-  k_vals <- cross_kfunc(dist_mat, start, end, step, Lt, na, nb,
+  k_vals <- cross_kfunc_cpp(dist_mat, start, end, step, Lt, na, nb,
                         snappedA$weight, snappedB$weight)
-  g_vals <- cross_gfun(dist_mat, start, end, step, width, Lt, na,
+  g_vals <- cross_gfunc_cpp(dist_mat, start, end, step, width, Lt, na,
                        nb, snappedA$weight, snappedB$weight)
 
   ## step7 : generate the permutations
@@ -1077,9 +1053,9 @@ cross_kfunctions.mc <- function(lines, pointsA, pointsB, start, end, step, width
         dist_mat <- randomize_distmatrix(graph_result$graph,
                                          graph_result$spedges,
                                          na, start_vert = snappedB$vertex_id)
-        k_vals <- cross_kfunc(dist_mat, start, end, step, Lt, na, nb,
+        k_vals <- cross_kfunc_cpp(dist_mat, start, end, step, Lt, na, nb,
                               w, snappedB$weight)
-        g_vals <- cross_gfun(dist_mat, start, end, step, width, Lt, na, nb,
+        g_vals <- cross_gfunc_cpp(dist_mat, start, end, step, width, Lt, na, nb,
                              w,snappedB$weight)
         return(cbind(k_vals,g_vals))
       },future.packages = c("igraph","base"))
@@ -1099,9 +1075,9 @@ cross_kfunctions.mc <- function(lines, pointsA, pointsB, start, end, step, width
       print("calculating the k and g functions for the randomized matrices..")
     }
     all_values <- future.apply::future_lapply(dist_matrices,function(dist_mat){
-        k_vals <- cross_kfunc(dist_mat, start, end, step, Lt, na, nb,
+        k_vals <- cross_kfunc_cpp(dist_mat, start, end, step, Lt, na, nb,
                               w, snappedB$weight)
-        g_vals <- cross_gfun(dist_mat, start, end, step, width, Lt, na, nb,
+        g_vals <- cross_gfunc_cpp(dist_mat, start, end, step, width, Lt, na, nb,
                              w,snappedB$weight)
         return(cbind(k_vals,g_vals))
       },future.packages = c("igraph","base"))
@@ -1154,10 +1130,15 @@ cross_kfunctions.mc <- function(lines, pointsA, pointsB, start, end, step, width
     labs(x = "distances",
          y = "empirical cross-G-function")
 
-  return(list(
+  obj <- list(
     "plotk" = plotk,
     "plotg" = plotg,
     "values" = plot_df
-  ))
+  )
+  if(return_sims){
+    obj$sim_k_values <- k_mat
+    obj$sim_g_values <- g_mat
+  }
+  return(obj)
 }
 

@@ -10,8 +10,22 @@ std::vector<double> seq_num(double start, double end, double step){
     values.push_back(cumul);
   }
   return values;
+}
+
+// a simple function to create a vector of values between a start and an end with defined step
+// [[Rcpp::export]]
+std::vector<double> seq_num2(double start, double end, double step){
+
+  std::vector<double> values;
+  double cumul = 0 - step;
+  while(cumul+step <= end){
+    cumul+=step;
+    values.push_back(cumul);
+  }
+  return values;
 
 }
+
 
 
 // a simple function to find the index of the first occurence of value in a numeric vector
@@ -100,3 +114,27 @@ arma::sp_mat make_edge_weight_sparse(DataFrame& df, List& neighbour_list){
   }
   return edge_mat;
 }
+
+
+// a little function used in space-time kfunctions to extend a matrix by duplicating rows and cols
+// for events that have been aggregated
+// oids is a unique id for each original event
+// locids is the location id of each original event (its location in the matrix)
+// [[Rcpp::export]]
+NumericMatrix extend_matrix_by_ids(NumericMatrix agg_mat, IntegerVector oids, IntegerVector locids){
+
+  // creating the matrix that will receive the values
+  NumericMatrix new_mat(oids.size(), oids.size());
+
+  // filling it by row and col
+  for(int i = 0; i < oids.size(); ++i){
+    int locid_i = locids(i);
+    for(int j = 0; j < oids.size(); ++j){
+      int locid_j = locids(j);
+      new_mat(i,j) = agg_mat(locid_i, locid_j);
+    }
+  }
+  return new_mat;
+}
+
+

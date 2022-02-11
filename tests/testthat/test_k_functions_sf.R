@@ -25,13 +25,24 @@ test_that("Testing the simple k function", {
   event <- st_as_sf(event, coords = c("x","y"))
 
   # calculating the observed values
-  observed <- kfunctions(all_lines, event, 0, 6, 0.5, 2, 5, conf_int = 0.05, digits = 2, tol = 0.1, resolution = NULL, agg = NULL, verbose = TRUE)
+  observed <- kfunctions(lines = all_lines,
+                         points = event,
+                         start = 0,
+                         end = 6,
+                         step = 0.5,
+                         width = 2,
+                         nsim = 5,
+                         conf_int = 0.05,
+                         digits = 2,
+                         tol = 0.1,
+                         resolution = NULL,
+                         agg = NULL,
+                         verbose = TRUE)
 
   # after checking on a paper with a pen, the observed k and g values at distance 3 must be :
   expected_vals <- c(0.9, 1.5)
-  diff <- observed$values[7,c("obs_k","obs_g")] - expected_vals
-  diff <- round(sum(abs(diff)),10)
-  expect_equal(diff, 0)
+  test <- round(observed$values[7,c("obs_k","obs_g")],1) == expected_vals
+  expect_equal(sum(test), 2)
 
 })
 
@@ -67,7 +78,20 @@ test_that("Testing the cross k function", {
 
   # calculating the observed values
 
-  observed <- cross_kfunctions(all_lines, As, Bs, 0, 6, 0.5, 2, 5, conf_int = 0.05, digits = 2, tol = 0.1, resolution = NULL, agg = NULL, verbose = TRUE)
+  observed <- cross_kfunctions(lines = all_lines,
+                               pointsA = As,
+                               pointsB = Bs,
+                               start = 0,
+                               end = 6,
+                               step = 0.5,
+                               width = 2,
+                               nsim = 5,
+                               conf_int = 0.05,
+                               digits = 2,
+                               tol = 0.1,
+                               resolution = NULL,
+                               agg = NULL,
+                               verbose = TRUE)
 
   # after checking on a paper with a pen, the observed k and g values at distance 3 must be :
   expected_vals <- c(0.2, 0.4)
@@ -309,10 +333,9 @@ test_that("Testing the multicore simple k function", {
 
   # after checking on a paper with a pen, the observed k and g values at distance 3 must be :
   expected_vals <- c(0.9, 1.5)
-  diff <- observed$values[7,c("obs_k","obs_g")] - expected_vals
-  diff <- round(sum(abs(diff)),10)
+  test <- round(observed$values[7,c("obs_k","obs_g")],1) == expected_vals
 
-  expect_equal(diff, 0)
+  expect_equal(sum(test), 2)
 
 })
 
@@ -349,6 +372,134 @@ test_that("Testing the multicore cross k function", {
   diff <- observed$values[7,c("obs_k","obs_g")] - expected_vals
   diff <- round(sum(abs(diff)),10)
   expect_equal(diff, 0)
+
+})
+
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#### TEST FOR THE SIMPLE space-time K AND G FUNCTION ####
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+test_that("Testing the simple k function in space-time", {
+
+  # defining a simple situation
+  wkt_lines <- c(
+    "LINESTRING (0 5, 0 0)",
+    "LINESTRING (-5 0, 0 0)",
+    "LINESTRING (0 -5, 0 0)",
+    "LINESTRING (5 0, 0 0)")
+
+  linesdf <- data.frame(wkt = wkt_lines,
+                        id = paste("l",1:length(wkt_lines),sep=""))
+
+  all_lines <- st_as_sf(linesdf, wkt = "wkt")
+
+  # definition of four events
+  event <- data.frame(x=c(0,3,1,0),
+                      y=c(3,0,0,1),
+                      id = c(1,2,3,4),
+                      time = c(1,1,3,2))
+
+  event <- st_as_sf(event, coords = c("x","y"))
+
+  # calculating the observed values
+  future::plan(future::multisession(workers=1))
+  observed <- k_nt_functions.mc(lines = all_lines,
+                         points = event,
+                         points_time = event$time,
+                         start_net = 0,
+                         end_net = 6,
+                         step_net = 0.5,
+                         width_net = 2,
+                         start_time = 0,
+                         end_time = 6,
+                         step_time = 0.5,
+                         width_time = 2,
+                         nsim = 5,
+                         conf_int = 0.05,
+                         digits = 2,
+                         tol = 0.1,
+                         resolution = NULL,
+                         agg = NULL,
+                         verbose = TRUE)
+
+  # after checking on a paper with a pen, the observed k and g values at  network
+  # distance 3 and time distance 1 must be :
+  Lt <- sum(st_length(all_lines))
+  Tt <- max(event$time) - min(event$time)
+  n <- nrow(event)
+  t1 <- (n-1)/(Lt * Tt);
+  exp_k <- 4 * t1
+  exp_g <- 10 * t1
+  expected_vals <- c(exp_k, exp_g)
+
+  obtained <- c(observed$obs_k[6,3], observed$obs_g[6,3])
+
+  test <- sum(round(obtained - expected_vals,7)) == 0
+  expect_true(test)
+
+})
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#### TEST FOR THE SIMPLE space-time K AND G FUNCTION (multicore) ####
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+test_that("Testing the simple k function in space-time (multicore)", {
+
+  # defining a simple situation
+  wkt_lines <- c(
+    "LINESTRING (0 5, 0 0)",
+    "LINESTRING (-5 0, 0 0)",
+    "LINESTRING (0 -5, 0 0)",
+    "LINESTRING (5 0, 0 0)")
+
+  linesdf <- data.frame(wkt = wkt_lines,
+                        id = paste("l",1:length(wkt_lines),sep=""))
+
+  all_lines <- st_as_sf(linesdf, wkt = "wkt")
+
+  # definition of four events
+  event <- data.frame(x=c(0,3,1,0),
+                      y=c(3,0,0,1),
+                      id = c(1,2,3,4),
+                      time = c(1,1,3,2))
+
+  event <- st_as_sf(event, coords = c("x","y"))
+
+  # calculating the observed values
+  observed <- k_nt_functions(lines = all_lines,
+                             points = event,
+                             points_time = event$time,
+                             start_net = 0,
+                             end_net = 6,
+                             step_net = 0.5,
+                             width_net = 2,
+                             start_time = 0,
+                             end_time = 6,
+                             step_time = 0.5,
+                             width_time = 2,
+                             nsim = 5,
+                             conf_int = 0.05,
+                             digits = 2,
+                             tol = 0.1,
+                             resolution = NULL,
+                             agg = NULL,
+                             verbose = TRUE)
+
+  # after checking on a paper with a pen, the observed k and g values at  network
+  # distance 3 and time distance 1 must be :
+  Lt <- sum(st_length(all_lines))
+  Tt <- max(event$time) - min(event$time)
+  n <- nrow(event)
+  t1 <- (n-1)/(Lt * Tt);
+  exp_k <- 4 * t1
+  exp_g <- 10 * t1
+  expected_vals <- c(exp_k, exp_g)
+
+  obtained <- c(observed$obs_k[6,3], observed$obs_g[6,3])
+
+  test <- sum(round(obtained - expected_vals,7)) == 0
+  expect_true(test)
 
 })
 

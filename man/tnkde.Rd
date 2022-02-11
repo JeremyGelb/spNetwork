@@ -170,6 +170,18 @@ limits induce lower densities at the border of the set of events, because
 they are not sampled outside the limits. It is possible to apply the Diggle
 correction factor \insertCite{diggle1985kernel}{spNetwork} in both the
 network and time spaces to minimize this effect.
+\cr\cr
+
+**Separated or simultaneous adaptive bandwidth**\cr
+When the parameter adaptive is TRUE, one can choose between using separated
+calculation of network and temporal bandwidths, and calculating them
+simultaneously. In the first case (default), the network bandwidths are
+determined for each event by considering only there locations and the time
+bandwidths are determined by considering only there time stamps. In the second
+case, for each event, the spatio-temporal density at its location on the
+network and in time is estimated and used to determine both the network and
+temporal bandwidths. This second approach must be preferred if the events are
+characterized by a high level of spatio-temporal autocorrelation.
 }
 \examples{
 \donttest{
