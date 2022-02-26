@@ -2,7 +2,7 @@
 % Please edit documentation in R/k_functions_nettime_sf.R
 \name{k_nt_functions}
 \alias{k_nt_functions}
-\title{Network k and g functions for spatio-temporal data (maturing)}
+\title{Network k and g functions for spatio-temporal data (not ready)}
 \usage{
 k_nt_functions(
   lines,
@@ -32,6 +32,8 @@ geometries must be simple Linestrings (may crash if some geometries
 
 \item{points}{A feature collection of points representing the points on the
 network. These points will be snapped on their nearest line}
+
+\item{points_time}{A numeric vector indicating when the point occured}
 
 \item{start_net}{A double, the lowest network distance used to evaluate the k and g functions}
 
@@ -92,19 +94,16 @@ A list with the following values : \cr
 }
 \description{
 Calculate the k and g functions for a set of points on a
-  network and in time (maturing).
+  network and in time (not ready).
 }
 \details{
 The k-function is a method to characterize the dispersion of a set
   of points. For each point, the numbers of other points in subsequent radii
-  are calculated. This empirical k-function can be more or less clustered
-  than a k-function obtained if the points were randomly located in space. In
+  are calculated in both space and time. This empirical k-function can be more or less clustered
+  than a k-function obtained if the points were randomly located . In
   a network, the network distance is used instead of the Euclidean distance.
   This function uses Monte Carlo simulations to assess if the points are
-  clustered or dispersed, and gives the results as a line plot. If the line
-  of the observed k-function is higher than the shaded area representing the
-  values of the simulations, then the points are more clustered than what we
-  can expect from randomness and vice-versa. The function also calculates the
+  clustered or dispersed. The function also calculates the
   g-function, a modified version of the k-function using rings instead of
   disks. The width of the ring must be chosen. The main interest is to avoid
   the cumulative effect of the classical k-function. This function is maturing,
@@ -112,5 +111,36 @@ The k-function is a method to characterize the dispersion of a set
   future releases (gain speed, advanced features, etc.).
 }
 \examples{
-# No example for the moment (development)
+\donttest{
+eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
+bike_accidents <- sf::st_read(eventsgpkg,layer="bike_accidents")
+networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
+mtl_network <- sf::st_read(networkgpkg,layer="mtl_network")
+
+# converting the Date field to a numeric field (counting days)
+bike_accidents$Time <- as.POSIXct(bike_accidents$Date, format = "\%Y/\%m/\%d")
+start <- as.POSIXct("2016/01/01", format = "\%Y/\%m/\%d")
+bike_accidents$Time <- difftime(bike_accidents$Time, start, units = "days")
+bike_accidents$Time <- as.numeric(bike_accidents$Time)
+
+values <- k_nt_functions(
+      lines =  mtl_network,
+      points = bike_accidents,
+      points_time = bike_accidents$Time,
+      start_net = 0 ,
+      end_net = 2000,
+      step_net = 10,
+      width_net = 200,
+      start_time = 0,
+      end_time = 360,
+      step_time = 7,
+      width_time = 14,
+      nsim = 50,
+      conf_int = 0.05,
+      digits = 2,
+      tol = 0.1,
+      resolution = NULL,
+      agg = 15,
+      verbose = TRUE)
+}
 }

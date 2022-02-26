@@ -61,7 +61,7 @@ between observation in spatial weights. Can be 'identity', 'inverse',
 vectorized internally}
 
 \item{matrice_type}{The type of the weighting scheme. Can be 'B' for Binary,
-'W' for row weighted, see the documentation of spdep::nb2listw for details}
+'W' for row weighted, or 'I' (identity), see the documentation of spdep::nb2listw for details}
 
 \item{grid_shape}{A vector of length 2 indicating the shape of the grid to
 use for splitting the dataset. Default is c(1,1), so all the calculation is
@@ -77,7 +77,9 @@ simplification used to reduce risk of topological error)}
 added as vertices to lines.}
 }
 \value{
-A listw object (spdep like)
+A listw object (spdep like) if matrice_type is "B" or "W". If
+  matrice_type is I, then a list with a nblist object and a list of weights
+  is returned.
 }
 \description{
 Generate listw object (spdep like) based on network distances.

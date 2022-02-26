@@ -213,6 +213,9 @@ bws_tnkde_cv_likelihood_calc <- function(bw_net_range, bw_net_step,
 
   ## step0 basic checks
   samples <- events
+  if(time_field %in% names(events) == FALSE){
+    stop("time_field must be the name of a numeric column in events")
+  }
   events$time <- events[[time_field]]
   events$weight <- w
   div <- "bw"
@@ -310,8 +313,13 @@ bws_tnkde_cv_likelihood_calc <- function(bw_net_range, bw_net_step,
     quad_events <- sel$samples
     sel_weights <- events_weight[,,sel_events$wid]
 
-    values <- tnkde_worker_bw_sel(sel$lines, quad_events, sel_events_loc, sel_events, sel_weights,
-                                  kernel_name, net_bws, time_bws,
+    values <- tnkde_worker_bw_sel(sel$lines,
+                                  quad_events,
+                                  sel_events_loc,
+                                  sel_events,
+                                  sel_weights,
+                                  kernel_name, net_bws,
+                                  time_bws,
                                   method, div, digits,
                                   tol,sparse, max_depth, verbose)
 
@@ -431,6 +439,9 @@ bws_tnkde_cv_likelihood_calc.mc <- function(bw_net_range, bw_net_step,
 
   ## step0 basic checks
   samples <- events
+  if(time_field %in% names(events) == FALSE){
+    stop("time_field must be the name of a numeric column in events")
+  }
   events$time <- events[[time_field]]
   events$weight <- w
   div <- "bw"
@@ -496,7 +507,10 @@ bws_tnkde_cv_likelihood_calc.mc <- function(bw_net_range, bw_net_step,
 
   ## step3 splitting the dataset with each rectangle
   # NB : here we select the events in the gris (samples) and the events locations in the buffer (events_loc)
-  selections <- split_by_grid(grid, events, events_loc, lines,max_bw_net, tol, digits, split_all = FALSE)
+  if(verbose){
+    print("splitting the data by the grid...")
+  }
+  selections <- split_by_grid.mc(grid, events, events_loc, lines,max_bw_net, tol, digits, split_all = FALSE)
 
   ## sub sampling the quadra if required
   if (sub_sample < 1){
@@ -527,7 +541,12 @@ bws_tnkde_cv_likelihood_calc.mc <- function(bw_net_range, bw_net_step,
         quad_events <- sel$samples
         sel_weights <- events_weight[,,sel_events$wid]
 
-        values <- tnkde_worker_bw_sel(sel$lines, quad_events, sel_events_loc, sel_events, sel_weights,
+        values <- spNetwork::tnkde_worker_bw_sel(
+                                      sel$lines,
+                                      quad_events,
+                                      sel_events_loc,
+                                      sel_events,
+                                      sel_weights,
                                       kernel_name, net_bws, time_bws,
                                       method, div, digits,
                                       tol,sparse, max_depth, verbose)
@@ -551,7 +570,7 @@ bws_tnkde_cv_likelihood_calc.mc <- function(bw_net_range, bw_net_step,
       quad_events <- sel$samples
       sel_weights <- events_weight[,,sel_events$wid]
 
-      values <- tnkde_worker_bw_sel(sel$lines, quad_events, sel_events_loc, sel_events, sel_weights,
+      values <- spNetwork::tnkde_worker_bw_sel(sel$lines, quad_events, sel_events_loc, sel_events, sel_weights,
                                     kernel_name, net_bws, time_bws,
                                     method, div, digits,
                                     tol,sparse, max_depth, verbose)
@@ -600,12 +619,19 @@ bws_tnkde_cv_likelihood_calc.mc <- function(bw_net_range, bw_net_step,
 #' @param kernel_name The name of the kernel to use (string)
 #' @param bws_net A numeric vector with the network bandwidths
 #' @param bws_time A numeric vector with the time bandwidths
+#' @param div The type of divisor (not used currently)
+#' @param max_depth The maximum depth of recursion
 #' @param method The type of NKDE to use (string)
-#' @template nkde_geoms-args
+#' @param digits The number of digits to retain from the spatial coordinates. It
+#'   ensures that topology is good when building the network. Default is 3. Too high a
+#'   precision (high number of digits) might break some connections
+#' @param tol A float indicating the minimum distance between the events and the
+#'   lines' extremities when adding the point to the network. When points are
+#'   closer, they are added at the extremity of the lines.
 #' @template sparse-arg
 #' @param verbose A boolean
 #' @param cvl A boolean indicating if the cvl method (TRUE) or the loo (FALSE) method must be used
-#' @keywords internal
+#' @export
 #' @examples
 #' # no example provided, this is an internal function
 tnkde_worker_bw_sel <- function(lines, quad_events, events_loc, events, w, kernel_name, bws_net, bws_time, method, div, digits, tol, sparse, max_depth, verbose = FALSE, cvl = FALSE){
@@ -643,8 +669,11 @@ tnkde_worker_bw_sel <- function(lines, quad_events, events_loc, events, w, kerne
 
   kernel_values <- tnkde_get_loo_values(method,
                                         neighbour_list,
-                                        quad_events2$vertex_id, quad_events2$wid, quad_events2$time,
-                                        events2$vertex_id, events2$wid, events2$time, w,
+                                        quad_events2$vertex_id,
+                                        quad_events2$wid,
+                                        quad_events2$time,
+                                        events2$vertex_id,
+                                        events2$wid, events2$time, w,
                                         bws_net, bws_time,
                                         kernel_name, graph_result$linelist, max_depth,
                                         .Machine$double.xmin

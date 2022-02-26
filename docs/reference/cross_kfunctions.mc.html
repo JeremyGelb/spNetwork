@@ -100,7 +100,8 @@
   tol <span class="op">=</span> <span class="fl">0.1</span>,
   resolution <span class="op">=</span> <span class="cn">NULL</span>,
   agg <span class="op">=</span> <span class="cn">NULL</span>,
-  verbose <span class="op">=</span> <span class="cn">TRUE</span>
+  verbose <span class="op">=</span> <span class="cn">TRUE</span>,
+  return_sims <span class="op">=</span> <span class="cn">FALSE</span>
 <span class="op">)</span></code></pre></div>
     </div>
 
@@ -150,6 +151,9 @@ vertices on the new network</p></dd>
 If NULL, the events are aggregated only by rounding the coordinates</p></dd>
 <dt>verbose</dt>
 <dd><p>A Boolean indicating if progress messages should be displayed</p></dd>
+<dt>return_sims</dt>
+<dd><p>a boolean indicating if the simulated k and g values must also
+be returned as matrices</p></dd>
 </dl></div>
     <div id="value">
     <h2>Value</h2>

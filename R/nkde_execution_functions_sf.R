@@ -673,14 +673,15 @@ adaptive_bw <- function(grid,events,lines,bw,trim_bw,method,kernel_name,max_dept
                           bws, method, div = "none", digits,
                           tol,sparse, max_depth, verbose)
     if(any(values==0)){
-      print("zero values here !")
+      # Adding a better way to explain the bug would be great !
+      stop("This is embarassing, we should not get 0 values here (bug code 0001). Please report the bug at https://github.com/JeremyGelb/spNetwork/issues and provide the dataset used.")
     }
     df <- data.frame("goid"=sel$samples$goid,
                      "k" = values)
     return(df)
   })
 
-  ## step 3  combining the results
+   ## step 3  combining the results
   tot_df <- do.call(rbind,dfs)
   tot_df <- tot_df[order(tot_df$goid),]
 
@@ -757,6 +758,10 @@ adaptive_bw.mc <- function(grid,events,lines,bw,trim_bw,method,kernel_name,max_d
   ## step 3  combining the results
   tot_df <- do.call(rbind,dfs)
   tot_df <- tot_df[order(tot_df$goid),]
+
+  if(any(tot_df$k == 0)){
+    stop("This is embarassing, we should not get 0 values here (bug code 0001). Please report the bug at https://github.com/JeremyGelb/spNetwork/issues and provide the dataset used.")
+  }
 
   ## step 4 calculating the new bandwidth !
   delta <- calc_gamma(tot_df$k)

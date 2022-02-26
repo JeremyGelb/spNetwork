@@ -104,7 +104,7 @@ test_that("Testing the adaptive_bw_tnkde.mc function", {
 
   event <- st_as_sf(event, coords = c("x","y"))
 
-  # definition of one sample point
+  # definition of two sample point
   sp_points <- data.frame(x=c(0,-1),
                           y=c(0,0),
                           id = 1:2)
@@ -129,7 +129,7 @@ test_that("Testing the adaptive_bw_tnkde.mc function", {
   nk2 <- quartic_kernel(2,3) * ((2.0-n)/n) # this is the backfire on network
   n2 <- ((nk1+nk2) * quartic_kernel(0,3)) + (quartic_kernel(2,3) * quartic_kernel(2,3))
 
-  hf0 <- c(n1,n3, n2)*(1/9)
+  hf0 <- c(n1,n3,n2)*(1/9)
 
   h0 <- 3
   gamma_val <- exp(sum(log(1/sqrt(hf0)))/3)

@@ -52,7 +52,7 @@ utils::globalVariables(c("origin", "fid"))
 #' directions. Must be the name of a column otherwise. The values of the
 #' column must be "FT" (From - To), "TF" (To - From) or "Both".
 #' @param matrice_type The type of the weighting scheme. Can be 'B' for Binary,
-#' 'W' for row weighted, see the documentation of spdep::nb2listw for details
+#' 'W' for row weighted, or 'I' (identity), see the documentation of spdep::nb2listw for details
 #' @param verbose A Boolean indicating if the function should print its
 #' progress
 #' @param digits the number of digits to keep in the spatial coordinates (
@@ -158,6 +158,8 @@ network_listw_worker<-function(points,lines,maxdistance,dist_func, direction=NUL
                 wtdweights <- rep(1,length(nbs))
             }else if (matrice_type=="W"){
                 wtdweights <- weights/sum(weights)
+            }else if (matrice_type == "I"){
+              wtdweights <- weights
             }
             return(list(nbs,as.numeric(wtdweights)))
         }else{
@@ -266,7 +268,7 @@ prepare_elements_netlistw <- function(is,grid,snapped_points,lines,maxdistance){
 #' 'squared inverse' or a function with one parameter x that will be
 #' vectorized internally
 #' @param matrice_type The type of the weighting scheme. Can be 'B' for Binary,
-#' 'W' for row weighted, see the documentation of spdep::nb2listw for details
+#' 'W' for row weighted, or 'I' (identity), see the documentation of spdep::nb2listw for details
 #' @param grid_shape A vector of length 2 indicating the shape of the grid to
 #' use for splitting the dataset. Default is c(1,1), so all the calculation is
 #' done in one go. It might be necessary to split it if the dataset is large.
@@ -276,7 +278,9 @@ prepare_elements_netlistw <- function(is,grid,snapped_points,lines,maxdistance){
 #' simplification used to reduce risk of topological error)
 #' @param tol A float indicating the spatial tolerance when points are
 #' added as vertices to lines.
-#' @return A listw object (spdep like)
+#' @return A listw object (spdep like) if matrice_type is "B" or "W". If
+#'   matrice_type is I, then a list with a nblist object and a list of weights
+#'   is returned.
 #' @importFrom utils txtProgressBar setTxtProgressBar
 #' @importFrom graphics plot
 #' @importFrom sf st_point_on_surface st_length
@@ -308,8 +312,8 @@ network_listw <- function(origins,lines, maxdistance, method="centroid", point_d
     #}
 
     ## step3  checking the matrix type
-    if (matrice_type %in% c("B", "W") == FALSE) {
-        stop("Matrice type must be B (binary) or W (row standardized)")
+    if (matrice_type %in% c("B", "W", "I") == FALSE) {
+        stop("Matrice type must be B (binary), W (row standardized) or I (identity)")
     }
     ## step 4 creating the vectorized distance function
     vdist_func <- select_dist_function(dist_func)
@@ -411,10 +415,18 @@ network_listw <- function(origins,lines, maxdistance, method="centroid", point_d
     if(verbose){
         print("finally generating the listw object ...")
     }
-    # setting the final listw attributes
-    listw <- spdep::nb2listw(ordered_nblist, glist = ordered_weights,
-                             zero.policy = TRUE, style = matrice_type)
-    return(listw)
+
+    if (matrice_type != "I"){
+      # setting the final listw attributes
+      listw <- spdep::nb2listw(ordered_nblist, glist = ordered_weights,
+                               zero.policy = TRUE, style = matrice_type)
+      return(listw)
+    }else{
+      return(list("nb_list" = ordered_nblist,
+                  "weights" = ordered_weights))
+    }
+
+
 
 }
 
@@ -423,44 +435,47 @@ network_listw <- function(origins,lines, maxdistance, method="centroid", point_d
 #' @description Generate listw object (spdep like) based on network distances with multicore support.
 #'
 #' @param origins A feature collection of linestrings, points or polygons for
-#' which the spatial neighbouring list will be built.
+#'   which the spatial neighbouring list will be built.
 #' @param lines A feature collection of linestrings representing the network
-#' @param maxdistance The maximum distance between two observations to
-#' consider them as neighbours.
-#' @param method A string indicating how the starting points will be built.
-#' If 'centroid' is used, then the centre of lines or polygons is used. If
-#' 'pointsalong' is used, then points will be placed along polygons' borders or
-#' along lines as starting and end points. If 'ends' is used (only for lines)
-#' the first and last vertices of lines are used as starting and ending points.
+#' @param maxdistance The maximum distance between two observations to consider
+#'   them as neighbours.
+#' @param method A string indicating how the starting points will be built. If
+#'   'centroid' is used, then the centre of lines or polygons is used. If
+#'   'pointsalong' is used, then points will be placed along polygons' borders
+#'   or along lines as starting and end points. If 'ends' is used (only for
+#'   lines) the first and last vertices of lines are used as starting and ending
+#'   points.
 #' @param point_dist A float, defining the distance between points when the
-#' method pointsalong is selected.
-#' @param snap_dist the maximum distance to snap the start and end points on
-#' the network.
-#' @param line_weight The weights to use for lines. Default is "length"
-#' (the geographical length), but can be the name of a column. The value is
-#' considered proportional with the geographical length of the lines.
-#' @param mindist The minimum distance between two different observations.
-#' It is important for it to be different from 0 when a W style is used.
+#'   method pointsalong is selected.
+#' @param snap_dist the maximum distance to snap the start and end points on the
+#'   network.
+#' @param line_weight The weights to use for lines. Default is "length" (the
+#'   geographical length), but can be the name of a column. The value is
+#'   considered proportional with the geographical length of the lines.
+#' @param mindist The minimum distance between two different observations. It is
+#'   important for it to be different from 0 when a W style is used.
 #' @param direction Indicates a field giving information about authorized
-#' travelling direction on lines. if NULL, then all lines can be used in both
-#' directions. Must be the name of a column otherwise. The values of the
-#' column must be "FT" (From - To), "TF" (To - From) or "Both".
+#'   travelling direction on lines. if NULL, then all lines can be used in both
+#'   directions. Must be the name of a column otherwise. The values of the
+#'   column must be "FT" (From - To), "TF" (To - From) or "Both".
 #' @param dist_func Indicates the function to use to convert the distance
-#' between observation in spatial weights. Can be 'identity', 'inverse',
-#' 'squared inverse' or a function with one parameter x that will be
-#' vectorized internally
+#'   between observation in spatial weights. Can be 'identity', 'inverse',
+#'   'squared inverse' or a function with one parameter x that will be
+#'   vectorized internally
 #' @param matrice_type The type of the weighting scheme. Can be 'B' for Binary,
-#' 'W' for row weighted, see the documentation of spdep::nb2listw for details
+#'   'W' for row weighted, or 'I' (identity) see the documentation of
+#'   spdep::nb2listw for details
 #' @param grid_shape A vector of length 2 indicating the shape of the grid to
-#' use for splitting the dataset. Default is c(1,1), so all the calculation is
-#' done in one go. It might be necessary to split it if the dataset is large.
-#' @param verbose A Boolean indicating if the function should print its
-#' progress
+#'   use for splitting the dataset. Default is c(1,1), so all the calculation is
+#'   done in one go. It might be necessary to split it if the dataset is large.
+#' @param verbose A Boolean indicating if the function should print its progress
 #' @param digits The number of digits to retain in the spatial coordinates (
-#' simplification used to reduce risk of topological error)
-#' @param tol A float indicating the spatial tolerance when points are
-#' added as vertices to lines.
-#' @return A listw object (spdep like)
+#'   simplification used to reduce risk of topological error)
+#' @param tol A float indicating the spatial tolerance when points are added as
+#'   vertices to lines.
+#' @return A listw object (spdep like) if matrice_type is "B" or "W". If
+#'   matrice_type is I, then a list with a nblist object and a list of weights
+#'   is returned.
 #' @importFrom sf st_length st_point_on_surface
 #' @importFrom utils txtProgressBar setTxtProgressBar
 #' @export
@@ -493,8 +508,8 @@ network_listw.mc <- function(origins,lines,maxdistance, method="centroid", point
     }
 
     ## checking the matrix type
-    if (matrice_type %in% c("B", "W") == FALSE) {
-        stop("Matrice type must be B (binary) or W (row standardized)")
+    if (matrice_type %in% c("B", "W", "I") == FALSE) {
+        stop("Matrice type must be B (binary), W (row standardized) or I (identity)")
     }
     ## creating the vectorized distance function
     vdist_func <- select_dist_function(dist_func)
@@ -604,9 +619,15 @@ network_listw.mc <- function(origins,lines,maxdistance, method="centroid", point
     if(verbose){
         print("finally generating the listw object ...")
     }
-    ## setting the final listw attributes
-    listw <- spdep::nb2listw(ordered_nblist, glist = ordered_weights,
-                             zero.policy = TRUE, style = matrice_type)
-    return(listw)
+
+    if (matrice_type != "I"){
+      # setting the final listw attributes
+      listw <- spdep::nb2listw(ordered_nblist, glist = ordered_weights,
+                               zero.policy = TRUE, style = matrice_type)
+      return(listw)
+    }else{
+      return(list("nb_list" = ordered_nblist,
+                  "weights" = ordered_weights))
+    }
 
 }

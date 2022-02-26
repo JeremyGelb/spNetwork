@@ -2,7 +2,7 @@
 % Please edit documentation in R/k_functions_nettime_sf.R
 \name{k_nt_functions.mc}
 \alias{k_nt_functions.mc}
-\title{Network k and g functions for spatio-temporal data (multicore, maturing)}
+\title{Network k and g functions for spatio-temporal data (multicore, not ready)}
 \usage{
 k_nt_functions.mc(
   lines,
@@ -32,6 +32,8 @@ geometries must be simple Linestrings (may crash if some geometries
 
 \item{points}{A feature collection of points representing the points on the
 network. These points will be snapped on their nearest line}
+
+\item{points_time}{A numeric vector indicating when the point occured}
 
 \item{start_net}{A double, the lowest network distance used to evaluate the k and g functions}
 
@@ -92,7 +94,7 @@ A list with the following values : \cr
 }
 \description{
 Calculate the k and g functions for a set of points on a
-  network and in time (multicore, maturing).
+  network and in time (multicore, not ready).
 }
 \details{
 The k-function is a method to characterize the dispersion of a set

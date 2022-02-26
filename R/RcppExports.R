@@ -520,6 +520,10 @@ k_nt_func_cpp <- function(dist_mat_net, dist_mat_time, start_net, end_net, step_
     .Call('_spNetwork_k_nt_func_cpp', PACKAGE = 'spNetwork', dist_mat_net, dist_mat_time, start_net, end_net, step_net, start_time, end_time, step_time, Lt, Tt, n, w)
 }
 
+k_nt_func_cpp2 <- function(dist_mat_net, dist_mat_time, start_net, end_net, step_net, start_time, end_time, step_time, Lt, Tt, n, w) {
+    .Call('_spNetwork_k_nt_func_cpp2', PACKAGE = 'spNetwork', dist_mat_net, dist_mat_time, start_net, end_net, step_net, start_time, end_time, step_time, Lt, Tt, n, w)
+}
+
 #' @title c++ g space-time function
 #' @name g_nt_func_cpp
 #' @param dist_mat A square matrix with the distances between points on the network
@@ -542,6 +546,10 @@ g_nt_func_cpp <- function(dist_mat_net, dist_mat_time, start_net, end_net, step_
 
 seq_num2 <- function(start, end, step) {
     .Call('_spNetwork_seq_num2', PACKAGE = 'spNetwork', start, end, step)
+}
+
+seq_num2f <- function(start, end, step) {
+    .Call('_spNetwork_seq_num2f', PACKAGE = 'spNetwork', start, end, step)
 }
 
 extend_matrix_by_ids <- function(agg_mat, oids, locids) {

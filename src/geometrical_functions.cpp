@@ -327,43 +327,60 @@ point_t project_point_on_segment(point_t p, linestring_t line){
 std::pair<double, point_t> project_point_on_Linestring_distance(point_t p, linestring_t line){
 
   // step1 : finding the best segment
-  int nb_seg = line.size()-1;
+  //Rcout << "Projecting a point on a line\n";
+  int nb_seg = line.size();
+  //Rcout << "The line has "<<nb_seg<<" vertices\n";
   int i;
   int best_candidate = 0;
   double best_dist = bg::distance(p,line)*2;
+  //Rcout << "This is the best expected distance "<<best_dist<<"\n\n";
   double dist;
+  double cumdist = 0;
   linestring_t seg;
-  for(i = 0; i < nb_seg; i++){
-    //seg.empty();
+
+  for(i = 0; i < (nb_seg-1); i++){
+    //Rcout << "   Iterating on candidate "<<i<<"\n";
     seg.clear();
     seg.push_back(line[i]);
     seg.push_back(line[i+1]);
     dist = bg::distance(p,seg);
-    if(dist < best_dist){
+    //Rcout << "   the distance is "<<dist<<"\n";
+    if(dist <= best_dist){
+      //Rcout << "   it was a good candidate !\n\n";
       best_dist = dist;
       best_candidate = i;
+      break;
     }
+    cumdist += bg::distance(line[i],line[i+1]);
   }
-  // step2 : calculating the cumulative length
-  double cumdist = 0;
-  if(best_candidate > 0){
-    for(i = 0 ; i<best_candidate ; i++){
-      point_t p1 = line[i];
-      point_t p2 = line[i+1];
-      cumdist += bg::distance(p1,p2);
-    }
-  }
+  // the cumulative distance is calculated untill the first vertex of the selected segment !
 
   // step3 : projecting the point on the best candidate
+  std::pair<double, point_t> result;
   linestring_t best_segment;
-  best_segment.push_back(line[best_candidate]);
-  best_segment.push_back(line[best_candidate+1]);
+  point_t p1 = line[best_candidate];
+  point_t p2 = line[best_candidate+1];
+  float d1 = bg::distance(p1,p);
+  float d2 = bg::distance(p2,p);
 
-  point_t projpt = project_point_on_segment(p, best_segment);
+  if(d1 == 0.0){
+    // cas 1 : le point est sur la vertex de depart
+    result = std::make_pair(cumdist,p1);
+  }else if (d2 == 0.0){
+    // cas 2 : le point est sur la vertex de fin
+    result = std::make_pair((cumdist + bg::distance(p2,p1)),p2);
+  }else{
+    // cas 3 : le point est quelque part entre les deux
+    best_segment.push_back(p1);
+    best_segment.push_back(p2);
 
-  //step 4 : calculating the final dist
-  cumdist+=bg::distance(projpt, line[best_candidate]);
-  std::pair<double, point_t> result = std::make_pair(cumdist,projpt);
+    point_t projpt = project_point_on_segment(p, best_segment);
+
+    //step 4 : calculating the final dist
+    cumdist+=bg::distance(projpt, line[best_candidate]);
+    result = std::make_pair(cumdist,projpt);
+  }
+
   return result;
 }
 
@@ -428,9 +445,12 @@ List add_vertices_lines_cpp(NumericMatrix points, List lines, arma::colvec neare
   // iterating over the lines
   int i,j;
   for(i = 0; i < lines.length() ; i++){
+    //Rcout << "Iterating on line " << i << '\n';
     NumericMatrix line = lines(i);
     // finding the points to match on that line
     mat ok_pts = Xmat.rows(find(nearest_lines_idx == i));
+    //Rcout << "These points will be projected on it \n\n" << ok_pts << "\n\n";
+
     // if their is not points to add to the line
     if(ok_pts.n_rows == 0){
       new_lines.push_back(line);
@@ -453,10 +473,13 @@ List add_vertices_lines_cpp(NumericMatrix points, List lines, arma::colvec neare
       line_mat.col(1) = as<arma::vec>(Y1);
       line_mat.col(2) = as<arma::vec>(dists);
 
+      //Rcout << "Here is the matrix of the line \n\n" << line_mat << "\n\n";
+
       // step2 : create a matrix of point dists with the snapped points
       arma::mat distMat(ok_pts.n_rows, 3);
       int nr = ok_pts.n_rows;
       for(j = 0; j < nr; j++){
+        //Rcout << "Iterating on point "<<j<<"\n";
         point_t org_pt(ok_pts(j,0),ok_pts(j,1));
         std::pair<double, point_t> point_dits = project_point_on_Linestring_distance(org_pt, line_geom);
         point_t pt = point_dits.second;
@@ -464,14 +487,21 @@ List add_vertices_lines_cpp(NumericMatrix points, List lines, arma::colvec neare
         distMat(j,1) = pt.y();
         distMat(j,2) = point_dits.first;
       }
+      //Rcout << "Here is the matrix of the projected pts \n\n" << distMat << "\n\n";
+
       // subsetting the matrix for dists < mindist
       mat ok_distMat = distMat.rows(find(distMat.col(2) >= mindist));
       //combining the two matrices
       mat total_mat = join_cols(line_mat,ok_distMat);
+      //mat total_mat = line_mat;
+
+      //Rcout << "Here is the total matrix \n\n" << total_mat << "\n\n";
 
       // ordering with the distances
       uvec order = sort_index(total_mat.col(2));
       total_mat = total_mat.rows(order);
+
+      //Rcout << "Here is the ordered total matrix \n\n" << total_mat << "\n\n";
 
       // adding to the list of lines
       new_lines.push_back(wrap(total_mat.cols(0,1)));

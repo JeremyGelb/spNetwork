@@ -2,21 +2,18 @@
 #### execution k functions in space-time ####
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-#' @title Network k and g functions for spatio-temporal data (maturing)
+#' @title Network k and g functions for spatio-temporal data (not ready)
 #'
 #' @description Calculate the k and g functions for a set of points on a
-#'   network and in time (maturing).
+#'   network and in time (not ready).
 #'
 #' @details The k-function is a method to characterize the dispersion of a set
 #'   of points. For each point, the numbers of other points in subsequent radii
-#'   are calculated. This empirical k-function can be more or less clustered
-#'   than a k-function obtained if the points were randomly located in space. In
+#'   are calculated in both space and time. This empirical k-function can be more or less clustered
+#'   than a k-function obtained if the points were randomly located . In
 #'   a network, the network distance is used instead of the Euclidean distance.
 #'   This function uses Monte Carlo simulations to assess if the points are
-#'   clustered or dispersed, and gives the results as a line plot. If the line
-#'   of the observed k-function is higher than the shaded area representing the
-#'   values of the simulations, then the points are more clustered than what we
-#'   can expect from randomness and vice-versa. The function also calculates the
+#'   clustered or dispersed. The function also calculates the
 #'   g-function, a modified version of the k-function using rings instead of
 #'   disks. The width of the ring must be chosen. The main interest is to avoid
 #'   the cumulative effect of the classical k-function. This function is maturing,
@@ -25,6 +22,7 @@
 #'
 #' @template kfunctions-arg
 #' @template common_kfunctions_nt-arg
+#' @param points_time A numeric vector indicating when the point occured
 #'
 #' @return A list with the following values : \cr
 #'  \itemize{
@@ -40,7 +38,38 @@
 #' @importFrom stats quantile
 #' @export
 #' @examples
-#' # No example for the moment (development)
+#' \donttest{
+#' eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
+#' bike_accidents <- sf::st_read(eventsgpkg,layer="bike_accidents")
+#' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
+#' mtl_network <- sf::st_read(networkgpkg,layer="mtl_network")
+#'
+#' # converting the Date field to a numeric field (counting days)
+#' bike_accidents$Time <- as.POSIXct(bike_accidents$Date, format = "%Y/%m/%d")
+#' start <- as.POSIXct("2016/01/01", format = "%Y/%m/%d")
+#' bike_accidents$Time <- difftime(bike_accidents$Time, start, units = "days")
+#' bike_accidents$Time <- as.numeric(bike_accidents$Time)
+#'
+#' values <- k_nt_functions(
+#'       lines =  mtl_network,
+#'       points = bike_accidents,
+#'       points_time = bike_accidents$Time,
+#'       start_net = 0 ,
+#'       end_net = 2000,
+#'       step_net = 10,
+#'       width_net = 200,
+#'       start_time = 0,
+#'       end_time = 360,
+#'       step_time = 7,
+#'       width_time = 14,
+#'       nsim = 50,
+#'       conf_int = 0.05,
+#'       digits = 2,
+#'       tol = 0.1,
+#'       resolution = NULL,
+#'       agg = 15,
+#'       verbose = TRUE)
+#'}
 k_nt_functions <- function(lines, points, points_time,
                            start_net, end_net, step_net, width_net,
                            start_time, end_time, step_time, width_time,
@@ -100,6 +129,8 @@ k_nt_functions <- function(lines, points, points_time,
 
   new_lines$oid <- seq_len(nrow(new_lines))
   new_lines <- new_lines[c("length","oid","probs")]
+
+  # calculating the extent of the study area
   Lt <- sum(as.numeric(st_length(new_lines)))
   Tt <- max(points_time) - min(points_time)
 
@@ -109,6 +140,7 @@ k_nt_functions <- function(lines, points, points_time,
   graph_result <- build_graph(new_lines,digits = digits,
                               line_weight = "weight",
                               attrs = TRUE)
+
   graph <- graph_result$graph
   nodes <- graph_result$spvertices
   graph_result$spedges$probs <- igraph::get.edge.attribute(graph_result$graph,
@@ -122,7 +154,6 @@ k_nt_functions <- function(lines, points, points_time,
   ## step 5.5 I must now deal with the dupplicated ids
   ## minus 1 because c++ indexing starts at 0
   dist_mat_net <- extend_matrix_by_ids(dist_mat, points$goid, points$locid-1)
-  print(round(dist_mat_net))
 
   ## and generate a matrix with the time distances !
   dist_mat_time <- as.matrix(stats::dist(points_time))
@@ -131,7 +162,6 @@ k_nt_functions <- function(lines, points, points_time,
   if (verbose){
     print("Calculating k and g functions ...")
   }
-
   k_vals <- k_nt_func_cpp(dist_mat_net, dist_mat_time,
                           start_net, end_net, step_net,
                           start_time, end_time, step_time,
@@ -263,10 +293,10 @@ k_nt_functions <- function(lines, points, points_time,
 }
 
 
-#' @title Network k and g functions for spatio-temporal data (multicore, maturing)
+#' @title Network k and g functions for spatio-temporal data (multicore, not ready)
 #'
 #' @description Calculate the k and g functions for a set of points on a
-#'   network and in time (multicore, maturing).
+#'   network and in time (multicore, not ready).
 #'
 #' @details The k-function is a method to characterize the dispersion of a set
 #'   of points. For each point, the numbers of other points in subsequent radii
@@ -286,6 +316,7 @@ k_nt_functions <- function(lines, points, points_time,
 #'
 #' @template kfunctions-arg
 #' @template common_kfunctions_nt-arg
+#' @param points_time A numeric vector indicating when the point occured
 #'
 #' @return A list with the following values : \cr
 #'  \itemize{
@@ -474,7 +505,7 @@ k_nt_functions.mc <- function(lines, points, points_time,
     if(verbose){
       print("calculating the k and g functions for the randomized matrices..")
     }
-    all_values <- future.apply::future_lapply(dist_mats, function(dist_mat_net){
+    all_values <- future.apply::future_lapply(dist_matrices, function(dist_mat_net){
       dist_mat_time2 <- runif(n = prod(dims_time),
                              min = min(points_time), max = max(points_time))
       dim(dist_mat_time2) <- dims_time

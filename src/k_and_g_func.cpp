@@ -201,6 +201,43 @@ NumericMatrix k_nt_func_cpp(arma::mat dist_mat_net, arma::mat dist_mat_time,
 }
 
 
+// [[Rcpp::export]]
+IntegerMatrix k_nt_func_cpp2(arma::imat dist_mat_net, arma::imat dist_mat_time,
+                            int start_net, int end_net, int step_net,
+                            int start_time,int end_time, int step_time,
+                            int Lt, int Tt, int n, arma::icolvec w){
+
+  std::vector<int> breaks_net = seq_num2f(start_net,end_net,step_net);
+  std::vector<int> breaks_time = seq_num2f(start_time,end_time,step_time);
+  int t1 = (n-1)/(Lt * Tt);
+
+  IntegerMatrix k_values(breaks_net.size(),breaks_time.size());
+  arma::imat int_mat(dist_mat_net.n_rows, dist_mat_net.n_cols);
+  int_mat.zeros();
+  arma::umat mat1(dist_mat_net.n_rows, dist_mat_net.n_cols);
+  mat1.zeros();
+
+  // pre-calculating the conditions in time
+  std::vector<arma::umat> umat_times;
+  for(int i = 0; i < breaks_time.size(); ++i){
+    umat_times.push_back(dist_mat_time <= breaks_time[i]);
+  }
+
+  for(int i = 0; i < breaks_net.size(); ++i) {
+    //mat1 = dist_mat_net <= breaks_net[i];
+    mat1.elem(arma::find(dist_mat_net <= breaks_net[i])).ones();
+    for(int j = 0; j < breaks_time.size(); ++j){
+      int_mat.elem( arma::find((mat1) && (umat_times[j]))).ones();
+      int_mat.each_col() %= w;
+      int_mat.diag().zeros();
+      k_values(i,j) = arma::accu(int_mat) * t1;
+      int_mat.zeros();
+    }
+    mat1.zeros();
+  }
+  return k_values;
+}
+
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // #### base g space-time function ####
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

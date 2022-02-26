@@ -49,10 +49,17 @@ test_that("Testing the adaptive_bw function", {
     samples = event,
     lines = all_lines,
     adaptive = TRUE,
-    bw = 3, trim_bw = 5, method = "discontinuous",
-    kernel_name = "quartic", max_depth = 8,
-    tol = 0.1, digits = 2, sparse = TRUE, verbose = TRUE,
-    check = FALSE
+    bw = 3,
+    trim_bw = 5,
+    method = "discontinuous",
+    kernel_name = "quartic",
+    max_depth = 8,
+    tol = 0.1,
+    digits = 2,
+    sparse = TRUE,
+    verbose = TRUE,
+    check = FALSE,
+    grid_shape = c(1,1)
   )
 
   diff <- sum(round(abs(abws - observed$events$bw),6))

@@ -237,7 +237,6 @@ randomize_distmatrix <- function(graph, edge_df, n, start_vert = NULL){
   }
 
   return(dist_mat)
-
 }
 
 
@@ -838,7 +837,7 @@ cross_kfunctions <- function(lines, pointsA, pointsB,
 
     all_values <- lapply(1:nsim,function(i){
       dist_mat <- dist_matrices[[i]]
-      k_vals <- cross_gkunc_cpp(dist_mat,start,end,step,Lt,na,nb,w,snappedB$weight)
+      k_vals <- cross_kfunc_cpp(dist_mat,start,end,step,Lt,na,nb,w,snappedB$weight)
       g_vals <- cross_gfunc_cpp(dist_mat,start,end,step,width,Lt,na,nb,w,snappedB$weight)
       if(verbose){
         setTxtProgressBar(pb, i)

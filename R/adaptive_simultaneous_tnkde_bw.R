@@ -140,14 +140,15 @@ adaptive_bw_tnkde <- function(grid, events_loc, events, lines,
   n_quadra <- length(selections)
 
   dfs <- lapply(1:n_quadra,function(i){
-
     sel <- selections[[i]]
 
-    sel_events <- subset(events, events$goid %in% sel$events$goid)
+    #sel_events <- subset(events, events$goid %in% sel$events$goid)
+    sel_events <- subset(events, events$goid %in% sel$samples$goid)
 
     # nice tnkde worker function !
     values <- worker_adaptive_bw_tnkde(lines = sel$lines,
-                                  quad_events = sel$samples,
+                                  #quad_events = sel$samples,
+                                  quad_events = sel_events,
                                   events_loc = sel$events,
                                   events = sel_events,
                                   w = sel_events$weight,
@@ -159,7 +160,7 @@ adaptive_bw_tnkde <- function(grid, events_loc, events, lines,
     # values will be a simple numeric vector
 
     # NOTE : the first column store the goid !
-    mat_result <- cbind(sel$samples$goid, as.vector(values))
+    mat_result <- cbind(sel_events$goid, as.vector(values))
     return(mat_result)
   })
 
@@ -219,27 +220,58 @@ adaptive_bw_tnkde.mc <- function(grid, events_loc, events, lines,
     print("start calculating the kernel values for the adaptive bandwidth...")
   }
 
-  dfs <- future.apply::future_lapply(selections, function(sel) {
+  if(verbose == FALSE){
+    dfs <- future.apply::future_lapply(selections, function(sel) {
 
-    sel_events <- subset(events, events$goid %in% sel$events$goid)
+      sel_events <- subset(events, events$goid %in% sel$samples$goid)
 
-    values <- worker_adaptive_bw_tnkde(lines = sel$lines,
-                                       quad_events = sel$samples,
-                                       events_loc = sel$events,
-                                       events = sel_events,
-                                       w = sel_events$weight,
-                                       kernel_name = kernel_name,
-                                       bw_net = bw_net, bw_time = bw_time,
-                                       method = method, div = div,
-                                       digits = digits, tol = tol, sparse = sparse,
-                                       max_depth = max_depth, verbose = FALSE)
-    # values will be a simple numeric vector
+      values <- spNetwork::worker_adaptive_bw_tnkde(lines = sel$lines,
+                                         # quad_events = sel_events, #sel_samples
+                                         quad_events = sel_events,
+                                         events_loc = sel$events,
+                                         events = sel_events,
+                                         w = sel_events$weight,
+                                         kernel_name = kernel_name,
+                                         bw_net = bw_net, bw_time = bw_time,
+                                         method = method, div = div,
+                                         digits = digits, tol = tol, sparse = sparse,
+                                         max_depth = max_depth, verbose = FALSE)
+      # values will be a simple numeric vector
 
-    # NOTE : the first column store the goid !
-    mat_result <- cbind(sel$samples$goid, as.vector(values))
-    return(mat_result)
+      # NOTE : the first column store the goid !
+      #mat_result <- cbind(sel$samples$goid, as.vector(values))
+      mat_result <- cbind(sel_events$goid, as.vector(values))
+      return(mat_result)
 
-  }, future.packages = c("spNetwork"))
+    }, future.packages = c("spNetwork"))
+  }else {
+    progressr::with_progress({
+      p <- progressr::progressor(along = selections)
+      dfs <- future.apply::future_lapply(selections, function(sel) {
+
+        sel_events <- subset(events, events$goid %in% sel$samples$goid)
+
+        values <- spNetwork::worker_adaptive_bw_tnkde(lines = sel$lines,
+                                           quad_events = sel_events,
+                                           events_loc = sel$events,
+                                           events = sel_events,
+                                           w = sel_events$weight,
+                                           kernel_name = kernel_name,
+                                           bw_net = bw_net, bw_time = bw_time,
+                                           method = method, div = div,
+                                           digits = digits, tol = tol, sparse = sparse,
+                                           max_depth = max_depth, verbose = FALSE)
+        # values will be a simple numeric vector
+
+        # NOTE : the first column store the goid !
+        mat_result <- cbind(sel_events$goid, as.vector(values))
+        p(sprintf("i=%g", sel$index))
+        return(mat_result)
+
+      }, future.packages = c("spNetwork"))
+    })
+  }
+
 
   ## step 3  combining the results
   tot_df <- do.call(rbind,dfs)

@@ -43,6 +43,8 @@ the same location. They are linked by the goid column}
 
 \item{method}{The type of NKDE to use (string)}
 
+\item{div}{The type of divisor (not used currently)}
+
 \item{digits}{The number of digits to retain from the spatial coordinates. It
 ensures that topology is good when building the network. Default is 3. Too high a
 precision (high number of digits) might break some connections}
@@ -57,13 +59,11 @@ between two nodes in a graph. Regular matrices are faster, but require more
 memory, in particular with multiprocessing. Sparse matrices are slower (a
 bit), but require much less memory.}
 
+\item{max_depth}{The maximum depth of recursion}
+
 \item{verbose}{A boolean}
 
 \item{cvl}{A boolean indicating if the cvl method (TRUE) or the loo (FALSE) method must be used}
-
-\item{agg}{A double indicating if the events must be aggregated within a
-distance. If NULL, the events are aggregated only by rounding the
-coordinates.}
 }
 \description{
 Calculate for multiple network and time bandwidths the cross validation likelihood to
@@ -72,4 +72,3 @@ select an appropriate bandwidth in a data-driven approach
 \examples{
 # no example provided, this is an internal function
 }
-\keyword{internal}

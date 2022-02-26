@@ -28,27 +28,28 @@ which the spatial neighbouring list will be built.}
 
 \item{lines}{A feature collection of linestrings representing the network}
 
-\item{maxdistance}{The maximum distance between two observations to
-consider them as neighbours.}
+\item{maxdistance}{The maximum distance between two observations to consider
+them as neighbours.}
 
-\item{method}{A string indicating how the starting points will be built.
-If 'centroid' is used, then the centre of lines or polygons is used. If
-'pointsalong' is used, then points will be placed along polygons' borders or
-along lines as starting and end points. If 'ends' is used (only for lines)
-the first and last vertices of lines are used as starting and ending points.}
+\item{method}{A string indicating how the starting points will be built. If
+'centroid' is used, then the centre of lines or polygons is used. If
+'pointsalong' is used, then points will be placed along polygons' borders
+or along lines as starting and end points. If 'ends' is used (only for
+lines) the first and last vertices of lines are used as starting and ending
+points.}
 
 \item{point_dist}{A float, defining the distance between points when the
 method pointsalong is selected.}
 
-\item{snap_dist}{the maximum distance to snap the start and end points on
-the network.}
+\item{snap_dist}{the maximum distance to snap the start and end points on the
+network.}
 
-\item{line_weight}{The weights to use for lines. Default is "length"
-(the geographical length), but can be the name of a column. The value is
+\item{line_weight}{The weights to use for lines. Default is "length" (the
+geographical length), but can be the name of a column. The value is
 considered proportional with the geographical length of the lines.}
 
-\item{mindist}{The minimum distance between two different observations.
-It is important for it to be different from 0 when a W style is used.}
+\item{mindist}{The minimum distance between two different observations. It is
+important for it to be different from 0 when a W style is used.}
 
 \item{direction}{Indicates a field giving information about authorized
 travelling direction on lines. if NULL, then all lines can be used in both
@@ -61,23 +62,25 @@ between observation in spatial weights. Can be 'identity', 'inverse',
 vectorized internally}
 
 \item{matrice_type}{The type of the weighting scheme. Can be 'B' for Binary,
-'W' for row weighted, see the documentation of spdep::nb2listw for details}
+'W' for row weighted, or 'I' (identity) see the documentation of
+spdep::nb2listw for details}
 
 \item{grid_shape}{A vector of length 2 indicating the shape of the grid to
 use for splitting the dataset. Default is c(1,1), so all the calculation is
 done in one go. It might be necessary to split it if the dataset is large.}
 
-\item{verbose}{A Boolean indicating if the function should print its
-progress}
+\item{verbose}{A Boolean indicating if the function should print its progress}
 
 \item{digits}{The number of digits to retain in the spatial coordinates (
 simplification used to reduce risk of topological error)}
 
-\item{tol}{A float indicating the spatial tolerance when points are
-added as vertices to lines.}
+\item{tol}{A float indicating the spatial tolerance when points are added as
+vertices to lines.}
 }
 \value{
-A listw object (spdep like)
+A listw object (spdep like) if matrice_type is "B" or "W". If
+  matrice_type is I, then a list with a nblist object and a list of weights
+  is returned.
 }
 \description{
 Generate listw object (spdep like) based on network distances with multicore support.

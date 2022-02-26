@@ -111,27 +111,28 @@ which the spatial neighbouring list will be built.</p></dd>
 <dt>lines</dt>
 <dd><p>A feature collection of linestrings representing the network</p></dd>
 <dt>maxdistance</dt>
-<dd><p>The maximum distance between two observations to
-consider them as neighbours.</p></dd>
+<dd><p>The maximum distance between two observations to consider
+them as neighbours.</p></dd>
 <dt>method</dt>
-<dd><p>A string indicating how the starting points will be built.
-If 'centroid' is used, then the centre of lines or polygons is used. If
-'pointsalong' is used, then points will be placed along polygons' borders or
-along lines as starting and end points. If 'ends' is used (only for lines)
-the first and last vertices of lines are used as starting and ending points.</p></dd>
+<dd><p>A string indicating how the starting points will be built. If
+'centroid' is used, then the centre of lines or polygons is used. If
+'pointsalong' is used, then points will be placed along polygons' borders
+or along lines as starting and end points. If 'ends' is used (only for
+lines) the first and last vertices of lines are used as starting and ending
+points.</p></dd>
 <dt>point_dist</dt>
 <dd><p>A float, defining the distance between points when the
 method pointsalong is selected.</p></dd>
 <dt>snap_dist</dt>
-<dd><p>the maximum distance to snap the start and end points on
-the network.</p></dd>
+<dd><p>the maximum distance to snap the start and end points on the
+network.</p></dd>
 <dt>line_weight</dt>
-<dd><p>The weights to use for lines. Default is "length"
-(the geographical length), but can be the name of a column. The value is
+<dd><p>The weights to use for lines. Default is "length" (the
+geographical length), but can be the name of a column. The value is
 considered proportional with the geographical length of the lines.</p></dd>
 <dt>mindist</dt>
-<dd><p>The minimum distance between two different observations.
-It is important for it to be different from 0 when a W style is used.</p></dd>
+<dd><p>The minimum distance between two different observations. It is
+important for it to be different from 0 when a W style is used.</p></dd>
 <dt>direction</dt>
 <dd><p>Indicates a field giving information about authorized
 travelling direction on lines. if NULL, then all lines can be used in both
@@ -144,24 +145,26 @@ between observation in spatial weights. Can be 'identity', 'inverse',
 vectorized internally</p></dd>
 <dt>matrice_type</dt>
 <dd><p>The type of the weighting scheme. Can be 'B' for Binary,
-'W' for row weighted, see the documentation of spdep::nb2listw for details</p></dd>
+'W' for row weighted, or 'I' (identity) see the documentation of
+spdep::nb2listw for details</p></dd>
 <dt>grid_shape</dt>
 <dd><p>A vector of length 2 indicating the shape of the grid to
 use for splitting the dataset. Default is c(1,1), so all the calculation is
 done in one go. It might be necessary to split it if the dataset is large.</p></dd>
 <dt>verbose</dt>
-<dd><p>A Boolean indicating if the function should print its
-progress</p></dd>
+<dd><p>A Boolean indicating if the function should print its progress</p></dd>
 <dt>digits</dt>
 <dd><p>The number of digits to retain in the spatial coordinates (
 simplification used to reduce risk of topological error)</p></dd>
 <dt>tol</dt>
-<dd><p>A float indicating the spatial tolerance when points are
-added as vertices to lines.</p></dd>
+<dd><p>A float indicating the spatial tolerance when points are added as
+vertices to lines.</p></dd>
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A listw object (spdep like)</p>
+    <p>A listw object (spdep like) if matrice_type is "B" or "W". If
+  matrice_type is I, then a list with a nblist object and a list of weights
+  is returned.</p>
     </div>
 
     <div id="ref-examples">

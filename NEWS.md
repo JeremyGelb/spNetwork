@@ -6,6 +6,12 @@
 
 * It is possible now to set directly the size of local bandwidths for the functions *nkde*, *nkde.mc*, *tnkde* and *tnkde.mc*. This feature is currently experimental, please submit an issue if you encounter a bug.
 
+* One can now use the identity matrix type for neighbour weighting (*network_listw*)
+
+## corrected bugs
+
+* The new c++ function for adding vertex on lines was buggy and could break the geometry of the original lines. This has been fixed.
+
 # spNetwork 0.4.0.9000
 
 ## New Features

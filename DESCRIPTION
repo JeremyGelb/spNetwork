@@ -35,9 +35,7 @@ Depends:
 Suggests:
     future (>= 1.16.0),
     testthat (>= 3.0.0),
-    knitr (>= 1.28),
     kableExtra (>= 1.1.0),
-    rmarkdown (>= 2.1),
     RColorBrewer (>= 1.1-2),
     classInt (>= 0.4-3),
     reshape2 (>= 1.4.3),
@@ -46,9 +44,12 @@ Suggests:
     tmap (>= 3.3-1),
     smoothr (>= 0.2.2),
     concaveman (>= 1.1.0),
-    covr (>= 3.5.1)
+    covr (>= 3.5.1),
+    knitr,
+    rmarkdown
 RoxygenNote: 7.1.2
-VignetteBuilder: knitr
+VignetteBuilder: 
+    knitr
 URL: https://jeremygelb.github.io/spNetwork/
 BugReports: https://github.com/JeremyGelb/spNetwork/issues
 LinkingTo: 

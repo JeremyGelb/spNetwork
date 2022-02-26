@@ -190,7 +190,7 @@ tnkde_worker <- function(lines, events_loc, events, samples_loc, samples_time, k
 
   ## step3 finding for each event, its corresponding node
   events_loc$vertex_id <- closest_points(events_loc, nodes)
-  events$vertex_id <- events_loc$vertex_id[events$goid]
+  events$vertex_id <- events_loc$vertex_id[match(events$goid,events_loc$goid)]
 
   ## step4 adding the spatial coordinates to samples and nodes
   XY_nodes <- st_coordinates(nodes)
@@ -450,6 +450,9 @@ tnkde <- function(lines, events, time_field, w, samples_loc, samples_time, kerne
   if(check){
     check_geometries(lines, samples_loc, events, study_area)
   }
+  if(time_field %in% names(events) == FALSE){
+    stop(paste0("The column ",time_field," is not a column of events"))
+  }
 
   events$time <- events[[time_field]]
   events$wid <- 1:nrow(events)
@@ -685,6 +688,9 @@ tnkde.mc <- function(lines, events, time_field, w, samples_loc, samples_time, ke
   if(check){
     check_geometries(lines, samples_loc, events, study_area)
   }
+  if(time_field %in% names(events) == FALSE){
+    stop(paste0("The column ",time_field," is not a column of events"))
+  }
 
   events$time <- events[[time_field]]
   events$wid <- 1:nrow(events)
@@ -713,7 +719,7 @@ tnkde.mc <- function(lines, events, time_field, w, samples_loc, samples_time, ke
   ## step2  creating the grid
   grid <- build_grid(grid_shape,list(lines,samples_loc,events))
 
-  ## adaptive bandwidth !
+    ## adaptive bandwidth !
   if(adaptive==FALSE){
     bws_net <- events$bws_net
     bws_time <- events$bws_time
@@ -734,7 +740,6 @@ tnkde.mc <- function(lines, events, time_field, w, samples_loc, samples_time, ke
       bws_net <- interaction_bws$bws_net
     }
   }
-
 
   ## calculating the correction factor
   if(diggle_correction){
@@ -761,8 +766,9 @@ tnkde.mc <- function(lines, events, time_field, w, samples_loc, samples_time, ke
   ## step3 splitting the dataset with each rectangle
   selections <- split_by_grid.mc(grid, samples_loc, events_loc, lines, max_bw, tol, digits)
 
+  save.image("situation3_error.rda")
   ## step 4 calculating the values
-
+  # save.image(".Rproj.user/error_occured_here.rda")
   if(verbose){
     print("starting the kernel calculations ...")
     progressr::with_progress({

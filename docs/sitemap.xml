@@ -178,6 +178,9 @@
     <loc>/reference/cross_gfun.html</loc>
   </url>
   <url>
+    <loc>/reference/cross_gfunc_cpp.html</loc>
+  </url>
+  <url>
     <loc>/reference/cross_kfunc.html</loc>
   </url>
   <url>
@@ -185,6 +188,9 @@
   </url>
   <url>
     <loc>/reference/cross_kfunctions.mc.html</loc>
+  </url>
+  <url>
+    <loc>/reference/cross_kfunc_cpp.html</loc>
   </url>
   <url>
     <loc>/reference/cut_lines_at_distance.html</loc>
@@ -274,10 +280,16 @@
     <loc>/reference/gfunc.html</loc>
   </url>
   <url>
+    <loc>/reference/gfunc_cpp.html</loc>
+  </url>
+  <url>
     <loc>/reference/gm_mean.html</loc>
   </url>
   <url>
     <loc>/reference/graph_checking.html</loc>
+  </url>
+  <url>
+    <loc>/reference/g_nt_func_cpp.html</loc>
   </url>
   <url>
     <loc>/reference/heal_edges.html</loc>
@@ -296,6 +308,18 @@
   </url>
   <url>
     <loc>/reference/kfunctions.mc.html</loc>
+  </url>
+  <url>
+    <loc>/reference/kfunc_cpp.html</loc>
+  </url>
+  <url>
+    <loc>/reference/k_nt_functions.html</loc>
+  </url>
+  <url>
+    <loc>/reference/k_nt_functions.mc.html</loc>
+  </url>
+  <url>
+    <loc>/reference/k_nt_func_cpp.html</loc>
   </url>
   <url>
     <loc>/reference/lines_center.html</loc>

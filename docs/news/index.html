@@ -84,6 +84,11 @@
 <h3 id="new-features-0-4-1-9000">New Features<a class="anchor" aria-label="anchor" href="#new-features-0-4-1-9000"></a></h3>
 <ul><li><p>It is possible now to choose between two strategies to deal with densities at 0 when calculating LOO likelihood for several bandwidths. For more details, see the parameter <em>zero_strat</em> in the functions <em>bw_cvl_calc</em>, <em>bw_cvl_calc.mc</em>, <em>bw_cv_likelihood_calc</em>, <em>bw_cv_likelihood_calc.mc</em>, <em>bws_tnkde_cv_likelihood_calc</em> and <em>bws_tnkde_cv_likelihood_calc.mc</em>.</p></li>
 <li><p>It is possible now to set directly the size of local bandwidths for the functions <em>nkde</em>, <em>nkde.mc</em>, <em>tnkde</em> and <em>tnkde.mc</em>. This feature is currently experimental, please submit an issue if you encounter a bug.</p></li>
+<li><p>One can now use the identity matrix type for neighbour weighting (<em>network_listw</em>)</p></li>
+</ul></div>
+<div class="section level3">
+<h3 id="corrected-bugs-0-4-1-9000">corrected bugs<a class="anchor" aria-label="anchor" href="#corrected-bugs-0-4-1-9000"></a></h3>
+<ul><li>The new c++ function for adding vertex on lines was buggy and could break the geometry of the original lines. This has been fixed.</li>
 </ul></div>
 </div>
     <div class="section level2">
