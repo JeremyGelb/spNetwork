@@ -14,6 +14,7 @@
 #include <boost/geometry/index/rtree.hpp>
 #include <boost/geometry/algorithms/distance.hpp>
 #include <boost/foreach.hpp>
+#include <boost/geometry/index/predicates.hpp>
 
 // **** some namespaces related to boost ****
 namespace bg = boost::geometry;
@@ -23,8 +24,9 @@ namespace bgi = boost::geometry::index;
 
 // basic geometries
 typedef bg::model::d2::point_xy<double> point_t;
+//typedef bg::model::point<double, 2, bg::cs::cartesian> point_t;
 typedef bg::model::linestring<point_t> linestring_t;
-typedef bg::model::box<point_t> box;
+typedef bg::model::box<point_t> bbox;
 
 // a simple vector of boost lines
 typedef std::vector<linestring_t> lines_vector;
@@ -78,21 +80,24 @@ lines_vector lines_vector_from_coordinates(List lines){
 // see here: https://www.boost.org/doc/libs/1_76_0/libs/geometry/doc/html/geometry/spatial_indexes/rtree_quickstart.html
 // and here for enveloppe https://www.boost.org/doc/libs/1_71_0/libs/geometry/doc/html/geometry/reference/algorithms/envelope/envelope_2.html
 // the basic element here will be a pair of box;int
-typedef std::pair<box, unsigned> rtree_element;
+// another lib if necessary : https://github.com/nushoin/RTree/blob/master/RTree.h
+typedef std::pair<bbox, int> rtree_element;
 typedef bgi::rtree< rtree_element, bgi::quadratic<16>> lines_rtree;
 
 lines_rtree build_rtree_for_lines(lines_vector lines){
 
   // **** This is the classical way ****//
   // setting the empty rtree
-  bgi::rtree< rtree_element, bgi::quadratic<16> > rtree;
-  boost::geometry::model::box<point_t> abox;
+  lines_rtree mytree;
+  //boost::geometry::model::box<point_t> abox;
+  bbox abox;
 
   // iterating over the lines
-  unsigned i = 0;
+  int i = 0;
   for(i = 0 ; i < lines.size() ; i++){
     bg::envelope(lines[i], abox);
-    rtree.insert(std::make_pair(abox, i));
+    rtree_element el = std::make_pair(abox, i);
+    mytree.insert(el);
   }
 
   // **** If I use a range adaptor, the packing algo can be used and is supposed to be faster ****//
@@ -112,7 +117,7 @@ lines_rtree build_rtree_for_lines(lines_vector lines){
   //bgi::rtree<rtree_element, bgi::quadratic<16> > rtree(boxes);
 
   // returning the filled rtree
-  return rtree;
+  return mytree;
 
 };
 
@@ -143,7 +148,7 @@ vector_rtree_element find_close_lines_in_index(lines_rtree index, lines_vector l
     width = actual_dist/2.0;
     point_t mypt1(point.x()-width, point.y()-width);
     point_t mypt2(point.x()+width, point.y()+width);
-    box region(mypt1,mypt2);
+    bbox region(mypt1,mypt2);
 
     //querying the index
     index.query(bgi::intersects(region), std::back_inserter(returned_values));

@@ -230,8 +230,6 @@ Features that will be added to the package in the future:
 
 -   temporal NKDE, a two dimensional kernel density estimation in
     network space and time
--   accessibility measures based on distance matrix between population
-    locations and services
 -   rework for using `sf` objects rather than `sp` (`rgeos` and
     `maptools` will be deprecated in 2023). This work is undergoing,
     please report any bug or error in the new documentation.
