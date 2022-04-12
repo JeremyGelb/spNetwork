@@ -29,7 +29,7 @@
 #' @return A feature collection of lines representing the isochrones with the
 #' following columns
 #' \itemize{
-#'         \item point_id: the index of the point at the centre of the isochrone
+#'         \item point_id: the index of the point at the centre of the isochrone;
 #'         \item distance: the size of the isochrone
 #' }
 #' @importFrom utils strcapture

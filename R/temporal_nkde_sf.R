@@ -333,16 +333,8 @@ tnkde_worker <- function(lines, events_loc, events, samples_loc, samples_time, k
 #' It is possible to use an adaptive bandwidth both on the network and in time.
 #' Adaptive bandwidths are calculated using the Abramson’s smoothing regimen
 #' \insertCite{abramson1982bandwidth}{spNetwork}. To do so, the original fixed
-#' bandwidths must be specified (bw_net and bw_time parameters). There are two
-#' available methods. The first one (default) calculate the local bandwidth in
-#' space and time separately (adaptative_separate = FALSE). So, the network and
-#' temporal densities at each event location are calculate separately and used
-#' to calculate the local bandwidth. Isolated events on the network will obtain
-#' larger network bandwidth and isolated events in time will obtain larger time
-#' bandwidth. The second one calculate the temporal-network density at each
-#' event location and use it to adjust both bandwidths simultaneously. The
-#' second method will always leads to stronger variation in the local
-#' bandwidths. The maximum size of the two local bandwidths can be limited with
+#' bandwidths must be specified (bw_net and bw_time parameters). 
+#' The maximum size of the two local bandwidths can be limited with
 #' the parameters trim_bw_net and trim_bw_time.
 #' \cr\cr
 #'
@@ -359,7 +351,7 @@ tnkde_worker <- function(lines, events_loc, events, samples_loc, samples_time, k
 #' When the parameter adaptive is TRUE, one can choose between using separated
 #' calculation of network and temporal bandwidths, and calculating them
 #' simultaneously. In the first case (default), the network bandwidths are
-#' determined for each event by considering only there locations and the time
+#' determined for each event by considering only their locations and the time
 #' bandwidths are determined by considering only there time stamps. In the second
 #' case, for each event, the spatio-temporal density at its location on the
 #' network and in time is estimated and used to determine both the network and

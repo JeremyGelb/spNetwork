@@ -29,11 +29,11 @@ its neighbours}
 
 \item{sel_events_wid}{a Numeric Vector indicating the unique if of the selected events}
 
-\item{events}{a NumericVector indicating the nodes in graph beeing events}
+\item{events}{a NumericVector indicating the nodes in the graph being events}
 
 \item{events_wid}{a NumericVector indicating the unique id of all the events}
 
-\item{weights}{a matrix with the weights associated with each events (row) for each
+\item{weights}{a matrix with the weights associated with each event (row) for each
 bws_net (cols).}
 
 \item{bws_net}{an arma::vec with the network bandwidths to consider}
@@ -50,7 +50,7 @@ bws_net (cols).}
 a vector with the CV score for each bandwidth and the densities if required
 }
 \description{
-The exposed function to calculate NKDE likelihood cv
+The exposed function to calculate NKDE likelihood cv (INTERNAL)
 }
 \examples{
 # no example provided, this is an internal function

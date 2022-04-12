@@ -28,9 +28,9 @@ As stated in the vignette  (*Network Kernel Density Estimate*), it is possible t
 
 # K nearest neighbours adaptive bandwidth for NKDE
 
-For each event, the K nearest neighbour distance could be used as a locally adapted bandwidth for intensity estimation. This method is called kernel the k-nearest neighbour kernel density estimation method [@loftsgaarden_nonparametric_1965;@terrell_variable_1992;@orava_k-nearest_2011].
+For each event, the K nearest neighbour distance could be used as a locally adapted bandwidth for intensity estimation. This method is called the k-nearest neighbour kernel density estimation method [@loftsgaarden_nonparametric_1965;@terrell_variable_1992;@orava_k-nearest_2011].
 
-To apply it in `spNetwork`, one can first use the `network_knn` function. The first step is to load the required packages and data.
+To apply it in `spNetwork`, one can use the `network_knn` function. The first step is to load the required packages and data.
 
 ```{r message=FALSE, warning=FALSE}
 # first load data and packages
@@ -55,7 +55,7 @@ bike_accidents$weight <- 1
 bike_accidents_agg <- aggregate_points(bike_accidents, 15, weight = "weight")
 ```
 
-We can now calculate for each event its distance to its 20th neighbour
+We can now calculate for each event its distance to its 20th neighbour.
 
 ```{r message=FALSE, warning=FALSE, out.width = "60%", fig.align= "center"}
 knn_dists <- network_knn(origins = bike_accidents_agg, 
@@ -69,10 +69,10 @@ bws <- knn_dists$distances[,20]
 
 ggplot() + 
   geom_histogram(aes(x = bws), fill = "white", color = "black", bins = 50) + 
-  labs(x = "distance to 20nt neighbour (m)")
+  labs(x = "distance to 20th neighbour (m)")
 ```
 
-There is some events for which the 20nt neighbour is very far. We decide here to trim the bandwidth at 1500m.
+There is some events for which the 20th neighbour is very far. We decide here to trim the bandwidth at 1500m.
 
 ```{r message=FALSE, warning=FALSE}
 

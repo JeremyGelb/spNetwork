@@ -67,7 +67,7 @@ bit), but require much less memory.}
 }
 \description{
 Calculate for multiple network and time bandwidths the cross validation likelihood to
-select an appropriate bandwidth in a data-driven approach
+select an appropriate bandwidth in a data-driven approach (INTERNAL)
 }
 \examples{
 # no example provided, this is an internal function

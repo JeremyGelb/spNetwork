@@ -255,7 +255,7 @@
 #' to keep in the calculus. For large datasets, it may be useful to limit the
 #' bandwidth evaluation and thus reduce calculation time.
 #' @param verbose A Boolean, indicating if the function should print messages
-#' about process.
+#' about the process.
 #' @param zero_strat A string indicating what to do when density is 0 when calculating LOO density estimate for an isolated event.
 #' "min_double" (default) replace the 0 value by the minimum double possible on the machine. "remove" will remove them from the final
 #' score. The first approach penalizes more strongly the small bandwidths.
@@ -445,7 +445,7 @@ bw_cv_likelihood_calc <- function(bw_range,bw_step,lines, events, w, kernel_name
 #' to keep in the calculus. For large datasets, it may be useful to limit the
 #' bandwidth evaluation and thus reduce calculation time.
 #' @param verbose A Boolean, indicating if the function should print messages
-#' about process.
+#' about the process.
 #' @param zero_strat A string indicating what to do when density is 0 when calculating LOO density estimate for an isolated event.
 #' "min_double" (default) replace the 0 value by the minimum double possible on the machine. "remove" will remove them from the final
 #' score. The first approach penalizes more strongly the small bandwidths.

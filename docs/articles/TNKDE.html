@@ -62,9 +62,6 @@
       <a href="../articles/NKDE.html">Network Kernel Density Estimate</a>
     </li>
     <li>
-      <a href="../articles/NKDEdetailed.html">Details about NKDE</a>
-    </li>
-    <li>
       <a href="../articles/SpatialWeightMatrices.html">Spatial Weight Matrices</a>
     </li>
     <li>
@@ -72,6 +69,9 @@
     </li>
     <li>
       <a href="../articles/web_vignettes/AdaptiveBW.html">K-nearest neighbour adaptive bandwidth</a>
+    </li>
+    <li>
+      <a href="../articles/web_vignettes/NKDEdetailed.html">Details about NKDE</a>
     </li>
   </ul>
 </li>
@@ -102,7 +102,7 @@
       <h1 data-toc-skip>Temporal Network Kernel Density Estimate</h1>
                         <h4 data-toc-skip class="author">Jeremy Gelb</h4>
             
-            <h4 data-toc-skip class="date">2022-03-17</h4>
+            <h4 data-toc-skip class="date">2022-04-11</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/JeremyGelb/spNetwork/blob/HEAD/vignettes/TNKDE.Rmd" class="external-link"><code>vignettes/TNKDE.Rmd</code></a></small>
       <div class="hidden name"><code>TNKDE.Rmd</code></div>
@@ -114,7 +114,7 @@
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p>Events recorded on a network often also have a temporal dimension. In that context, one could estimate the density of events in both time and network space.</p>
+<p>Events recorded on a network often have a temporal dimension. In that context, one could estimate the density of events in both time and network spaces.</p>
 <p>The spatio-temporal kernel is calculated as the product of the network kernel density and the time kernel density. For a sample point at location <em>l</em> and time <em>t</em>, the Temporal Network Kernel Density Estimate (TNKDE) is calculated as follows:</p>
 <p><span class="math display">\[tnkde(l,t) = \frac{1}{bw_{net} * bw_{time}} * \sum^n_{i=1}(k_{net}(d(l,i_l),bw_{net})*k_{time}(d(t,i_t),bw_{time}))\]</span></p>
 <p>with:</p>
@@ -137,7 +137,7 @@
 </li>
 </ul>
 <p>As specified in the previous formula, two bandwidths are necessary, one for space and one for time.</p>
-<p>We give in this vignette a short example with bike accidents data in 2016 in the central districts of Montreal.</p>
+<p>We give in this vignette a short example with the bike accidents data in 2016 in the central districts of Montreal.</p>
 </div>
 <div class="section level2">
 <h2 id="temporal-dimension">Temporal dimension<a class="anchor" aria-label="anchor" href="#temporal-dimension"></a>
@@ -170,7 +170,7 @@
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html" class="external-link">geom_histogram</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span><span class="op">)</span>, bins <span class="op">=</span> <span class="fl">30</span>, color <span class="op">=</span> <span class="st">"white"</span><span class="op">)</span> <span class="op">+</span> 
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>breaks <span class="op">=</span> <span class="va">months_starts_num</span>, labels <span class="op">=</span> <span class="va">months_starts_labs</span><span class="op">)</span></code></pre></div>
 <p><img src="TNKDE_files/figure-html/unnamed-chunk-2-1.png" width="70%"></p>
-<p>It is not surprising to observe that most of the accidents occur during spring, summer, and fall. We will remove the lonely observations during the three first months of the year because they might influence the bandwidths’ size latter.</p>
+<p>It is not surprising to observe that most of the accidents occur during spring, summer, and fall. We will remove the lonely observations during the first three months of the year because they might influence the bandwidths’ size latter.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">bike_accidents</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">bike_accidents</span>, <span class="va">bike_accidents</span><span class="op">$</span><span class="va">Time</span> <span class="op">&gt;=</span> <span class="fl">90</span><span class="op">)</span></code></pre></div>
 <p>We can now calculate the kernel density values in time for several bandwidths.</p>
@@ -198,7 +198,7 @@
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>axis.text <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">5</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p><img src="TNKDE_files/figure-html/unnamed-chunk-4-1.png" width="80%"></p>
 <p>It seems that a bandwidth between 30 and 40 days capture the bimodal shape of the temporal dimension of bike accidents. The lower densities during July and August are likely caused by the lower traffic due to holidays.</p>
-<p>It is also possible to use the classical functions from R to find a bandwidth with a datadriven approach.</p>
+<p>It is also possible to use the classical functions from R to find a bandwidth with a data-driven approach.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">bw1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/bandwidth.html" class="external-link">bw.bcv</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">$</span><span class="va">Time</span>, nb <span class="op">=</span> <span class="fl">1000</span>, lower <span class="op">=</span> <span class="fl">1</span>, upper <span class="op">=</span> <span class="fl">80</span><span class="op">)</span>
 <span class="va">bw2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/bandwidth.html" class="external-link">bw.ucv</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">$</span><span class="va">Time</span>, nb <span class="op">=</span> <span class="fl">1000</span>, lower <span class="op">=</span> <span class="fl">1</span>, upper <span class="op">=</span> <span class="fl">80</span><span class="op">)</span>
@@ -221,12 +221,12 @@
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">variable</span><span class="op">)</span>, ncol<span class="op">=</span><span class="fl">2</span>, scales <span class="op">=</span> <span class="st">"free"</span><span class="op">)</span>  <span class="op">+</span> 
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>axis.text <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">5</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p><img src="TNKDE_files/figure-html/unnamed-chunk-5-1.png" width="80%"></p>
-<p>In that case, the automatic bandwidth selection methods yield much more noisy results with small bandwidths. Bike accidents are rare events and too small time bandwidths would create results with meaningless hot spots.</p>
+<p>In that case, the automatic bandwidth selection methods yield much noisier results with small bandwidths. Bike accidents are rare events and too small time bandwidths would create results with meaningless hot spots.</p>
 </div>
 <div class="section level2">
 <h2 id="spatial-dimension">Spatial dimension<a class="anchor" aria-label="anchor" href="#spatial-dimension"></a>
 </h2>
-<p>Before considering the spatio-temporal case, we can also investigate the temporal dimension.</p>
+<p>Before considering the spatio-temporal case, we can also investigate the spatial dimension.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># loading the road network</span>
 <span class="va">networkgpkg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"networks.gpkg"</span>, package <span class="op">=</span> <span class="st">"spNetwork"</span>, mustWork <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
@@ -264,14 +264,14 @@
   <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_symbols.html" class="external-link">tm_dots</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"density"</span>, style <span class="op">=</span> <span class="st">"kmeans"</span>, n <span class="op">=</span> <span class="fl">8</span>, palette <span class="op">=</span> <span class="st">"viridis"</span>, size <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span> <span class="op">+</span> 
   <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_layout.html" class="external-link">tm_layout</a></span><span class="op">(</span>legend.outside <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 <p><img src="TNKDE_files/figure-html/unnamed-chunk-8-1.png" width="75%" style="display: block; margin: auto;"></p>
-<p>Several hot spots could already be identified, but we have no information about their location in time. The previous map represent the average density during the full period.</p>
+<p>Several hot spots could already be identified, but we have no information about their location in time. The previous map represents the average density during the full period.</p>
 </div>
 <div class="section level2">
 <h2 id="spatio-temporal">Spatio-temporal<a class="anchor" aria-label="anchor" href="#spatio-temporal"></a>
 </h2>
 <p>We can now estimate the kernel density in both space and time. Note that increasing the dimension leads to larger bandwidths.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">cv_scores</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bws_tnkde_cv_likelihood_calc.html">bws_tnkde_cv_likelihood_calc</a></span><span class="op">(</span>
+<code class="sourceCode R"><span class="va">cv_scores</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bw_tnkde_cv_likelihood_calc.html">bw_tnkde_cv_likelihood_calc</a></span><span class="op">(</span>
   bw_net_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">100</span>,<span class="fl">1000</span><span class="op">)</span>,
   bw_net_step <span class="op">=</span> <span class="fl">100</span>,
   bw_time_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>,<span class="fl">60</span><span class="op">)</span>,
@@ -281,7 +281,7 @@
   time_field <span class="op">=</span> <span class="st">"Time"</span>,
   w <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">)</span><span class="op">)</span>,
   kernel_name <span class="op">=</span> <span class="st">"quartic"</span>,
-  method <span class="op">=</span> <span class="st">"discontinuous"</span>,
+  method <span class="op">=</span> <span class="st">"discontinuous"</span>, 
   diggle_correction <span class="op">=</span> <span class="cn">FALSE</span>,
   study_area <span class="op">=</span> <span class="cn">NULL</span>,
   max_depth <span class="op">=</span> <span class="fl">10</span>,
@@ -398,18 +398,27 @@
 </tr>
 </tbody>
 </table>
-<p>According to the leave one out cross validation method, the optimal set of bandwidths is 700 metres and 60 days. As expected, larger bandwidths are required because the density of the events are spread both in space and time.</p>
+<p>According to the “leave one out cross validation” method, the optimal set of bandwidths is 700 metres and 60 days. As expected, larger bandwidths are required because the density of the events are spread both in space and time.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># choosing sample in times (every 10 days)</span>
 <span class="va">sample_time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">$</span><span class="va">Time</span><span class="op">)</span>, <span class="fl">10</span><span class="op">)</span>
 
 <span class="co"># calculating densities</span>
 <span class="va">tnkde_densities</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tnkde.html">tnkde</a></span><span class="op">(</span>lines <span class="op">=</span> <span class="va">mtl_network</span>,
-                   events <span class="op">=</span> <span class="va">bike_accidents</span>, time_field <span class="op">=</span> <span class="st">"Time"</span>, w <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">)</span><span class="op">)</span>, 
-                   samples_loc <span class="op">=</span> <span class="va">sample_points</span>, samples_time <span class="op">=</span> <span class="va">sample_time</span>, 
-                   kernel_name <span class="op">=</span> <span class="st">"quartic"</span>, bw_net <span class="op">=</span> <span class="fl">700</span>, bw_time <span class="op">=</span> <span class="fl">60</span>, adaptive <span class="op">=</span> <span class="cn">TRUE</span>,
-                   trim_bw_net <span class="op">=</span> <span class="fl">900</span>, trim_bw_time <span class="op">=</span> <span class="fl">80</span>, method <span class="op">=</span> <span class="st">"discontinuous"</span>,
-                   div <span class="op">=</span> <span class="st">"bw"</span>, max_depth <span class="op">=</span> <span class="fl">10</span>, digits <span class="op">=</span> <span class="fl">2</span>, tol <span class="op">=</span> <span class="fl">0.01</span>, agg <span class="op">=</span> <span class="fl">15</span>, grid_shape <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span>, 
+                   events <span class="op">=</span> <span class="va">bike_accidents</span>,
+                   time_field <span class="op">=</span> <span class="st">"Time"</span>,
+                   w <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">)</span><span class="op">)</span>, 
+                   samples_loc <span class="op">=</span> <span class="va">sample_points</span>,
+                   samples_time <span class="op">=</span> <span class="va">sample_time</span>, 
+                   kernel_name <span class="op">=</span> <span class="st">"quartic"</span>,
+                   bw_net <span class="op">=</span> <span class="fl">700</span>, bw_time <span class="op">=</span> <span class="fl">60</span>,
+                   adaptive <span class="op">=</span> <span class="cn">TRUE</span>,
+                   trim_bw_net <span class="op">=</span> <span class="fl">900</span>,
+                   trim_bw_time <span class="op">=</span> <span class="fl">80</span>,
+                   method <span class="op">=</span> <span class="st">"discontinuous"</span>,
+                   div <span class="op">=</span> <span class="st">"bw"</span>, max_depth <span class="op">=</span> <span class="fl">10</span>,
+                   digits <span class="op">=</span> <span class="fl">2</span>, tol <span class="op">=</span> <span class="fl">0.01</span>,
+                   agg <span class="op">=</span> <span class="fl">15</span>, grid_shape <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span>, 
                    verbose  <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
 
 <span class="co"># creating a color palette for all the densities</span>
@@ -438,6 +447,29 @@
 <code class="sourceCode R"><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/include_graphics.html" class="external-link">include_graphics</a></span><span class="op">(</span><span class="st">"images/animated_map.gif"</span><span class="op">)</span></code></pre></div>
 <p><img src="images/animated_map.gif" width="75%" style="display: block; margin: auto;"></p>
 <p>The locations of the hot spots are changing during the year. This information was hidden when only a spatial NKDE was used.</p>
+</div>
+<div class="section level2">
+<h2 id="adaptive-bandwidth">Adaptive bandwidth<a class="anchor" aria-label="anchor" href="#adaptive-bandwidth"></a>
+</h2>
+<p>One can decide to use adaptive bandwidth for the TNKDE. They are calculated using the Abramson’s smoothing regimen. Two approaches are available: separated and simultaneous. In the first case, the network and temporal density at each event location are calculated separately and used to calculate the local bandwidth. Isolated events on the network will obtain larger network bandwidth and isolated events in time will obtain larger time bandwidth. The second method calculates the temporal-network density at each event location and uses it to adjust both bandwidths simultaneously. This method will always lead to stronger variation in the local bandwidths.</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">tnkde_densities</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tnkde.html">tnkde</a></span><span class="op">(</span>lines <span class="op">=</span> <span class="va">mtl_network</span>,
+                   events <span class="op">=</span> <span class="va">bike_accidents</span>,
+                   time_field <span class="op">=</span> <span class="st">"Time"</span>,
+                   w <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">)</span><span class="op">)</span>, 
+                   samples_loc <span class="op">=</span> <span class="va">sample_points</span>,
+                   samples_time <span class="op">=</span> <span class="va">sample_time</span>, 
+                   kernel_name <span class="op">=</span> <span class="st">"quartic"</span>,
+                   bw_net <span class="op">=</span> <span class="fl">700</span>, bw_time <span class="op">=</span> <span class="fl">60</span>,
+                   adaptive <span class="op">=</span> <span class="cn">TRUE</span>,
+                   adaptive_separate <span class="op">=</span> <span class="cn">FALSE</span>,
+                   trim_bw_net <span class="op">=</span> <span class="fl">900</span>,
+                   trim_bw_time <span class="op">=</span> <span class="fl">80</span>,
+                   method <span class="op">=</span> <span class="st">"discontinuous"</span>,
+                   div <span class="op">=</span> <span class="st">"bw"</span>, max_depth <span class="op">=</span> <span class="fl">10</span>,
+                   digits <span class="op">=</span> <span class="fl">2</span>, tol <span class="op">=</span> <span class="fl">0.01</span>,
+                   agg <span class="op">=</span> <span class="fl">15</span>, grid_shape <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span>, 
+                   verbose  <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
 </div>
   </div>
 

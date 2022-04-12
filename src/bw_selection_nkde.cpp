@@ -14,7 +14,7 @@
 //' @name ess_kernel_loo_nkde
 //' @param kernel_func a cpp pointer function (selected with the kernel name)
 //' @param edge_mat matrix, to find the id of each edge given two neighbours.
-//' @param events a NumericVector indicating the nodes in graph beeing events
+//' @param events a NumericVector indicating the nodes in the graph being events
 //' @param neighbour_list a List, giving for each node an IntegerVector with
 //' its neighbours
 //' @param v the actual node to consider (int)
@@ -22,7 +22,7 @@
 //' @param line_weights a vector with the length of the edges
 //' @param depth the actual recursion depth
 //' @param max_depth the maximum recursion depth
-//' @return a matrix with the impact of the event v on each other event for
+//' @return a matrix with the impact of the event v on each other events for
 //' each pair of bandwidths (mat(event, bws_net))
 //' @keywords internal
 arma::mat ess_kernel_loo_nkde(fptros kernel_func, arma::sp_mat& edge_mat,
@@ -35,7 +35,7 @@ arma::mat ess_kernel_loo_nkde(fptros kernel_func, arma::sp_mat& edge_mat,
 
   //step0 : generate the queue
   int depth = 0;
-  queue <List> data_holder;
+  std::queue <List> data_holder;
   arma::mat kvalues(events.length(), bws_net.n_elem);
 
     //step1 : generate the first case
@@ -117,9 +117,10 @@ arma::mat ess_kernel_loo_nkde(fptros kernel_func, arma::sp_mat& edge_mat,
 
 //' @title The worker function to calculate discontinuous TNKDE likelihood cv
 //' @name esd_kernel_loo_nkde
+//' @description The worker function to calculate discontinuous TNKDE likelihood cv (INTERNAL)
 //' @param kernel_func a cpp pointer function (selected with the kernel name)
 //' @param edge_mat matrix, to find the id of each edge given two neighbours.
-//' @param events a NumericVector indicating the nodes in graph beeing events
+//' @param events a NumericVector indicating the nodes in the graph being events
 //' @param neighbour_list a List, giving for each node an IntegerVector with
 //' its neighbours
 //' @param v the actual node to consider (int)
@@ -127,7 +128,7 @@ arma::mat ess_kernel_loo_nkde(fptros kernel_func, arma::sp_mat& edge_mat,
 //' @param line_weights a vector with the length of the edges
 //' @param depth the actual recursion depth
 //' @param max_depth the maximum recursion depth
-//' @return a cube with the impact of the event v on each other event for
+//' @return a cube with the impact of the event v on each other events for
 //' each pair of bandwidths (cube(bws_net, bws_time, events))
 arma::mat esd_kernel_loo_nkde(fptros kernel_func, arma::sp_mat& edge_mat,
                                 NumericVector& events,
@@ -139,7 +140,7 @@ arma::mat esd_kernel_loo_nkde(fptros kernel_func, arma::sp_mat& edge_mat,
 
   //step0 : generate the queue
   int depth = 0;
-  queue <List> data_holder;
+  std::queue <List> data_holder;
 
   arma::mat kvalues(events.length(), bws_net.n_elem);
   kvalues.fill(0.0);
@@ -239,9 +240,10 @@ arma::mat esd_kernel_loo_nkde(fptros kernel_func, arma::sp_mat& edge_mat,
 
 //' @title The worker function to calculate continuous TNKDE likelihood cv
 //' @name esc_kernel_loo_nkde
+//' @description The worker function to calculate continuous TNKDE likelihood cv (INTERNAL)
 //' @param kernel_func a cpp pointer function (selected with the kernel name)
 //' @param edge_mat matrix, to find the id of each edge given two neighbours.
-//' @param events a NumericVector indicating the nodes in graph beeing events
+//' @param events a NumericVector indicating the nodes in the graph being events
 //' @param neighbour_list a List, giving for each node an IntegerVector with
 //' its neighbours
 //' @param v the actual node to consider (int)
@@ -249,7 +251,7 @@ arma::mat esd_kernel_loo_nkde(fptros kernel_func, arma::sp_mat& edge_mat,
 //' @param line_weights a vector with the length of the edges
 //' @param depth the actual recursion depth
 //' @param max_depth the maximum recursion depth
-//' @return a cube with the impact of the event v on each other event for
+//' @return a cube with the impact of the event v on each other events for
 //' each pair of bandwidths (cube(bws_net, bws_time, events))
 arma::mat esc_kernel_loo_nkde(fptros kernel_func, arma::sp_mat& edge_mat,
                                 NumericVector& events,
@@ -374,14 +376,15 @@ arma::mat esc_kernel_loo_nkde(fptros kernel_func, arma::sp_mat& edge_mat,
 
 //' @title The exposed function to calculate NKDE likelihood cv
 //' @name nkde_get_loo_values
+//' @description The exposed function to calculate NKDE likelihood cv (INTERNAL)
 //' @param method a string, one of "simple", "continuous", "discontinuous"
 //' @param neighbour_list a List, giving for each node an IntegerVector with
 //' its neighbours
 //' @param sel_events a Numeric vector indicating the selected events (id of nodes)
 //' @param sel_events_wid a Numeric Vector indicating the unique if of the selected events
-//' @param events a NumericVector indicating the nodes in graph beeing events
+//' @param events a NumericVector indicating the nodes in the graph being events
 //' @param events_wid a NumericVector indicating the unique id of all the events
-//' @param weights a matrix with the weights associated with each events (row) for each
+//' @param weights a matrix with the weights associated with each event (row) for each
 //' bws_net (cols).
 //' @param bws_net an arma::vec with the network bandwidths to consider
 //' @param kernel_name a string with the name of the kernel to use

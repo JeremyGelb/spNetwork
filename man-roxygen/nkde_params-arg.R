@@ -5,7 +5,7 @@
 #' network. The points will be snapped on the network to their closest line.
 #' @param w A vector representing the weight of each event
 #' @param kernel_name The name of the kernel to use. Must be one of triangle,
-#' gaussian, tricube, cosine ,triweight, quartic, epanechnikov or uniform.
+#' gaussian, tricube, cosine, triweight, quartic, epanechnikov or uniform.
 #' @param method The method to use when calculating the NKDE, must be one of
 #' simple / discontinuous / continuous (see nkde details for more information)
 #' @param max_depth when using the continuous and discontinuous methods, the

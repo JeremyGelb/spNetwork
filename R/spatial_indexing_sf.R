@@ -5,8 +5,8 @@
 
 #' @title Build a quadtree
 #'
-#' @description Generate quadtree object from package SearchTrees, useful to speed up
-#' spatial requesting.
+#' @description Generate a quadtree object from package SearchTrees, useful to speed up
+#' spatial requesting (INTERNAL).
 #'
 #' @param data a feature collection of linestrings or a feature collection of points
 #' @return quadtree object from package SearchTrees
@@ -80,7 +80,7 @@ spatial_request <- function(geometry,tree,data){
 
 #' @title Find closest points
 #'
-#' @description Solve the nearest neighbour problem for two feature collection of points
+#' @description Solve the nearest neighbour problem for two feature collections of points
 #' This is a simple wrap-up of the dbscan::kNN function
 #'
 #' @param origins a feature collection of points

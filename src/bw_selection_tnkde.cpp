@@ -14,7 +14,7 @@
 //' @name ess_kernel_loo_tnkde
 //' @param kernel_func a cpp pointer function (selected with the kernel name)
 //' @param edge_mat matrix, to find the id of each edge given two neighbours.
-//' @param events a NumericVector indicating the nodes in graph beeing events
+//' @param events a NumericVector indicating the nodes in the graph being events
 //' @param time_events a NumericVector indicating the timestamp of each event
 //' @param neighbour_list a List, giving for each node an IntegerVector with
 //' its neighbours
@@ -39,7 +39,7 @@ arma::cube ess_kernel_loo_tnkde(fptros kernel_func, arma::sp_mat& edge_mat,
 
   //step0 : generate the queue
   int depth = 0;
-  queue <List> data_holder;
+  std::queue <List> data_holder;
   arma::cube kvalues(bws_net.n_elem, bws_time.n_elem, events.length());
   kvalues.fill(0.0);
   //step1 : generate the first case
@@ -125,9 +125,10 @@ arma::cube ess_kernel_loo_tnkde(fptros kernel_func, arma::sp_mat& edge_mat,
 
 //' @title The worker function to calculate discontinuous TNKDE likelihood cv
 //' @name esd_kernel_loo_tnkde
+//' @description The worker function to calculate discontinuous TNKDE likelihood cv (INTERNAL)
 //' @param kernel_func a cpp pointer function (selected with the kernel name)
 //' @param edge_mat matrix, to find the id of each edge given two neighbours.
-//' @param events a NumericVector indicating the nodes in graph beeing events
+//' @param events a NumericVector indicating the nodes in the graph being events
 //' @param time_events a NumericVector indicating the timestamp of each event
 //' @param neighbour_list a List, giving for each node an IntegerVector with
 //' its neighbours
@@ -151,7 +152,7 @@ arma::cube esd_kernel_loo_tnkde(fptros kernel_func, arma::sp_mat& edge_mat,
 
   //step0 : generate the queue
   int depth = 0;
-  queue <List> data_holder;
+  std::queue <List> data_holder;
   arma::cube kvalues(bws_net.n_elem, bws_time.n_elem, events.length());
   kvalues.fill(0.0);
   //step1 : generate the first case
@@ -253,9 +254,10 @@ arma::cube esd_kernel_loo_tnkde(fptros kernel_func, arma::sp_mat& edge_mat,
 
 //' @title The worker function to calculate continuous TNKDE likelihood cv
 //' @name esc_kernel_loo_tnkde
+//' @description The worker function to calculate continuous TNKDE likelihood cv (INTERNAL)
 //' @param kernel_func a cpp pointer function (selected with the kernel name)
 //' @param edge_mat matrix, to find the id of each edge given two neighbours.
-//' @param events a NumericVector indicating the nodes in graph beeing events
+//' @param events a NumericVector indicating the nodes in the graph being events
 //' @param time_events a NumericVector indicating the timestamp of each event
 //' @param neighbour_list a List, giving for each node an IntegerVector with
 //' its neighbours
@@ -403,23 +405,24 @@ arma::cube esc_kernel_loo_tnkde(fptros kernel_func, arma::sp_mat& edge_mat,
 
 //' @title The exposed function to calculate TNKDE likelihood cv
 //' @name tnkde_get_loo_values
+//' @description The exposed function to calculate TNKDE likelihood cv (INTERNAL)
 //' @param method a string, one of "simple", "continuous", "discontinuous"
 //' @param neighbour_list a List, giving for each node an IntegerVector with
 //' its neighbours
 //' @param sel_events a Numeric vector indicating the selected events (id of nodes)
 //' @param sel_events_wid a Numeric Vector indicating the unique if of the selected events
 //' @param sel_events_time a Numeric Vector indicating the time of the selected events
-//' @param events a NumericVector indicating the nodes in graph beeing events
+//' @param events a NumericVector indicating the nodes in the graph being events
 //' @param events_wid a NumericVector indicating the unique id of all the events
 //' @param events_time a NumericVector indicating the timestamp of each event
-//' @param weights a cube with the weights associated with each events for each
+//' @param weights a cube with the weights associated with each event for each
 //' bws_net and bws_time.
 //' @param bws_net an arma::vec with the network bandwidths to consider
 //' @param bws_time an arma::vec with the time bandwidths to consider
 //' @param kernel_name a string with the name of the kernel to use
 //' @param line_list a DataFrame describing the lines
 //' @param max_depth the maximum recursion depth
-//' @param min_tol a double indicating by how much 0 in densities values must be replaced
+//' @param min_tol a double indicating by how much 0 in density values must be replaced
 //' @return a matrix with the CV score for each pair of bandiwdths
 //' @export
 //' @examples
@@ -511,7 +514,7 @@ arma::cube tnkde_get_loo_values(std::string method, List neighbour_list,
 
 
 //' @title The exposed function to calculate adaptive bandwidth with space-time
-//' interaction for TNKDE
+//' interaction for TNKDE (INTERNAL)
 //' @name adaptive_bw_tnkde_cpp
 //' @param method a string, one of "simple", "continuous", "discontinuous"
 //' @param neighbour_list a List, giving for each node an IntegerVector with
@@ -519,17 +522,17 @@ arma::cube tnkde_get_loo_values(std::string method, List neighbour_list,
 //' @param sel_events a Numeric vector indicating the selected events (id of nodes)
 //' @param sel_events_wid a Numeric Vector indicating the unique if of the selected events
 //' @param sel_events_time a Numeric Vector indicating the time of the selected events
-//' @param events a NumericVector indicating the nodes in graph beeing events
+//' @param events a NumericVector indicating the nodes in the graph being events
 //' @param events_wid a NumericVector indicating the unique id of all the events
 //' @param events_time a NumericVector indicating the timestamp of each event
-//' @param weights a cube with the weights associated with each events for each
+//' @param weights a cube with the weights associated with each event for each
 //' bws_net and bws_time.
 //' @param bws_net an arma::vec with the network bandwidths to consider
 //' @param bws_time an arma::vec with the time bandwidths to consider
 //' @param kernel_name a string with the name of the kernel to use
 //' @param line_list a DataFrame describing the lines
 //' @param max_depth the maximum recursion depth
-//' @param min_tol a double indicating by how much 0 in densities values must be replaced
+//' @param min_tol a double indicating by how much 0 in density values must be replaced
 //' @return a vector witht the estimated density at each event location
 //' @export
 //' @examples

@@ -42,7 +42,7 @@ network. The points will be snapped on the network to their closest line.}
 \item{w}{A vector representing the weight of each event}
 
 \item{kernel_name}{The name of the kernel to use. Must be one of triangle,
-gaussian, tricube, cosine ,triweight, quartic, epanechnikov or uniform.}
+gaussian, tricube, cosine, triweight, quartic, epanechnikov or uniform.}
 
 \item{method}{The method to use when calculating the NKDE, must be one of
 simple / discontinuous / continuous (see nkde details for more information)}
@@ -94,7 +94,7 @@ bandwidth evaluation and thus reduce calculation time.}
 score. The first approach penalizes more strongly the small bandwidths.}
 
 \item{verbose}{A Boolean, indicating if the function should print messages
-about process.}
+about the process.}
 
 \item{check}{A Boolean indicating if the geometry checks must be run before
 the operation. This might take some times, but it will ensure that the CRS

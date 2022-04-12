@@ -8,7 +8,7 @@
 
 \item{edge_mat}{matrix, to find the id of each edge given two neighbours.}
 
-\item{events}{a NumericVector indicating the nodes in graph beeing events}
+\item{events}{a NumericVector indicating the nodes in the graph being events}
 
 \item{time_events}{a NumericVector indicating the timestamp of each event}
 

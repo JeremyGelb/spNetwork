@@ -42,7 +42,7 @@ network. The points will be snapped on the network to their closest line.}
 \item{w}{A vector representing the weight of each event}
 
 \item{kernel_name}{The name of the kernel to use. Must be one of triangle,
-gaussian, tricube, cosine ,triweight, quartic, epanechnikov or uniform.}
+gaussian, tricube, cosine, triweight, quartic, epanechnikov or uniform.}
 
 \item{method}{The method to use when calculating the NKDE, must be one of
 simple / discontinuous / continuous (see nkde details for more information)}

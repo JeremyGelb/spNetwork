@@ -5,7 +5,7 @@
 #' @details This function can be used to generate an undirected graph object (igraph
 #'   object). It uses the coordinates of the linestrings extremities to create
 #'   the nodes of the graph. This is why the number of digits in the coordinates
-#'   is important. Too high a precision (high number of digits) might break some
+#'   is important. Too high precision (high number of digits) might break some
 #'   connections.
 #'
 #' @param lines A feature collection of lines
@@ -15,12 +15,12 @@
 #'   stored in the final object
 #' @return A list containing the following elements:
 #' \itemize{
-#'         \item graph: an igraph object
-#'         \item linelist: the dataframe used to build the graph
-#'         \item lines: the original feature collection of linesstrings
+#'         \item graph: an igraph object;
+#'         \item linelist: the dataframe used to build the graph;
+#'         \item lines: the original feature collection of linestrings;
 #'         \item spvertices: a feature collection of points representing the vertices
-#'         of the graph
-#'         \item digits : the number of digits kept for the coordinates
+#'         of the graph;
+#'         \item digits : the number of digits kept for the coordinates.
 #' }
 #' @importFrom sf st_as_text st_length st_geometry st_geometry<-
 #' @importFrom utils strcapture
@@ -107,7 +107,7 @@ build_graph <- function(lines, digits, line_weight, attrs = FALSE) {
 #' @details This function can be used to generate a directed graph object (igraph
 #'   object). It uses the coordinates of the linestrings extremities to create
 #'   the nodes of the graph. This is why the number of digits in the coordinates
-#'   is important. Too high a precision (high number of digits) might break some
+#'   is important. Too high precision (high number of digits) might break some
 #'   connections. The column used to indicate directions can only have the
 #'   following values: "FT" (From-To), "TF" (To-From) and "Both".
 #'
@@ -122,12 +122,12 @@ build_graph <- function(lines, digits, line_weight, attrs = FALSE) {
 #'   To), "TF" (To - From) or "Both"
 #' @return A list containing the following elements:
 #' \itemize{
-#'         \item graph: an igraph object
-#'         \item linelist: the dataframe used to build the graph
-#'         \item lines: the original feature collection of lines
+#'         \item graph: an igraph object;
+#'         \item linelist: the dataframe used to build the graph;
+#'         \item lines: the original feature collection of lines;
 #'         \item spvertices: a feature collection of points representing the vertices
-#'         of the graph
-#'         \item digits : the number of digits kept for the coordinates
+#'         of the graph;
+#'         \item digits : the number of digits kept for the coordinates.
 #' }
 #' @importFrom utils strcapture
 #' @export

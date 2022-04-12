@@ -22,5 +22,5 @@ kfunc_cpp(dist_mat, start, end, step, Lt, n, w)
 \item{w}{The weight of the points (coincident points)}
 }
 \description{
-c++ k function
+c++ k function (INTERNAL)
 }

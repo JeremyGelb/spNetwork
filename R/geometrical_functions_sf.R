@@ -1203,7 +1203,7 @@ simplify_network <- function(lines, digits = 3, heal = TRUE, mirror = TRUE, keep
 #' (feature collection of points), may fail if the line geometries are self intersecting.
 #'
 #' @param lines The feature collection of linestrings to split
-#' @param points The feature collection of point to add to as vertex to the lines
+#' @param points The feature collection of points to add to as vertex to the lines
 #' @param nearest_lines_idx For each point, the index of the nearest line
 #' @param mindist The minimum distance between one point and the extremity of
 #'   the line to add the point as a vertex.

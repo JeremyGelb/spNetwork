@@ -62,9 +62,6 @@
       <a href="../../articles/NKDE.html">Network Kernel Density Estimate</a>
     </li>
     <li>
-      <a href="../../articles/NKDEdetailed.html">Details about NKDE</a>
-    </li>
-    <li>
       <a href="../../articles/SpatialWeightMatrices.html">Spatial Weight Matrices</a>
     </li>
     <li>
@@ -72,6 +69,9 @@
     </li>
     <li>
       <a href="../../articles/web_vignettes/AdaptiveBW.html">K-nearest neighbour adaptive bandwidth</a>
+    </li>
+    <li>
+      <a href="../../articles/web_vignettes/NKDEdetailed.html">Details about NKDE</a>
     </li>
   </ul>
 </li>
@@ -102,7 +102,7 @@
       <h1 data-toc-skip>K-nearest neighbour adaptive bandwidth</h1>
                         <h4 data-toc-skip class="author">Jeremy Gelb</h4>
             
-            <h4 data-toc-skip class="date">2022-03-17</h4>
+            <h4 data-toc-skip class="date">2022-04-11</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/JeremyGelb/spNetwork/blob/HEAD/vignettes/web_vignettes/AdaptiveBW.Rmd" class="external-link"><code>vignettes/web_vignettes/AdaptiveBW.Rmd</code></a></small>
       <div class="hidden name"><code>AdaptiveBW.Rmd</code></div>
@@ -119,8 +119,8 @@
 <div class="section level2">
 <h2 id="k-nearest-neighbours-adaptive-bandwidth-for-nkde">K nearest neighbours adaptive bandwidth for NKDE<a class="anchor" aria-label="anchor" href="#k-nearest-neighbours-adaptive-bandwidth-for-nkde"></a>
 </h2>
-<p>For each event, the K nearest neighbour distance could be used as a locally adapted bandwidth for intensity estimation. This method is called kernel the k-nearest neighbour kernel density estimation method <span class="citation">(<a href="#ref-loftsgaarden_nonparametric_1965" role="doc-biblioref">Loftsgaarden and Quesenberry 1965</a>; <a href="#ref-terrell_variable_1992" role="doc-biblioref">Terrell and Scott 1992</a>; <a href="#ref-orava_k-nearest_2011" role="doc-biblioref">Orava 2011</a>)</span>.</p>
-<p>To apply it in <code>spNetwork</code>, one can first use the <code>network_knn</code> function. The first step is to load the required packages and data.</p>
+<p>For each event, the K nearest neighbour distance could be used as a locally adapted bandwidth for intensity estimation. This method is called the k-nearest neighbour kernel density estimation method <span class="citation">(<a href="#ref-loftsgaarden_nonparametric_1965" role="doc-biblioref">Loftsgaarden and Quesenberry 1965</a>; <a href="#ref-terrell_variable_1992" role="doc-biblioref">Terrell and Scott 1992</a>; <a href="#ref-orava_k-nearest_2011" role="doc-biblioref">Orava 2011</a>)</span>.</p>
+<p>To apply it in <code>spNetwork</code>, one can use the <code>network_knn</code> function. The first step is to load the required packages and data.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># first load data and packages</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span>
@@ -139,7 +139,7 @@
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">bike_accidents</span><span class="op">$</span><span class="va">weight</span> <span class="op">&lt;-</span> <span class="fl">1</span>
 <span class="va">bike_accidents_agg</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/aggregate_points.html">aggregate_points</a></span><span class="op">(</span><span class="va">bike_accidents</span>, <span class="fl">15</span>, weight <span class="op">=</span> <span class="st">"weight"</span><span class="op">)</span></code></pre></div>
-<p>We can now calculate for each event its distance to its 20th neighbour</p>
+<p>We can now calculate for each event its distance to its 20th neighbour.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">knn_dists</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/network_knn.html">network_knn</a></span><span class="op">(</span>origins <span class="op">=</span> <span class="va">bike_accidents_agg</span>, 
                          lines <span class="op">=</span> <span class="va">mtl_network</span>, 
@@ -152,9 +152,9 @@
 
 <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> 
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html" class="external-link">geom_histogram</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">bws</span><span class="op">)</span>, fill <span class="op">=</span> <span class="st">"white"</span>, color <span class="op">=</span> <span class="st">"black"</span>, bins <span class="op">=</span> <span class="fl">50</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"distance to 20nt neighbour (m)"</span><span class="op">)</span></code></pre></div>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"distance to 20th neighbour (m)"</span><span class="op">)</span></code></pre></div>
 <p><img src="AdaptiveBW_files/figure-html/unnamed-chunk-3-1.png" width="60%" style="display: block; margin: auto;"></p>
-<p>There is some events for which the 20nt neighbour is very far. We decide here to trim the bandwidth at 1500m.</p>
+<p>There is some events for which the 20th neighbour is very far. We decide here to trim the bandwidth at 1500m.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="va">trimed_bw</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">bws</span> <span class="op">&gt;</span> <span class="fl">1500</span>, <span class="fl">1500</span>, <span class="va">bws</span><span class="op">)</span>

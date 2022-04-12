@@ -34,13 +34,13 @@ its neighbours}
 
 \item{sel_events_time}{a Numeric Vector indicating the time of the selected events}
 
-\item{events}{a NumericVector indicating the nodes in graph beeing events}
+\item{events}{a NumericVector indicating the nodes in the graph being events}
 
 \item{events_wid}{a NumericVector indicating the unique id of all the events}
 
 \item{events_time}{a NumericVector indicating the timestamp of each event}
 
-\item{weights}{a cube with the weights associated with each events for each
+\item{weights}{a cube with the weights associated with each event for each
 bws_net and bws_time.}
 
 \item{bws_net}{an arma::vec with the network bandwidths to consider}
@@ -53,13 +53,13 @@ bws_net and bws_time.}
 
 \item{max_depth}{the maximum recursion depth}
 
-\item{min_tol}{a double indicating by how much 0 in densities values must be replaced}
+\item{min_tol}{a double indicating by how much 0 in density values must be replaced}
 }
 \value{
 a matrix with the CV score for each pair of bandiwdths
 }
 \description{
-The exposed function to calculate TNKDE likelihood cv
+The exposed function to calculate TNKDE likelihood cv (INTERNAL)
 }
 \examples{
 # no example provided, this is an internal function

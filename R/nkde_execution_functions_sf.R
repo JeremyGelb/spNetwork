@@ -967,7 +967,7 @@ nkde_worker <- function(lines, events, samples, kernel_name, bw, bws, method, di
 #' \item{method="continuous"}{If the discontinuous method is unbiased, it leads
 #' to a discontinuous kernel function which is a bit counter-intuitive.
 #' \insertCite{okabe2009kernel;textual}{spNetwork} proposed another version of
-#' the kernel, that divides the mass of the density at intersections but adjusts
+#' the kernel, which divides the mass of the density at intersections but adjusts
 #' the density before the intersection to make the function continuous.} } The
 #' three methods are available because, even though that the simple method is
 #' less precise statistically speaking, it might be more intuitive. From a
@@ -1000,7 +1000,7 @@ nkde_worker <- function(lines, events, samples, kernel_name, bw, bws, method, di
 #' close to each other. In that case, the weights of the aggregated events are
 #' summed. According to an aggregation distance, a buffer is drawn around the
 #' fist event, all events falling in that buffer are aggregated to the first
-#' event, forming a new event. The coordinates of this new event are the mean of
+#' event, forming a new event. The coordinates of this new event are the means of
 #' the original events coordinates. This procedure is repeated until no events
 #' are aggregated. The aggregation distance can be fixed with the parameter agg.
 #' \cr\cr When using the continuous and discontinuous kernel, the density is
@@ -1010,7 +1010,7 @@ nkde_worker <- function(lines, events, samples, kernel_name, bw, bws, method, di
 #' NKDE, the density value is divided by approximately 7.6. The max_depth
 #' parameters allows the user to control the maximum depth of these two NKDE.
 #' The base value is 15, but a value of 10 would yield very close estimates. A
-#' lower value might have a critical impact on speed when the bandwidth is large
+#' lower value might have a critical impact on speed when the bandwidth is large.
 #' \cr\cr When using the continuous and discontinuous kernel, the connections
 #' between graph nodes are stored in a matrix. This matrix is typically sparse,
 #' and so a sparse matrix object is used to limit memory use. If the network is

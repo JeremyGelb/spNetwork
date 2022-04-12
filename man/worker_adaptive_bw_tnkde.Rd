@@ -75,7 +75,7 @@ A vector with the local bandwidths
 }
 \description{
 The worker function to calculate Adaptive bandwidths according
-  to Abramson’s smoothing regimen for TNKDE with a space-time interaction.
+  to Abramson’s smoothing regimen for TNKDE with a space-time interaction (INTERNAL).
 }
 \examples{
 #This is an internal function, no example provided

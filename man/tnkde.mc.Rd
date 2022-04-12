@@ -51,7 +51,7 @@ which the densities will be estimated.}
 \item{samples_time}{A numeric vector indicating when the densities will be sampled}
 
 \item{kernel_name}{The name of the kernel to use. Must be one of triangle,
-gaussian, tricube, cosine ,triweight, quartic, epanechnikov or uniform.}
+gaussian, tricube, cosine, triweight, quartic, epanechnikov or uniform.}
 
 \item{bw_net}{The network kernel bandwidth (using the scale of the lines),
 can be a single float or a numeric vector if a different bandwidth must be

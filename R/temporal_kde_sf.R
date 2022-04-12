@@ -72,7 +72,7 @@ tkde <- function(events, w, samples, bw, kernel_name, adaptive = FALSE){
 #' Temporal Kernel density
 #' @param events A numeric vector representing the moments of occurrence of events
 #' @param w The weight of the events
-#' @param bws A numeric vector, the bandiwdths to use
+#' @param bws A numeric vector, the bandwidths to use
 #' @param kernel_name The name of the kernel to use
 #' @export
 #' @examples

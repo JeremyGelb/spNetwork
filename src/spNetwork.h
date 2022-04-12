@@ -12,7 +12,6 @@
 #include <math.h>
 
 using namespace Rcpp;
-using namespace std;
 using namespace arma;
 // [[Rcpp::depends(RcppProgress)]]
 //[[Rcpp::plugins(cpp17)]]

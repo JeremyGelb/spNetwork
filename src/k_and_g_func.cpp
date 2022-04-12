@@ -7,6 +7,7 @@
 
 //' @title c++ k function
 //' @name kfunc_cpp
+//' @description c++ k function (INTERNAL)
 //' @param dist_mat A square matrix with the distances between points
 //' @param start A float, the start value for evaluating the k-function
 //' @param end A float, the last value for evaluating the k-function
@@ -40,6 +41,7 @@ NumericVector kfunc_cpp(arma::mat dist_mat,float start,float end, float step, fl
 
 //' @title c++ g function
 //' @name gfunc_cpp
+//' @description c++ g function (INTERNAL)
 //' @param dist_mat A square matrix with the distances between points
 //' @param start A float, the start value for evaluating the g-function
 //' @param end A float, the last value for evaluating the g-function
@@ -111,6 +113,7 @@ NumericVector cross_kfunc_cpp(arma::mat dist_mat,float start,float end, float st
 
 //' @title c++ cross g function
 //' @name cross_gfunc_cpp
+//' @description c++ cross g function (INTERNAL)
 //' @param dist_mat A matrix with the distances between points
 //' @param start A float, the start value for evaluating the g-function
 //' @param end A float, the last value for evaluating the g-function

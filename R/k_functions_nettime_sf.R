@@ -2,10 +2,10 @@
 #### execution k functions in space-time ####
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-#' @title Network k and g functions for spatio-temporal data (not ready)
+#' @title Network k and g functions for spatio-temporal data (experimental, NOT READY FOR USE)
 #'
 #' @description Calculate the k and g functions for a set of points on a
-#'   network and in time (not ready).
+#'   network and in time (experimental, NOT READY FOR USE).
 #'
 #' @details The k-function is a method to characterize the dispersion of a set
 #'   of points. For each point, the numbers of other points in subsequent radii
@@ -293,10 +293,10 @@ k_nt_functions <- function(lines, points, points_time,
 }
 
 
-#' @title Network k and g functions for spatio-temporal data (multicore, not ready)
+#' @title Network k and g functions for spatio-temporal data (multicore, experimental, NOT READY FOR USE)
 #'
 #' @description Calculate the k and g functions for a set of points on a
-#'   network and in time (multicore, not ready).
+#'   network and in time (multicore, experimental, NOT READY FOR USE).
 #'
 #' @details The k-function is a method to characterize the dispersion of a set
 #'   of points. For each point, the numbers of other points in subsequent radii

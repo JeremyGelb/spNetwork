@@ -179,7 +179,7 @@ bw_tnkde_corr_factor <- function(net_bws, time_bws, diggle_correction, study_are
 #' bike_accidents <- subset(bike_accidents, bike_accidents$Time>=89)
 #'
 #' # calculating the cross validation values
-#' cv_scores <- bws_tnkde_cv_likelihood_calc(
+#' cv_scores <- bw_tnkde_cv_likelihood_calc(
 #'   bw_net_range = c(100,1000),
 #'   bw_net_step = 100,
 #'   bw_time_range = c(10,60),
@@ -202,7 +202,7 @@ bw_tnkde_corr_factor <- function(net_bws, time_bws, diggle_correction, study_are
 #'   verbose = FALSE,
 #'   check = TRUE)
 #'}
-bws_tnkde_cv_likelihood_calc <- function(bw_net_range, bw_net_step,
+bw_tnkde_cv_likelihood_calc <- function(bw_net_range, bw_net_step,
                                          bw_time_range, bw_time_step,
                                          lines, events, time_field,
                                          w, kernel_name, method,
@@ -327,9 +327,6 @@ bws_tnkde_cv_likelihood_calc <- function(bw_net_range, bw_net_step,
     if(verbose){
       setTxtProgressBar(pb, i)
     }
-
-    # (OLD) values est une matrice (bw_net, bw_time) avec les sommes de loglikelihood de chaque
-    # (OLD) values est un cube (bw_net, bw_time, events) avec les densites estimees en mode LOO
     return(values)
   })
 
@@ -347,9 +344,6 @@ bws_tnkde_cv_likelihood_calc <- function(bw_net_range, bw_net_step,
     final_mat <- rowSums(log(final_array), dims = 2) / rowSums(!bin_arr, dims = 2)
   }
 
-  # add <- function(x) Reduce("+", x)
-  #
-  # final_mat <- add(dfs)
   colnames(final_mat) <- time_bws
   rownames(final_mat) <- net_bws
 
@@ -382,7 +376,7 @@ bws_tnkde_cv_likelihood_calc <- function(bw_net_range, bw_net_step,
 #' @param zero_strat A string indicating what to do when density is 0 when calculating LOO density estimate for an isolated event.
 #' "min_double" (default) replace the 0 value by the minimum double possible on the machine. "remove" will remove them from the final
 #' score. The first approach penalizes more strongly the small bandwidths.
-#' @return A matrix with the cross validation score.  Each row correspond to a network
+#' @return A matrix with the cross validation score.  Each row corresponds to a network
 #' bandwidth and each column to a time bandwidth (the higher the better).
 #' @export
 #' @examples
@@ -402,7 +396,7 @@ bws_tnkde_cv_likelihood_calc <- function(bw_net_range, bw_net_step,
 #' future::plan(future::multisession(workers=2))
 #'
 #' # calculating the cross validation values
-#' cv_scores <- bws_tnkde_cv_likelihood_calc.mc(
+#' cv_scores <- bw_tnkde_cv_likelihood_calc.mc(
 #'   bw_net_range = c(100,1000),
 #'   bw_net_step = 100,
 #'   bw_time_range = c(10,60),
@@ -428,7 +422,7 @@ bws_tnkde_cv_likelihood_calc <- function(bw_net_range, bw_net_step,
 #' ## make sure any open connections are closed afterward
 #' if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
 #'}
-bws_tnkde_cv_likelihood_calc.mc <- function(bw_net_range, bw_net_step,
+bw_tnkde_cv_likelihood_calc.mc <- function(bw_net_range, bw_net_step,
                                          bw_time_range, bw_time_step,
                                          lines, events, time_field,
                                          w, kernel_name, method,
@@ -609,7 +603,7 @@ bws_tnkde_cv_likelihood_calc.mc <- function(bw_net_range, bw_net_step,
 #' @title Worker function fo Bandwidth selection by likelihood cross validation for temporal NKDE
 #'
 #' @description Calculate for multiple network and time bandwidths the cross validation likelihood to
-#' select an appropriate bandwidth in a data-driven approach
+#' select an appropriate bandwidth in a data-driven approach (INTERNAL)
 #' @param lines A feature collection of linestrings representing the underlying network
 #' @param quad_events a feature collection of points indicating for which events the densities must be calculated
 #' @param events_loc A feature collection of points representing the location of the events

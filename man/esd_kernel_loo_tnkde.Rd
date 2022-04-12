@@ -8,7 +8,7 @@
 
 \item{edge_mat}{matrix, to find the id of each edge given two neighbours.}
 
-\item{events}{a NumericVector indicating the nodes in graph beeing events}
+\item{events}{a NumericVector indicating the nodes in the graph being events}
 
 \item{time_events}{a NumericVector indicating the timestamp of each event}
 
@@ -34,5 +34,5 @@ a cube with the impact of the event v on each other event for
 each pair of bandwidths (cube(bws_net, bws_time, events))
 }
 \description{
-The worker function to calculate discontinuous TNKDE likelihood cv
+The worker function to calculate discontinuous TNKDE likelihood cv (INTERNAL)
 }

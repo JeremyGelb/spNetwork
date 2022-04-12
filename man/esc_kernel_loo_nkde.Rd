@@ -8,7 +8,7 @@
 
 \item{edge_mat}{matrix, to find the id of each edge given two neighbours.}
 
-\item{events}{a NumericVector indicating the nodes in graph beeing events}
+\item{events}{a NumericVector indicating the nodes in the graph being events}
 
 \item{neighbour_list}{a List, giving for each node an IntegerVector with
 its neighbours}
@@ -24,9 +24,9 @@ its neighbours}
 \item{max_depth}{the maximum recursion depth}
 }
 \value{
-a cube with the impact of the event v on each other event for
+a cube with the impact of the event v on each other events for
 each pair of bandwidths (cube(bws_net, bws_time, events))
 }
 \description{
-The worker function to calculate continuous TNKDE likelihood cv
+The worker function to calculate continuous TNKDE likelihood cv (INTERNAL)
 }

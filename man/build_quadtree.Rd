@@ -13,8 +13,8 @@ build_quadtree(data)
 quadtree object from package SearchTrees
 }
 \description{
-Generate quadtree object from package SearchTrees, useful to speed up
-spatial requesting.
+Generate a quadtree object from package SearchTrees, useful to speed up
+spatial requesting (INTERNAL).
 }
 \examples{
 #This is an internal function, no example provided

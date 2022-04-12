@@ -45,9 +45,6 @@ select an appropriate bandwidth in a data-driven approach"><!-- mathjax --><scri
       <a href="../articles/NKDE.html">Network Kernel Density Estimate</a>
     </li>
     <li>
-      <a href="../articles/NKDEdetailed.html">Details about NKDE</a>
-    </li>
-    <li>
       <a href="../articles/SpatialWeightMatrices.html">Spatial Weight Matrices</a>
     </li>
     <li>
@@ -55,6 +52,9 @@ select an appropriate bandwidth in a data-driven approach"><!-- mathjax --><scri
     </li>
     <li>
       <a href="../articles/web_vignettes/AdaptiveBW.html">K-nearest neighbour adaptive bandwidth</a>
+    </li>
+    <li>
+      <a href="../articles/web_vignettes/NKDEdetailed.html">Details about NKDE</a>
     </li>
   </ul></li>
 <li>
@@ -127,7 +127,7 @@ network. The points will be snapped on the network to their closest line.</p></d
 <dd><p>A vector representing the weight of each event</p></dd>
 <dt>kernel_name</dt>
 <dd><p>The name of the kernel to use. Must be one of triangle,
-gaussian, tricube, cosine ,triweight, quartic, epanechnikov or uniform.</p></dd>
+gaussian, tricube, cosine, triweight, quartic, epanechnikov or uniform.</p></dd>
 <dt>method</dt>
 <dd><p>The method to use when calculating the NKDE, must be one of
 simple / discontinuous / continuous (see nkde details for more information)</p></dd>
@@ -179,7 +179,7 @@ bandwidth evaluation and thus reduce calculation time.</p></dd>
 score. The first approach penalizes more strongly the small bandwidths.</p></dd>
 <dt>verbose</dt>
 <dd><p>A Boolean, indicating if the function should print messages
-about process.</p></dd>
+about the process.</p></dd>
 <dt>check</dt>
 <dd><p>A Boolean indicating if the geometry checks must be run before
 the operation. This might take some times, but it will ensure that the CRS

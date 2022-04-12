@@ -28,5 +28,5 @@ cross_gfunc_cpp(dist_mat, start, end, step, width, Lt, na, nb, wa, wb)
 \item{wb}{The weight of the points in set B (coincident points)}
 }
 \description{
-c++ cross g function
+c++ cross g function (INTERNAL)
 }

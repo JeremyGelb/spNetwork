@@ -41,7 +41,7 @@ network. The points will be snapped on the network to their closest line.}
 which the densities will be estimated.}
 
 \item{kernel_name}{The name of the kernel to use. Must be one of triangle,
-gaussian, tricube, cosine ,triweight, quartic, epanechnikov or uniform.}
+gaussian, tricube, cosine, triweight, quartic, epanechnikov or uniform.}
 
 \item{bw}{The kernel bandwidth (using the scale of the lines), can be a
 single float or a numeric vector if a different bandwidth must be used
@@ -134,7 +134,7 @@ discontinuous version of the kernel function on network, which equally
 \item{method="continuous"}{If the discontinuous method is unbiased, it leads
 to a discontinuous kernel function which is a bit counter-intuitive.
 \insertCite{okabe2009kernel;textual}{spNetwork} proposed another version of
-the kernel, that divides the mass of the density at intersections but adjusts
+the kernel, which divides the mass of the density at intersections but adjusts
 the density before the intersection to make the function continuous.} } The
 three methods are available because, even though that the simple method is
 less precise statistically speaking, it might be more intuitive. From a
@@ -167,7 +167,7 @@ possible to limit the number of vertices by aggregating the events that are
 close to each other. In that case, the weights of the aggregated events are
 summed. According to an aggregation distance, a buffer is drawn around the
 fist event, all events falling in that buffer are aggregated to the first
-event, forming a new event. The coordinates of this new event are the mean of
+event, forming a new event. The coordinates of this new event are the means of
 the original events coordinates. This procedure is repeated until no events
 are aggregated. The aggregation distance can be fixed with the parameter agg.
 \cr\cr When using the continuous and discontinuous kernel, the density is
@@ -177,7 +177,7 @@ leading to very small values. In the same situation but with the continuous
 NKDE, the density value is divided by approximately 7.6. The max_depth
 parameters allows the user to control the maximum depth of these two NKDE.
 The base value is 15, but a value of 10 would yield very close estimates. A
-lower value might have a critical impact on speed when the bandwidth is large
+lower value might have a critical impact on speed when the bandwidth is large.
 \cr\cr When using the continuous and discontinuous kernel, the connections
 between graph nodes are stored in a matrix. This matrix is typically sparse,
 and so a sparse matrix object is used to limit memory use. If the network is

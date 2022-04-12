@@ -1,7 +1,7 @@
 #' @title Worker function for adaptive bandwidth for TNDE
 #'
 #' @description The worker function to calculate Adaptive bandwidths according
-#'   to Abramson’s smoothing regimen for TNKDE with a space-time interaction.
+#'   to Abramson’s smoothing regimen for TNKDE with a space-time interaction (INTERNAL).
 #'
 #' @param lines A feature collection of linestrings representing the underlying
 #'   network

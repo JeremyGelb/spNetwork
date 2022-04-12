@@ -15,7 +15,7 @@ closest_points(origins, targets)
 for each origin point, the index of the nearest target point
 }
 \description{
-Solve the nearest neighbour problem for two feature collection of points
+Solve the nearest neighbour problem for two feature collections of points
 This is a simple wrap-up of the dbscan::kNN function
 }
 \examples{

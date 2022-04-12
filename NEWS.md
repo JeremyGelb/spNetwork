@@ -2,21 +2,30 @@
 
 ## New Features
 
-* It is possible now to choose between two strategies to deal with densities at 0 when calculating LOO likelihood for several bandwidths. For more details, see the parameter *zero_strat* in the functions *bw_cvl_calc*, *bw_cvl_calc.mc*, *bw_cv_likelihood_calc*, *bw_cv_likelihood_calc.mc*, *bws_tnkde_cv_likelihood_calc* and *bws_tnkde_cv_likelihood_calc.mc*.
+* It is possible now to choose between two strategies to deal with density at 0 when calculating LOO likelihood for several bandwidths. For more details, see the parameter *zero_strat* in the functions *bw_cvl_calc*, *bw_cvl_calc.mc*, *bw_cv_likelihood_calc*, *bw_cv_likelihood_calc.mc*, *bws_tnkde_cv_likelihood_calc* and *bws_tnkde_cv_likelihood_calc.mc*.
 
 * It is possible now to set directly the size of local bandwidths for the functions *nkde*, *nkde.mc*, *tnkde* and *tnkde.mc*. This feature is currently experimental, please submit an issue if you encounter a bug.
 
-* One can now use the identity matrix type for neighbour weighting (*network_listw*)
+* One can now use the identity matrix type for neighbour weighting (*network_listw*). It is useful if one wants to apply different function to calculate the weights and to compare the results.
+
+* Adaptive bandwidth for TNKDE can now be calculated separately or simultaneously. For more details, see the parameter *adaptive_separate*.
+
+## documentation
+
+* The vignette *Details about NKDE"* has been removed from the package because it could not be knitted on some CRAN machines. It is still accessible on the website.
+
+* A new vignette *K-nearest neighbour adaptive bandwidth* has also be added to the website. It presents how spNetwork can use user defined local bandwidths.
 
 ## corrected bugs
 
 * The new c++ function for adding vertex on lines was buggy and could break the geometry of the original lines. This has been fixed.
+* On Linux with gcc-12, the package couldn't be compiled. This has been fixed.
 
 # spNetwork 0.4.0.9000
 
 ## New Features
 
-* the package has been reworked to use sf rather than rgeos, maptools and sp. All the test passed and the documentation has been modified.
+* the package has been reworked to use sf rather than rgeos, maptools and sp. All the tests passed and the documentation has been modified.
 
 # spNetwork 0.3.0.9000
 
@@ -31,7 +40,7 @@
 
 ## performance
 
-* Performance was improved for data driven bandwidth selection for NKDE
+* Performance was improved for data-driven bandwidth selection for NKDE
 * The function *lines_points_along* has been reworked with c++ and is now way faster
 * The function *lines_center* has been reworked with c++ and is now way faster
 
@@ -51,8 +60,8 @@ Minor release to fix a bug on SOLARIS for CRAN
 
 ## New Features
 
-* Added two function for data-driven bandwidth selection (see vignette NKDE)
-* Added a function to simplify network before processing (*simplify_network*), reducing network complexity by removing useless edges or merge continuous edge can improve performance. This function is still experimental and must be used only for undirected networks.
+* Added two functions for data-driven bandwidth selection (see vignette NKDE)
+* Added a function to simplify network before processing (*simplify_network*), reducing network complexity by removing useless edges or merge continuous edges can improve performance. This function is still experimental and must be used only for undirected networks.
 * Added two functions to calculate k nearest neighbours: *network_knn* and *network_knn.mc*
 * Added a function to calculate isochrones on a geographical network: *calc_isochrones* and a Vignette (*Calculating isochrones*) to give an example.
 * Making some internal functions visible for the user to allow graph analysis on networks, see the new vignette *Building networks*.
@@ -65,7 +74,7 @@ We follow now the code coverage. We want to reach 70% coverage before the next C
 
 ## corrected bugs
 
-* issue 1 fixed by changing the function maptools::snapPointsToLines for a home made function. The package BH including the c++ boost library is used to realize fast spatial query.
+* issue 1 fixed by changing the function maptools::snapPointsToLines for a home-made function. The package BH including the c++ boost library is used to realize fast spatial query.
 * issue 2 fixed by handling the special case of lines of length 0.
 * an error was raised when using *listw_network* with polygons and the method = "pointsalong". This was caused by a minor error in the code and works now as expected.
 * an error was present in the Diggle correction factor, leading to overestimation of the correction. This error has been corrected.
@@ -86,3 +95,4 @@ We follow now the code coverage. We want to reach 70% coverage before the next C
 # spNetwork 0.1.0
   
 * Initial release version
+

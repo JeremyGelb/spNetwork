@@ -11,7 +11,7 @@ bw_cv_likelihood_calc_tkde(events, w, bws, kernel_name)
 
 \item{w}{The weight of the events}
 
-\item{bws}{A numeric vector, the bandiwdths to use}
+\item{bws}{A numeric vector, the bandwidths to use}
 
 \item{kernel_name}{The name of the kernel to use}
 }

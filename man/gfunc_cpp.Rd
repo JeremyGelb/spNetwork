@@ -24,5 +24,5 @@ gfunc_cpp(dist_mat, start, end, step, width, Lt, n, w)
 \item{w}{The weight of the points (coincident points)}
 }
 \description{
-c++ g function
+c++ g function (INTERNAL)
 }

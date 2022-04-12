@@ -9,7 +9,7 @@ split_lines_at_vertex(lines, points, nearest_lines_idx, mindist)
 \arguments{
 \item{lines}{The feature collection of linestrings to split}
 
-\item{points}{The feature collection of point to add to as vertex to the lines}
+\item{points}{The feature collection of points to add to as vertex to the lines}
 
 \item{nearest_lines_idx}{For each point, the index of the nearest line}
 

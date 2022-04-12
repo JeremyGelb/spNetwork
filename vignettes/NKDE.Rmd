@@ -53,7 +53,7 @@ To calculate a Network Kernel Density Estimate (NKDE), it is possible to:
 * calculate network distances between objects instead of Euclidean distances.
 * adjust the kernel function to deal with the anisotropic space
 
-A picture is worth thousand of words, so let us consider this situation: 
+A picture is worth thousand words, so let us consider this situation: 
 
 <center>
 ![Image Title](images/step0.png){width=300px}

@@ -33,6 +33,18 @@ typedef std::vector<linestring_t> lines_vector;
 
 
 // *********************************************************************
+// Get coordinates of a point
+// *********************************************************************
+double getX(point_t pt){
+  return bg::get<0>(pt);
+}
+
+double getY(point_t pt){
+  return bg::get<1>(pt);
+}
+
+
+// *********************************************************************
 // Finding the nearest line for a set of points
 // *********************************************************************
 
@@ -147,7 +159,9 @@ vector_rtree_element find_close_lines_in_index(lines_rtree index, lines_vector l
     // calculating the box
     width = actual_dist/2.0;
     point_t mypt1(point.x()-width, point.y()-width);
+    //point_t mypt1(getX(point)-width, getY(point)-width);
     point_t mypt2(point.x()+width, point.y()+width);
+    //point_t mypt2(getX(point)+width, getY(point)+width);
     bbox region(mypt1,mypt2);
 
     //querying the index
@@ -299,6 +313,7 @@ List cut_lines_at_distances_cpp(List lines, NumericVector dists){
 
 double points_dot_product(point_t p1, point_t p2){
   return(p1.x()*p2.x()+p1.y()*p2.y());
+  //return(getX(p1)*getX(p2)+getY(p1)*getY(p2));
 };
 
 
@@ -309,15 +324,21 @@ point_t project_point_on_segment(point_t p, linestring_t line){
   point_t v1 = line[0];
   point_t v2 = line[1];
   // get dot product of e1, e2
+  //point_t e1(getX(v2) - getX(v1), getY(v2) - getY(v1));
   point_t e1(v2.x() - v1.x(), v2.y() - v1.y());
+  //point_t e2(getX(p) - getX(v1), getY(p) - getY(v1));
   point_t e2(p.x() - v1.x(), p.y() - v1.y());
   double valDp = points_dot_product(e1, e2);
   // get length of vectors
+  //double lenLineE1 = sqrt(getX(e1) * getX(e1) + getY(e1) * getY(e1));
   double lenLineE1 = sqrt(e1.x() * e1.x() + e1.y() * e1.y());
+  //double lenLineE2 = sqrt(getX(e2) * getX(e2) + getY(e2) * getY(e2));
   double lenLineE2 = sqrt(e2.x() * e2.x() + e2.y() * e2.y());
   double cos = valDp / (lenLineE1 * lenLineE2);
   // length of v1P'
   double projLenOfLine = cos * lenLineE2;
+  // point_t p2((getX(v1) + (projLenOfLine * getX(e1)) / lenLineE1),
+  //            (getY(v1) + (projLenOfLine * getY(e1)) / lenLineE1));
   point_t p2((v1.x() + (projLenOfLine * e1.x()) / lenLineE1),
              (v1.y() + (projLenOfLine * e1.y()) / lenLineE1));
   return p2;
@@ -488,6 +509,8 @@ List add_vertices_lines_cpp(NumericMatrix points, List lines, arma::colvec neare
         point_t org_pt(ok_pts(j,0),ok_pts(j,1));
         std::pair<double, point_t> point_dits = project_point_on_Linestring_distance(org_pt, line_geom);
         point_t pt = point_dits.second;
+        //distMat(j,0) = getX(pt);
+        //distMat(j,1) = getY(pt);
         distMat(j,0) = pt.x();
         distMat(j,1) = pt.y();
         distMat(j,2) = point_dits.first;
@@ -553,6 +576,8 @@ List add_center_lines_cpp(List lines){
       double Y = line(j,1);
       cum_dist += sqrt(pow(X-prevX,2) + pow(Y-prevY,2));
       if((cum_dist>middle) & (ad == 0)){
+        // new_line(j,0) = getX(p);
+        // new_line(j,1) = getY(p);
         new_line(j,0) = p.x();
         new_line(j,1) = p.y();
         ad = 1;
@@ -626,8 +651,11 @@ List split_lines_at_points_cpp(arma::mat Xmat, List lines, arma::colvec nearest_
       for(j = 0; j < nr; j++){
         point_t org_pt(ok_pts(j,0),ok_pts(j,1));
         std::pair<double, point_t> point_dits = project_point_on_Linestring_distance(org_pt, line_geom);
-        distMat(j,0) = point_dits.second.x();
-        distMat(j,1) = point_dits.second.y();
+        // distMat(j,0) = getX(point_dits.second);
+        // distMat(j,1) = getY(point_dits.second);
+        point_t pt = point_dits.second;
+        distMat(j,0) = pt.x();
+        distMat(j,1) = pt.y();
         distMat(j,2) = point_dits.first;
       }
       // subsetting the matrix for dists < mindist
@@ -692,7 +720,7 @@ List lixelize_lines_cpp(List lines, double lx_length, double mindist){
       new_lines.push_back(line);
       new_index.push_back(i);
     }else{
-    // otherwise, we have things to do
+      // otherwise, we have things to do
 
       // fist, generating the points to add
       std::vector<double> break_lengths;
@@ -706,6 +734,8 @@ List lixelize_lines_cpp(List lines, double lx_length, double mindist){
         if((line_length - actual_dist-lx_length) > mindist){
           actual_dist += lx_length;
           bg::line_interpolate(line_geom,actual_dist,p);
+          // new_x.push_back(getX(p));
+          // new_y.push_back(getY(p));
           new_x.push_back(p.x());
           new_y.push_back(p.y());
           break_lengths.push_back(actual_dist);
@@ -805,6 +835,8 @@ NumericMatrix points_along_lines_cpp(List lines, double dist){
 
     for(double & d : dists){
       bg::line_interpolate(line_geom, d, p);
+      // new_X.push_back(getX(p));
+      // new_Y.push_back(getY(p));
       new_X.push_back(p.x());
       new_Y.push_back(p.y());
       new_index.push_back(i);
@@ -861,6 +893,8 @@ NumericMatrix points_at_lines_centers_cpp(List lines){
 
     float d = line_length/2.0;
     bg::line_interpolate(line_geom, d, p);
+    // new_X.push_back(getX(p));
+    // new_Y.push_back(getY(p));
     new_X.push_back(p.x());
     new_Y.push_back(p.y());
   }

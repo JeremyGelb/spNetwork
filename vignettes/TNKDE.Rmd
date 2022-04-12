@@ -30,7 +30,7 @@ library(ggplot2)
 
 # Introduction
 
-Events recorded on a network often also have a temporal dimension. In that context, one could estimate the density of events in both time and network space.
+Events recorded on a network often have a temporal dimension. In that context, one could estimate the density of events in both time and network spaces.
 
 The spatio-temporal kernel is calculated as the product of the network kernel density and the time kernel density. For a sample point at location *l* and time *t*, the Temporal Network Kernel Density Estimate (TNKDE) is calculated as follows:
 
@@ -48,7 +48,7 @@ with:
 
 As specified in the previous formula, two bandwidths are necessary, one for space and one for time.
 
-We give in this vignette a short example with bike accidents data in 2016 in the central districts of Montreal.
+We give in this vignette a short example with the bike accidents data in 2016 in the central districts of Montreal.
 
 ```{r include=FALSE}
 load(system.file("extdata", "results_vignette_tnkde.rda",
@@ -87,7 +87,7 @@ ggplot(bike_accidents) +
   scale_x_continuous(breaks = months_starts_num, labels = months_starts_labs)
 ```
 
-It is not surprising to observe that most of the accidents occur during spring, summer, and fall. We will remove the lonely observations during the three first months of the year because they might influence the bandwidths' size latter.
+It is not surprising to observe that most of the accidents occur during spring, summer, and fall. We will remove the lonely observations during the first three months of the year because they might influence the bandwidths' size latter.
 
 ```{r message=FALSE, warning=FALSE}
 bike_accidents <- subset(bike_accidents, bike_accidents$Time >= 90)
@@ -121,7 +121,7 @@ ggplot(data = df_time) +
 
 It seems that a bandwidth between 30 and 40 days capture the bimodal shape of the temporal dimension of bike accidents. The lower densities during July and August are likely caused by the lower traffic due to holidays.
 
-It is also possible to use the classical functions from R to find a bandwidth with a datadriven approach.
+It is also possible to use the classical functions from R to find a bandwidth with a data-driven approach.
 
 ```{r message=FALSE, warning=FALSE, out.width = "80%"}
 bw1 <- bw.bcv(bike_accidents$Time, nb = 1000, lower = 1, upper = 80)
@@ -147,11 +147,11 @@ ggplot(data = df_time) +
 
 ```
 
-In that case, the automatic bandwidth selection methods yield much more noisy results with small bandwidths. Bike accidents are rare events and too small time bandwidths would create results with meaningless hot spots.
+In that case, the automatic bandwidth selection methods yield much noisier results with small bandwidths. Bike accidents are rare events and too small time bandwidths would create results with meaningless hot spots.
 
 # Spatial dimension
 
-Before considering the spatio-temporal case, we can also investigate the temporal dimension.
+Before considering the spatio-temporal case, we can also investigate the spatial dimension.
 
 ```{r message=FALSE, warning=FALSE, out.width = "75%", fig.align='center', message = FALSE}
 # loading the road network
@@ -196,7 +196,7 @@ tm_shape(sample_points) +
   tm_layout(legend.outside = TRUE)
 ```
 
-Several hot spots could already be identified, but we have no information about their location in time. The previous map represent the average density during the full period. 
+Several hot spots could already be identified, but we have no information about their location in time. The previous map represents the average density during the full period. 
 
 
 # Spatio-temporal
@@ -204,7 +204,7 @@ Several hot spots could already be identified, but we have no information about 
 We can now estimate the kernel density in both space and time. Note that increasing the dimension leads to larger bandwidths.
 
 ```{r message=FALSE, warning=FALSE, eval = FALSE}
-cv_scores <- bws_tnkde_cv_likelihood_calc(
+cv_scores <- bw_tnkde_cv_likelihood_calc(
   bw_net_range = c(100,1000),
   bw_net_step = 100,
   bw_time_range = c(10,60),
@@ -214,7 +214,7 @@ cv_scores <- bws_tnkde_cv_likelihood_calc(
   time_field = "Time",
   w = rep(1, length(bike_accidents)),
   kernel_name = "quartic",
-  method = "discontinuous",
+  method = "discontinuous", 
   diggle_correction = FALSE,
   study_area = NULL,
   max_depth = 10,
@@ -231,7 +231,7 @@ cv_scores <- bws_tnkde_cv_likelihood_calc(
 knitr::kable(cv_scores)
 ```
 
-According to the leave one out cross validation method, the optimal set of bandwidths is 700 metres and 60 days. As expected, larger bandwidths are required because the density of the events are spread both in space and time.
+According to the "leave one out cross validation" method, the optimal set of bandwidths is 700 metres and 60 days. As expected, larger bandwidths are required because the density of the events are spread both in space and time.
 
 
 ```{r message=FALSE, warning=FALSE, eval = FALSE}
@@ -240,11 +240,20 @@ sample_time <- seq(0, max(bike_accidents$Time), 10)
 
 # calculating densities
 tnkde_densities <- tnkde(lines = mtl_network,
-                   events = bike_accidents, time_field = "Time", w = rep(1, nrow(bike_accidents)), 
-                   samples_loc = sample_points, samples_time = sample_time, 
-                   kernel_name = "quartic", bw_net = 700, bw_time = 60, adaptive = TRUE,
-                   trim_bw_net = 900, trim_bw_time = 80, method = "discontinuous",
-                   div = "bw", max_depth = 10, digits = 2, tol = 0.01, agg = 15, grid_shape = c(1,1), 
+                   events = bike_accidents,
+                   time_field = "Time",
+                   w = rep(1, nrow(bike_accidents)), 
+                   samples_loc = sample_points,
+                   samples_time = sample_time, 
+                   kernel_name = "quartic",
+                   bw_net = 700, bw_time = 60,
+                   adaptive = TRUE,
+                   trim_bw_net = 900,
+                   trim_bw_time = 80,
+                   method = "discontinuous",
+                   div = "bw", max_depth = 10,
+                   digits = 2, tol = 0.01,
+                   agg = 15, grid_shape = c(1,1), 
                    verbose  = FALSE)
 
 # creating a color palette for all the densities
@@ -274,5 +283,28 @@ tmap_animation(all_maps, filename = "images/animated_map.gif",
 knitr::include_graphics("images/animated_map.gif")
 ```
 
-
 The locations of the hot spots are changing during the year. This information was hidden when only a spatial NKDE was used.
+
+# Adaptive bandwidth 
+
+One can decide to use adaptive bandwidth for the TNKDE. They are calculated using the Abramson’s smoothing regimen. Two approaches are available: separated and simultaneous. In the first case, the network and temporal density at each event location are calculated separately and used to calculate the local bandwidth. Isolated events on the network will obtain larger network bandwidth and isolated events in time will obtain larger time bandwidth. The second method calculates the temporal-network density at each event location and uses it to adjust both bandwidths simultaneously. This method will always lead to stronger variation in the local bandwidths.
+
+```{r message=FALSE, warning=FALSE, eval = FALSE}
+tnkde_densities <- tnkde(lines = mtl_network,
+                   events = bike_accidents,
+                   time_field = "Time",
+                   w = rep(1, nrow(bike_accidents)), 
+                   samples_loc = sample_points,
+                   samples_time = sample_time, 
+                   kernel_name = "quartic",
+                   bw_net = 700, bw_time = 60,
+                   adaptive = TRUE,
+                   adaptive_separate = FALSE,
+                   trim_bw_net = 900,
+                   trim_bw_time = 80,
+                   method = "discontinuous",
+                   div = "bw", max_depth = 10,
+                   digits = 2, tol = 0.01,
+                   agg = 15, grid_shape = c(1,1), 
+                   verbose  = FALSE)
+```

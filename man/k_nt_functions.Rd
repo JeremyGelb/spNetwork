@@ -2,7 +2,7 @@
 % Please edit documentation in R/k_functions_nettime_sf.R
 \name{k_nt_functions}
 \alias{k_nt_functions}
-\title{Network k and g functions for spatio-temporal data (not ready)}
+\title{Network k and g functions for spatio-temporal data (experimental, NOT READY FOR USE)}
 \usage{
 k_nt_functions(
   lines,
@@ -94,7 +94,7 @@ A list with the following values : \cr
 }
 \description{
 Calculate the k and g functions for a set of points on a
-  network and in time (not ready).
+  network and in time (experimental, NOT READY FOR USE).
 }
 \details{
 The k-function is a method to characterize the dispersion of a set
