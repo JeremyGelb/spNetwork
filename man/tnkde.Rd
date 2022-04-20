@@ -125,6 +125,12 @@ about the process.}
 the operation. This might take some times, but it will ensure that the CRS
 of the provided objects are valid and identical, and that geometries are valid.}
 }
+\value{
+A matrix with the estimated density for each sample point (rows) at
+  each timestamp (columns). If adaptive = TRUE, the function returns a list
+  with two slots: k (the matrix with the density values) and events (a
+  feature collection of points with the local bandwidths).
+}
 \description{
 Calculate the Temporal Network Kernel Density Estimate based on a network of lines,
 sampling points in space and times, and events in space and time.
@@ -150,7 +156,7 @@ event in time or in the network space.
 It is possible to use an adaptive bandwidth both on the network and in time.
 Adaptive bandwidths are calculated using the Abramson’s smoothing regimen
 \insertCite{abramson1982bandwidth}{spNetwork}. To do so, the original fixed
-bandwidths must be specified (bw_net and bw_time parameters). 
+bandwidths must be specified (bw_net and bw_time parameters).
 The maximum size of the two local bandwidths can be limited with
 the parameters trim_bw_net and trim_bw_time.
 \cr\cr

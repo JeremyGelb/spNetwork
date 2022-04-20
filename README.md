@@ -9,7 +9,7 @@
 
 [![R-CMD-check](https://github.com/JeremyGelb/spNetwork/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/JeremyGelb/spNetwork/actions/workflows/R-CMD-check.yaml)
 
-[![](https://img.shields.io/badge/devel%20version-0.4.1.9000-green.svg)](https://jeremygelb.github.io/spNetwork/)
+[![](https://img.shields.io/badge/devel%20version-0.4.2-green.svg)](https://jeremygelb.github.io/spNetwork/)
 [![](https://www.r-pkg.org/badges/version/spNetwork?color=blue)](https://cran.r-project.org/package=spNetwork)
 [![](http://cranlogs.r-pkg.org/badges/grand-total/spNetwork?color=blue)](https://cran.r-project.org/package=spNetwork)
 [![](http://cranlogs.r-pkg.org/badges/last-month/spNetwork?color=green)](https://cran.r-project.org/package=spNetwork)
@@ -233,6 +233,19 @@ Features that will be added to the package in the future:
 -   rework for using `sf` objects rather than `sp` (`rgeos` and
     `maptools` will be deprecated in 2023). This work is undergoing,
     please report any bug or error in the new documentation.
+
+## Reporting a bug
+
+If you encounter a bug when using spNetwork, please open an *issue*
+[here](https://github.com/JeremyGelb/spNetwork/issues). To ensure that
+the problem is quickly identified, the issue should follow the following
+guidelines:
+
+1.  Provide an informative title and do not copy-paste the error message
+    as the title.
+2.  Provide the ALL code which lead to the bug.
+3.  Indicate the version of R and spNetwork.
+4.  If possible, provide a sample of data and a reproductible example.
 
 ## Authors
 

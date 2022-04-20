@@ -431,7 +431,7 @@ split_by_grid_abw <- function(grid,events,lines,bw,tol,digits){
 #' @keywords internal
 #' @examples
 #' #This is an internal function, no example provided
-split_by_grid.mc <- function(grid,samples,events,lines,bw,tol,digits, split_all = T){
+split_by_grid.mc <- function(grid,samples,events,lines,bw,tol,digits, split_all = TRUE){
 
   ## step1 creating the spatial trees
   tree_samples <- build_quadtree(samples)

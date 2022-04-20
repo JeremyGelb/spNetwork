@@ -664,7 +664,7 @@ st_bbox_geom <- function(x){
 #' @examples
 #' #This is an internal function, no example provided
 build_grid <- function(grid_shape, spatial) {
-    boxes <- lapply(spatial,function(i){matrix(st_bbox(i),nrow = 2, byrow = F)})
+    boxes <- lapply(spatial,function(i){matrix(st_bbox(i),nrow = 2, byrow = FALSE)})
     boxes <- do.call(cbind,boxes)
     v1 <- as.numeric(c(min(boxes[1,]),max(boxes[1,])))
     v2 <- as.numeric(c(min(boxes[2,]),max(boxes[2,])))

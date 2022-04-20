@@ -15,6 +15,7 @@
 //' @param Lt The total length of the network
 //' @param n The number of points
 //' @param w The weight of the points (coincident points)
+//' @return A numeric vector with the values of the k function evaluated at the required distances
 //' @export
 // [[Rcpp::export]]
 NumericVector kfunc_cpp(arma::mat dist_mat,float start,float end, float step, float Lt, int n, arma::colvec w){
@@ -50,6 +51,7 @@ NumericVector kfunc_cpp(arma::mat dist_mat,float start,float end, float step, fl
 //' @param Lt The total length of the network
 //' @param n The number of points
 //' @param w The weight of the points (coincident points)
+//' @return A numeric vector with the values of the g function evaluated at the required distances
 //' @export
 // [[Rcpp::export]]
 NumericVector gfunc_cpp(arma::mat dist_mat,float start,float end, float step, float width, float Lt, int n, arma::colvec w){

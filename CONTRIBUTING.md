@@ -22,7 +22,7 @@ Guidelines for contributors:
 * Create a named branch (not master) which merges cleanly with master.
 * Limit the scope of the pull request to a clearly defined improvement or fix.
 * For naming functions, use name_separated_by_underscore.
-* spNetwork relies on the spatial class from the package sp and NOT sf.
+* spNetwork relies on the spatial class from the package sf and NOT sp anymore.
 * Avoid to include new dependencies.
 * Document (more is better than less) your code.
 * Use [roxygen2](https://cran.r-project.org/package=roxygen2) for documentation.

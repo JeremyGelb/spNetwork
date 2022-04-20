@@ -210,6 +210,15 @@ Features that will be added to the package in the future:
 * temporal NKDE, a two dimensional kernel density estimation in network space and time
 * rework for using `sf` objects rather than `sp` (`rgeos` and `maptools` will be deprecated in 2023). This work is undergoing, please report any bug or error in the new documentation.
 
+## Reporting a bug
+
+If you encounter a bug when using spNetwork, please open an *issue* [here](https://github.com/JeremyGelb/spNetwork/issues). To ensure that the problem is quickly identified, the issue should follow the following guidelines: 
+
+1. Provide an informative title and do not copy-paste the error message as the title.
+2. Provide the ALL code which lead to the bug.
+3. Indicate the version of R and spNetwork.
+4. If possible, provide a sample of data and a reproductible example.
+
 ## Authors
 
 * **Jeremy Gelb** - *Creator and maintainer*

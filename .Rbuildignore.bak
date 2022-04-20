@@ -14,4 +14,4 @@
 ^man-roxygen$
 ^pkgdown$
 ^codecov\.yml$
-^vignettes/web_vignettes$
+^.*\vignettes\web_vignettes$

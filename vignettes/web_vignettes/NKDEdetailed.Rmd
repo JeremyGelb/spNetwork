@@ -13,7 +13,7 @@ vignette: >
   %\VignetteIndexEntry{Details about NKDE}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
-bibliography: spnetwork_bilbio.bibtex
+bibliography: ../spnetwork_bilbio.bibtex
 link-citations: yes
 colorlinks: yes
 ---

@@ -457,6 +457,7 @@ points_at_lines_centers_cpp <- function(lines) {
 #' @param Lt The total length of the network
 #' @param n The number of points
 #' @param w The weight of the points (coincident points)
+#' @return A numeric vector with the values of the k function evaluated at the required distances
 #' @export
 kfunc_cpp <- function(dist_mat, start, end, step, Lt, n, w) {
     .Call('_spNetwork_kfunc_cpp', PACKAGE = 'spNetwork', dist_mat, start, end, step, Lt, n, w)
@@ -473,6 +474,7 @@ kfunc_cpp <- function(dist_mat, start, end, step, Lt, n, w) {
 #' @param Lt The total length of the network
 #' @param n The number of points
 #' @param w The weight of the points (coincident points)
+#' @return A numeric vector with the values of the g function evaluated at the required distances
 #' @export
 gfunc_cpp <- function(dist_mat, start, end, step, width, Lt, n, w) {
     .Call('_spNetwork_gfunc_cpp', PACKAGE = 'spNetwork', dist_mat, start, end, step, width, Lt, n, w)

@@ -73,7 +73,7 @@
 #   ## sub sampling the quadra if required
 #   if (sub_sample < 1){
 #     nb <- ceiling(length(selections) * sub_sample)
-#     selections <- selections[sample(1:length(selections),size = nb,replace = FALSE)]
+#     selections <- selections[sample(1:length(selections),size = nb,replace = F)]
 #   }
 #
 #   ## step 4 calculating the CVl values
@@ -315,7 +315,7 @@ bw_cvl_calc <- function(bw_range, bw_step,lines, events, w, kernel_name, method,
   ## sub sampling the quadra if required
   if (sub_sample < 1){
     nb <- ceiling(length(selections) * sub_sample)
-    selections <- selections[sample(1:length(selections),size = nb,replace = FALSE)]
+    selections <- selections[sample(1:length(selections),size = nb,replace = F)]
   }
 
   ## step 4 calculating the CV values
@@ -496,7 +496,7 @@ bw_cvl_calc.mc <- function(bw_range,bw_step,lines, events, w, kernel_name, metho
   ## sub sampling the quadra if required
   if (sub_sample < 1){
     nb <- ceiling(length(selections) * sub_sample)
-    selections <- selections[sample(1:length(selections),size = nb,replace = FALSE)]
+    selections <- selections[sample(1:length(selections),size = nb,replace = F)]
   }
 
   ## step 4 calculating the CV values

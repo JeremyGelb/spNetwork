@@ -18,7 +18,7 @@ sampling points in space and times, and events in space and time with multicore 
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.1.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2</span>
       </span>
     </div>
 
@@ -148,9 +148,9 @@ vector if a different bandwidth must be used for each event.</p></dd>
 <dd><p>A Boolean, indicating if an adaptive bandwidth must be used.
 Both spatial and temporal bandwidths are adapted but separately.</p></dd>
 <dt>adaptive_separate</dt>
-<dd><p>A boolean indicating if the adaptive bandwidths
-for the time and the network dimensions must be calculated separately (TRUE) or in
-interaction (FALSE)</p></dd>
+<dd><p>A boolean indicating if the adaptive bandwidths for
+the time and the network dimensions must be calculated separately (TRUE) or
+in interaction (FALSE)</p></dd>
 <dt>trim_bw_net</dt>
 <dd><p>A float, indicating the maximum value for the adaptive
 network bandwidth</p></dd>
@@ -210,6 +210,13 @@ about the process.</p></dd>
 the operation. This might take some times, but it will ensure that the CRS
 of the provided objects are valid and identical, and that geometries are valid.</p></dd>
 </dl></div>
+    <div id="value">
+    <h2>Value</h2>
+    <p>A matrix with the estimated density for each sample point (rows) at
+  each timestamp (columns). If adaptive = TRUE, the function returns a list
+  with two slots: k (the matrix with the density values) and events (a
+  feature collection of points with the local bandwidths).</p>
+    </div>
     <div id="details">
     <h2>Details</h2>
     <p>For details, see help(tnkde) and help(nkde)</p>

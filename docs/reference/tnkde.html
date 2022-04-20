@@ -18,7 +18,7 @@ sampling points in space and times, and events in space and time."><!-- mathjax 
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.1.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2</span>
       </span>
     </div>
 
@@ -210,6 +210,13 @@ about the process.</p></dd>
 the operation. This might take some times, but it will ensure that the CRS
 of the provided objects are valid and identical, and that geometries are valid.</p></dd>
 </dl></div>
+    <div id="value">
+    <h2>Value</h2>
+    <p>A matrix with the estimated density for each sample point (rows) at
+  each timestamp (columns). If adaptive = TRUE, the function returns a list
+  with two slots: k (the matrix with the density values) and events (a
+  feature collection of points with the local bandwidths).</p>
+    </div>
     <div id="details">
     <h2>Details</h2>
     <p>**Temporal Network Kernel Density Estimate**<br>
@@ -232,7 +239,7 @@ It is possible to use an adaptive bandwidth both on the network and in time.
 Adaptive bandwidths are calculated using the Abramson’s smoothing regimen
 (Abramson 1982)
 . To do so, the original fixed
-bandwidths must be specified (bw_net and bw_time parameters). 
+bandwidths must be specified (bw_net and bw_time parameters).
 The maximum size of the two local bandwidths can be limited with
 the parameters trim_bw_net and trim_bw_time.
 <br><br></p>

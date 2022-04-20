@@ -72,7 +72,7 @@
 #   ## sub sampling the quadra if required
 #   if (sub_sample < 1){
 #     nb <- ceiling(length(selections) * sub_sample)
-#     selections <- selections[sample(1:length(selections),size = nb,replace = F)]
+#     selections <- selections[sample(1:length(selections),size = nb,replace = FALSE)]
 #   }
 #
 #   ## step 4 calculating the CV values
@@ -355,7 +355,7 @@ bw_cv_likelihood_calc <- function(bw_range,bw_step,lines, events, w, kernel_name
   ## sub sampling the quadra if required
   if (sub_sample < 1){
     nb <- ceiling(length(selections) * sub_sample)
-    selections <- selections[sample(1:length(selections),size = nb,replace = F)]
+    selections <- selections[sample(1:length(selections),size = nb,replace = FALSE)]
   }
 
   ## step 4 calculating the CV values
@@ -544,7 +544,7 @@ bw_cv_likelihood_calc.mc <- function(bw_range,bw_step,lines, events, w, kernel_n
   ## sub sampling the quadra if required
   if (sub_sample < 1){
     nb <- ceiling(length(selections) * sub_sample)
-    selections <- selections[sample(1:length(selections),size = nb,replace = F)]
+    selections <- selections[sample(1:length(selections),size = nb,replace = FALSE)]
   }
 
   ## step 4 calculating the CV values

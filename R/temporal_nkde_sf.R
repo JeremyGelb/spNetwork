@@ -333,7 +333,7 @@ tnkde_worker <- function(lines, events_loc, events, samples_loc, samples_time, k
 #' It is possible to use an adaptive bandwidth both on the network and in time.
 #' Adaptive bandwidths are calculated using the Abramson’s smoothing regimen
 #' \insertCite{abramson1982bandwidth}{spNetwork}. To do so, the original fixed
-#' bandwidths must be specified (bw_net and bw_time parameters). 
+#' bandwidths must be specified (bw_net and bw_time parameters).
 #' The maximum size of the two local bandwidths can be limited with
 #' the parameters trim_bw_net and trim_bw_time.
 #' \cr\cr
@@ -372,6 +372,10 @@ tnkde_worker <- function(lines, events_loc, events, samples_loc, samples_time, k
 #' @param adaptive_separate A boolean indicating if the adaptive bandwidths
 #'   for the time and the network dimensions must be calculated separately (TRUE) or in
 #'   interaction (FALSE)
+#' @return A matrix with the estimated density for each sample point (rows) at
+#'   each timestamp (columns). If adaptive = TRUE, the function returns a list
+#'   with two slots: k (the matrix with the density values) and events (a
+#'   feature collection of points with the local bandwidths).
 #' @export
 #' @examples
 #' \donttest{
@@ -602,9 +606,13 @@ tnkde <- function(lines, events, time_field, w, samples_loc, samples_time, kerne
 #' @template sparse-arg
 #' @template check-arg
 #' @template verbose-arg
-#' @param adaptive_separate A boolean indicating if the adaptive bandwidths
-#'   for the time and the network dimensions must be calculated separately (TRUE) or in
-#'   interaction (FALSE)
+#' @param adaptive_separate A boolean indicating if the adaptive bandwidths for
+#'   the time and the network dimensions must be calculated separately (TRUE) or
+#'   in interaction (FALSE)
+#' @return A matrix with the estimated density for each sample point (rows) at
+#'   each timestamp (columns). If adaptive = TRUE, the function returns a list
+#'   with two slots: k (the matrix with the density values) and events (a
+#'   feature collection of points with the local bandwidths).
 #' @export
 #' @examples
 #' \donttest{
@@ -758,7 +766,6 @@ tnkde.mc <- function(lines, events, time_field, w, samples_loc, samples_time, ke
   ## step3 splitting the dataset with each rectangle
   selections <- split_by_grid.mc(grid, samples_loc, events_loc, lines, max_bw, tol, digits)
 
-  save.image("situation3_error.rda")
   ## step 4 calculating the values
   # save.image(".Rproj.user/error_occured_here.rda")
   if(verbose){

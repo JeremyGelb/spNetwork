@@ -33,6 +33,7 @@ adaptive_bw_1d <- function(events, w, bw, kernel_name){
 #' @param bw A float, the bandwidth to use
 #' @param kernel_name The name of the kernel to use
 #' @param adaptive Boolean
+#' @return A numeric vector with the density values at the requested timestamps
 #' @export
 #' @examples
 #' eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
@@ -74,6 +75,7 @@ tkde <- function(events, w, samples, bw, kernel_name, adaptive = FALSE){
 #' @param w The weight of the events
 #' @param bws A numeric vector, the bandwidths to use
 #' @param kernel_name The name of the kernel to use
+#' @return A vector with the cross validation scores (the higher the better).
 #' @export
 #' @examples
 #' eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)

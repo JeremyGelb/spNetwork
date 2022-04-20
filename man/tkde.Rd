@@ -19,6 +19,9 @@ tkde(events, w, samples, bw, kernel_name, adaptive = FALSE)
 
 \item{adaptive}{Boolean}
 }
+\value{
+A numeric vector with the density values at the requested timestamps
+}
 \description{
 Calculate the Temporal kernel density estimate based on sampling points in
 time and events

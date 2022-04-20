@@ -15,6 +15,9 @@ bw_cv_likelihood_calc_tkde(events, w, bws, kernel_name)
 
 \item{kernel_name}{The name of the kernel to use}
 }
+\value{
+A vector with the cross validation scores (the higher the better).
+}
 \description{
 Calculate the likelihood cross validation score for several bandwidths for the
 Temporal Kernel density

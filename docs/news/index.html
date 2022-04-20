@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.1.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2</span>
       </span>
     </div>
 
@@ -44,9 +44,6 @@
       <a href="../articles/NKDE.html">Network Kernel Density Estimate</a>
     </li>
     <li>
-      <a href="../articles/NKDEdetailed.html">Details about NKDE</a>
-    </li>
-    <li>
       <a href="../articles/SpatialWeightMatrices.html">Spatial Weight Matrices</a>
     </li>
     <li>
@@ -54,6 +51,9 @@
     </li>
     <li>
       <a href="../articles/web_vignettes/AdaptiveBW.html">K-nearest neighbour adaptive bandwidth</a>
+    </li>
+    <li>
+      <a href="../articles/web_vignettes/NKDEdetailed.html">Details about NKDE</a>
     </li>
   </ul></li>
 <li>
@@ -82,20 +82,27 @@
 <h2 class="page-header" data-toc-text="0.4.1.9000" id="spnetwork-0419000">spNetwork 0.4.1.9000<a class="anchor" aria-label="anchor" href="#spnetwork-0419000"></a></h2>
 <div class="section level3">
 <h3 id="new-features-0-4-1-9000">New Features<a class="anchor" aria-label="anchor" href="#new-features-0-4-1-9000"></a></h3>
-<ul><li><p>It is possible now to choose between two strategies to deal with densities at 0 when calculating LOO likelihood for several bandwidths. For more details, see the parameter <em>zero_strat</em> in the functions <em>bw_cvl_calc</em>, <em>bw_cvl_calc.mc</em>, <em>bw_cv_likelihood_calc</em>, <em>bw_cv_likelihood_calc.mc</em>, <em>bws_tnkde_cv_likelihood_calc</em> and <em>bws_tnkde_cv_likelihood_calc.mc</em>.</p></li>
+<ul><li><p>It is possible now to choose between two strategies to deal with density at 0 when calculating LOO likelihood for several bandwidths. For more details, see the parameter <em>zero_strat</em> in the functions <em>bw_cvl_calc</em>, <em>bw_cvl_calc.mc</em>, <em>bw_cv_likelihood_calc</em>, <em>bw_cv_likelihood_calc.mc</em>, <em>bws_tnkde_cv_likelihood_calc</em> and <em>bws_tnkde_cv_likelihood_calc.mc</em>.</p></li>
 <li><p>It is possible now to set directly the size of local bandwidths for the functions <em>nkde</em>, <em>nkde.mc</em>, <em>tnkde</em> and <em>tnkde.mc</em>. This feature is currently experimental, please submit an issue if you encounter a bug.</p></li>
-<li><p>One can now use the identity matrix type for neighbour weighting (<em>network_listw</em>)</p></li>
+<li><p>One can now use the identity matrix type for neighbour weighting (<em>network_listw</em>). It is useful if one wants to apply different function to calculate the weights and to compare the results.</p></li>
+<li><p>Adaptive bandwidth for TNKDE can now be calculated separately or simultaneously. For more details, see the parameter <em>adaptive_separate</em>.</p></li>
+</ul></div>
+<div class="section level3">
+<h3 id="documentation-0-4-1-9000">documentation<a class="anchor" aria-label="anchor" href="#documentation-0-4-1-9000"></a></h3>
+<ul><li><p>The vignette <em>Details about NKDE”</em> has been removed from the package because it could not be knitted on some CRAN machines. It is still accessible on the website.</p></li>
+<li><p>A new vignette <em>K-nearest neighbour adaptive bandwidth</em> has also be added to the website. It presents how spNetwork can use user defined local bandwidths.</p></li>
 </ul></div>
 <div class="section level3">
 <h3 id="corrected-bugs-0-4-1-9000">corrected bugs<a class="anchor" aria-label="anchor" href="#corrected-bugs-0-4-1-9000"></a></h3>
 <ul><li>The new c++ function for adding vertex on lines was buggy and could break the geometry of the original lines. This has been fixed.</li>
+<li>On Linux with gcc-12, the package couldn’t be compiled. This has been fixed.</li>
 </ul></div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.4.0.9000" id="spnetwork-0409000">spNetwork 0.4.0.9000<a class="anchor" aria-label="anchor" href="#spnetwork-0409000"></a></h2>
 <div class="section level3">
 <h3 id="new-features-0-4-0-9000">New Features<a class="anchor" aria-label="anchor" href="#new-features-0-4-0-9000"></a></h3>
-<ul><li>the package has been reworked to use sf rather than rgeos, maptools and sp. All the test passed and the documentation has been modified.</li>
+<ul><li>the package has been reworked to use sf rather than rgeos, maptools and sp. All the tests passed and the documentation has been modified.</li>
 </ul></div>
 </div>
     <div class="section level2">
@@ -111,7 +118,7 @@
 </ul></div>
 <div class="section level3">
 <h3 id="performance-0-3-0-9000">performance<a class="anchor" aria-label="anchor" href="#performance-0-3-0-9000"></a></h3>
-<ul><li>Performance was improved for data driven bandwidth selection for NKDE</li>
+<ul><li>Performance was improved for data-driven bandwidth selection for NKDE</li>
 <li>The function <em>lines_points_along</em> has been reworked with c++ and is now way faster</li>
 <li>The function <em>lines_center</em> has been reworked with c++ and is now way faster</li>
 </ul></div>
@@ -130,8 +137,8 @@
 <h2 class="page-header" data-toc-text="0.2.0" id="spnetwork-020">spNetwork 0.2.0<small>2021-10-09</small><a class="anchor" aria-label="anchor" href="#spnetwork-020"></a></h2>
 <div class="section level3">
 <h3 id="new-features-0-2-0">New Features<a class="anchor" aria-label="anchor" href="#new-features-0-2-0"></a></h3>
-<ul><li>Added two function for data-driven bandwidth selection (see vignette NKDE)</li>
-<li>Added a function to simplify network before processing (<em>simplify_network</em>), reducing network complexity by removing useless edges or merge continuous edge can improve performance. This function is still experimental and must be used only for undirected networks.</li>
+<ul><li>Added two functions for data-driven bandwidth selection (see vignette NKDE)</li>
+<li>Added a function to simplify network before processing (<em>simplify_network</em>), reducing network complexity by removing useless edges or merge continuous edges can improve performance. This function is still experimental and must be used only for undirected networks.</li>
 <li>Added two functions to calculate k nearest neighbours: <em>network_knn</em> and <em>network_knn.mc</em>
 </li>
 <li>Added a function to calculate isochrones on a geographical network: <em>calc_isochrones</em> and a Vignette (<em>Calculating isochrones</em>) to give an example.</li>
@@ -144,7 +151,7 @@
 </div>
 <div class="section level3">
 <h3 id="corrected-bugs-0-2-0">corrected bugs<a class="anchor" aria-label="anchor" href="#corrected-bugs-0-2-0"></a></h3>
-<ul><li>issue 1 fixed by changing the function maptools::snapPointsToLines for a home made function. The package BH including the c++ boost library is used to realize fast spatial query.</li>
+<ul><li>issue 1 fixed by changing the function maptools::snapPointsToLines for a home-made function. The package BH including the c++ boost library is used to realize fast spatial query.</li>
 <li>issue 2 fixed by handling the special case of lines of length 0.</li>
 <li>an error was raised when using <em>listw_network</em> with polygons and the method = “pointsalong”. This was caused by a minor error in the code and works now as expected.</li>
 <li>an error was present in the Diggle correction factor, leading to overestimation of the correction. This error has been corrected.</li>

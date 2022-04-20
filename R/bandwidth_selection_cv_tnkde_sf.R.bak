@@ -376,7 +376,7 @@ bw_tnkde_cv_likelihood_calc <- function(bw_net_range, bw_net_step,
 #' @param zero_strat A string indicating what to do when density is 0 when calculating LOO density estimate for an isolated event.
 #' "min_double" (default) replace the 0 value by the minimum double possible on the machine. "remove" will remove them from the final
 #' score. The first approach penalizes more strongly the small bandwidths.
-#' @return A matrix with the cross validation score.  Each row correspond to a network
+#' @return A matrix with the cross validation score.  Each row corresponds to a network
 #' bandwidth and each column to a time bandwidth (the higher the better).
 #' @export
 #' @examples
@@ -625,6 +625,7 @@ bw_tnkde_cv_likelihood_calc.mc <- function(bw_net_range, bw_net_step,
 #' @template sparse-arg
 #' @param verbose A boolean
 #' @param cvl A boolean indicating if the cvl method (TRUE) or the loo (FALSE) method must be used
+#' @return An array with the CV score for each pair of bandiwdths (rows and lines) for each event (slices)
 #' @export
 #' @examples
 #' # no example provided, this is an internal function

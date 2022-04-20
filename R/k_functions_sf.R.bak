@@ -148,7 +148,7 @@ randomize_distmatrix2 <- function(graph, edge_df, n, resolution, nsim, start_ver
   ## and now, calculating the distance matrices
   verts <- as.numeric(igraph::V(tot_graph))
   dist_matrices <- lapply(1:nsim, function(i){
-    new_vert <- sample(verts,size = n, replace = FALSE)
+    new_vert <- sample(verts,size = n, replace = F)
     if (is.null(start_vert)){
       dist_mat <- igraph::distances(tot_graph,v = new_vert, to = new_vert)
     }else{

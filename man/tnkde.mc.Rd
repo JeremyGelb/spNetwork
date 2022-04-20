@@ -63,9 +63,9 @@ vector if a different bandwidth must be used for each event.}
 \item{adaptive}{A Boolean, indicating if an adaptive bandwidth must be used.
 Both spatial and temporal bandwidths are adapted but separately.}
 
-\item{adaptive_separate}{A boolean indicating if the adaptive bandwidths
-for the time and the network dimensions must be calculated separately (TRUE) or in
-interaction (FALSE)}
+\item{adaptive_separate}{A boolean indicating if the adaptive bandwidths for
+the time and the network dimensions must be calculated separately (TRUE) or
+in interaction (FALSE)}
 
 \item{trim_bw_net}{A float, indicating the maximum value for the adaptive
 network bandwidth}
@@ -124,6 +124,12 @@ about the process.}
 \item{check}{A Boolean indicating if the geometry checks must be run before
 the operation. This might take some times, but it will ensure that the CRS
 of the provided objects are valid and identical, and that geometries are valid.}
+}
+\value{
+A matrix with the estimated density for each sample point (rows) at
+  each timestamp (columns). If adaptive = TRUE, the function returns a list
+  with two slots: k (the matrix with the density values) and events (a
+  feature collection of points with the local bandwidths).
 }
 \description{
 Calculate the Temporal Network Kernel Density Estimate based on a network of lines,

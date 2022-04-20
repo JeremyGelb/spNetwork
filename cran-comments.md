@@ -319,3 +319,47 @@ Found the following (possibly) invalid URLs:
 **correction:**
 
 The URL was replaced as suggested in the Readme
+
+
+# Version 0.4.2
+
+This version is submitted to correct 2 errors raised because of the new compiler gcc12 and the vignette using rgl.
+I did not had enough time to do the corrections and spNetwork was removed from CRAN.
+
+submitted the 15/04/2022
+
+## round 2 (after Gregor's check)
+
+**Problem:**
+Size of tarball: 5130234 bytes
+A CRAN package should not be larger than 5 MB. Please reduce the size.
+
+**Correction:**
+Some files used to build the package website were not added to buildignore. This has been corrected and the package weight is now 4602 Ko
+
+**Problem:**
+Please write TRUE and FALSE instead of T and F. (Please don't use 'T' or
+'F' as vector names.), e.g.:
+   man/split_by_grid.mc.Rd:
+        split_by_grid.mc(grid, samples, events, lines, bw, tol, digits,
+split_all = T)
+
+**Correction:** I looked up for the abreviations T and F and changed them for TRUE and FALSE
+
+**Problem:**
+Please add \\value to .Rd files regarding exported methods and explain
+the functions results in the documentation. Please write about the
+structure of the output (class) and also what the output means. (If a
+function does not return a value, please document that too, e.g.
+\\value{No return value, called for side effects} or similar)
+Missing Rd-tags:
+      bw_cv_likelihood_calc_tkde.Rd: \\value
+      gfunc_cpp.Rd: \\value
+      kfunc_cpp.Rd: \\value
+      tkde.Rd: \\value
+      tnkde_worker_bw_sel.Rd: \\value
+      tnkde.mc.Rd: \\value
+      tnkde.Rd: \\value
+
+**correction:**
+For all the functions above, a @return entry has been added in the Roxygen documentation

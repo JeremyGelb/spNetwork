@@ -10,7 +10,7 @@
 #' @examples
 #' #This is an internal function, no example provided
 select_dist_function <- function(dist_func = "inverse") {
-    if (class(dist_func) == "character") {
+    if (inherits(dist_func, "character")) {
         if (dist_func == "identity") {
             dist_func <- function(x) {
                 return(x)

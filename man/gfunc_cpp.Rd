@@ -23,6 +23,9 @@ gfunc_cpp(dist_mat, start, end, step, width, Lt, n, w)
 
 \item{w}{The weight of the points (coincident points)}
 }
+\value{
+A numeric vector with the values of the g function evaluated at the required distances
+}
 \description{
 c++ g function (INTERNAL)
 }

@@ -4,7 +4,16 @@
 \alias{split_by_grid.mc}
 \title{Split data with a grid (multicore)}
 \usage{
-split_by_grid.mc(grid, samples, events, lines, bw, tol, digits, split_all = T)
+split_by_grid.mc(
+  grid,
+  samples,
+  events,
+  lines,
+  bw,
+  tol,
+  digits,
+  split_all = TRUE
+)
 }
 \arguments{
 \item{grid}{A spatial grid to split the data within}

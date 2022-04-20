@@ -286,7 +286,7 @@ bw_tnkde_cv_likelihood_calc <- function(bw_net_range, bw_net_step,
   ## sub sampling the quadra if required
   if (sub_sample < 1){
     nb <- ceiling(length(selections) * sub_sample)
-    selections <- selections[sample(1:length(selections),size = nb,replace = F)]
+    selections <- selections[sample(1:length(selections),size = nb,replace = FALSE)]
   }
 
   ## step 4 calculating the CV values
@@ -509,7 +509,7 @@ bw_tnkde_cv_likelihood_calc.mc <- function(bw_net_range, bw_net_step,
   ## sub sampling the quadra if required
   if (sub_sample < 1){
     nb <- ceiling(length(selections) * sub_sample)
-    selections <- selections[sample(1:length(selections),size = nb,replace = F)]
+    selections <- selections[sample(1:length(selections),size = nb,replace = FALSE)]
   }
 
   ## step 4 calculating the CV values
@@ -625,6 +625,7 @@ bw_tnkde_cv_likelihood_calc.mc <- function(bw_net_range, bw_net_step,
 #' @template sparse-arg
 #' @param verbose A boolean
 #' @param cvl A boolean indicating if the cvl method (TRUE) or the loo (FALSE) method must be used
+#' @return An array with the CV score for each pair of bandiwdths (rows and lines) for each event (slices)
 #' @export
 #' @examples
 #' # no example provided, this is an internal function

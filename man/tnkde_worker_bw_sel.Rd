@@ -65,6 +65,9 @@ bit), but require much less memory.}
 
 \item{cvl}{A boolean indicating if the cvl method (TRUE) or the loo (FALSE) method must be used}
 }
+\value{
+An array with the CV score for each pair of bandiwdths (rows and lines) for each event (slices)
+}
 \description{
 Calculate for multiple network and time bandwidths the cross validation likelihood to
 select an appropriate bandwidth in a data-driven approach (INTERNAL)
