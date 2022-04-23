@@ -31,10 +31,8 @@ Snap points to their nearest lines (edited from maptools)
 }
 \examples{
 # reading the data
-networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
-mtl_network <- sf::st_read(networkgpkg,layer="mtl_network")
-eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
-bike_accidents <- sf::st_read(eventsgpkg,layer="bike_accidents")
+data(mtl_network)
+data(bike_accidents)
 mtl_network$LineID <- 1:nrow(mtl_network)
 # snapping point to lines
 snapped_points <- snapPointsToLines2(bike_accidents,

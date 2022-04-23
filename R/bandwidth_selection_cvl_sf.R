@@ -228,10 +228,8 @@
 #' @export
 #' @examples
 #' \donttest{
-#' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
-#' eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
-#' mtl_network <- sf::st_read(networkgpkg,layer="mtl_network")
-#' bike_accidents <- sf::st_read(eventsgpkg,layer="bike_accidents")
+#' data(mtl_network)
+#' data(bike_accidents)
 #' cv_scores <- bw_cvl_calc(c(200,400),50,
 #'                                mtl_network, bike_accidents,
 #'                                rep(1,nrow(bike_accidents)),
@@ -409,10 +407,8 @@ bw_cvl_calc <- function(bw_range, bw_step,lines, events, w, kernel_name, method,
 #' @export
 #' @examples
 #' \donttest{
-#' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
-#' eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
-#' mtl_network <- sf::st_read(networkgpkg,layer="mtl_network")
-#' bike_accidents <-sf::st_read(eventsgpkg,layer="bike_accidents")
+#' data(mtl_network)
+#' data(bike_accidents)
 #' future::plan(future::multisession(workers=2))
 #' cv_scores <- bw_cvl_calc.mc(c(200,400),50,
 #'                                mtl_network, bike_accidents,

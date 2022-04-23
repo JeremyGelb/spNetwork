@@ -112,10 +112,8 @@ The k-function is a method to characterize the dispersion of a set
 }
 \examples{
 \donttest{
-eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
-bike_accidents <- sf::st_read(eventsgpkg,layer="bike_accidents")
-networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
-mtl_network <- sf::st_read(networkgpkg,layer="mtl_network")
+data(mtl_network)
+data(bike_accidents)
 
 # converting the Date field to a numeric field (counting days)
 bike_accidents$Time <- as.POSIXct(bike_accidents$Date, format = "\%Y/\%m/\%d")

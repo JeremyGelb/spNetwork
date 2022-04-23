@@ -187,10 +187,8 @@ significantly increases speed, but could lead to memory issues.
 }
 \examples{
 \donttest{
-networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
-eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
-mtl_network <- sf::st_read(networkgpkg,layer="mtl_network")
-bike_accidents <- sf::st_read(eventsgpkg,layer="bike_accidents")
+data(mtl_network)
+data(bike_accidents)
 lixels <- lixelize_lines(mtl_network,200,mindist = 50)
 samples <- lines_center(lixels)
 densities <- nkde(mtl_network,

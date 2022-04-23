@@ -45,8 +45,8 @@ networkgpkg <- system.file("extdata", "networks.gpkg",
 eventsgpkg <- system.file("extdata", "events.gpkg",
                           package = "spNetwork", mustWork = TRUE)
 
-mtl_network <- sf::st_read(networkgpkg,layer="mtl_network", quiet = TRUE)
-bike_accidents <- sf::st_read(eventsgpkg,layer="bike_accidents", quiet = TRUE)
+data(mtl_network)
+data(bike_accidents)
 
 # then plotting the data
 tm_shape(mtl_network) + 

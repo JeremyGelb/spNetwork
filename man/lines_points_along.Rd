@@ -20,8 +20,7 @@ feature collection of Linestrings.
 }
 \examples{
 \donttest{
-networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
-mtl_network <- sf::st_read(networkgpkg,layer = "mtl_network")
+data(mtl_network)
 new_pts <- lines_points_along(mtl_network,50)
 }
 }

@@ -122,10 +122,8 @@ estimate at x[i] for a bandwidth h. A higher value indicates a better bandwidth.
 }
 \examples{
 \donttest{
-networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
-eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
-mtl_network <- sf::st_read(networkgpkg,layer="mtl_network")
-bike_accidents <- sf::st_read(eventsgpkg,layer="bike_accidents")
+data(mtl_network)
+data(bike_accidents)
 cv_scores <- bw_cv_likelihood_calc(c(200,800),50,
                                mtl_network, bike_accidents,
                                rep(1,nrow(bike_accidents)),

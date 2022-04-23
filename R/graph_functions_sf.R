@@ -26,8 +26,7 @@
 #' @importFrom utils strcapture
 #' @export
 #' @examples
-#' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
-#' mtl_network <- sf::st_read(networkgpkg,layer="mtl_network")
+#' data(mtl_network)
 #' mtl_network$length <- as.numeric(sf::st_length(mtl_network))
 #' graph_result <- build_graph(mtl_network, 2, "length", attrs = TRUE)
 build_graph <- function(lines, digits, line_weight, attrs = FALSE) {
@@ -133,8 +132,7 @@ build_graph <- function(lines, digits, line_weight, attrs = FALSE) {
 #' @export
 #' @examples
 #' \donttest{
-#' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
-#' mtl_network <- sf::st_read(networkgpkg,layer="mtl_network")
+#' data(mtl_network)
 #' mtl_network$length <- as.numeric(sf::st_length(mtl_network))
 #' mtl_network$direction <- "Both"
 #' mtl_network[6, "direction"] <- "TF"
@@ -331,8 +329,7 @@ plot_graph <- function(graph) { # nocov start
 #' @export
 #' @examples
 #' \donttest{
-#' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
-#' mtl_network <- sf::st_read(networkgpkg,layer="mtl_network")
+#' data(mtl_netowrk)
 #' topo_errors <- graph_checking(mtl_network, 2)
 #' }
 graph_checking <- function(lines,digits, max_search = 5, tol = 0.1){
@@ -442,8 +439,7 @@ dist_mat_dupl <- function(graph, start, end ){ # nocov start
 #' @return A list of lists, the graph_result split for each graph component
 #' @export
 #' @examples
-#' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
-#' mtl_network <- sf::st_read(networkgpkg,layer="mtl_network")
+#' data(mtl_network)
 #' mtl_network$length <- as.numeric(sf::st_length(mtl_network))
 #' graph_result <- build_graph(mtl_network, 2, "length", attrs = TRUE)
 #' sub_elements <- split_graph_components(graph_result)

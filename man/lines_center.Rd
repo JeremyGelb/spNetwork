@@ -19,8 +19,7 @@ Generate a feature collection of points at the centre of the
 }
 \examples{
 \donttest{
-networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
-mtl_network <- sf::st_read(networkgpkg,layer="mtl_network")
+data(mtl_network)
 centers <- lines_center(mtl_network)
 }
 }

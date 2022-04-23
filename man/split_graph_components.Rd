@@ -17,8 +17,7 @@ Function to split the results of build_graph and build_graph_directed
 into their sub components
 }
 \examples{
-networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
-mtl_network <- sf::st_read(networkgpkg,layer="mtl_network")
+data(mtl_network)
 mtl_network$length <- as.numeric(sf::st_length(mtl_network))
 graph_result <- build_graph(mtl_network, 2, "length", attrs = TRUE)
 sub_elements <- split_graph_components(graph_result)

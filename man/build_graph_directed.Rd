@@ -45,8 +45,7 @@ This function can be used to generate a directed graph object (igraph
 }
 \examples{
 \donttest{
-networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
-mtl_network <- sf::st_read(networkgpkg,layer="mtl_network")
+data(mtl_network)
 mtl_network$length <- as.numeric(sf::st_length(mtl_network))
 mtl_network$direction <- "Both"
 mtl_network[6, "direction"] <- "TF"

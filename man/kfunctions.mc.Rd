@@ -82,10 +82,8 @@ For details, please look at the function kfunctions.
 }
 \examples{
 \donttest{
-networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
-eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
-main_network_mtl <-  sf::st_read(networkgpkg,layer="main_network_mtl")
-mtl_libraries <- sf::st_read(eventsgpkg,layer="mtl_libraries")
+data(main_network_mtl)
+data(mtl_libraries)
 future::plan(future::multisession(workers=2))
 result <- kfunctions.mc(main_network_mtl, mtl_libraries,
      start = 0, end = 2500, step = 10,

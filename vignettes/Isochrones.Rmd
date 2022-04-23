@@ -40,10 +40,7 @@ library(sf)
 library(spNetwork)
 library(tmap)
 
-networkgpkg <- system.file("extdata", "networks.gpkg",
-                           package = "spNetwork", mustWork = TRUE)
-
-mtl_network <- sf::st_read(networkgpkg,layer="mtl_network", quiet = TRUE)
+data(mtl_network)
 
 # calculating the length of each segment
 mtl_network$length <- as.numeric(st_length(mtl_network))

@@ -151,10 +151,8 @@ network_knn_worker <- function(points, lines, k, direction = NULL, use_dest = FA
 #' @export
 #' @examples
 #' \donttest{
-#'     networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
-#'     eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
-#'     main_network_mtl <- sf::st_read(networkgpkg,layer="main_network_mtl")
-#'     mtl_libraries <- sf::st_read(eventsgpkg,layer="mtl_libraries")
+#'     data(main_network_mtl)
+#'     data(mtl_libraries)
 #'     results <- network_knn(mtl_libraries, main_network_mtl,
 #'         k = 3, maxdistance = 1000, line_weight = "length",
 #'         grid_shape=c(1,1), verbose = FALSE)
@@ -271,10 +269,8 @@ network_knn <- function(origins, lines, k, destinations = NULL, maxdistance = 0,
 #' @export
 #' @examples
 #' \donttest{
-#' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
-#' eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
-#' main_network_mtl <- sf::st_read(networkgpkg,layer="main_network_mtl")
-#' mtl_libraries <- sf::st_read(eventsgpkg,layer="mtl_libraries")
+#' data(main_network_mtl)
+#' data(mtl_libraries)
 #' future::plan(future::multisession(workers=2))
 #' results <- network_knn.mc(mtl_libraries, main_network_mtl,
 #'     k = 3, maxdistance = 1000, line_weight = "length",

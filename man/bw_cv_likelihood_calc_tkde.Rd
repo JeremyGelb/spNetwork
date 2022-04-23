@@ -23,8 +23,7 @@ Calculate the likelihood cross validation score for several bandwidths for the
 Temporal Kernel density
 }
 \examples{
-eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
-bike_accidents <- sf::st_read(eventsgpkg,layer="bike_accidents")
+data(bike_accidents)
 bike_accidents$Date <- as.POSIXct(bike_accidents$Date, format = "\%Y/\%m/\%d")
 start <- min(bike_accidents$Date)
 diff <- as.integer(difftime(bike_accidents$Date , start, units = "days"))

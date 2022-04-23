@@ -23,8 +23,7 @@ that only From-To situation are present by reverting To-From lines. For
 the lines labelled as To-From, the order of their vertices is reverted.
 }
 \examples{
-networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
-mtl_network <- sf::st_read(networkgpkg,layer="mtl_network")
+data(mtl_network)
 mtl_network$length <- as.numeric(sf::st_length(mtl_network))
 mtl_network$direction <- "Both"
 mtl_network[6, "direction"] <- "TF"

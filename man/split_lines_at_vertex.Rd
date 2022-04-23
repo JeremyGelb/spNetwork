@@ -26,10 +26,8 @@ Split lines (feature collection of linestrings) at their nearest vertices
 \examples{
 \donttest{
 # reading the data
-networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
-mtl_network <- sf::st_read(networkgpkg,layer="mtl_network")
-eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
-bike_accidents <- sf::st_read(eventsgpkg,layer="bike_accidents")
+data(mtl_network)
+data(bike_accidents)
 # aggregating points within a 5 metres radius
 bike_accidents$weight <- 1
 agg_points <- aggregate_points(bike_accidents, 5)

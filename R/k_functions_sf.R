@@ -279,10 +279,8 @@ randomize_distmatrix <- function(graph, edge_df, n, start_vert = NULL){
 #' @export
 #' @examples
 #' \donttest{
-#' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
-#' eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
-#' main_network_mtl <- sf::st_read(networkgpkg,layer="main_network_mtl")
-#' mtl_libraries <- sf::st_read(eventsgpkg,layer="mtl_libraries")
+#' data(main_network_mtl)
+#' data(mtl_libraries)
 #' result <- kfunctions(main_network_mtl, mtl_libraries,
 #'      start = 0, end = 2500, step = 10,
 #'      width = 200, nsim = 50,
@@ -490,10 +488,8 @@ kfunctions <- function(lines, points,
 #' @export
 #' @examples
 #' \donttest{
-#' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
-#' eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
-#' main_network_mtl <-  sf::st_read(networkgpkg,layer="main_network_mtl")
-#' mtl_libraries <- sf::st_read(eventsgpkg,layer="mtl_libraries")
+#' data(main_network_mtl)
+#' data(mtl_libraries)
 #' future::plan(future::multisession(workers=2))
 #' result <- kfunctions.mc(main_network_mtl, mtl_libraries,
 #'      start = 0, end = 2500, step = 10,
@@ -727,11 +723,9 @@ kfunctions.mc <- function(lines, points, start, end, step, width, nsim, conf_int
 #' @export
 #' @examples
 #' \donttest{
-#' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
-#' eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
-#' main_network_mtl <- sf::st_read(networkgpkg,layer="main_network_mtl")
-#' mtl_libraries <- sf::st_read(eventsgpkg,layer="mtl_libraries")
-#' mtl_theatres <- sf::st_read(eventsgpkg,layer="mtl_theatres")
+#' data(main_network_mtl)
+#' data(mtl_libraries)
+#' data(mtl_theatres)
 #' result <- cross_kfunctions(main_network_mtl, mtl_theatres, mtl_libraries,
 #'                            start = 0, end = 2500, step = 10, width = 250,
 #'                            nsim = 50, conf_int = 0.05, digits = 2,
@@ -940,11 +934,9 @@ cross_kfunctions <- function(lines, pointsA, pointsB,
 #' @export
 #' @examples
 #' \donttest{
-#' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
-#' eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
-#' main_network_mtl <- sf::st_read(networkgpkg,layer="main_network_mtl")
-#' mtl_libraries <- sf::st_read(eventsgpkg,layer="mtl_libraries")
-#' mtl_theatres <- sf::st_read(eventsgpkg,layer="mtl_theatres")
+#' data(main_network_mtl)
+#' data(mtl_libraries)
+#' data(mtl_theatres)
 #' future::plan(future::multisession(workers=2))
 #' result <- cross_kfunctions.mc(main_network_mtl, mtl_libraries, mtl_theatres,
 #'                            start = 0, end = 2500, step = 10, width = 250,

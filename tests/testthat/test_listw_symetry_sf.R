@@ -2,11 +2,9 @@ context("symetry and comparison between simple and multicore")
 library(sf)
 
 test_that("A listw object returned by the function network_listw must be symetric and identic as one returned by network_listw.mc", {
-  #data(small_mtl_network)
-  networkgpkg <- system.file("extdata", "networks.gpkg",
-                             package = "spNetwork", mustWork = TRUE)
 
-  small_mtl_network <- st_read(networkgpkg,layer="small_mtl_network")
+  data(small_mtl_network)
+  
   listw <- network_listw(small_mtl_network,small_mtl_network,
                                   method="centroid",
                                   maxdistance = 300,

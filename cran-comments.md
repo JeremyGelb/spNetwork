@@ -363,3 +363,11 @@ Missing Rd-tags:
 
 **correction:**
 For all the functions above, a @return entry has been added in the Roxygen documentation
+
+# Version 0.4.3
+
+submitted the 20/04/2022
+
+**Problem:**
+
+noLD error in one test on macOS, likely caused by a rounding issue. The test has been rewritten to be more tolerant.

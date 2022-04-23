@@ -88,10 +88,8 @@ spatial_request <- function(geometry,tree,data){
 #' @return for each origin point, the index of the nearest target point
 #' @export
 #' @examples
-#' #This is an internal function, no example provided
-#' eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
-#' mtl_libraries <- sf::st_read(eventsgpkg,layer="mtl_libraries")
-#' mtl_theatres <- sf::st_read(eventsgpkg,layer="mtl_theatres")
+#' data(mtl_libraries)
+#' data(mtl_theatres)
 #' close_libs <- closest_points(mtl_theatres, mtl_libraries)
 closest_points <- function(origins, targets){
 

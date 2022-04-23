@@ -40,8 +40,7 @@ This function can be used to check for three common problems in
 }
 \examples{
 \donttest{
-networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
-mtl_network <- sf::st_read(networkgpkg,layer="mtl_network")
+data(mtl_netowrk)
 topo_errors <- graph_checking(mtl_network, 2)
 }
 }

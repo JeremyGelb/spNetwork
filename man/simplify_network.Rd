@@ -46,9 +46,7 @@ NOTE: the edge healing does not consider lines directions currently!
 }
 \examples{
 \donttest{
-library(spNetwork)
-networkgpkg <- system.file("extdata", "networks.gpkg",package = "spNetwork", mustWork = TRUE)
-lines <- sf::st_read(networkgpkg,layer="mtl_network")
-edited_lines <- simplify_network(lines, digits = 3, verbose = FALSE)
+data(mtl_network)
+edited_lines <- simplify_network(mtl_network, digits = 3, verbose = FALSE)
 }
 }

@@ -36,8 +36,7 @@ adaptive_bw_1d <- function(events, w, bw, kernel_name){
 #' @return A numeric vector with the density values at the requested timestamps
 #' @export
 #' @examples
-#' eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
-#' bike_accidents <- sf::st_read(eventsgpkg,layer="bike_accidents")
+#' data(bike_accidents)
 #' bike_accidents$Date <- as.POSIXct(bike_accidents$Date, format = "%Y/%m/%d")
 #' start <- min(bike_accidents$Date)
 #' diff <- as.integer(difftime(bike_accidents$Date , start, units = "days"))
@@ -78,8 +77,7 @@ tkde <- function(events, w, samples, bw, kernel_name, adaptive = FALSE){
 #' @return A vector with the cross validation scores (the higher the better).
 #' @export
 #' @examples
-#' eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
-#' bike_accidents <- sf::st_read(eventsgpkg,layer="bike_accidents")
+#' data(bike_accidents)
 #' bike_accidents$Date <- as.POSIXct(bike_accidents$Date, format = "%Y/%m/%d")
 #' start <- min(bike_accidents$Date)
 #' diff <- as.integer(difftime(bike_accidents$Date , start, units = "days"))

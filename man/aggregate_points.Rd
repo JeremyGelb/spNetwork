@@ -27,8 +27,7 @@ This function can be used to aggregate points within a radius. This
   repeated until no more modification is applied.
 }
 \examples{
-eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
-bike_accidents <- sf::st_read(eventsgpkg,layer="bike_accidents")
+data(bike_accidents)
 bike_accidents$weight <- 1
 agg_points <- aggregate_points(bike_accidents, 5)
 }

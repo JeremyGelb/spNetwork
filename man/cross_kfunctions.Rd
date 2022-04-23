@@ -104,11 +104,9 @@ The cross k-function is a method to characterize the dispersion of a
 }
 \examples{
 \donttest{
-networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
-eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
-main_network_mtl <- sf::st_read(networkgpkg,layer="main_network_mtl")
-mtl_libraries <- sf::st_read(eventsgpkg,layer="mtl_libraries")
-mtl_theatres <- sf::st_read(eventsgpkg,layer="mtl_theatres")
+data(main_network_mtl)
+data(mtl_libraries)
+data(mtl_theatres)
 result <- cross_kfunctions(main_network_mtl, mtl_theatres, mtl_libraries,
                            start = 0, end = 2500, step = 10, width = 250,
                            nsim = 50, conf_int = 0.05, digits = 2,

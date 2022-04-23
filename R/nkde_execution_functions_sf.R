@@ -145,8 +145,7 @@ clean_events <- function(events,digits=5,agg=NULL){
 #' @return A new feature collection of points
 #' @export
 #' @examples
-#' eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
-#' bike_accidents <- sf::st_read(eventsgpkg,layer="bike_accidents")
+#' data(bike_accidents)
 #' bike_accidents$weight <- 1
 #' agg_points <- aggregate_points(bike_accidents, 5)
 aggregate_points <- function(points, maxdist, weight = "weight"){
@@ -1034,10 +1033,8 @@ nkde_worker <- function(lines, events, samples, kernel_name, bw, bws, method, di
 #' @export
 #' @examples
 #' \donttest{
-#' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
-#' eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
-#' mtl_network <- sf::st_read(networkgpkg,layer="mtl_network")
-#' bike_accidents <- sf::st_read(eventsgpkg,layer="bike_accidents")
+#' data(mtl_network)
+#' data(bike_accidents)
 #' lixels <- lixelize_lines(mtl_network,200,mindist = 50)
 #' samples <- lines_center(lixels)
 #' densities <- nkde(mtl_network,
@@ -1200,10 +1197,8 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, tri
 #' @export
 #' @examples
 #' \donttest{
-#' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
-#' eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
-#' mtl_network <- sf::st_read(networkgpkg,layer="mtl_network")
-#' bike_accidents <- sf::st_read(eventsgpkg,layer="bike_accidents")
+#' data(mtl_network)
+#' data(bike_accidents)
 #' future::plan(future::multisession(workers=2))
 #' lixels <- lixelize_lines(mtl_network,200,mindist = 50)
 #' samples <- lines_center(lixels)

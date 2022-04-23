@@ -167,10 +167,8 @@ bw_tnkde_corr_factor <- function(net_bws, time_bws, diggle_correction, study_are
 #' @examples
 #' \donttest{
 #' # loading the data
-#' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
-#' eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
-#' mtl_network <- sf::st_read(networkgpkg,layer="mtl_network")
-#' bike_accidents <- sf::st_read(eventsgpkg,layer="bike_accidents")
+#' data(mtl_network)
+#' data(bike_accidents)
 #'
 #' # converting the Date field to a numeric field (counting days)
 #' bike_accidents$Time <- as.POSIXct(bike_accidents$Date, format = "%Y/%m/%d")
@@ -382,10 +380,8 @@ bw_tnkde_cv_likelihood_calc <- function(bw_net_range, bw_net_step,
 #' @examples
 #' \donttest{
 #' # loading the data
-#' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
-#' eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
-#' mtl_network <- sf::st_read(networkgpkg,layer="mtl_network")
-#' bike_accidents <- sf::st_read(eventsgpkg,layer="bike_accidents")
+#' data(mtl_network)
+#' data(bike_accidents)
 #'
 #' # converting the Date field to a numeric field (counting days)
 #' bike_accidents$Time <- as.POSIXct(bike_accidents$Date, format = "%Y/%m/%d")

@@ -122,8 +122,7 @@ remove_loop_lines <- function(lines, digits){
 #' @importFrom sf st_reverse
 #' @export
 #' @examples
-#' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
-#' mtl_network <- sf::st_read(networkgpkg,layer="mtl_network")
+#' data(mtl_network)
 #' mtl_network$length <- as.numeric(sf::st_length(mtl_network))
 #' mtl_network$direction <- "Both"
 #' mtl_network[6, "direction"] <- "TF"
@@ -319,8 +318,7 @@ add_vertices_lines <- function(lines, points, nearest_lines_idx, mindist) {
 #' @export
 #' @examples
 #' \donttest{
-#' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
-#' mtl_network <- sf::st_read(networkgpkg,layer="mtl_network")
+#' data(mtl_network)
 #' lixels <- lixelize_lines(mtl_network,150,50)
 #' }
 lixelize_lines<- function(lines, lx_length, mindist = NULL) {
@@ -370,8 +368,7 @@ lixelize_lines<- function(lines, lx_length, mindist = NULL) {
 #'@importFrom utils capture.output
 #' @examples
 #' \donttest{
-#' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
-#' mtl_network <- sf::st_read(networkgpkg,layer="mtl_network")
+#' data(mtl_network)
 #' future::plan(future::multisession(workers=2))
 #' lixels <- lixelize_lines.mc(mtl_network,150,50)
 #' ## make sure any open connections are closed afterward
@@ -467,8 +464,7 @@ simple_lines <- function(lines) {
 #' @export
 #' @examples
 #' \donttest{
-#' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
-#' mtl_network <- sf::st_read(networkgpkg,layer="mtl_network")
+#' data(mtl_network)
 #' centers <- lines_center(mtl_network)
 #' }
 lines_center <- function(lines) {
@@ -559,8 +555,7 @@ add_center_lines <- function(lines) {
 #' @export
 #' @examples
 #' \donttest{
-#' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
-#' mtl_network <- sf::st_read(networkgpkg,layer = "mtl_network")
+#' data(mtl_network)
 #' new_pts <- lines_points_along(mtl_network,50)
 #' }
 lines_points_along <- function(lines,dist){
@@ -814,10 +809,8 @@ nearest_lines <- function(points, lines, snap_dist = 300, max_iter = 10){
 #' @export
 #' @examples
 #' # reading the data
-#' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
-#' mtl_network <- sf::st_read(networkgpkg,layer="mtl_network")
-#' eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
-#' bike_accidents <- sf::st_read(eventsgpkg,layer="bike_accidents")
+#' data(mtl_network)
+#' data(bike_accidents)
 #' mtl_network$LineID <- 1:nrow(mtl_network)
 #' # snapping point to lines
 #' snapped_points <- snapPointsToLines2(bike_accidents,
@@ -1102,10 +1095,8 @@ remove_mirror_edges <- function(lines, keep_shortest = TRUE, digits = 3, verbose
 #' @export
 #' @examples
 #' \donttest{
-#' library(spNetwork)
-#' networkgpkg <- system.file("extdata", "networks.gpkg",package = "spNetwork", mustWork = TRUE)
-#' lines <- sf::st_read(networkgpkg,layer="mtl_network")
-#' edited_lines <- simplify_network(lines, digits = 3, verbose = FALSE)
+#' data(mtl_network)
+#' edited_lines <- simplify_network(mtl_network, digits = 3, verbose = FALSE)
 #' }
 simplify_network <- function(lines, digits = 3, heal = TRUE, mirror = TRUE, keep_shortest = TRUE, verbose = TRUE){ # nocov start
 
@@ -1213,10 +1204,8 @@ simplify_network <- function(lines, digits = 3, heal = TRUE, mirror = TRUE, keep
 #' @examples
 #' \donttest{
 #' # reading the data
-#' networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
-#' mtl_network <- sf::st_read(networkgpkg,layer="mtl_network")
-#' eventsgpkg <- system.file("extdata", "events.gpkg", package = "spNetwork", mustWork = TRUE)
-#' bike_accidents <- sf::st_read(eventsgpkg,layer="bike_accidents")
+#' data(mtl_network)
+#' data(bike_accidents)
 #' # aggregating points within a 5 metres radius
 #' bike_accidents$weight <- 1
 #' agg_points <- aggregate_points(bike_accidents, 5)

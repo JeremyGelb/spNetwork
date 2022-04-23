@@ -38,8 +38,7 @@ This function can be used to generate an undirected graph object (igraph
   connections.
 }
 \examples{
-networkgpkg <- system.file("extdata", "networks.gpkg", package = "spNetwork", mustWork = TRUE)
-mtl_network <- sf::st_read(networkgpkg,layer="mtl_network")
+data(mtl_network)
 mtl_network$length <- as.numeric(sf::st_length(mtl_network))
 graph_result <- build_graph(mtl_network, 2, "length", attrs = TRUE)
 }
