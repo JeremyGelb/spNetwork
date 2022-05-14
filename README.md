@@ -9,7 +9,7 @@
 
 [![R-CMD-check](https://github.com/JeremyGelb/spNetwork/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/JeremyGelb/spNetwork/actions/workflows/R-CMD-check.yaml)
 
-[![](https://img.shields.io/badge/devel%20version-0.4.2-green.svg)](https://jeremygelb.github.io/spNetwork/)
+[![](https://img.shields.io/badge/devel%20version-0.4.3.2-green.svg)](https://jeremygelb.github.io/spNetwork/)
 [![](https://www.r-pkg.org/badges/version/spNetwork?color=blue)](https://cran.r-project.org/package=spNetwork)
 [![](http://cranlogs.r-pkg.org/badges/grand-total/spNetwork?color=blue)](https://cran.r-project.org/package=spNetwork)
 [![](http://cranlogs.r-pkg.org/badges/last-month/spNetwork?color=green)](https://cran.r-project.org/package=spNetwork)
@@ -22,10 +22,12 @@ The package’s website is available
 
 ## Breaking news
 
+### Moving to sf
+
 Considering that `rgeos` and `maptools` will be deprecated soon, we are
 moving to sf! This requires some adjustment in the code and the
-documentation. The development version 0.4.9000 is now using `sf`.
-Please, report any bug or error in the documentation.
+documentation. The development version and the releases on CRAN are now
+using `sf`. Please, report any bug or error in the documentation.
 
 To install the previous version using `sp`, `rgeos` and `maptools`, you
 can run the following command:
@@ -36,6 +38,14 @@ devtools::install_github("JeremyGelb/spNetwork", ref = "a3bc982")
 
 Note that all the new developments will use `sf` and you should switch
 as soon as possible.
+
+### Removing gpkgs
+
+Because of a new CRAN policy, it is not possible anymore to read data in
+gpkg if they are stored in the user library. On Debian systems, this
+library is now mounted as read-only for checking. All the datasets
+provided by spNetwork are now stored as .rda file, and can be loaded
+with the function `data`.
 
 ## What is this package ?
 
@@ -98,9 +108,9 @@ structure :
 -   future
 -   future.apply
 -   data.table
--   SearchTrees
 -   Rcpp
 -   RcppArmadillo
+-   BH
 
 ## Some examples
 
@@ -115,12 +125,8 @@ library(tmap)
 library(sf)
 
 # loading the dataset
-networkgpkg <- system.file("extdata", "networks.gpkg",
-                           package = "spNetwork", mustWork = TRUE)
-eventsgpkg <- system.file("extdata", "events.gpkg",
-                          package = "spNetwork", mustWork = TRUE)
-mtl_network <- st_read(networkgpkg,layer="mtl_network", quiet = TRUE)
-bike_accidents <- st_read(eventsgpkg,layer="bike_accidents", quiet = TRUE)
+data(mtl_network)
+data(bike_accidents)
 
 
 # generating sampling points at the middle of lixels
@@ -201,13 +207,8 @@ convert the listw object into regular matrix if needed
 
 ``` r
 # loading the data
-networkgpkg <- system.file("extdata", "networks.gpkg",
-                           package = "spNetwork", mustWork = TRUE)
-eventsgpkg <- system.file("extdata", "events.gpkg",
-                          package = "spNetwork", mustWork = TRUE)
-
-main_network_mtl <- st_read(networkgpkg,layer="main_network_mtl", quiet = TRUE)
-mtl_theatres <- st_read(eventsgpkg,layer="mtl_theatres", quiet = TRUE)
+data(main_network_mtl)
+data(mtl_theatres)
 
 # calculating the k function
 kfun_theatre <- kfunctions(main_network_mtl, mtl_theatres,

@@ -1,3 +1,15 @@
+# spNetwork 0.4.3.2
+
+## other changes
+
+* The package searchTrees is not on CRAN anymore. It has been replaced in spNetwork by home made c++ classes using the BH library.
+
+# spNetwork 0.4.3.1
+
+## other changes
+
+* example datasets are now stored in .rda file and can be loaded with the function `data`
+
 # spNetwork 0.4.1.9000
 
 ## New Features

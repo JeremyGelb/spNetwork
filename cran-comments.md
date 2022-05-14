@@ -371,3 +371,40 @@ submitted the 20/04/2022
 **Problem:**
 
 noLD error in one test on macOS, likely caused by a rounding issue. The test has been rewritten to be more tolerant.
+
+# Version 0.4.3.1
+
+submitted the 20/04/2022
+
+**Problem:**
+Warning in CPL_read_ogr(dsn, layer, query, as.character(options), quiet, :
+  GDAL Error 1: unable to open database file: this file is a WAL-enabled database. It cannot be opened because it is presumably read-only or in a read-only directory.
+Error: Cannot open "/home/hornik/tmp/R.check/r-devel-gcc/Work/build/Packages/spNetwork/extdata/events.gpkg"; The source could be corrupt or not supported. See `st_drivers()` for a list of supported formats.
+Execution halted
+
+The check problems on the Debian systems are caused by attempts to write
+to the user library to which all packages get installed before checking
+(and which now is remounted read-only for checking).
+
+**correction:**
+All the data provided as gpkg files are now provided in .rda files in the data folder. The CRS has been changed to avoid error with non-ASCII characters.
+
+
+# Version 0.4.3.2
+
+submitted the 13/05/2022
+
+**Problem:**
+SearchTrees package will be soon removed from CRAN. 
+
+
+**correction:**
+We changed the functions using it to remove the dependency.
+
+## round 2 (after automatic checks)
+
+**Problem:**
+1 NOTE: Found if() conditions comparing class() to string:
+
+**correction:**
+This has been replaced as suggested by the inherits function

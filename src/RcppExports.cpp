@@ -822,6 +822,8 @@ BEGIN_RCPP
 END_RCPP
 }
 
+RcppExport SEXP _rcpp_module_boot_spatial_index_cpp();
+
 static const R_CallMethodDef CallEntries[] = {
     {"_spNetwork_quartic_kernel_cpp", (DL_FUNC) &_spNetwork_quartic_kernel_cpp, 2},
     {"_spNetwork_quartic_kernelos", (DL_FUNC) &_spNetwork_quartic_kernelos, 2},
@@ -874,6 +876,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_spNetwork_discontinuous_nkde_cpp_arma", (DL_FUNC) &_spNetwork_discontinuous_nkde_cpp_arma, 11},
     {"_spNetwork_discontinuous_tnkde_cpp_arma_sparse", (DL_FUNC) &_spNetwork_discontinuous_tnkde_cpp_arma_sparse, 14},
     {"_spNetwork_discontinuous_tnkde_cpp_arma", (DL_FUNC) &_spNetwork_discontinuous_tnkde_cpp_arma, 14},
+    {"_rcpp_module_boot_spatial_index_cpp", (DL_FUNC) &_rcpp_module_boot_spatial_index_cpp, 0},
     {NULL, NULL, 0}
 };
 

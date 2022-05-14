@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3.2</span>
       </span>
     </div>
 
@@ -102,7 +102,7 @@
       <h1 data-toc-skip>Network Kernel Density Estimate</h1>
                         <h4 data-toc-skip class="author">Jeremy Gelb</h4>
             
-            <h4 data-toc-skip class="date">2022-04-19</h4>
+            <h4 data-toc-skip class="date">2022-05-13</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/JeremyGelb/spNetwork/blob/HEAD/vignettes/NKDE.Rmd" class="external-link"><code>vignettes/NKDE.Rmd</code></a></small>
       <div class="hidden name"><code>NKDE.Rmd</code></div>
@@ -430,13 +430,8 @@ cosine
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://jeremygelb.github.io/spNetwork/" class="external-link">spNetwork</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mtennekes/tmap" class="external-link">tmap</a></span><span class="op">)</span>
 
-<span class="va">networkgpkg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"networks.gpkg"</span>,
-                           package <span class="op">=</span> <span class="st">"spNetwork"</span>, mustWork <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="va">eventsgpkg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"events.gpkg"</span>,
-                          package <span class="op">=</span> <span class="st">"spNetwork"</span>, mustWork <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-
-<span class="va">mtl_network</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">st_read</a></span><span class="op">(</span><span class="va">networkgpkg</span>,layer<span class="op">=</span><span class="st">"mtl_network"</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="va">bike_accidents</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">st_read</a></span><span class="op">(</span><span class="va">eventsgpkg</span>,layer<span class="op">=</span><span class="st">"bike_accidents"</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span> 
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">)</span>
 
 <span class="co"># then plotting the data</span>
 <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html" class="external-link">tm_shape</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span> <span class="op">+</span> 
@@ -679,7 +674,7 @@ cvl_crit
 -640.03
 </td>
 <td style="text-align:right;">
-3.544510e+11
+3.543131e+11
 </td>
 </tr>
 <tr>
@@ -687,10 +682,10 @@ cvl_crit
 100
 </td>
 <td style="text-align:right;">
--397.15
+-397.16
 </td>
 <td style="text-align:right;">
-9.598845e+12
+9.600025e+12
 </td>
 </tr>
 <tr>
@@ -698,10 +693,10 @@ cvl_crit
 150
 </td>
 <td style="text-align:right;">
--204.68
+-204.69
 </td>
 <td style="text-align:right;">
-4.273393e+13
+4.274366e+13
 </td>
 </tr>
 <tr>
@@ -709,10 +704,10 @@ cvl_crit
 200
 </td>
 <td style="text-align:right;">
--124.43
+-124.44
 </td>
 <td style="text-align:right;">
-1.165157e+14
+1.165463e+14
 </td>
 </tr>
 <tr>
@@ -723,7 +718,7 @@ cvl_crit
 -78.48
 </td>
 <td style="text-align:right;">
-2.490670e+14
+2.491374e+14
 </td>
 </tr>
 <tr>
@@ -734,7 +729,7 @@ cvl_crit
 -52.54
 </td>
 <td style="text-align:right;">
-4.564636e+14
+4.566083e+14
 </td>
 </tr>
 <tr>
@@ -745,7 +740,7 @@ cvl_crit
 -40.54
 </td>
 <td style="text-align:right;">
-7.514827e+14
+7.517414e+14
 </td>
 </tr>
 <tr>
@@ -756,7 +751,7 @@ cvl_crit
 -24.68
 </td>
 <td style="text-align:right;">
-1.147395e+15
+1.147820e+15
 </td>
 </tr>
 <tr>
@@ -767,7 +762,7 @@ cvl_crit
 -20.69
 </td>
 <td style="text-align:right;">
-1.652193e+15
+1.652854e+15
 </td>
 </tr>
 <tr>
@@ -778,7 +773,7 @@ cvl_crit
 -16.76
 </td>
 <td style="text-align:right;">
-2.273229e+15
+2.274188e+15
 </td>
 </tr>
 <tr>
@@ -789,7 +784,7 @@ cvl_crit
 -16.80
 </td>
 <td style="text-align:right;">
-3.019365e+15
+3.020698e+15
 </td>
 </tr>
 <tr>
@@ -800,7 +795,7 @@ cvl_crit
 -14.86
 </td>
 <td style="text-align:right;">
-3.896636e+15
+3.898428e+15
 </td>
 </tr>
 <tr>
@@ -811,7 +806,7 @@ cvl_crit
 -14.91
 </td>
 <td style="text-align:right;">
-4.910340e+15
+4.912670e+15
 </td>
 </tr>
 <tr>
@@ -822,7 +817,7 @@ cvl_crit
 -14.95
 </td>
 <td style="text-align:right;">
-6.069664e+15
+6.072589e+15
 </td>
 </tr>
 </tbody>

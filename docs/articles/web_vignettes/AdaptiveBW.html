@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3.2</span>
       </span>
     </div>
 
@@ -102,7 +102,7 @@
       <h1 data-toc-skip>K-nearest neighbour adaptive bandwidth</h1>
                         <h4 data-toc-skip class="author">Jeremy Gelb</h4>
             
-            <h4 data-toc-skip class="date">2022-04-19</h4>
+            <h4 data-toc-skip class="date">2022-05-13</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/JeremyGelb/spNetwork/blob/HEAD/vignettes/web_vignettes/AdaptiveBW.Rmd" class="external-link"><code>vignettes/web_vignettes/AdaptiveBW.Rmd</code></a></small>
       <div class="hidden name"><code>AdaptiveBW.Rmd</code></div>
@@ -131,10 +131,8 @@
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/classInt/" class="external-link">classInt</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://sjmgarnier.github.io/viridis/" class="external-link">viridis</a></span><span class="op">)</span>
 
-<span class="va">networkgpkg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"networks.gpkg"</span>, package <span class="op">=</span> <span class="st">"spNetwork"</span>, mustWork <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="va">eventsgpkg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"events.gpkg"</span>, package <span class="op">=</span> <span class="st">"spNetwork"</span>, mustWork <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="va">mtl_network</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">st_read</a></span><span class="op">(</span><span class="va">networkgpkg</span>,layer<span class="op">=</span><span class="st">"mtl_network"</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="va">bike_accidents</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">st_read</a></span><span class="op">(</span><span class="va">eventsgpkg</span>,layer<span class="op">=</span><span class="st">"bike_accidents"</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">)</span></code></pre></div>
 <p>We must then aggregate the events that are very close.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">bike_accidents</span><span class="op">$</span><span class="va">weight</span> <span class="op">&lt;-</span> <span class="fl">1</span>

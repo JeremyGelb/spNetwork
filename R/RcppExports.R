@@ -7,7 +7,7 @@
 #' @param bw a double representing the size of the kernel bandwidth
 #' @keywords internal
 quartic_kernel_cpp <- function(d, bw) {
-    .Call('_spNetwork_quartic_kernel_cpp', PACKAGE = 'spNetwork', d, bw)
+    .Call(`_spNetwork_quartic_kernel_cpp`, d, bw)
 }
 
 #' @title c++ quartic kernel for one distance
@@ -16,7 +16,7 @@ quartic_kernel_cpp <- function(d, bw) {
 #' @param bw a double representing the size of the kernel bandwidth
 #' @keywords internal
 quartic_kernelos <- function(d, bw) {
-    .Call('_spNetwork_quartic_kernelos', PACKAGE = 'spNetwork', d, bw)
+    .Call(`_spNetwork_quartic_kernelos`, d, bw)
 }
 
 #' @title c++ triangle kernel
@@ -25,7 +25,7 @@ quartic_kernelos <- function(d, bw) {
 #' @param bw a double representing the size of the kernel bandwidth
 #' @keywords internal
 triangle_kernel_cpp <- function(d, bw) {
-    .Call('_spNetwork_triangle_kernel_cpp', PACKAGE = 'spNetwork', d, bw)
+    .Call(`_spNetwork_triangle_kernel_cpp`, d, bw)
 }
 
 #' @title c++ triangle kernel for one distance
@@ -34,7 +34,7 @@ triangle_kernel_cpp <- function(d, bw) {
 #' @param bw a double representing the size of the kernel bandwidth
 #' @keywords internal
 triangle_kernelos <- function(d, bw) {
-    .Call('_spNetwork_triangle_kernelos', PACKAGE = 'spNetwork', d, bw)
+    .Call(`_spNetwork_triangle_kernelos`, d, bw)
 }
 
 #' @title c++ uniform kernel
@@ -43,7 +43,7 @@ triangle_kernelos <- function(d, bw) {
 #' @param bw a double representing the size of the kernel bandwidth
 #' @keywords internal
 uniform_kernel_cpp <- function(d, bw) {
-    .Call('_spNetwork_uniform_kernel_cpp', PACKAGE = 'spNetwork', d, bw)
+    .Call(`_spNetwork_uniform_kernel_cpp`, d, bw)
 }
 
 #' @title c++ uniform kernel for one distance
@@ -52,7 +52,7 @@ uniform_kernel_cpp <- function(d, bw) {
 #' @param bw a double representing the size of the kernel bandwidth
 #' @keywords internal
 uniform_kernelos <- function(d, bw) {
-    .Call('_spNetwork_uniform_kernelos', PACKAGE = 'spNetwork', d, bw)
+    .Call(`_spNetwork_uniform_kernelos`, d, bw)
 }
 
 #' @title c++ epanechnikov kernel
@@ -61,7 +61,7 @@ uniform_kernelos <- function(d, bw) {
 #' @param bw a double representing the size of the kernel bandwidth
 #' @keywords internal
 epanechnikov_kernel_cpp <- function(d, bw) {
-    .Call('_spNetwork_epanechnikov_kernel_cpp', PACKAGE = 'spNetwork', d, bw)
+    .Call(`_spNetwork_epanechnikov_kernel_cpp`, d, bw)
 }
 
 #' @title c++ epanechnikov kernel for one distance
@@ -70,7 +70,7 @@ epanechnikov_kernel_cpp <- function(d, bw) {
 #' @param bw a double representing the size of the kernel bandwidth
 #' @keywords internal
 epanechnikov_kernelos <- function(d, bw) {
-    .Call('_spNetwork_epanechnikov_kernelos', PACKAGE = 'spNetwork', d, bw)
+    .Call(`_spNetwork_epanechnikov_kernelos`, d, bw)
 }
 
 #' @title c++ triweight kernel
@@ -79,7 +79,7 @@ epanechnikov_kernelos <- function(d, bw) {
 #' @param bw a double representing the size of the kernel bandwidth
 #' @keywords internal
 triweight_kernel_cpp <- function(d, bw) {
-    .Call('_spNetwork_triweight_kernel_cpp', PACKAGE = 'spNetwork', d, bw)
+    .Call(`_spNetwork_triweight_kernel_cpp`, d, bw)
 }
 
 #' @title c++ triweight kernel for one distance
@@ -88,7 +88,7 @@ triweight_kernel_cpp <- function(d, bw) {
 #' @param bw a double representing the size of the kernel bandwidth
 #' @keywords internal
 triweight_kernelos <- function(d, bw) {
-    .Call('_spNetwork_triweight_kernelos', PACKAGE = 'spNetwork', d, bw)
+    .Call(`_spNetwork_triweight_kernelos`, d, bw)
 }
 
 #' @title c++ tricube kernel
@@ -97,7 +97,7 @@ triweight_kernelos <- function(d, bw) {
 #' @param bw a double representing the size of the kernel bandwidth
 #' @keywords internal
 tricube_kernel_cpp <- function(d, bw) {
-    .Call('_spNetwork_tricube_kernel_cpp', PACKAGE = 'spNetwork', d, bw)
+    .Call(`_spNetwork_tricube_kernel_cpp`, d, bw)
 }
 
 #' @title c++ tricube kernel for one distance
@@ -106,7 +106,7 @@ tricube_kernel_cpp <- function(d, bw) {
 #' @param bw a double representing the size of the kernel bandwidth
 #' @keywords internal
 tricube_kernelos <- function(d, bw) {
-    .Call('_spNetwork_tricube_kernelos', PACKAGE = 'spNetwork', d, bw)
+    .Call(`_spNetwork_tricube_kernelos`, d, bw)
 }
 
 #' @title c++ cosine kernel
@@ -115,7 +115,7 @@ tricube_kernelos <- function(d, bw) {
 #' @param bw a double representing the size of the kernel bandwidth
 #' @keywords internal
 cosine_kernel_cpp <- function(d, bw) {
-    .Call('_spNetwork_cosine_kernel_cpp', PACKAGE = 'spNetwork', d, bw)
+    .Call(`_spNetwork_cosine_kernel_cpp`, d, bw)
 }
 
 #' @title c++ cosine kernel for one distance
@@ -124,7 +124,7 @@ cosine_kernel_cpp <- function(d, bw) {
 #' @param bw a double representing the size of the kernel bandwidth
 #' @keywords internal
 cosine_kernelos <- function(d, bw) {
-    .Call('_spNetwork_cosine_kernelos', PACKAGE = 'spNetwork', d, bw)
+    .Call(`_spNetwork_cosine_kernelos`, d, bw)
 }
 
 #' @title c++ gaussian kernel
@@ -133,7 +133,7 @@ cosine_kernelos <- function(d, bw) {
 #' @param bw a double representing the size of the kernel bandwidth
 #' @keywords internal
 gaussian_kernel_cpp <- function(d, bw) {
-    .Call('_spNetwork_gaussian_kernel_cpp', PACKAGE = 'spNetwork', d, bw)
+    .Call(`_spNetwork_gaussian_kernel_cpp`, d, bw)
 }
 
 #' @title c++ gaussian kernel for one distance
@@ -142,7 +142,7 @@ gaussian_kernel_cpp <- function(d, bw) {
 #' @param bw a double representing the size of the kernel bandwidth
 #' @keywords internal
 gaussian_kernelos <- function(d, bw) {
-    .Call('_spNetwork_gaussian_kernelos', PACKAGE = 'spNetwork', d, bw)
+    .Call(`_spNetwork_gaussian_kernelos`, d, bw)
 }
 
 #' @title c++ scale gaussian kernel
@@ -151,7 +151,7 @@ gaussian_kernelos <- function(d, bw) {
 #' @param bw a double representing the size of the kernel bandwidth
 #' @keywords internal
 gaussian_kernel_scaled_cpp <- function(d, bw) {
-    .Call('_spNetwork_gaussian_kernel_scaled_cpp', PACKAGE = 'spNetwork', d, bw)
+    .Call(`_spNetwork_gaussian_kernel_scaled_cpp`, d, bw)
 }
 
 #' @title c++ scaled gaussian kernel for one distance
@@ -160,7 +160,7 @@ gaussian_kernel_scaled_cpp <- function(d, bw) {
 #' @param bw a double representing the size of the kernel bandwidth
 #' @keywords internal
 gaussian_kernel_scaledos <- function(d, bw) {
-    .Call('_spNetwork_gaussian_kernel_scaledos', PACKAGE = 'spNetwork', d, bw)
+    .Call(`_spNetwork_gaussian_kernel_scaledos`, d, bw)
 }
 
 #' @title A function to calculate the necessary information to apply the
@@ -175,7 +175,7 @@ gaussian_kernel_scaledos <- function(d, bw) {
 #' @export
 #' @keywords internal
 corrfactor_discontinuous_sparse <- function(neighbour_list, events, line_list, bws, max_depth) {
-    .Call('_spNetwork_corrfactor_discontinuous_sparse', PACKAGE = 'spNetwork', neighbour_list, events, line_list, bws, max_depth)
+    .Call(`_spNetwork_corrfactor_discontinuous_sparse`, neighbour_list, events, line_list, bws, max_depth)
 }
 
 #' @title A function to calculate the necessary informations to apply the
@@ -190,7 +190,7 @@ corrfactor_discontinuous_sparse <- function(neighbour_list, events, line_list, b
 #' @export
 #' @keywords internal
 corrfactor_discontinuous <- function(neighbour_list, events, line_list, bws, max_depth) {
-    .Call('_spNetwork_corrfactor_discontinuous', PACKAGE = 'spNetwork', neighbour_list, events, line_list, bws, max_depth)
+    .Call(`_spNetwork_corrfactor_discontinuous`, neighbour_list, events, line_list, bws, max_depth)
 }
 
 #' @title A function to calculate the necessary information to apply the
@@ -205,7 +205,7 @@ corrfactor_discontinuous <- function(neighbour_list, events, line_list, bws, max
 #' @export
 #' @keywords internal
 corrfactor_continuous_sparse <- function(neighbour_list, events, line_list, bws, max_depth) {
-    .Call('_spNetwork_corrfactor_continuous_sparse', PACKAGE = 'spNetwork', neighbour_list, events, line_list, bws, max_depth)
+    .Call(`_spNetwork_corrfactor_continuous_sparse`, neighbour_list, events, line_list, bws, max_depth)
 }
 
 #' @title A function to calculate the necessary information to apply the
@@ -220,7 +220,7 @@ corrfactor_continuous_sparse <- function(neighbour_list, events, line_list, bws,
 #' @export
 #' @keywords internal
 corrfactor_continuous <- function(neighbour_list, events, line_list, bws, max_depth) {
-    .Call('_spNetwork_corrfactor_continuous', PACKAGE = 'spNetwork', neighbour_list, events, line_list, bws, max_depth)
+    .Call(`_spNetwork_corrfactor_continuous`, neighbour_list, events, line_list, bws, max_depth)
 }
 
 #' @title The worker function to calculate simple NKDE likelihood cv
@@ -296,7 +296,7 @@ NULL
 #' @examples
 #' # no example provided, this is an internal function
 nkde_get_loo_values <- function(method, neighbour_list, sel_events, sel_events_wid, events, events_wid, weights, bws_net, kernel_name, line_list, max_depth, cvl) {
-    .Call('_spNetwork_nkde_get_loo_values', PACKAGE = 'spNetwork', method, neighbour_list, sel_events, sel_events_wid, events, events_wid, weights, bws_net, kernel_name, line_list, max_depth, cvl)
+    .Call(`_spNetwork_nkde_get_loo_values`, method, neighbour_list, sel_events, sel_events_wid, events, events_wid, weights, bws_net, kernel_name, line_list, max_depth, cvl)
 }
 
 #' @title The worker function to calculate simple TNKDE likelihood cv
@@ -384,7 +384,7 @@ NULL
 #' @examples
 #' # no example provided, this is an internal function
 tnkde_get_loo_values <- function(method, neighbour_list, sel_events, sel_events_wid, sel_events_time, events, events_wid, events_time, weights, bws_net, bws_time, kernel_name, line_list, max_depth, min_tol) {
-    .Call('_spNetwork_tnkde_get_loo_values', PACKAGE = 'spNetwork', method, neighbour_list, sel_events, sel_events_wid, sel_events_time, events, events_wid, events_time, weights, bws_net, bws_time, kernel_name, line_list, max_depth, min_tol)
+    .Call(`_spNetwork_tnkde_get_loo_values`, method, neighbour_list, sel_events, sel_events_wid, sel_events_time, events, events_wid, events_time, weights, bws_net, bws_time, kernel_name, line_list, max_depth, min_tol)
 }
 
 #' @title The exposed function to calculate adaptive bandwidth with space-time
@@ -412,39 +412,39 @@ tnkde_get_loo_values <- function(method, neighbour_list, sel_events, sel_events_
 #' @examples
 #' # no example provided, this is an internal function
 adaptive_bw_tnkde_cpp <- function(method, neighbour_list, sel_events, sel_events_wid, sel_events_time, events, events_wid, events_time, weights, bws_net, bws_time, kernel_name, line_list, max_depth, min_tol) {
-    .Call('_spNetwork_adaptive_bw_tnkde_cpp', PACKAGE = 'spNetwork', method, neighbour_list, sel_events, sel_events_wid, sel_events_time, events, events_wid, events_time, weights, bws_net, bws_time, kernel_name, line_list, max_depth, min_tol)
+    .Call(`_spNetwork_adaptive_bw_tnkde_cpp`, method, neighbour_list, sel_events, sel_events_wid, sel_events_time, events, events_wid, events_time, weights, bws_net, bws_time, kernel_name, line_list, max_depth, min_tol)
 }
 
 find_nearest_object_in_line_rtree <- function(pts, lines, min_dist, max_iter) {
-    .Call('_spNetwork_find_nearest_object_in_line_rtree', PACKAGE = 'spNetwork', pts, lines, min_dist, max_iter)
+    .Call(`_spNetwork_find_nearest_object_in_line_rtree`, pts, lines, min_dist, max_iter)
 }
 
 cut_lines_at_distances_cpp <- function(lines, dists) {
-    .Call('_spNetwork_cut_lines_at_distances_cpp', PACKAGE = 'spNetwork', lines, dists)
+    .Call(`_spNetwork_cut_lines_at_distances_cpp`, lines, dists)
 }
 
 add_vertices_lines_cpp <- function(points, lines, nearest_lines_idx, mindist) {
-    .Call('_spNetwork_add_vertices_lines_cpp', PACKAGE = 'spNetwork', points, lines, nearest_lines_idx, mindist)
+    .Call(`_spNetwork_add_vertices_lines_cpp`, points, lines, nearest_lines_idx, mindist)
 }
 
 add_center_lines_cpp <- function(lines) {
-    .Call('_spNetwork_add_center_lines_cpp', PACKAGE = 'spNetwork', lines)
+    .Call(`_spNetwork_add_center_lines_cpp`, lines)
 }
 
 split_lines_at_points_cpp <- function(Xmat, lines, nearest_lines_idx, mindist) {
-    .Call('_spNetwork_split_lines_at_points_cpp', PACKAGE = 'spNetwork', Xmat, lines, nearest_lines_idx, mindist)
+    .Call(`_spNetwork_split_lines_at_points_cpp`, Xmat, lines, nearest_lines_idx, mindist)
 }
 
 lixelize_lines_cpp <- function(lines, lx_length, mindist) {
-    .Call('_spNetwork_lixelize_lines_cpp', PACKAGE = 'spNetwork', lines, lx_length, mindist)
+    .Call(`_spNetwork_lixelize_lines_cpp`, lines, lx_length, mindist)
 }
 
 points_along_lines_cpp <- function(lines, dist) {
-    .Call('_spNetwork_points_along_lines_cpp', PACKAGE = 'spNetwork', lines, dist)
+    .Call(`_spNetwork_points_along_lines_cpp`, lines, dist)
 }
 
 points_at_lines_centers_cpp <- function(lines) {
-    .Call('_spNetwork_points_at_lines_centers_cpp', PACKAGE = 'spNetwork', lines)
+    .Call(`_spNetwork_points_at_lines_centers_cpp`, lines)
 }
 
 #' @title c++ k function
@@ -460,7 +460,7 @@ points_at_lines_centers_cpp <- function(lines) {
 #' @return A numeric vector with the values of the k function evaluated at the required distances
 #' @export
 kfunc_cpp <- function(dist_mat, start, end, step, Lt, n, w) {
-    .Call('_spNetwork_kfunc_cpp', PACKAGE = 'spNetwork', dist_mat, start, end, step, Lt, n, w)
+    .Call(`_spNetwork_kfunc_cpp`, dist_mat, start, end, step, Lt, n, w)
 }
 
 #' @title c++ g function
@@ -477,7 +477,7 @@ kfunc_cpp <- function(dist_mat, start, end, step, Lt, n, w) {
 #' @return A numeric vector with the values of the g function evaluated at the required distances
 #' @export
 gfunc_cpp <- function(dist_mat, start, end, step, width, Lt, n, w) {
-    .Call('_spNetwork_gfunc_cpp', PACKAGE = 'spNetwork', dist_mat, start, end, step, width, Lt, n, w)
+    .Call(`_spNetwork_gfunc_cpp`, dist_mat, start, end, step, width, Lt, n, w)
 }
 
 #' @title c++ cross k function
@@ -492,7 +492,7 @@ gfunc_cpp <- function(dist_mat, start, end, step, width, Lt, n, w) {
 #' @param wa The weight of the points in set A (coincident points)
 #' @param wb The weight of the points in set B (coincident points)
 cross_kfunc_cpp <- function(dist_mat, start, end, step, Lt, na, nb, wa, wb) {
-    .Call('_spNetwork_cross_kfunc_cpp', PACKAGE = 'spNetwork', dist_mat, start, end, step, Lt, na, nb, wa, wb)
+    .Call(`_spNetwork_cross_kfunc_cpp`, dist_mat, start, end, step, Lt, na, nb, wa, wb)
 }
 
 #' @title c++ cross g function
@@ -509,7 +509,7 @@ cross_kfunc_cpp <- function(dist_mat, start, end, step, Lt, na, nb, wa, wb) {
 #' @param wa The weight of the points in set A (coincident points)
 #' @param wb The weight of the points in set B (coincident points)
 cross_gfunc_cpp <- function(dist_mat, start, end, step, width, Lt, na, nb, wa, wb) {
-    .Call('_spNetwork_cross_gfunc_cpp', PACKAGE = 'spNetwork', dist_mat, start, end, step, width, Lt, na, nb, wa, wb)
+    .Call(`_spNetwork_cross_gfunc_cpp`, dist_mat, start, end, step, width, Lt, na, nb, wa, wb)
 }
 
 #' @title c++ k space-time function
@@ -528,11 +528,11 @@ cross_gfunc_cpp <- function(dist_mat, start, end, step, width, Lt, na, nb, wa, w
 #' @param w The weight of the points (coincident points)
 #' @keywords internal
 k_nt_func_cpp <- function(dist_mat_net, dist_mat_time, start_net, end_net, step_net, start_time, end_time, step_time, Lt, Tt, n, w) {
-    .Call('_spNetwork_k_nt_func_cpp', PACKAGE = 'spNetwork', dist_mat_net, dist_mat_time, start_net, end_net, step_net, start_time, end_time, step_time, Lt, Tt, n, w)
+    .Call(`_spNetwork_k_nt_func_cpp`, dist_mat_net, dist_mat_time, start_net, end_net, step_net, start_time, end_time, step_time, Lt, Tt, n, w)
 }
 
 k_nt_func_cpp2 <- function(dist_mat_net, dist_mat_time, start_net, end_net, step_net, start_time, end_time, step_time, Lt, Tt, n, w) {
-    .Call('_spNetwork_k_nt_func_cpp2', PACKAGE = 'spNetwork', dist_mat_net, dist_mat_time, start_net, end_net, step_net, start_time, end_time, step_time, Lt, Tt, n, w)
+    .Call(`_spNetwork_k_nt_func_cpp2`, dist_mat_net, dist_mat_time, start_net, end_net, step_net, start_time, end_time, step_time, Lt, Tt, n, w)
 }
 
 #' @title c++ g space-time function
@@ -552,19 +552,19 @@ k_nt_func_cpp2 <- function(dist_mat_net, dist_mat_time, start_net, end_net, step
 #' @param w The weight of the points (coincident points)
 #' @keywords internal
 g_nt_func_cpp <- function(dist_mat_net, dist_mat_time, start_net, end_net, step_net, width_net, start_time, end_time, step_time, width_time, Lt, Tt, n, w) {
-    .Call('_spNetwork_g_nt_func_cpp', PACKAGE = 'spNetwork', dist_mat_net, dist_mat_time, start_net, end_net, step_net, width_net, start_time, end_time, step_time, width_time, Lt, Tt, n, w)
+    .Call(`_spNetwork_g_nt_func_cpp`, dist_mat_net, dist_mat_time, start_net, end_net, step_net, width_net, start_time, end_time, step_time, width_time, Lt, Tt, n, w)
 }
 
 seq_num2 <- function(start, end, step) {
-    .Call('_spNetwork_seq_num2', PACKAGE = 'spNetwork', start, end, step)
+    .Call(`_spNetwork_seq_num2`, start, end, step)
 }
 
 seq_num2f <- function(start, end, step) {
-    .Call('_spNetwork_seq_num2f', PACKAGE = 'spNetwork', start, end, step)
+    .Call(`_spNetwork_seq_num2f`, start, end, step)
 }
 
 extend_matrix_by_ids <- function(agg_mat, oids, locids) {
-    .Call('_spNetwork_extend_matrix_by_ids', PACKAGE = 'spNetwork', agg_mat, oids, locids)
+    .Call(`_spNetwork_extend_matrix_by_ids`, agg_mat, oids, locids)
 }
 
 #' @title The worker function to calculate continuous NKDE (with ARMADILLO and sparse matrix)
@@ -631,7 +631,7 @@ NULL
 #' @keywords internal
 #'
 continuous_nkde_cpp_arma_sparse <- function(neighbour_list, events, weights, samples, bws, kernel_name, nodes, line_list, max_depth, verbose, div = "bw") {
-    .Call('_spNetwork_continuous_nkde_cpp_arma_sparse', PACKAGE = 'spNetwork', neighbour_list, events, weights, samples, bws, kernel_name, nodes, line_list, max_depth, verbose, div)
+    .Call(`_spNetwork_continuous_nkde_cpp_arma_sparse`, neighbour_list, events, weights, samples, bws, kernel_name, nodes, line_list, max_depth, verbose, div)
 }
 
 #' @title The main function to calculate continuous NKDE (with ARMADILO and integer matrix)
@@ -652,7 +652,7 @@ continuous_nkde_cpp_arma_sparse <- function(neighbour_list, events, weights, sam
 #' @keywords internal
 #'
 continuous_nkde_cpp_arma <- function(neighbour_list, events, weights, samples, bws, kernel_name, nodes, line_list, max_depth, verbose, div = "bw") {
-    .Call('_spNetwork_continuous_nkde_cpp_arma', PACKAGE = 'spNetwork', neighbour_list, events, weights, samples, bws, kernel_name, nodes, line_list, max_depth, verbose, div)
+    .Call(`_spNetwork_continuous_nkde_cpp_arma`, neighbour_list, events, weights, samples, bws, kernel_name, nodes, line_list, max_depth, verbose, div)
 }
 
 #' @title The main function to calculate continuous TNKDE (with ARMADILO and sparse matrix)
@@ -676,7 +676,7 @@ continuous_nkde_cpp_arma <- function(neighbour_list, events, weights, samples, b
 #' @keywords internal
 #'
 continuous_tnkde_cpp_arma_sparse <- function(neighbour_list, events, events_time, weights, samples, samples_time, bws_net, bws_time, kernel_name, nodes, line_list, max_depth, verbose, div) {
-    .Call('_spNetwork_continuous_tnkde_cpp_arma_sparse', PACKAGE = 'spNetwork', neighbour_list, events, events_time, weights, samples, samples_time, bws_net, bws_time, kernel_name, nodes, line_list, max_depth, verbose, div)
+    .Call(`_spNetwork_continuous_tnkde_cpp_arma_sparse`, neighbour_list, events, events_time, weights, samples, samples_time, bws_net, bws_time, kernel_name, nodes, line_list, max_depth, verbose, div)
 }
 
 #' @title The main function to calculate continuous TNKDE (with ARMADILO and integer matrix)
@@ -699,7 +699,7 @@ continuous_tnkde_cpp_arma_sparse <- function(neighbour_list, events, events_time
 #' @keywords internal
 #'
 continuous_tnkde_cpp_arma <- function(neighbour_list, events, events_time, weights, samples, samples_time, bws_net, bws_time, kernel_name, nodes, line_list, max_depth, verbose, div) {
-    .Call('_spNetwork_continuous_tnkde_cpp_arma', PACKAGE = 'spNetwork', neighbour_list, events, events_time, weights, samples, samples_time, bws_net, bws_time, kernel_name, nodes, line_list, max_depth, verbose, div)
+    .Call(`_spNetwork_continuous_tnkde_cpp_arma`, neighbour_list, events, events_time, weights, samples, samples_time, bws_net, bws_time, kernel_name, nodes, line_list, max_depth, verbose, div)
 }
 
 #' @title The worker function to calculate discontinuous NKDE (with ARMADILLO and sparse matrix)
@@ -761,7 +761,7 @@ NULL
 #' @export
 #' @keywords internal
 discontinuous_nkde_cpp_arma_sparse <- function(neighbour_list, events, weights, samples, bws, kernel_name, nodes, line_list, max_depth, verbose, div = "bw") {
-    .Call('_spNetwork_discontinuous_nkde_cpp_arma_sparse', PACKAGE = 'spNetwork', neighbour_list, events, weights, samples, bws, kernel_name, nodes, line_list, max_depth, verbose, div)
+    .Call(`_spNetwork_discontinuous_nkde_cpp_arma_sparse`, neighbour_list, events, weights, samples, bws, kernel_name, nodes, line_list, max_depth, verbose, div)
 }
 
 #' @title The main function to calculate discontinuous NKDE (ARMA and Integer matrix)
@@ -781,7 +781,7 @@ discontinuous_nkde_cpp_arma_sparse <- function(neighbour_list, events, weights, 
 #' @export
 #' @keywords internal
 discontinuous_nkde_cpp_arma <- function(neighbour_list, events, weights, samples, bws, kernel_name, nodes, line_list, max_depth, verbose, div = "bw") {
-    .Call('_spNetwork_discontinuous_nkde_cpp_arma', PACKAGE = 'spNetwork', neighbour_list, events, weights, samples, bws, kernel_name, nodes, line_list, max_depth, verbose, div)
+    .Call(`_spNetwork_discontinuous_nkde_cpp_arma`, neighbour_list, events, weights, samples, bws, kernel_name, nodes, line_list, max_depth, verbose, div)
 }
 
 #' @title The main function to calculate discontinuous NKDE (ARMA and sparse matrix)
@@ -803,7 +803,7 @@ discontinuous_nkde_cpp_arma <- function(neighbour_list, events, weights, samples
 #' @export
 #' @keywords internal
 discontinuous_tnkde_cpp_arma_sparse <- function(neighbour_list, events, weights, events_time, samples, samples_time, bws_net, bws_time, kernel_name, nodes, line_list, max_depth, verbose, div = "bw") {
-    .Call('_spNetwork_discontinuous_tnkde_cpp_arma_sparse', PACKAGE = 'spNetwork', neighbour_list, events, weights, events_time, samples, samples_time, bws_net, bws_time, kernel_name, nodes, line_list, max_depth, verbose, div)
+    .Call(`_spNetwork_discontinuous_tnkde_cpp_arma_sparse`, neighbour_list, events, weights, events_time, samples, samples_time, bws_net, bws_time, kernel_name, nodes, line_list, max_depth, verbose, div)
 }
 
 #' @title The main function to calculate discontinuous NKDE (ARMA and Integer matrix)
@@ -825,6 +825,6 @@ discontinuous_tnkde_cpp_arma_sparse <- function(neighbour_list, events, weights,
 #' @export
 #' @keywords internal
 discontinuous_tnkde_cpp_arma <- function(neighbour_list, events, weights, events_time, samples, samples_time, bws_net, bws_time, kernel_name, nodes, line_list, max_depth, verbose, div = "bw") {
-    .Call('_spNetwork_discontinuous_tnkde_cpp_arma', PACKAGE = 'spNetwork', neighbour_list, events, weights, events_time, samples, samples_time, bws_net, bws_time, kernel_name, nodes, line_list, max_depth, verbose, div)
+    .Call(`_spNetwork_discontinuous_tnkde_cpp_arma`, neighbour_list, events, weights, events_time, samples, samples_time, bws_net, bws_time, kernel_name, nodes, line_list, max_depth, verbose, div)
 }
 

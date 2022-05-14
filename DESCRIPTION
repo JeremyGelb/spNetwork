@@ -1,7 +1,7 @@
 Package: spNetwork
 Type: Package
 Title: Spatial Analysis on Network
-Version: 0.4.3
+Version: 0.4.3.2
 Authors@R: c(
     person("Jeremy", "Gelb", email = "jeremy.gelb@ucs.inrs.ca",role = c("aut", "cre"), comment = c(ORCID = "0000-0002-7114-2714")),
     person("Philippe", "Apparicio", email="philippe.apparicio@ucs.inrs.ca", role=c("ctb"), comment = c(ORCID = "0000-0001-6466-9342")))
@@ -23,7 +23,6 @@ Imports:
     ggplot2 (>= 3.3.0),
     progressr (>= 0.4.0),
     data.table (>= 1.12.8),
-    SearchTrees (>= 0.5.2),
     Rcpp (>= 1.0.4.6),
     Rdpack (>= 2.1.1),
     dbscan (>= 1.1-8),

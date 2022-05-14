@@ -82,6 +82,9 @@
     <loc>/reference/aggregate_points.html</loc>
   </url>
   <url>
+    <loc>/reference/bike_accidents.html</loc>
+  </url>
+  <url>
     <loc>/reference/build_graph.html</loc>
   </url>
   <url>
@@ -355,6 +358,18 @@
     <loc>/reference/lixelize_lines.mc.html</loc>
   </url>
   <url>
+    <loc>/reference/main_network_mtl.html</loc>
+  </url>
+  <url>
+    <loc>/reference/mtl_libraries.html</loc>
+  </url>
+  <url>
+    <loc>/reference/mtl_network.html</loc>
+  </url>
+  <url>
+    <loc>/reference/mtl_theatres.html</loc>
+  </url>
+  <url>
     <loc>/reference/nearest.html</loc>
   </url>
   <url>
@@ -457,7 +472,19 @@
     <loc>/reference/simplify_network.html</loc>
   </url>
   <url>
+    <loc>/reference/small_mtl_network.html</loc>
+  </url>
+  <url>
     <loc>/reference/snapPointsToLines2.html</loc>
+  </url>
+  <url>
+    <loc>/reference/spatial_index-cash-new.html</loc>
+  </url>
+  <url>
+    <loc>/reference/spatial_index-cash-tree_request.html</loc>
+  </url>
+  <url>
+    <loc>/reference/spatial_index.html</loc>
   </url>
   <url>
     <loc>/reference/spatial_request.html</loc>
@@ -487,7 +514,13 @@
     <loc>/reference/split_lines_at_vertex.html</loc>
   </url>
   <url>
+    <loc>/reference/spNetwork-package.html</loc>
+  </url>
+  <url>
     <loc>/reference/sp_char_index.html</loc>
+  </url>
+  <url>
+    <loc>/reference/st_bbox_by_feature.html</loc>
   </url>
   <url>
     <loc>/reference/st_bbox_geom.html</loc>

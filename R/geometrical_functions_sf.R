@@ -338,7 +338,8 @@ lixelize_lines<- function(lines, lx_length, mindist = NULL) {
 
     df <- st_drop_geometry(lines)[result[[2]]+1, ]
 
-    if(class(df) != "dataframe"){
+
+    if(inherits(df, "data.frame") == FALSE){
         df <- as.data.frame(df)
     }
 

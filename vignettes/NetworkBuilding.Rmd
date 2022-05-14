@@ -40,11 +40,6 @@ library(spNetwork)
 library(tmap)
 library(dbscan)
 
-networkgpkg <- system.file("extdata", "networks.gpkg",
-                           package = "spNetwork", mustWork = TRUE)
-eventsgpkg <- system.file("extdata", "events.gpkg",
-                          package = "spNetwork", mustWork = TRUE)
-
 data(mtl_network)
 data(bike_accidents)
 

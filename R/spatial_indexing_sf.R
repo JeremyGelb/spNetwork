@@ -3,13 +3,27 @@
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
+#' @title Obtain all the bounding boxes of a feature collection
+#'
+#' @description Obtain all the bounding boxes of a feature collection (INTERNAL).
+#'
+#' @param x a feature collection
+#' @return a matrix (xmin, ymin, xmax, ymax)
+#' @importFrom sf st_geometry st_as_sfc st_bbox
+#' @examples
+#' #This is an internal function, no example provided
+st_bbox_by_feature = function(x) {
+  t(sapply(st_geometry(x), function(y){st_bbox(y)}))
+}
+
+
 #' @title Build a quadtree
 #'
 #' @description Generate a quadtree object from package SearchTrees, useful to speed up
 #' spatial requesting (INTERNAL).
 #'
 #' @param data a feature collection of linestrings or a feature collection of points
-#' @return quadtree object from package SearchTrees
+#' @return a spatial_index object (pointer to a c++ instance)
 #' @export
 #' @examples
 #' #This is an internal function, no example provided
@@ -18,35 +32,48 @@ build_quadtree <- function(data){
   if(class(data)[[1]] != "sf"){
     stop("The data argument must be a feature collection from the package sf")
   }
-  geom_type <- unique(st_geometry_type(data))
 
-  if(geom_type == "LINESTRING"){
-
-    coords <- st_coordinates(data)
-    ids <- coords[,3]
-    coords_list <- split(coords[,1:2], f = ids)
-
-    bbox_coords <- lapply(coords_list,function(i){
-      line_coords <- matrix(i, ncol = 2, byrow = FALSE)
-      maxs <- apply(line_coords,MARGIN=2,FUN = max)
-      mins <- apply(line_coords,MARGIN=2,FUN = min)
-      row <- c(maxs,mins)
-      return(row)
-    })
-
-    bbox_coords <- do.call(rbind,bbox_coords)
-    #step2 : generate the spatial index
-    spIndex <- SearchTrees::createTree(bbox_coords,dataType = "rect")
-
-  }else if (geom_type == "POINT"){
-    coords <- st_coordinates(data)
-    spIndex <- SearchTrees::createTree(coords,dataType = "point")
-  }else {
-    stop("The supported geometry types are POINT and LINESTRING")
-  }
+  boxes <- st_bbox_by_feature(data)
+  spIndex <- new(spatial_index, boxes)
 
   return(spIndex)
 }
+
+
+# build_quadtree <- function(data){
+#   #step1 : extracting the bbox of the geometrie
+#   if(class(data)[[1]] != "sf"){
+#     stop("The data argument must be a feature collection from the package sf")
+#   }
+#   geom_type <- unique(st_geometry_type(data))
+#
+#   if(geom_type == "LINESTRING"){
+#
+#     coords <- st_coordinates(data)
+#     ids <- coords[,3]
+#     coords_list <- split(coords[,1:2], f = ids)
+#
+#     bbox_coords <- lapply(coords_list,function(i){
+#       line_coords <- matrix(i, ncol = 2, byrow = FALSE)
+#       maxs <- apply(line_coords,MARGIN=2,FUN = max)
+#       mins <- apply(line_coords,MARGIN=2,FUN = min)
+#       row <- c(maxs,mins)
+#       return(row)
+#     })
+#
+#     bbox_coords <- do.call(rbind,bbox_coords)
+#     #step2 : generate the spatial index
+#     spIndex <- SearchTrees::createTree(bbox_coords,dataType = "rect")
+#
+#   }else if (geom_type == "POINT"){
+#     coords <- st_coordinates(data)
+#     spIndex <- SearchTrees::createTree(coords,dataType = "point")
+#   }else {
+#     stop("The supported geometry types are POINT and LINESTRING")
+#   }
+#
+#   return(spIndex)
+# }
 
 
 #' @title Spatial request
@@ -64,8 +91,8 @@ build_quadtree <- function(data){
 spatial_request <- function(geometry,tree,data){
   ## step1 : find candidates
   #box <- t(raster::bbox(geometry))
-  box <- matrix(st_bbox(geometry), nrow = 2, byrow = TRUE)
-  idx <- SearchTrees::rectLookup(tree,box[1,],box[2,])
+  box <- st_bbox(geometry)
+  idx <- tree$tree_request(box)
   candidates <- data[idx,]
   if(nrow(candidates) > 0){
     ## step2 : find real intersection

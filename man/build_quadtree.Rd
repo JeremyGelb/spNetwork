@@ -10,7 +10,7 @@ build_quadtree(data)
 \item{data}{a feature collection of linestrings or a feature collection of points}
 }
 \value{
-quadtree object from package SearchTrees
+a spatial_index object (pointer to a c++ instance)
 }
 \description{
 Generate a quadtree object from package SearchTrees, useful to speed up

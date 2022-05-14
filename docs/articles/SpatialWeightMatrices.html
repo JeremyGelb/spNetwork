@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3.2</span>
       </span>
     </div>
 
@@ -102,7 +102,7 @@
       <h1 data-toc-skip>Spatial Weight Matrices</h1>
                         <h4 data-toc-skip class="author">Jeremy Gelb</h4>
             
-            <h4 data-toc-skip class="date">2022-04-19</h4>
+            <h4 data-toc-skip class="date">2022-05-13</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/JeremyGelb/spNetwork/blob/HEAD/vignettes/SpatialWeightMatrices.Rmd" class="external-link"><code>vignettes/SpatialWeightMatrices.Rmd</code></a></small>
       <div class="hidden name"><code>SpatialWeightMatrices.Rmd</code></div>
@@ -134,13 +134,8 @@
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-spatial/spdep/" class="external-link">spdep</a></span><span class="op">)</span>
 
-<span class="va">networkgpkg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"networks.gpkg"</span>,
-                           package <span class="op">=</span> <span class="st">"spNetwork"</span>, mustWork <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="va">eventsgpkg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"events.gpkg"</span>,
-                          package <span class="op">=</span> <span class="st">"spNetwork"</span>, mustWork <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-
-<span class="va">mtl_network</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">st_read</a></span><span class="op">(</span><span class="va">networkgpkg</span>,layer<span class="op">=</span><span class="st">"small_mtl_network"</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="va">bike_accidents</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">st_read</a></span><span class="op">(</span><span class="va">eventsgpkg</span>,layer<span class="op">=</span><span class="st">"bike_accidents_small"</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span> 
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">)</span></code></pre></div>
 <p>then we want to split lines into lixels and calculate for each lixel the number of events on that lixel.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">lixels</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/lixelize_lines.html">lixelize_lines</a></span><span class="op">(</span><span class="va">mtl_network</span>,<span class="fl">200</span>,mindist <span class="op">=</span> <span class="fl">50</span><span class="op">)</span>
@@ -174,7 +169,7 @@
 <code class="sourceCode R"><span class="va">Test</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/spdep/reference/moran.test.html" class="external-link">moran.test</a></span><span class="op">(</span><span class="va">nbAccident</span>, <span class="va">netlistw</span>, zero.policy <span class="op">=</span> <span class="cn">T</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">Test</span><span class="op">$</span><span class="va">estimate</span>,<span class="fl">4</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt; Moran I statistic       Expectation          Variance </span>
-<span class="co">#&gt;            0.0051           -0.0008            0.0003</span></code></pre></div>
+<span class="co">#&gt;            0.0511           -0.0003            0.0001</span></code></pre></div>
 <p>The autocorrelation is weak, this is due to the large distance used and the fact that the analyzed variable is a counting variable (number of accidents). Indeed, the Moran I is supposed to be used on continuous variables.</p>
 <p>One could go further and define its own function to convert distances into spatial weights</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
