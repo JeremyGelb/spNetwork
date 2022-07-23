@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3.4</span>
       </span>
     </div>
 
@@ -100,9 +100,10 @@
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Spatial Weight Matrices</h1>
-                        <h4 data-toc-skip class="author">Jeremy Gelb</h4>
+                        <h4 data-toc-skip class="author">Jeremy
+Gelb</h4>
             
-            <h4 data-toc-skip class="date">2022-05-13</h4>
+            <h4 data-toc-skip class="date">2022-07-23</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/JeremyGelb/spNetwork/blob/HEAD/vignettes/SpatialWeightMatrices.Rmd" class="external-link"><code>vignettes/SpatialWeightMatrices.Rmd</code></a></small>
       <div class="hidden name"><code>SpatialWeightMatrices.Rmd</code></div>
@@ -111,20 +112,37 @@
 
     
     
-<p>This vignette is a short introduction to the spatial weight matrices feature of the <strong>spNetwork</strong> package.</p>
+<p>This vignette is a short introduction to the spatial weight matrices
+feature of the <strong>spNetwork</strong> package.</p>
 <div class="section level2">
 <h2 id="quick-introduction-to-spatial-weight-matrices">Quick introduction to spatial weight matrices<a class="anchor" aria-label="anchor" href="#quick-introduction-to-spatial-weight-matrices"></a>
 </h2>
-<p>A vast number of spatial analysis methods are based on a spatial matrix W<sub>ij</sub> of size <em>n</em> x <em>n</em> with <em>i</em> an observation and <em>j</em> the neighbours of that observation. W<sub>ij</sub> represents the degree of spatial relationship between <em>i</em> and <em>j</em>.</p>
+<p>A vast number of spatial analysis methods are based on a spatial
+matrix W<sub>ij</sub> of size <em>n</em> x <em>n</em> with <em>i</em> an
+observation and <em>j</em> the neighbours of that observation.
+W<sub>ij</sub> represents the degree of spatial relationship between
+<em>i</em> and <em>j</em>.</p>
 <p>Classically one can define :</p>
 <ul>
-<li>neighbouring matrix (W<sub>ij</sub> = 1 if <em>j</em> is a neighbour of <em>i</em>, 0 otherwise)</li>
-<li>distance matrix (W<sub>ij</sub> = the distance between <em>i</em> and <em>j</em>, modified by a function like <span class="math inline">\(\frac{1}{distance}\)</span> or <span class="math inline">\(\frac{1}{distance^2}\)</span>)</li>
-<li>interaction matrix (W<sub>ij</sub> = the degree of interaction between <em>i</em> and <em>j</em>, the measure of the interaction depends on the subject of the analysis)</li>
+<li>neighbouring matrix (W<sub>ij</sub> = 1 if <em>j</em> is a neighbour
+of <em>i</em>, 0 otherwise)</li>
+<li>distance matrix (W<sub>ij</sub> = the distance between <em>i</em>
+and <em>j</em>, modified by a function like <span class="math inline">\(\frac{1}{distance}\)</span> or <span class="math inline">\(\frac{1}{distance^2}\)</span>)</li>
+<li>interaction matrix (W<sub>ij</sub> = the degree of interaction
+between <em>i</em> and <em>j</em>, the measure of the interaction
+depends on the subject of the analysis)</li>
 </ul>
-<p>In R, the classical package to deal with such matrices is the package ‘spdep’ which defines objects like neighbour lists and spatial weight lists, and offers the possibility to convert these objects into regular matrices.</p>
-<p>When one works with data constrained on a network, using Euclidean distance to estimate proximity between observations leads to an underestimation of the real distances between them</p>
-<p><strong>spNetwork</strong> makes it possible to create <code>listw</code> objects based on network distance. Let us give an example here: calculating the Moran autocorrelation index for the number of bike accidents recorded on the Montreal road network in 2016.</p>
+<p>In R, the classical package to deal with such matrices is the package
+‘spdep’ which defines objects like neighbour lists and spatial weight
+lists, and offers the possibility to convert these objects into regular
+matrices.</p>
+<p>When one works with data constrained on a network, using Euclidean
+distance to estimate proximity between observations leads to an
+underestimation of the real distances between them</p>
+<p><strong>spNetwork</strong> makes it possible to create
+<code>listw</code> objects based on network distance. Let us give an
+example here: calculating the Moran autocorrelation index for the number
+of bike accidents recorded on the Montreal road network in 2016.</p>
 <p>First, we want to load data:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span><span class="st">"rgdal_show_exportToProj4_warnings"</span><span class="op">=</span><span class="st">"none"</span><span class="op">)</span>
@@ -136,7 +154,8 @@
 
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span> 
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">)</span></code></pre></div>
-<p>then we want to split lines into lixels and calculate for each lixel the number of events on that lixel.</p>
+<p>then we want to split lines into lixels and calculate for each lixel
+the number of events on that lixel.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">lixels</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/lixelize_lines.html">lixelize_lines</a></span><span class="op">(</span><span class="va">mtl_network</span>,<span class="fl">200</span>,mindist <span class="op">=</span> <span class="fl">50</span><span class="op">)</span>
 
@@ -152,8 +171,15 @@
 <span class="co"># merging the results</span>
 <span class="va">lixels</span><span class="op">$</span><span class="va">nbAccident</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">lixels</span>,<span class="va">counts_df</span>, by<span class="op">=</span><span class="st">"oid"</span><span class="op">)</span><span class="op">$</span><span class="va">count</span>
 <span class="va">nbAccident</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">lixels</span><span class="op">$</span><span class="va">nbAccident</span><span class="op">)</span>,<span class="fl">0</span>,<span class="va">lixels</span><span class="op">$</span><span class="va">nbAccident</span><span class="op">)</span></code></pre></div>
-<p>We use here the function <em>network_listw</em> the create a <code>listw</code> object representing the spatial weight matrix. The distances can be calculated from the centroids of the lixels, from the extremities of the lixels or from evenly spaced points on the lixels. We use here the second approach and specify it with the parameter <code>method = "ends"</code>.</p>
-<p>Let us consider that above 300 metres two segments are not neighbours anymore, and convert the distances between the observations into spatial weights by using the inverse of the squared distance.</p>
+<p>We use here the function <em>network_listw</em> the create a
+<code>listw</code> object representing the spatial weight matrix. The
+distances can be calculated from the centroids of the lixels, from the
+extremities of the lixels or from evenly spaced points on the lixels. We
+use here the second approach and specify it with the parameter
+<code>method = "ends"</code>.</p>
+<p>Let us consider that above 300 metres two segments are not neighbours
+anymore, and convert the distances between the observations into spatial
+weights by using the inverse of the squared distance.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">netlistw</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/network_listw.html">network_listw</a></span><span class="op">(</span><span class="va">lixels</span>,<span class="va">mtl_network</span>,
                            method <span class="op">=</span> <span class="st">"ends"</span>,
@@ -164,14 +190,19 @@
                            matrice_type <span class="op">=</span> <span class="st">'W'</span>,
                            grid_shape <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span>,
                            verbose<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
-<p>With that matrix, we can calculate the Moran I for the number of accidents on a lixel.</p>
+<p>With that matrix, we can calculate the Moran I for the number of
+accidents on a lixel.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">Test</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/spdep/reference/moran.test.html" class="external-link">moran.test</a></span><span class="op">(</span><span class="va">nbAccident</span>, <span class="va">netlistw</span>, zero.policy <span class="op">=</span> <span class="cn">T</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">Test</span><span class="op">$</span><span class="va">estimate</span>,<span class="fl">4</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt; Moran I statistic       Expectation          Variance </span>
 <span class="co">#&gt;            0.0511           -0.0003            0.0001</span></code></pre></div>
-<p>The autocorrelation is weak, this is due to the large distance used and the fact that the analyzed variable is a counting variable (number of accidents). Indeed, the Moran I is supposed to be used on continuous variables.</p>
-<p>One could go further and define its own function to convert distances into spatial weights</p>
+<p>The autocorrelation is weak, this is due to the large distance used
+and the fact that the analyzed variable is a counting variable (number
+of accidents). Indeed, the Moran I is supposed to be used on continuous
+variables.</p>
+<p>One could go further and define its own function to convert distances
+into spatial weights</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">my_conv_func</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">{</span>
   <span class="kw">if</span> <span class="op">(</span><span class="va">x</span><span class="op">&gt;=</span><span class="fl">300</span><span class="op">)</span><span class="op">{</span>
@@ -190,7 +221,11 @@
                              matrice_type <span class="op">=</span> <span class="st">'W'</span>,
                              grid_shape <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span>,
                              verbose<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
-<p>To speed up calculation, one could use a multiprocessing plan defined with the package ‘future’. To do so, the study area is divided into rectangles (according to the parameter <em>grid_shape</em>), and each rectangle is treated separately. A buffer is applied around the rectangles to avoid edge effects.</p>
+<p>To speed up calculation, one could use a multiprocessing plan defined
+with the package ‘future’. To do so, the study area is divided into
+rectangles (according to the parameter <em>grid_shape</em>), and each
+rectangle is treated separately. A buffer is applied around the
+rectangles to avoid edge effects.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># setting the multiprocess plan</span>
 <span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/multisession.html" class="external-link">multisession</a></span><span class="op">(</span>workers<span class="op">=</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span>
@@ -211,8 +246,13 @@
 <h2 id="other-features">Other features<a class="anchor" aria-label="anchor" href="#other-features"></a>
 </h2>
 <ul>
-<li>A spatial matrix could be calculated for every type of geometries not only lines. Points can directly be used. For polygons, it is possible to use the centres of the geometries as starting points. One can also choose a distance and equally spaced starting points will be defined on the border of the polygons according to that distance.</li>
-<li>The cost of travelling on an edge could be set to something else than “length”.</li>
+<li>A spatial matrix could be calculated for every type of geometries
+not only lines. Points can directly be used. For polygons, it is
+possible to use the centres of the geometries as starting points. One
+can also choose a distance and equally spaced starting points will be
+defined on the border of the polygons according to that distance.</li>
+<li>The cost of travelling on an edge could be set to something else
+than “length”.</li>
 <li>It is possible to specify directions on the network.</li>
 </ul>
 </div>
@@ -235,7 +275,8 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
+2.0.2.</p>
 </div>
 
       </footer>

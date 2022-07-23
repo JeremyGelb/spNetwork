@@ -166,7 +166,6 @@ aggregate_points <- function(points, maxdist, weight = "weight"){
     new_pts <- data.frame(t(sapply(2:length(pt_list), function(i){
       pts <- pt_list[[i]]
       if(nrow(pts) == 1 ){
-        #return(c(st_coordinates(pts), pts[[weight]]))
         return(c(st_coordinates(pts), st_drop_geometry(pts)))
       }else{
         coords <- colMeans(st_coordinates(pts))
@@ -217,6 +216,20 @@ prepare_data <- function(samples,lines,events, w ,digits,tol, agg){
   events$goid <- 1:nrow(events)
   samples$goid <- 1:nrow(samples)
   samples <- samples[c("goid")]
+
+  # removing existing X and Y coordinates
+  if("X" %in% names(samples)){
+    samples$X <- NULL
+  }
+  if("Y" %in% names(samples)){
+    samples$Y <- NULL
+  }
+  if("X" %in% names(events)){
+    events$X <- NULL
+  }
+  if("Y" %in% names(events)){
+    events$Y <- NULL
+  }
 
   ## step3 remove lines with no length
   lines$length <- as.numeric(st_length(lines))

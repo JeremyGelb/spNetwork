@@ -324,6 +324,7 @@ kfunctions <- function(lines, points,
   snapped_events <- snapPointsToLines2(points,lines,idField = "oid")
   new_lines <- split_lines_at_vertex(lines, snapped_events,
                                      snapped_events$nearest_line_id, tol)
+
   # new_lines <- add_vertices_lines(lines,snapped_events,
   #                                 snapped_events$nearest_line_id, tol)
 
@@ -352,6 +353,13 @@ kfunctions <- function(lines, points,
   graph_result$spedges$probs <- igraph::get.edge.attribute(graph_result$graph,
                                                            name = "probs")
   snapped_events$vertex_id <- closest_points(snapped_events, nodes)
+
+  ## HERE, I SHOULD CHECK THAT TWO POINTS DO NOT SHARE THE SAME vertex
+  if(max(table(snapped_events$vertex_id))>1){
+    stop("After snapping the points on the network, some of them share the same location.
+         To correct it, please consider setting or increasing the value of the parameter agg.
+         They will be merged and their weights added")
+  }
 
   ## step5 : calculating the distance matrix
   dist_mat <- igraph::distances(graph,v = snapped_events$vertex_id,
@@ -552,6 +560,13 @@ kfunctions.mc <- function(lines, points, start, end, step, width, nsim, conf_int
   graph <- graph_result$graph
   nodes <- graph_result$spvertices
   snapped_events$vertex_id <- closest_points(snapped_events, nodes)
+
+  ## HERE, I SHOULD CHECK THAT TWO POINTS DO NOT SHARE THE SAME vertex
+  if(max(table(snapped_events$vertex_id))>1){
+    stop("After snapping the points on the network, some of them share the same location.
+         To correct it, please consider setting or increasing the value of the parameter agg.
+         They will be merged and their weights added")
+  }
 
   ## step5 : calculating the distance matrix
   dist_mat <- igraph::distances(graph,v = snapped_events$vertex_id,
@@ -800,6 +815,14 @@ cross_kfunctions <- function(lines, pointsA, pointsB,
   graph <- graph_result$graph
   nodes <- graph_result$spvertices
   snapped_events$vertex_id <- closest_points(snapped_events, nodes)
+
+  ## HERE, I SHOULD CHECK THAT TWO POINTS DO NOT SHARE THE SAME vertex
+  if(max(table(snapped_events$vertex_id))>1){
+    stop("After snapping the points on the network, some of them share the same location.
+         To correct it, please consider setting or increasing the value of the parameter agg.
+         They will be merged and their weights added")
+  }
+
   snappedA <- subset(snapped_events, snapped_events$type == "A")
   snappedB <- subset(snapped_events, snapped_events$type == "B")
 
@@ -1014,6 +1037,14 @@ cross_kfunctions.mc <- function(lines, pointsA, pointsB,
   graph <- graph_result$graph
   nodes <- graph_result$spvertices
   snapped_events$vertex_id <- closest_points(snapped_events, nodes)
+
+  ## HERE, I SHOULD CHECK THAT TWO POINTS DO NOT SHARE THE SAME vertex
+  if(max(table(snapped_events$vertex_id))>1){
+    stop("After snapping the points on the network, some of them share the same location.
+         To correct it, please consider setting or increasing the value of the parameter agg.
+         They will be merged and their weights added")
+  }
+
   snappedA <- subset(snapped_events, snapped_events$type == "A")
   snappedB <- subset(snapped_events, snapped_events$type == "B")
 

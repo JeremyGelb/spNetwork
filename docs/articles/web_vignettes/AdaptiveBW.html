@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3.4</span>
       </span>
     </div>
 
@@ -100,9 +100,10 @@
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>K-nearest neighbour adaptive bandwidth</h1>
-                        <h4 data-toc-skip class="author">Jeremy Gelb</h4>
+                        <h4 data-toc-skip class="author">Jeremy
+Gelb</h4>
             
-            <h4 data-toc-skip class="date">2022-05-13</h4>
+            <h4 data-toc-skip class="date">2022-07-23</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/JeremyGelb/spNetwork/blob/HEAD/vignettes/web_vignettes/AdaptiveBW.Rmd" class="external-link"><code>vignettes/web_vignettes/AdaptiveBW.Rmd</code></a></small>
       <div class="hidden name"><code>AdaptiveBW.Rmd</code></div>
@@ -114,13 +115,26 @@
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p>As stated in the vignette (<em>Network Kernel Density Estimate</em>), it is possible to use adaptive bandwidths instead of a fixed bandwidth to adapt the level of smoothing of the NKDE locally. The default approach is to use the method proposed by <span class="citation"><a href="#ref-abramson1982bandwidth" role="doc-biblioref">Abramson</a> (<a href="#ref-abramson1982bandwidth" role="doc-biblioref">1982</a>)</span>, implying a variation of the bandwidth that is inversely proportional to the square root of the target density itself. However, one can also specified the bandwidths to use for each event directly and thus try other approaches. We give in this vignette some examples.</p>
+<p>As stated in the vignette (<em>Network Kernel Density Estimate</em>),
+it is possible to use adaptive bandwidths instead of a fixed bandwidth
+to adapt the level of smoothing of the NKDE locally. The default
+approach is to use the method proposed by <span class="citation">Abramson (<a href="#ref-abramson1982bandwidth" role="doc-biblioref">1982</a>)</span>, implying a variation of the
+bandwidth that is inversely proportional to the square root of the
+target density itself. However, one can also specified the bandwidths to
+use for each event directly and thus try other approaches. We give in
+this vignette some examples.</p>
 </div>
 <div class="section level2">
 <h2 id="k-nearest-neighbours-adaptive-bandwidth-for-nkde">K nearest neighbours adaptive bandwidth for NKDE<a class="anchor" aria-label="anchor" href="#k-nearest-neighbours-adaptive-bandwidth-for-nkde"></a>
 </h2>
-<p>For each event, the K nearest neighbour distance could be used as a locally adapted bandwidth for intensity estimation. This method is called the k-nearest neighbour kernel density estimation method <span class="citation">(<a href="#ref-loftsgaarden_nonparametric_1965" role="doc-biblioref">Loftsgaarden and Quesenberry 1965</a>; <a href="#ref-terrell_variable_1992" role="doc-biblioref">Terrell and Scott 1992</a>; <a href="#ref-orava_k-nearest_2011" role="doc-biblioref">Orava 2011</a>)</span>.</p>
-<p>To apply it in <code>spNetwork</code>, one can use the <code>network_knn</code> function. The first step is to load the required packages and data.</p>
+<p>For each event, the K nearest neighbour distance could be used as a
+locally adapted bandwidth for intensity estimation. This method is
+called the k-nearest neighbour kernel density estimation method <span class="citation">(<a href="#ref-loftsgaarden_nonparametric_1965" role="doc-biblioref">Loftsgaarden and Quesenberry 1965</a>; <a href="#ref-terrell_variable_1992" role="doc-biblioref">Terrell and Scott
+1992</a>; <a href="#ref-orava_k-nearest_2011" role="doc-biblioref">Orava
+2011</a>)</span>.</p>
+<p>To apply it in <code>spNetwork</code>, one can use the
+<code>network_knn</code> function. The first step is to load the
+required packages and data.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># first load data and packages</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span>
@@ -137,7 +151,8 @@
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">bike_accidents</span><span class="op">$</span><span class="va">weight</span> <span class="op">&lt;-</span> <span class="fl">1</span>
 <span class="va">bike_accidents_agg</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/aggregate_points.html">aggregate_points</a></span><span class="op">(</span><span class="va">bike_accidents</span>, <span class="fl">15</span>, weight <span class="op">=</span> <span class="st">"weight"</span><span class="op">)</span></code></pre></div>
-<p>We can now calculate for each event its distance to its 20th neighbour.</p>
+<p>We can now calculate for each event its distance to its 20th
+neighbour.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">knn_dists</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/network_knn.html">network_knn</a></span><span class="op">(</span>origins <span class="op">=</span> <span class="va">bike_accidents_agg</span>, 
                          lines <span class="op">=</span> <span class="va">mtl_network</span>, 
@@ -152,7 +167,8 @@
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html" class="external-link">geom_histogram</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">bws</span><span class="op">)</span>, fill <span class="op">=</span> <span class="st">"white"</span>, color <span class="op">=</span> <span class="st">"black"</span>, bins <span class="op">=</span> <span class="fl">50</span><span class="op">)</span> <span class="op">+</span> 
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"distance to 20th neighbour (m)"</span><span class="op">)</span></code></pre></div>
 <p><img src="AdaptiveBW_files/figure-html/unnamed-chunk-3-1.png" width="60%" style="display: block; margin: auto;"></p>
-<p>There is some events for which the 20th neighbour is very far. We decide here to trim the bandwidth at 1500m.</p>
+<p>There is some events for which the 20th neighbour is very far. We
+decide here to trim the bandwidth at 1500m.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="va">trimed_bw</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">bws</span> <span class="op">&gt;</span> <span class="fl">1500</span>, <span class="fl">1500</span>, <span class="va">bws</span><span class="op">)</span>
@@ -196,7 +212,8 @@
   <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_layout.html" class="external-link">tm_layout</a></span><span class="op">(</span>legend.outside <span class="op">=</span> <span class="cn">TRUE</span>, 
             main.title <span class="op">=</span> <span class="va">title</span>, main.title.size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></code></pre></div>
 <p><img src="AdaptiveBW_files/figure-html/unnamed-chunk-5-1.png" width="768" style="display: block; margin: auto;"></p>
-<p>It is easy to calculate the density for several distances and comparing the results with maps.</p>
+<p>It is easy to calculate the density for several distances and
+comparing the results with maps.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="co"># calculating all the densities</span>
@@ -263,17 +280,26 @@
 <span class="co">#&gt; Animation saved to E:\R\Packages\spNetwork\vignettes\web_vignettes\images\animated_densities.gif</span></code></pre></div>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/include_graphics.html" class="external-link">include_graphics</a></span><span class="op">(</span><span class="st">"images/animated_densities.gif"</span><span class="op">)</span></code></pre></div>
-<p><img src="images/animated_densities.gif" width="100%" style="display: block; margin: auto;"> With no suprise, the larger the bandwidth, the smoother the results</p>
+<p><img src="images/animated_densities.gif" width="100%" style="display: block; margin: auto;">
+With no suprise, the larger the bandwidth, the smoother the results</p>
 </div>
 <div class="section level2">
 <h2 id="k-nearest-neighbours-adaptive-bandwidth-for-tnkde">K nearest neighbours adaptive bandwidth for TNKDE<a class="anchor" aria-label="anchor" href="#k-nearest-neighbours-adaptive-bandwidth-for-tnkde"></a>
 </h2>
-<p>This method can be extended to the spatio-temporal case. We propose here a two-steps approach:</p>
+<p>This method can be extended to the spatio-temporal case. We propose
+here a two-steps approach:</p>
 <ol style="list-style-type: decimal">
-<li>Finding for each event its 20 nearest neighbours on the network. The distance to the last neighbour will be the local network bandwidth for this event.</li>
-<li>Within the selected neighbours, calculating the median of the temporal distances with the event. This value will be used as the local time bandwidth for this event.</li>
+<li>Finding for each event its 20 nearest neighbours on the network. The
+distance to the last neighbour will be the local network bandwidth for
+this event.</li>
+<li>Within the selected neighbours, calculating the median of the
+temporal distances with the event. This value will be used as the local
+time bandwidth for this event.</li>
 </ol>
-<p>This approach ensures that relatively small network bandwidths are selected, and limits the risk of obtaining very wide temporal bandwidths. It is well adapted if the events are characterized by strong spatio-temporal autocorrelation.</p>
+<p>This approach ensures that relatively small network bandwidths are
+selected, and limits the risk of obtaining very wide temporal
+bandwidths. It is well adapted if the events are characterized by strong
+spatio-temporal autocorrelation.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="co"># creating a time variable</span>
@@ -300,7 +326,9 @@
 <span class="va">medians</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">temporal_mat</span>,<span class="va">median</span><span class="op">)</span>
 <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> 
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html" class="external-link">geom_histogram</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">medians</span><span class="op">)</span>, bins <span class="op">=</span> <span class="fl">30</span>, color <span class="op">=</span> <span class="st">"white"</span><span class="op">)</span></code></pre></div>
-<p><img src="AdaptiveBW_files/figure-html/unnamed-chunk-8-1.png" width="60%" style="display: block; margin: auto;"> Once again, we could trim the obtained bandwidths and setting a limit at 120 days (4 months).</p>
+<p><img src="AdaptiveBW_files/figure-html/unnamed-chunk-8-1.png" width="60%" style="display: block; margin: auto;">
+Once again, we could trim the obtained bandwidths and setting a limit at
+120 days (4 months).</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">trimed_bws_time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">medians</span> <span class="op">&gt;</span> <span class="fl">120</span>, <span class="fl">120</span>, <span class="va">medians</span><span class="op">)</span></code></pre></div>
 <p>And we can now calculate the TNKDE with these bandwidths:</p>
@@ -366,16 +394,27 @@
 <p><img src="images/animated_map_tnkdeknn.gif" width="75%" style="display: block; margin: auto;"></p>
 <div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-abramson1982bandwidth" class="csl-entry">
-Abramson, Ian S. 1982. <span>“On Bandwidth Variation in Kernel Estimates-a Square Root Law.”</span> <em>The Annals of Statistics</em>, 1217–23.
+Abramson, Ian S. 1982. <span>“On Bandwidth Variation in Kernel
+Estimates-a Square Root Law.”</span> <em>The Annals of Statistics</em>,
+1217–23.
 </div>
 <div id="ref-loftsgaarden_nonparametric_1965" class="csl-entry">
-Loftsgaarden, D. O., and C. P. Quesenberry. 1965. <span>“A <span>Nonparametric</span> <span>Estimate</span> of a <span>Multivariate</span> <span>Density</span> <span>Function</span>.”</span> <em>The Annals of Mathematical Statistics</em> 36 (3): 1049–51. <a href="https://doi.org/10.1214/aoms/1177700079" class="external-link">https://doi.org/10.1214/aoms/1177700079</a>.
+Loftsgaarden, D. O., and C. P. Quesenberry. 1965. <span>“A
+<span>Nonparametric</span> <span>Estimate</span> of a
+<span>Multivariate</span> <span>Density</span>
+<span>Function</span>.”</span> <em>The Annals of Mathematical
+Statistics</em> 36 (3): 1049–51. <a href="https://doi.org/10.1214/aoms/1177700079" class="external-link">https://doi.org/10.1214/aoms/1177700079</a>.
 </div>
 <div id="ref-orava_k-nearest_2011" class="csl-entry">
-Orava, Jan. 2011. <span>“K-Nearest Neighbour Kernel Density Estimation, the Choice of Optimal k.”</span> <em>Tatra Mountains Mathematical Publications</em> 50 (1): 39–50. <a href="https://doi.org/10.2478/v10127-011-0035-z" class="external-link">https://doi.org/10.2478/v10127-011-0035-z</a>.
+Orava, Jan. 2011. <span>“K-Nearest Neighbour Kernel Density Estimation,
+the Choice of Optimal k.”</span> <em>Tatra Mountains Mathematical
+Publications</em> 50 (1): 39–50. <a href="https://doi.org/10.2478/v10127-011-0035-z" class="external-link">https://doi.org/10.2478/v10127-011-0035-z</a>.
 </div>
 <div id="ref-terrell_variable_1992" class="csl-entry">
-Terrell, George R., and David W. Scott. 1992. <span>“Variable <span>Kernel</span> <span>Density</span> <span>Estimation</span>.”</span> <em>The Annals of Statistics</em> 20 (3): 1236–65. <a href="https://www.jstor.org/stable/2242011" class="external-link">https://www.jstor.org/stable/2242011</a>.
+Terrell, George R., and David W. Scott. 1992. <span>“Variable
+<span>Kernel</span> <span>Density</span>
+<span>Estimation</span>.”</span> <em>The Annals of Statistics</em> 20
+(3): 1236–65. <a href="https://www.jstor.org/stable/2242011" class="external-link">https://www.jstor.org/stable/2242011</a>.
 </div>
 </div>
 </div>
@@ -398,7 +437,8 @@ Terrell, George R., and David W. Scott. 1992. <span>“Variable <span>Kernel</sp
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
+2.0.2.</p>
 </div>
 
       </footer>

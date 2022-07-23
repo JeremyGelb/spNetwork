@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3.4</span>
       </span>
     </div>
 
@@ -100,9 +100,10 @@
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Building graphs</h1>
-                        <h4 data-toc-skip class="author">Jeremy Gelb</h4>
+                        <h4 data-toc-skip class="author">Jeremy
+Gelb</h4>
             
-            <h4 data-toc-skip class="date">2022-05-13</h4>
+            <h4 data-toc-skip class="date">2022-07-23</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/JeremyGelb/spNetwork/blob/HEAD/vignettes/NetworkBuilding.Rmd" class="external-link"><code>vignettes/NetworkBuilding.Rmd</code></a></small>
       <div class="hidden name"><code>NetworkBuilding.Rmd</code></div>
@@ -114,15 +115,24 @@
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p>The goal of this vignette is to present how several functions in <strong>spNetwork</strong> can be used to build graphs and to analyze it.</p>
-<p>To illustrate the process, we give a full example with the calculation of the correlation between the centrality of bike accidents in the Montreal network and the NKDE density calculated at each accident point. Here are the steps we will follow to perform this analysis:</p>
+<p>The goal of this vignette is to present how several functions in
+<strong>spNetwork</strong> can be used to build graphs and to analyze
+it.</p>
+<p>To illustrate the process, we give a full example with the
+calculation of the correlation between the centrality of bike accidents
+in the Montreal network and the NKDE density calculated at each accident
+point. Here are the steps we will follow to perform this analysis:</p>
 <ol style="list-style-type: decimal">
-<li>Calculating the NKDE density of accidents at each accident point</li>
+<li>Calculating the NKDE density of accidents at each accident
+point</li>
 <li>Snapping the accidents to the network</li>
-<li>Cutting the lines of the network at the snapped accidents’ locations</li>
+<li>Cutting the lines of the network at the snapped accidents’
+locations</li>
 <li>Building a graph with the cut lines</li>
-<li>Calculating for each node of the graph its centrality (betweenness)</li>
-<li>Calculating the correlation between the NKDE density and the centrality measure.</li>
+<li>Calculating for each node of the graph its centrality
+(betweenness)</li>
+<li>Calculating the correlation between the NKDE density and the
+centrality measure.</li>
 </ol>
 <p>Let us start by loading some data.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
@@ -145,7 +155,9 @@
 <div class="section level2">
 <h2 id="calculating-the-nkde-density">Calculating the NKDE density<a class="anchor" aria-label="anchor" href="#calculating-the-nkde-density"></a>
 </h2>
-<p>This step is easy to perform with the basic functions of <strong>spNetwork</strong>. For the sake of simplicity, we select an arbitrary bandwidth of 300m and use the discontinuous kernel.</p>
+<p>This step is easy to perform with the basic functions of
+<strong>spNetwork</strong>. For the sake of simplicity, we select an
+arbitrary bandwidth of 300m and use the discontinuous kernel.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># calculating the density values</span>
 <span class="va">densities</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nkde.html">nkde</a></span><span class="op">(</span><span class="va">mtl_network</span>, 
@@ -174,8 +186,15 @@
 <div class="section level2">
 <h2 id="snapping-the-accidents-to-the-network">Snapping the accidents to the network<a class="anchor" aria-label="anchor" href="#snapping-the-accidents-to-the-network"></a>
 </h2>
-<p>For this step, we will use the function <code>snapPointsToLines2</code>. It is mainly based on the function <code>snapPointsToLines</code> from <strong>maptools</strong> but can be used for bigger datasets. Note that we create two index columns: <code>OID</code> for the accidents’ location and <code>LineID</code> for the network lines.</p>
-<p>We will also start by aggregating the points that are too close to each other. We will aggregate all the points that are within a 5 metres radius.</p>
+<p>For this step, we will use the function
+<code>snapPointsToLines2</code>. It is mainly based on the function
+<code>snapPointsToLines</code> from <strong>maptools</strong> but can be
+used for bigger datasets. Note that we create two index columns:
+<code>OID</code> for the accidents’ location and <code>LineID</code> for
+the network lines.</p>
+<p>We will also start by aggregating the points that are too close to
+each other. We will aggregate all the points that are within a 5 metres
+radius.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">bike_accidents</span><span class="op">$</span><span class="va">weight</span> <span class="op">&lt;-</span> <span class="fl">1</span>
 <span class="va">agg_points</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_points.html">aggregate_points</a></span><span class="op">(</span><span class="va">bike_accidents</span>, maxdist <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>
@@ -190,7 +209,8 @@
 <div class="section level2">
 <h2 id="cutting-the-lines-of-the-network">Cutting the lines of the network<a class="anchor" aria-label="anchor" href="#cutting-the-lines-of-the-network"></a>
 </h2>
-<p>The next step is to use the new points to cut the lines of the network.</p>
+<p>The next step is to use the new points to cut the lines of the
+network.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">new_lines</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/split_lines_at_vertex.html">split_lines_at_vertex</a></span><span class="op">(</span><span class="va">mtl_network</span>, 
                                    <span class="va">snapped_accidents</span>,
@@ -210,7 +230,9 @@
 <div class="section level2">
 <h2 id="calculating-for-each-node-of-the-graph-its-centrality">Calculating for each node of the graph its centrality<a class="anchor" aria-label="anchor" href="#calculating-for-each-node-of-the-graph-its-centrality"></a>
 </h2>
-<p>The graph can be used with the library <strong>igraph</strong>. We will calculate here the betweenness centrality of each node in the graph.</p>
+<p>The graph can be used with the library <strong>igraph</strong>. We
+will calculate here the betweenness centrality of each node in the
+graph.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">btws</span> <span class="op">&lt;-</span> <span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/igraph/man/betweenness.html" class="external-link">betweenness</a></span><span class="op">(</span><span class="va">graph_result</span><span class="op">$</span><span class="va">graph</span>, directed <span class="op">=</span> <span class="cn">FALSE</span>,
                             normalized <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
@@ -223,7 +245,9 @@
           n <span class="op">=</span> <span class="fl">6</span>, size <span class="op">=</span> <span class="fl">0.1</span>, palette <span class="op">=</span> <span class="st">"-RdYlBu"</span><span class="op">)</span><span class="op">+</span>
   <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_layout.html" class="external-link">tm_layout</a></span><span class="op">(</span>legend.outside <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> </code></pre></div>
 <p><img src="NetworkBuilding_files/figure-html/unnamed-chunk-9-1.png" width="700"></p>
-<p>The last step is to find for each of the original points its corresponding node. We will do it by using the k nearest neighbours approach with the package <strong>FNN</strong>.</p>
+<p>The last step is to find for each of the original points its
+corresponding node. We will do it by using the k nearest neighbours
+approach with the package <strong>FNN</strong>.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># first: nn merging between snapped points and nodes</span>
 <span class="va">xy1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_coordinates.html" class="external-link">st_coordinates</a></span><span class="op">(</span><span class="va">snapped_accidents</span><span class="op">)</span>
@@ -251,7 +275,8 @@
           n <span class="op">=</span> <span class="fl">6</span>, size <span class="op">=</span> <span class="fl">0.1</span>, palette <span class="op">=</span> <span class="st">"-RdYlBu"</span><span class="op">)</span><span class="op">+</span>
   <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_layout.html" class="external-link">tm_layout</a></span><span class="op">(</span>legend.outside <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> </code></pre></div>
 <p><img src="NetworkBuilding_files/figure-html/unnamed-chunk-11-2.png" width="700"></p>
-<p>And finally, we can calculate the correlation between the two variables !</p>
+<p>And finally, we can calculate the correlation between the two
+variables !</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/stats/cor.test.html" class="external-link">cor.test</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">$</span><span class="va">density</span>, <span class="va">bike_accidents</span><span class="op">$</span><span class="va">btws</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">## </span>
@@ -265,7 +290,10 @@
 <span class="co">## sample estimates:</span>
 <span class="co">## cor </span>
 <span class="co">##  NA</span></code></pre>
-<p>We can see that there is no correlation between the two variables. There is no association between the degree of centrality of an accident location in the network and the density of accidents in a radius of 300m at that location.</p>
+<p>We can see that there is no correlation between the two variables.
+There is no association between the degree of centrality of an accident
+location in the network and the density of accidents in a radius of 300m
+at that location.</p>
 </div>
   </div>
 
@@ -286,7 +314,8 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
+2.0.2.</p>
 </div>
 
       </footer>

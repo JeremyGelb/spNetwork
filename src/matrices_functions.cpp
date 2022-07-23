@@ -17,7 +17,7 @@ std::vector<double> seq_num(double start, double end, double step){
 std::vector<double> seq_num2(double start, double end, double step){
 
   std::vector<double> values;
-  double cumul = 0 - step;
+  double cumul = start - step;
   while(cumul+step <= end){
     cumul+=step;
     values.push_back(cumul);
@@ -30,7 +30,7 @@ std::vector<double> seq_num2(double start, double end, double step){
 std::vector<int> seq_num2f(int start, int end, int step){
 
   std::vector<int> values;
-  int cumul = 0 - step;
+  int cumul = start - step;
   while(cumul+step <= end){
     cumul+=step;
     values.push_back(cumul);

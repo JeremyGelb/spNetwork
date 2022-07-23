@@ -1,3 +1,15 @@
+# spNetwork 0.4.3.4
+
+## corrected bugs
+
+* corrected two minor bugs with the kfunctions, kfunctions.mc, cross_kfunctions and cross_kfunctions.mc ([issue 8](https://github.com/JeremyGelb/spNetwork/issues/8))
+
+# spNetwork 0.4.3.3
+
+## corrected bugs
+
+* When using the nkde and nkde.mc functions, one could get an error if the samples or the events had a X or a Y column. This has been corrected.
+
 # spNetwork 0.4.3.2
 
 ## other changes

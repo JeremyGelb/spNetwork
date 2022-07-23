@@ -1,4 +1,4 @@
-pandoc: 2.14.0.3
+pandoc: 2.17.1.1
 pkgdown: 2.0.2
 pkgdown_sha: ~
 articles:
@@ -10,5 +10,5 @@ articles:
   TNKDE: TNKDE.html
   AdaptiveBW: web_vignettes/AdaptiveBW.html
   NKDEdetailed: web_vignettes/NKDEdetailed.html
-last_built: 2022-05-13T21:48Z
+last_built: 2022-07-23T18:01Z
 
