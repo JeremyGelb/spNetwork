@@ -8,6 +8,7 @@ calc_isochrones(
   lines,
   dists,
   start_points,
+  donught = FALSE,
   mindist = 1,
   weight = NULL,
   direction = NULL
@@ -20,6 +21,10 @@ calc_isochrones(
 
 \item{start_points}{A feature collection of points representing the starting
 points if the isochrones}
+
+\item{donught}{A boolean indicating if the returned lines must overlap for
+each distance (FALSE, default) or if the lines must be cut between each
+distance step (TRUE).}
 
 \item{mindist}{The minimum distance between two points. When two points are
 too close, they might end up snapped at the same location on a line.
@@ -87,7 +92,8 @@ start_points <- st_as_sf(start_points, coords = c("x","y"))
 lines$direction <- "Both"
 lines[6,"direction"] <- "TF"
 
-isochrones <- calc_isochrones(lines, dists = c(10,12),
+isochrones <- calc_isochrones(lines,dists = c(10,12),
+                              donught = TRUE,
                               start_points = start_points,
                               direction = "direction")
 }

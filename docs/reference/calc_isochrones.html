@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3.5</span>
       </span>
     </div>
 
@@ -88,6 +88,7 @@
   <span class="va">lines</span>,
   <span class="va">dists</span>,
   <span class="va">start_points</span>,
+  donught <span class="op">=</span> <span class="cn">FALSE</span>,
   mindist <span class="op">=</span> <span class="fl">1</span>,
   weight <span class="op">=</span> <span class="cn">NULL</span>,
   direction <span class="op">=</span> <span class="cn">NULL</span>
@@ -103,6 +104,10 @@
 <dt>start_points</dt>
 <dd><p>A feature collection of points representing the starting
 points if the isochrones</p></dd>
+<dt>donught</dt>
+<dd><p>A boolean indicating if the returned lines must overlap for
+each distance (FALSE, default) or if the lines must be cut between each
+distance step (TRUE).</p></dd>
 <dt>mindist</dt>
 <dd><p>The minimum distance between two points. When two points are
 too close, they might end up snapped at the same location on a line.
@@ -168,7 +173,8 @@ how to create smooth polygons from the returned sets of lines.</p>
 <span class="va">lines</span><span class="op">$</span><span class="va">direction</span> <span class="op">&lt;-</span> <span class="st">"Both"</span>
 <span class="va">lines</span><span class="op">[</span><span class="fl">6</span>,<span class="st">"direction"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">"TF"</span>
 
-<span class="va">isochrones</span> <span class="op">&lt;-</span> <span class="fu">calc_isochrones</span><span class="op">(</span><span class="va">lines</span>, dists <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>,<span class="fl">12</span><span class="op">)</span>,
+<span class="va">isochrones</span> <span class="op">&lt;-</span> <span class="fu">calc_isochrones</span><span class="op">(</span><span class="va">lines</span>,dists <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>,<span class="fl">12</span><span class="op">)</span>,
+                              donught <span class="op">=</span> <span class="cn">TRUE</span>,
                               start_points <span class="op">=</span> <span class="va">start_points</span>,
                               direction <span class="op">=</span> <span class="st">"direction"</span><span class="op">)</span>
 </code></pre></div>

@@ -15,6 +15,9 @@
 #' @param dists A vector of the size of the desired isochrones
 #' @param start_points A feature collection of points representing the starting
 #' points if the isochrones
+#' @param donught A boolean indicating if the returned lines must overlap for
+#' each distance (FALSE, default) or if the lines must be cut between each
+#' distance step (TRUE).
 #' @param mindist The minimum distance between two points. When two points are
 #' too close, they might end up snapped at the same location on a line.
 #' Default is 1.
@@ -66,10 +69,11 @@
 #' lines$direction <- "Both"
 #' lines[6,"direction"] <- "TF"
 #'
-#' isochrones <- calc_isochrones(lines, dists = c(10,12),
+#' isochrones <- calc_isochrones(lines,dists = c(10,12),
+#'                               donught = TRUE,
 #'                               start_points = start_points,
 #'                               direction = "direction")
-calc_isochrones <- function(lines, dists, start_points, mindist = 1, weight = NULL, direction = NULL){
+calc_isochrones <- function(lines, dists, start_points, donught = FALSE, mindist = 1, weight = NULL, direction = NULL){
 
   # step1 : Check that some points are not too close to each other
   # before snapping
@@ -127,7 +131,6 @@ calc_isochrones <- function(lines, dists, start_points, mindist = 1, weight = NU
   xynodes <- st_coordinates(graph_result$spvertices)
   xy_points <- st_coordinates(snapped_points)
 
-  #start_nodes <- FNN::get.knnx(xynodes, xy_points, k=1)
   start_nodes <- dbscan::kNN(xynodes, query = xy_points, k=1)
   df_start <- data.frame(
     "ptOID" = 1:nrow(snapped_points),
@@ -135,6 +138,9 @@ calc_isochrones <- function(lines, dists, start_points, mindist = 1, weight = NU
     "node_id" = graph_result$spvertices$id[start_nodes$id],
     "node_name" = graph_result$spvertices$name[start_nodes$id]
   )
+
+
+  # tm_shape(lines) + tm_lines("black") + tm_shape(start_points) + tm_dots("red", size = 0.5)
 
   # creating the isochrones: sets of linestrings
   all_multi_lignes <- lapply(1:nrow(df_start), function(i){
@@ -151,8 +157,12 @@ calc_isochrones <- function(lines, dists, start_points, mindist = 1, weight = NU
     )
 
     # on va maintenant iterer sur toutes les distances demandees
-    all_lignes <- lapply(dists, function(d){
-      # on retrouve les noeuds a utiliser
+    dists2 <- c(0,dists[1:(length(dists)-1)])
+    all_lignes <- lapply(1:length(dists), function(j){
+      d <- dists[[j]]
+      dd <- dists2[[j]]
+
+      # on retrouve tous les noeuds a utiliser
       ok_nodes <- subset(dist_df, dist_df$dist <= d)
       # et toutes les edges
       ok_edges <- subset(graph_result$spedges,
@@ -164,7 +174,7 @@ calc_isochrones <- function(lines, dists, start_points, mindist = 1, weight = NU
       df1 <- ok_edges
       df2 <- ok_nodes
 
-      df1<- merge(df1,df2, by.x = "start_oid",
+      df1 <- merge(df1,df2, by.x = "start_oid",
                        by.y = "node_id", all.x = TRUE,
                        all.y = FALSE)
 
@@ -179,52 +189,61 @@ calc_isochrones <- function(lines, dists, start_points, mindist = 1, weight = NU
       df1$end_dist <- df1$dist
       df1$dist <- NULL
 
+      if(donught){
+        df1 <- subset(df1,
+                      df1$start_dist >= dd & df1$start_dist <= d |
+                      df1$end_dist >= dd & df1$end_dist <= d |
+                      is.na(df1$start_dist) |   is.na(df1$end_dist)
+                        )
+      }
+      # tm_shape(lines) + tm_lines("black") + tm_shape(start_points) + tm_dots("red", size = 0.5) + tm_shape(df1) + tm_lines("blue")
+
       # If we are in a directed graph, some edges need to be removed here
       if(is.null(direction) == FALSE){
         df1 <- subset(df1, (is.na(df1$end_dist) & df1$direction == "TF") == FALSE)
         df1 <- subset(df1, (is.na(df1$start_dist) & df1$direction == "FT") == FALSE)
       }
-
-      # we now have to cut the remaining edges
-      test <- is.na(df1$start_dist)==FALSE & is.na(df1$end_dist)==FALSE
-      no_cut <- subset(df1, test)
-
-      # cutting the lines by the start
-      to_cut <- subset(df1, !test)
-      to_cut$node_okid <- ifelse(is.na(to_cut$start_dist), to_cut$end_oid,
-                                 to_cut$start_oid
-                                 )
-      to_cut$ok_dist <- ifelse(is.na(to_cut$start_dist), to_cut$end_dist,
-                               to_cut$start_dist
-      )
-
-      # reordering line if required
-      ext <- lines_extremities(to_cut)
-      ok_nodes <- graph_result$spvertices[to_cut$node_okid,]
-      test1 <- subset(ext, ext$pttype == "start")
-      test2 <- subset(ext, ext$pttype == "end")
-
-      d1 <- sqrt((test1$X - ok_nodes$x)**2 + (test1$Y - ok_nodes$y)**2)
-      d2 <- sqrt((test2$X - ok_nodes$x)**2 + (test2$Y - ok_nodes$y)**2)
-      to_keep <- subset(to_cut, d1 < d2)
-      to_reverse <- subset(to_cut, d1 >= d2)
-
-      # and final cut
-      all_dists <- d - c(to_keep$ok_dist, to_reverse$ok_dist)
-      if(nrow(to_reverse) > 0){
-        all_cuts <- rbind(to_keep, reverse_lines(to_reverse))
-      }else{
-        all_cuts <- to_keep
-      }
-
-      cut_lines <- cut_lines_at_distance(all_cuts, all_dists)
-
-      # saving
-      ok_lines <- rbind(no_cut[c("end_oid","start_oid","edge_id","weight" )],
-                        cut_lines[c("end_oid","start_oid","edge_id","weight" )])
-      ok_lines$distance <- d
-      ok_lines$point_id <- i
-      ok_lines <- ok_lines[c("point_id", "distance")]
+      ok_lines <- trim_lines_at(df1, graph_result, d, dd, i, donught)
+      # # we now have to cut the remaining edges
+      # test <- is.na(df1$start_dist)==FALSE & is.na(df1$end_dist)==FALSE
+      # no_cut <- subset(df1, test)
+      #
+      # # cutting the lines by the start
+      # to_cut <- subset(df1, !test)
+      # to_cut$node_okid <- ifelse(is.na(to_cut$start_dist), to_cut$end_oid,
+      #                            to_cut$start_oid
+      #                            )
+      # to_cut$ok_dist <- ifelse(is.na(to_cut$start_dist), to_cut$end_dist,
+      #                          to_cut$start_dist
+      # )
+      #
+      # # reordering line if required
+      # ext <- lines_extremities(to_cut)
+      # ok_nodes <- graph_result$spvertices[to_cut$node_okid,]
+      # test1 <- subset(ext, ext$pttype == "start")
+      # test2 <- subset(ext, ext$pttype == "end")
+      #
+      # d1 <- sqrt((test1$X - ok_nodes$x)**2 + (test1$Y - ok_nodes$y)**2)
+      # d2 <- sqrt((test2$X - ok_nodes$x)**2 + (test2$Y - ok_nodes$y)**2)
+      # to_keep <- subset(to_cut, d1 < d2)
+      # to_reverse <- subset(to_cut, d1 >= d2)
+      #
+      # # and final cut
+      # all_dists <- d - c(to_keep$ok_dist, to_reverse$ok_dist)
+      # if(nrow(to_reverse) > 0){
+      #   all_cuts <- rbind(to_keep, reverse_lines(to_reverse))
+      # }else{
+      #   all_cuts <- to_keep
+      # }
+      #
+      # cut_lines <- cut_lines_at_distance(all_cuts, all_dists)
+      #
+      # # saving
+      # ok_lines <- rbind(no_cut[c("end_oid","start_oid","edge_id","weight" )],
+      #                   cut_lines[c("end_oid","start_oid","edge_id","weight" )])
+      # ok_lines$distance <- d
+      # ok_lines$point_id <- i
+      # ok_lines <- ok_lines[c("point_id", "distance")]
       return(ok_lines)
 
     })
@@ -236,3 +255,89 @@ calc_isochrones <- function(lines, dists, start_points, mindist = 1, weight = NU
   return(all_multi_lignes)
 
 }
+
+#' @title Helper for isochrones lines cutting
+#'
+#' @description last operation for isochrone calculation, cutting the lines at
+#' their begining and ending. This is a worker function for calc_isochrones.
+#'
+#' @param df1 A features collection of linestrings with some specific fields.
+#' @param graph_result A list produced by the functions build_graph_directed or build_graph.
+#' @param d the end distance of this isochrones.
+#' @param dd the start distance of this isochrones.
+#' @param i the actual iteration.
+#' @param donught A boolean indicating if the returned isochrone will be plained or a donught.
+#'
+#' @return A feature collection of lines
+#'
+#' @keywords internal
+trim_lines_at <- function(df1, graph_result, d, dd, i, donught){
+
+  # we now have to cut the remaining edgesç
+  if(donught){
+    test <- is.na(df1$start_dist)==FALSE &
+      is.na(df1$end_dist)==FALSE &
+      df1$start_dist >= dd &
+      df1$end_dist >= dd
+  }else{
+    test <- is.na(df1$start_dist)==FALSE & is.na(df1$end_dist)==FALSE
+  }
+
+  no_cut <- subset(df1, test)
+
+  # cutting the lines by the start
+  to_cut <- subset(df1, !test)
+  to_cut$node_okid <- ifelse(is.na(to_cut$start_dist), to_cut$end_oid,
+                             to_cut$start_oid
+  )
+  to_cut$ok_dist <- ifelse(is.na(to_cut$start_dist), to_cut$end_dist,
+                           to_cut$start_dist
+  )
+
+  # reordering line if required
+  ext <- lines_extremities(to_cut)
+  ok_nodes <- graph_result$spvertices[to_cut$node_okid,]
+  test1 <- subset(ext, ext$pttype == "start")
+  test2 <- subset(ext, ext$pttype == "end")
+
+  d1 <- sqrt((test1$X - ok_nodes$x)**2 + (test1$Y - ok_nodes$y)**2)
+  d2 <- sqrt((test2$X - ok_nodes$x)**2 + (test2$Y - ok_nodes$y)**2)
+  to_keep <- subset(to_cut, d1 < d2)
+  to_reverse <- subset(to_cut, d1 >= d2)
+
+  # and final cut
+  all_dists <- d - c(to_keep$ok_dist, to_reverse$ok_dist)
+  if(nrow(to_reverse) > 0){
+    all_cuts <- rbind(to_keep, reverse_lines(to_reverse))
+  }else{
+    all_cuts <- to_keep
+  }
+
+  cut_lines <- cut_lines_at_distance(all_cuts, all_dists)
+
+  # HERE : TODO THINK ABOUT HOW TO ALSO CUT THE LINES AT THEIR BEGINING IF REQUIRED !
+  if(donught){
+    # HERE : TODO THINK ABOUT HOW TO ALSO CUT THE LINES AT THEIR BEGINING IF REQUIRED !
+    start_cuts <- dd - cut_lines$ok_dist
+    need_2nd_cut <- start_cuts > 0
+    if(sum(need_2nd_cut) > 0){
+      part1 <- subset(cut_lines, need_2nd_cut)
+      part2 <- subset(cut_lines, !need_2nd_cut)
+
+      cut_lines2 <-  cut_lines_at_distance(reverse_lines(part1), as.vector(st_length(part1)) - start_cuts[need_2nd_cut])
+      cut_lines2$lineID.1 <- NULL
+      cut_lines <- rbind(cut_lines2,part2)
+    }
+  }
+
+  # saving
+  ok_lines <- rbind(no_cut[c("end_oid","start_oid","edge_id","weight" )],
+                    cut_lines[c("end_oid","start_oid","edge_id","weight" )])
+  ok_lines$distance <- d
+  ok_lines$point_id <- i
+  ok_lines <- ok_lines[c("point_id", "distance")]
+  return(ok_lines)
+}
+
+
+

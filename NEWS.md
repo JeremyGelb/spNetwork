@@ -1,3 +1,9 @@
+# spNetwork 0.4.3.5
+
+## New Features
+
+* It is now possible to create isochrones as donught instead of plain isochrones (no overlapping lines). This can be handy if the are used for mapping and to limit the size of the produced feature collections.
+
 # spNetwork 0.4.3.4
 
 ## corrected bugs

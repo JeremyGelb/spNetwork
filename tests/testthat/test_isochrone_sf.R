@@ -166,3 +166,70 @@ test_that("Testing the isochrone function return the expected result on a simple
   expect_false(any(!test))
 })
 
+
+context("testing the isochrone creation functions")
+
+test_that("Testing the isochrone function return the expected result on a simple example and donught mode", {
+
+  #definition of a simple situation
+  wkt_lines <- c(
+    "LINESTRING (0 0, 1 0)",
+    "LINESTRING (1 0, 2 0)",
+    "LINESTRING (2 0, 3 0)",
+    "LINESTRING (0 1, 1 1)",
+    "LINESTRING (1 1, 2 1)",
+    "LINESTRING (2 1, 3 1)",
+    "LINESTRING (0 2, 1 2)",
+    "LINESTRING (1 2, 2 2)",
+    "LINESTRING (2 2, 3 2)",
+    "LINESTRING (0 3, 1 3)",
+    "LINESTRING (1 3, 2 3)",
+    "LINESTRING (2 3, 3 3)",
+    "LINESTRING (0 0, 0 1)",
+    "LINESTRING (0 1, 0 2)",
+    "LINESTRING (0 2, 0 3)",
+    "LINESTRING (1 0, 1 1)",
+    "LINESTRING (1 1, 1 2)",
+    "LINESTRING (1 2, 1 3)",
+    "LINESTRING (2 0, 2 1)",
+    "LINESTRING (2 1, 2 2)",
+    "LINESTRING (2 2, 2 3)",
+    "LINESTRING (3 0, 3 1)",
+    "LINESTRING (3 1, 3 2)",
+    "LINESTRING (3 2, 3 3)"
+  )
+
+  linesdf <- data.frame(wkt = wkt_lines,
+                        id = paste("l",1:length(wkt_lines),sep=""))
+
+  all_lines <- st_as_sf(linesdf, wkt = "wkt")
+
+  # definition of one event
+  event <- data.frame(x=c(0, 1, 3),
+                      y=c(0, 2, 3),
+                      id = c(1,2,3))
+  event <- st_as_sf(event, coords = c("x","y"))
+
+  # calculating the isochrone
+  observed <- calc_isochrones(all_lines, dists = c(1.5,2.5), event[1,],
+                              donught = TRUE,
+                              mindist = 1)
+
+  # expected length of part1 :
+  exp_len1 <- 4
+  exp_nb1 <- 6
+  exp_len2 <- 5
+  exp_nb2 <- 10
+
+  obs_len1 <- sum(st_length(subset(observed, observed$distance == 1.5)))
+  obs_nb1 <- nrow(subset(observed, observed$distance == 1.5))
+  obs_len2 <- sum(st_length(subset(observed, observed$distance == 2.5)))
+  obs_nb2 <- nrow(subset(observed, observed$distance == 2.5))
+
+  v1 <- c(exp_len1, exp_nb1, exp_len2, exp_nb2)
+  v2 <- c(obs_len1, obs_nb1, obs_len2, obs_nb2)
+
+  test <- any(v1 != v2)
+
+  expect_false(test)
+})
