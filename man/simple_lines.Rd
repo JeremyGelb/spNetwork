@@ -14,9 +14,11 @@ An featue collection of linestrings
 }
 \description{
 Split the polylines of a feature collection of linestrings in simple
-segments
+segments at each vertex. The values of the columns are duplicated for each segment.
 }
 \examples{
-#This is an internal function, no example provided
+\donttest{
+data(mtl_lines)
+new_lines <- simple_lines(mtl_lines)
 }
-\keyword{internal}
+}

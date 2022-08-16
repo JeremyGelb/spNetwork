@@ -411,15 +411,18 @@ lixelize_lines.mc <- function(lines, lx_length, mindist = NULL, verbose = TRUE, 
 #' @title LineString to simple Line
 #'
 #' @description Split the polylines of a feature collection of linestrings in simple
-#' segments
+#' segments at each vertex. The values of the columns are duplicated for each segment.
 #'
 #' @param lines The featue collection of linestrings to modify
 #' @return An featue collection of linestrings
 #' @importFrom utils txtProgressBar setTxtProgressBar
 #' @importFrom sf st_crs st_drop_geometry
-#' @keywords internal
+#' @export
 #' @examples
-#' #This is an internal function, no example provided
+#' \donttest{
+#' data(mtl_lines)
+#' new_lines <- simple_lines(mtl_lines)
+#' }
 simple_lines <- function(lines) {
     ## extracting the coordinates of the lines
     allcoords <- lines_coordinates_as_list(lines)
