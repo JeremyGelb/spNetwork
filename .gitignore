@@ -7,6 +7,5 @@ Meta
 /doc/
 /Meta/
 configure
-
 *.o
 *.dll
