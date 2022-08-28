@@ -284,15 +284,22 @@ trim_lines_at <- function(df1, graph_result, d, dd, i, donught){
   }
 
   no_cut <- subset(df1, test)
+  to_cut <- subset(df1, !test)
+
+  if(donught){
+    ok_first_cut <- is.na(to_cut$start_dist) | is.na(to_cut$end_dist)
+  }else{
+
+  }
 
   # cutting the lines by the start
-  to_cut <- subset(df1, !test)
   to_cut$node_okid <- ifelse(is.na(to_cut$start_dist), to_cut$end_oid,
                              to_cut$start_oid
   )
   to_cut$ok_dist <- ifelse(is.na(to_cut$start_dist), to_cut$end_dist,
                            to_cut$start_dist
   )
+
 
   # reordering line if required
   ext <- lines_extremities(to_cut)
@@ -324,7 +331,9 @@ trim_lines_at <- function(df1, graph_result, d, dd, i, donught){
       part1 <- subset(cut_lines, need_2nd_cut)
       part2 <- subset(cut_lines, !need_2nd_cut)
 
-      cut_lines2 <-  cut_lines_at_distance(reverse_lines(part1), as.vector(st_length(part1)) - start_cuts[need_2nd_cut])
+      cut_lines2 <-  cut_lines_at_distance(reverse_lines(part1),
+                                           as.vector(st_length(part1)) - start_cuts[need_2nd_cut]
+      )
       cut_lines2$lineID.1 <- NULL
       cut_lines <- rbind(cut_lines2,part2)
     }
@@ -341,3 +350,103 @@ trim_lines_at <- function(df1, graph_result, d, dd, i, donught){
 
 
 
+
+# trim_lines_at <- function(df1, graph_result, d, dd, i, donught){
+#
+#   # we now have to cut the remaining edges
+#   # we first do the first cut (mandatory in both cases)
+#   test <- is.na(df1$start_dist)==FALSE & is.na(df1$end_dist)==FALSE
+#
+#
+#   no_cut <- subset(df1, test)
+#   to_cut <- subset(df1, !test)
+#
+#   if(nrow(to_cut) > 0){
+#     # cutting the lines by the start
+#     to_cut$node_okid <- ifelse(is.na(to_cut$start_dist), to_cut$end_oid,
+#                                to_cut$start_oid
+#     )
+#     to_cut$ok_dist <- ifelse(is.na(to_cut$start_dist), to_cut$end_dist,
+#                              to_cut$start_dist
+#     )
+#
+#
+#     # reordering line if required
+#     ext <- lines_extremities(to_cut)
+#     ok_nodes <- graph_result$spvertices[to_cut$node_okid,]
+#     test1 <- subset(ext, ext$pttype == "start")
+#     test2 <- subset(ext, ext$pttype == "end")
+#
+#     d1 <- sqrt((test1$X - ok_nodes$x)**2 + (test1$Y - ok_nodes$y)**2)
+#     d2 <- sqrt((test2$X - ok_nodes$x)**2 + (test2$Y - ok_nodes$y)**2)
+#     to_keep <- subset(to_cut, d1 < d2)
+#     to_reverse <- subset(to_cut, d1 >= d2)
+#
+#     # and final cut
+#     all_dists <- d - c(to_keep$ok_dist, to_reverse$ok_dist)
+#     if(nrow(to_reverse) > 0){
+#       all_cuts <- rbind(to_keep, reverse_lines(to_reverse))
+#     }else{
+#       all_cuts <- to_keep
+#     }
+#
+#     cut_lines <- cut_lines_at_distance(all_cuts, all_dists)
+#
+#     ok_names <- names(cut_lines)[names(cut_lines) %in% names(no_cut)]
+#     print(names(cut_lines[ok_names]))
+#     print(names(no_cut))
+#     df1B <- rbind(cut_lines[ok_names], no_cut)
+#   }else{
+#     df1B <- df1
+#   }
+#
+#
+#
+#   # HERE : TODO THINK ABOUT HOW TO ALSO CUT THE LINES AT THEIR BEGINING IF REQUIRED !
+#   if(donught){
+#
+#     df1B$node_okid <- dplyr::case_when(
+#       df1B$start_dist < df1B$end_dist ~ df1B$start_oid,
+#       df1B$start_dist > df1B$end_dist ~ df1B$end_oid,
+#       is.na(df1B$start_dist) ~ df1B$end_oid,
+#       is.na(df1B$end_dist) ~ df1B$start_oid,
+#     )
+#
+#     df1B$ok_dist <- dplyr::case_when(
+#       df1B$start_dist < df1B$end_dist ~ df1B$start_dist,
+#       df1B$start_dist > df1B$end_dist ~ df1B$end_dist,
+#       is.na(df1B$start_dist) ~ df1B$end_dist,
+#       is.na(df1B$end_dist) ~ df1B$start_dist,
+#     )
+#
+#
+#     # HERE : TODO THINK ABOUT HOW TO ALSO CUT THE LINES AT THEIR BEGINING IF REQUIRED !
+#     start_cuts <- dd - df1B$ok_dist
+#     need_2nd_cut <- start_cuts > 0
+#     if(sum(need_2nd_cut) > 0){
+#
+#       part1 <- subset(df1B, need_2nd_cut)
+#       part2 <- subset(df1B, !need_2nd_cut)
+#
+#       ## LAST THING TO DO : ROTATE THE LINES IN THE RIGHT DIRECTION IF NEEDED
+#
+#
+#       cut_lines2 <-  cut_lines_at_distance(reverse_lines(part1),
+#                                            as.vector(st_length(part1)) - start_cuts[need_2nd_cut]
+#       )
+#       cut_lines2$lineID <- NULL
+#       ok_lines <- rbind(cut_lines2,part2)
+#     }else{
+#       ok_lines <- df1B
+#     }
+#
+#   }
+#
+#   # saving
+#   print(names(ok_lines))
+#   ok_lines <- ok_lines[c("end_oid","start_oid","edge_id","weight")]
+#   ok_lines$distance <- d
+#   ok_lines$point_id <- i
+#   ok_lines <- ok_lines[c("point_id", "distance")]
+#   return(ok_lines)
+# }

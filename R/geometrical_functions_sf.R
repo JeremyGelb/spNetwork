@@ -420,8 +420,8 @@ lixelize_lines.mc <- function(lines, lx_length, mindist = NULL, verbose = TRUE, 
 #' @export
 #' @examples
 #' \donttest{
-#' data(mtl_lines)
-#' new_lines <- simple_lines(mtl_lines)
+#' data(mtl_network)
+#' new_lines <- simple_lines(mtl_network)
 #' }
 simple_lines <- function(lines) {
     ## extracting the coordinates of the lines

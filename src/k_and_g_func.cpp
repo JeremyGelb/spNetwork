@@ -24,7 +24,7 @@ NumericVector kfunc_cpp(arma::mat dist_mat,float start,float end, float step, fl
   float t1 = (n-1)/Lt;
 
   NumericVector k_values(breaks.size());
-
+  // Iterating on breaks
   for(int i = 0; i < breaks.size(); ++i) {
     float dist = breaks[i];
     arma::mat int_mat = arma::conv_to<arma::mat>::from((dist_mat <= dist));

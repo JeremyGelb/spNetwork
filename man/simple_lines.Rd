@@ -18,7 +18,7 @@ segments at each vertex. The values of the columns are duplicated for each segme
 }
 \examples{
 \donttest{
-data(mtl_lines)
-new_lines <- simple_lines(mtl_lines)
+data(mtl_network)
+new_lines <- simple_lines(mtl_network)
 }
 }
