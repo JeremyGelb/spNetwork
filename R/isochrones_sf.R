@@ -145,7 +145,6 @@ calc_isochrones <- function(lines, dists, start_points, donught = FALSE, mindist
   # creating the isochrones: sets of linestrings
   all_multi_lignes <- lapply(1:nrow(df_start), function(i){
     row <- df_start[i,]
-
     # pour chaque point de depart calculer les distances a tous les autres points
     all_dists <- t(igraph::distances(graph_result$graph,
                                    to = row$node_idx,
@@ -283,48 +282,53 @@ trim_lines_at <- function(df1, graph_result, d, dd, i, donught){
     test <- is.na(df1$start_dist)==FALSE & is.na(df1$end_dist)==FALSE
   }
 
-  no_cut <- subset(df1, test)
-  to_cut <- subset(df1, !test)
+  if(sum(!test) > 0){
+    no_cut <- subset(df1, test)
+    to_cut <- subset(df1, !test)
+    # here I need to know if the start point and end point of each line match with
+    # the start node and end nodes
 
-  # here I need to know if the start point and end point of each line match with
-  # the start node and end nodes
+    # first, I find the coordinates of the nodes in the graph
+    to_cut$start_nodeX <- graph_result$spvertices[to_cut$start_oid,]$x
+    to_cut$end_nodeX <- graph_result$spvertices[to_cut$end_oid,]$x
+    to_cut$start_nodeY <- graph_result$spvertices[to_cut$start_oid,]$y
+    to_cut$end_nodeY <- graph_result$spvertices[to_cut$end_oid,]$y
 
-  # first, I find the coordinates of the nodes in the graph
-  to_cut$start_nodeX <- graph_result$spvertices[to_cut$start_oid,]$x
-  to_cut$end_nodeX <- graph_result$spvertices[to_cut$end_oid,]$x
-  to_cut$start_nodeY <- graph_result$spvertices[to_cut$start_oid,]$y
-  to_cut$end_nodeY <- graph_result$spvertices[to_cut$end_oid,]$y
+    # second, I find the coordinates of the extremities of the lines
+    ext <- lines_extremities(to_cut)
+    coords <- st_coordinates(ext)
+    start_coords <- subset(coords, ext$pttype == "start")
 
-  # second, I find the coordinates of the extremities of the lines
-  ext <- lines_extremities(to_cut)
-  coords <- st_coordinates(ext)
-  start_coords <- subset(coords, ext$pttype == "start")
+    # third, I calculate the distances between the nodes and the start point
+    dist1 <- sqrt(((start_coords[,1] - to_cut$start_nodeX) ** 2) + ((start_coords[,2] - to_cut$start_nodeY) ** 2))
+    dist2 <- sqrt(((start_coords[,1] - to_cut$end_nodeX) ** 2) + ((start_coords[,2] - to_cut$end_nodeY) ** 2))
 
-  # third, I calculate the distances between the nodes and the start point
-  dist1 <- sqrt(((start_coords[,1] - to_cut$start_nodeX) ** 2) + ((start_coords[,2] - to_cut$start_nodeY) ** 2))
-  dist2 <- sqrt(((start_coords[,1] - to_cut$end_nodeX) ** 2) + ((start_coords[,2] - to_cut$end_nodeY) ** 2))
+    # If the distance to start_node is not the smallest, then I must reverse the geometry
+    # it will insure that for each line, start_node is also the first vertex of the line
+    test <- dist1 < dist2
+    to_cut2 <- rbind(
+      subset(to_cut, test),
+      reverse_lines(subset(to_cut, !test))
+    )
 
-  # If the distance to start_node is not the smallest, then I must reverse the geometry
-  # it will insure that for each line, start_node is also the first vertex of the line
-  test <- dist1 < dist2
-  to_cut2 <- rbind(
-    subset(to_cut, test),
-    reverse_lines(subset(to_cut, !test))
-  )
+    # on va passer le tout a une fonction en c++ qui va iterer et regler son cas a chaque ligne
+    list_of_lines <- lines_coordinates_as_list(to_cut2)
+    start_dists <- ifelse(is.na(to_cut2$start_dist),-1,to_cut2$start_dist)
+    end_dists <- ifelse(is.na(to_cut2$end_dist),-1,to_cut2$end_dist)
 
-  # on va passer le tout a une fonction en c++ qui va iterer et regler son cas a chaque ligne
-  list_of_lines <- lines_coordinates_as_list(to_cut2)
-  start_dists <- ifelse(is.na(to_cut2$start_dist),-1,to_cut2$start_dist)
-  end_dists <- ifelse(is.na(to_cut2$end_dist),-1,to_cut2$end_dist)
-
-  cut_coords <- trim_lines_for_isos_cpp(list_of_lines, start_dists, end_dists, donught, d, dd)
-  new_lines <- list_coordinates_as_lines(cut_coords, st_crs(to_cut2))
-  to_cut2$geometry <- new_lines$geometry
+    cut_coords <- trim_lines_for_isos_cpp(list_of_lines, start_dists, end_dists, donught, d, dd)
+    new_lines <- list_coordinates_as_lines(cut_coords, st_crs(to_cut2))
+    to_cut2$geometry <- new_lines$geometry
 
 
-  # saving
-  ok_lines <- rbind(no_cut[c("end_oid","start_oid","edge_id","weight" )],
-                    to_cut2[c("end_oid","start_oid","edge_id","weight" )])
+    # saving
+    ok_lines <- rbind(no_cut[c("end_oid","start_oid","edge_id","weight" )],
+                      to_cut2[c("end_oid","start_oid","edge_id","weight" )])
+  }else{
+    ok_lines <- no_cut[c("end_oid","start_oid","edge_id","weight" )]
+  }
+
+
   ok_lines$distance <- d
   ok_lines$point_id <- i
   ok_lines <- ok_lines[c("point_id", "distance")]
