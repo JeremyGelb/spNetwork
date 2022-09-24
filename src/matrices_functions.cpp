@@ -149,3 +149,17 @@ NumericMatrix extend_matrix_by_ids(NumericMatrix agg_mat, IntegerVector oids, In
 }
 
 
+// a little function used to reverse the order of the row in a matrix
+// borrowed here : https://stackoverflow.com/questions/31946641/reverse-numeric-matrix-by-row
+// TY Dirk !
+// [[Rcpp::export]]
+NumericMatrix reverseByRow(NumericMatrix inmat) {
+  int r = inmat.nrow();
+  NumericMatrix nw(r,inmat.ncol());
+  for(int i = 0; i < r; i++){
+    nw.row(i) = inmat.row(r-i-1);
+  }
+  return nw;
+}
+
+

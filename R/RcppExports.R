@@ -419,8 +419,24 @@ find_nearest_object_in_line_rtree <- function(pts, lines, min_dist, max_iter) {
     .Call(`_spNetwork_find_nearest_object_in_line_rtree`, pts, lines, min_dist, max_iter)
 }
 
+calc_line_length <- function(line) {
+    .Call(`_spNetwork_calc_line_length`, line)
+}
+
+cut_line_at_dist <- function(line, d) {
+    .Call(`_spNetwork_cut_line_at_dist`, line, d)
+}
+
 cut_lines_at_distances_cpp <- function(lines, dists) {
     .Call(`_spNetwork_cut_lines_at_distances_cpp`, lines, dists)
+}
+
+trim_line_for_isos <- function(line, start_dist, end_dist, donught, d, dd) {
+    .Call(`_spNetwork_trim_line_for_isos`, line, start_dist, end_dist, donught, d, dd)
+}
+
+trim_lines_for_isos_cpp <- function(lines, start_dists, end_dists, donught, d, dd) {
+    .Call(`_spNetwork_trim_lines_for_isos_cpp`, lines, start_dists, end_dists, donught, d, dd)
 }
 
 add_vertices_lines_cpp <- function(points, lines, nearest_lines_idx, mindist) {
@@ -565,6 +581,10 @@ seq_num2f <- function(start, end, step) {
 
 extend_matrix_by_ids <- function(agg_mat, oids, locids) {
     .Call(`_spNetwork_extend_matrix_by_ids`, agg_mat, oids, locids)
+}
+
+reverseByRow <- function(inmat) {
+    .Call(`_spNetwork_reverseByRow`, inmat)
 }
 
 #' @title The worker function to calculate continuous NKDE (with ARMADILLO and sparse matrix)

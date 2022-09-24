@@ -373,6 +373,29 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// calc_line_length
+float calc_line_length(NumericMatrix line);
+RcppExport SEXP _spNetwork_calc_line_length(SEXP lineSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type line(lineSEXP);
+    rcpp_result_gen = Rcpp::wrap(calc_line_length(line));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cut_line_at_dist
+NumericMatrix cut_line_at_dist(NumericMatrix line, float d);
+RcppExport SEXP _spNetwork_cut_line_at_dist(SEXP lineSEXP, SEXP dSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type line(lineSEXP);
+    Rcpp::traits::input_parameter< float >::type d(dSEXP);
+    rcpp_result_gen = Rcpp::wrap(cut_line_at_dist(line, d));
+    return rcpp_result_gen;
+END_RCPP
+}
 // cut_lines_at_distances_cpp
 List cut_lines_at_distances_cpp(List lines, NumericVector dists);
 RcppExport SEXP _spNetwork_cut_lines_at_distances_cpp(SEXP linesSEXP, SEXP distsSEXP) {
@@ -382,6 +405,38 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< List >::type lines(linesSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type dists(distsSEXP);
     rcpp_result_gen = Rcpp::wrap(cut_lines_at_distances_cpp(lines, dists));
+    return rcpp_result_gen;
+END_RCPP
+}
+// trim_line_for_isos
+NumericMatrix trim_line_for_isos(NumericMatrix line, float start_dist, float end_dist, bool donught, float d, float dd);
+RcppExport SEXP _spNetwork_trim_line_for_isos(SEXP lineSEXP, SEXP start_distSEXP, SEXP end_distSEXP, SEXP donughtSEXP, SEXP dSEXP, SEXP ddSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type line(lineSEXP);
+    Rcpp::traits::input_parameter< float >::type start_dist(start_distSEXP);
+    Rcpp::traits::input_parameter< float >::type end_dist(end_distSEXP);
+    Rcpp::traits::input_parameter< bool >::type donught(donughtSEXP);
+    Rcpp::traits::input_parameter< float >::type d(dSEXP);
+    Rcpp::traits::input_parameter< float >::type dd(ddSEXP);
+    rcpp_result_gen = Rcpp::wrap(trim_line_for_isos(line, start_dist, end_dist, donught, d, dd));
+    return rcpp_result_gen;
+END_RCPP
+}
+// trim_lines_for_isos_cpp
+List trim_lines_for_isos_cpp(List lines, NumericVector start_dists, NumericVector end_dists, bool donught, float d, float dd);
+RcppExport SEXP _spNetwork_trim_lines_for_isos_cpp(SEXP linesSEXP, SEXP start_distsSEXP, SEXP end_distsSEXP, SEXP donughtSEXP, SEXP dSEXP, SEXP ddSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type lines(linesSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type start_dists(start_distsSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type end_dists(end_distsSEXP);
+    Rcpp::traits::input_parameter< bool >::type donught(donughtSEXP);
+    Rcpp::traits::input_parameter< float >::type d(dSEXP);
+    Rcpp::traits::input_parameter< float >::type dd(ddSEXP);
+    rcpp_result_gen = Rcpp::wrap(trim_lines_for_isos_cpp(lines, start_dists, end_dists, donught, d, dd));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -641,6 +696,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// reverseByRow
+NumericMatrix reverseByRow(NumericMatrix inmat);
+RcppExport SEXP _spNetwork_reverseByRow(SEXP inmatSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type inmat(inmatSEXP);
+    rcpp_result_gen = Rcpp::wrap(reverseByRow(inmat));
+    return rcpp_result_gen;
+END_RCPP
+}
 // continuous_nkde_cpp_arma_sparse
 DataFrame continuous_nkde_cpp_arma_sparse(List neighbour_list, NumericVector events, NumericVector weights, DataFrame samples, NumericVector bws, std::string kernel_name, DataFrame nodes, DataFrame line_list, int max_depth, bool verbose, std::string div);
 RcppExport SEXP _spNetwork_continuous_nkde_cpp_arma_sparse(SEXP neighbour_listSEXP, SEXP eventsSEXP, SEXP weightsSEXP, SEXP samplesSEXP, SEXP bwsSEXP, SEXP kernel_nameSEXP, SEXP nodesSEXP, SEXP line_listSEXP, SEXP max_depthSEXP, SEXP verboseSEXP, SEXP divSEXP) {
@@ -851,7 +917,11 @@ static const R_CallMethodDef CallEntries[] = {
     {"_spNetwork_tnkde_get_loo_values", (DL_FUNC) &_spNetwork_tnkde_get_loo_values, 15},
     {"_spNetwork_adaptive_bw_tnkde_cpp", (DL_FUNC) &_spNetwork_adaptive_bw_tnkde_cpp, 15},
     {"_spNetwork_find_nearest_object_in_line_rtree", (DL_FUNC) &_spNetwork_find_nearest_object_in_line_rtree, 4},
+    {"_spNetwork_calc_line_length", (DL_FUNC) &_spNetwork_calc_line_length, 1},
+    {"_spNetwork_cut_line_at_dist", (DL_FUNC) &_spNetwork_cut_line_at_dist, 2},
     {"_spNetwork_cut_lines_at_distances_cpp", (DL_FUNC) &_spNetwork_cut_lines_at_distances_cpp, 2},
+    {"_spNetwork_trim_line_for_isos", (DL_FUNC) &_spNetwork_trim_line_for_isos, 6},
+    {"_spNetwork_trim_lines_for_isos_cpp", (DL_FUNC) &_spNetwork_trim_lines_for_isos_cpp, 6},
     {"_spNetwork_add_vertices_lines_cpp", (DL_FUNC) &_spNetwork_add_vertices_lines_cpp, 4},
     {"_spNetwork_add_center_lines_cpp", (DL_FUNC) &_spNetwork_add_center_lines_cpp, 1},
     {"_spNetwork_split_lines_at_points_cpp", (DL_FUNC) &_spNetwork_split_lines_at_points_cpp, 4},
@@ -868,6 +938,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_spNetwork_seq_num2", (DL_FUNC) &_spNetwork_seq_num2, 3},
     {"_spNetwork_seq_num2f", (DL_FUNC) &_spNetwork_seq_num2f, 3},
     {"_spNetwork_extend_matrix_by_ids", (DL_FUNC) &_spNetwork_extend_matrix_by_ids, 3},
+    {"_spNetwork_reverseByRow", (DL_FUNC) &_spNetwork_reverseByRow, 1},
     {"_spNetwork_continuous_nkde_cpp_arma_sparse", (DL_FUNC) &_spNetwork_continuous_nkde_cpp_arma_sparse, 11},
     {"_spNetwork_continuous_nkde_cpp_arma", (DL_FUNC) &_spNetwork_continuous_nkde_cpp_arma, 11},
     {"_spNetwork_continuous_tnkde_cpp_arma_sparse", (DL_FUNC) &_spNetwork_continuous_tnkde_cpp_arma_sparse, 14},

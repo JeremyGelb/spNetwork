@@ -249,6 +249,70 @@ IntegerVector find_nearest_object_in_line_rtree(NumericMatrix pts, List lines, d
  *
  */
 
+// A simple function to calculate the length of a line based on its coordinates
+// [[Rcpp::export]]
+float calc_line_length(NumericMatrix line){
+
+  float full_length = 0.0;
+  double x2,y2,x1,y1,x3,y3,dd;
+  int j;
+  for(j=1; j < line.nrow(); ++j){
+    x2 = line(j,0);
+    y2 = line(j,1);
+    x1 = line(j-1,0);
+    y1 = line(j-1,1);
+    dd = sqrt(pow(x1-x2,2) + pow(y1-y2,2));
+    full_length = full_length + dd;
+  }
+  return(full_length);
+
+};
+
+
+// A simple function to cut a line at a specified distance from its start
+// [[Rcpp::export]]
+NumericMatrix cut_line_at_dist(NumericMatrix line, float d){
+
+  int j;
+  double x2,y2,x1,y1,x3,y3,dd,dt,t;
+  NumericVector okX;
+  NumericVector okY;
+  okX.push_back(line(0,0));
+  okY.push_back(line(0,1));
+  double totald = 0;
+
+  for(j=1; j < line.nrow(); ++j){
+    // on calcule la longueur entre ce nvx point et le precedent
+    x2 = line(j,0);
+    y2 = line(j,1);
+    x1 = line(j-1,0);
+    y1 = line(j-1,1);
+    dd = sqrt(pow(x1-x2,2) + pow(y1-y2,2));
+    totald = totald + dd;
+    // si on ne depasse pas la longueur totale, on continue
+    if (totald < d){
+      okX.push_back(x2);
+      okY.push_back(y2);
+    }else{
+      // si on depasse pas la longueur totale, on calcule la position du dernier point
+      dt = d - (totald - dd);
+      t = dt / dd;
+      x3 = (1-t)*x1 + x2*t;
+      y3 = (1-t)*y1 + t*y2;
+      okX.push_back(x3);
+      okY.push_back(y3);
+      break;
+    }
+  }
+
+  //creating a new matrix
+  NumericMatrix outmat(okX.length(),2);
+  outmat(_,0) = okX;
+  outmat(_,1) = okY;
+  return(outmat);
+};
+
+
 // A simple function to cut lines specified as matrix of coordinates and a
 // vector of distances
 // [[Rcpp::export]]
@@ -265,46 +329,129 @@ List cut_lines_at_distances_cpp(List lines, NumericVector dists){
   for(i=0; i < lines.length(); ++i){
     d = dists(i);
     NumericMatrix line = lines(i);
+    NumericMatrix outmat = cut_line_at_dist(line, d);
     // on va ensuite iterer sur les points de cette ligne
-    NumericVector okX;
-    NumericVector okY;
-    okX.push_back(line(0,0));
-    okY.push_back(line(0,1));
-    totald = 0;
-
-    for(j=1; j < line.nrow(); ++j){
-      // on calcule la longueur entre ce nvx point et le precedent
-      x2 = line(j,0);
-      y2 = line(j,1);
-      x1 = line(j-1,0);
-      y1 = line(j-1,1);
-      dd = sqrt(pow(x1-x2,2) + pow(y1-y2,2));
-      totald = totald + dd;
-      // si on ne depasse pas la longueur totale, on continue
-      if (totald < d){
-        okX.push_back(x2);
-        okY.push_back(y2);
-      }else{
-        // si on depasse pas la longueur totale, on calcule la position du dernier point
-        dt = d - (totald - dd);
-        t = dt / dd;
-        x3 = (1-t)*x1 + x2*t;
-        y3 = (1-t)*y1 + t*y2;
-        okX.push_back(x3);
-        okY.push_back(y3);
-        break;
-      }
-    }
-
-    //creating a new matrix
-    NumericMatrix outmat(okX.length(),2);
-    outmat(_,0) = okX;
-    outmat(_,1) = okY;
+    // NumericVector okX;
+    // NumericVector okY;
+    // okX.push_back(line(0,0));
+    // okY.push_back(line(0,1));
+    // totald = 0;
+    //
+    // for(j=1; j < line.nrow(); ++j){
+    //   // on calcule la longueur entre ce nvx point et le precedent
+    //   x2 = line(j,0);
+    //   y2 = line(j,1);
+    //   x1 = line(j-1,0);
+    //   y1 = line(j-1,1);
+    //   dd = sqrt(pow(x1-x2,2) + pow(y1-y2,2));
+    //   totald = totald + dd;
+    //   // si on ne depasse pas la longueur totale, on continue
+    //   if (totald < d){
+    //     okX.push_back(x2);
+    //     okY.push_back(y2);
+    //   }else{
+    //     // si on depasse pas la longueur totale, on calcule la position du dernier point
+    //     dt = d - (totald - dd);
+    //     t = dt / dd;
+    //     x3 = (1-t)*x1 + x2*t;
+    //     y3 = (1-t)*y1 + t*y2;
+    //     okX.push_back(x3);
+    //     okY.push_back(y3);
+    //     break;
+    //   }
+    // }
+    //
+    // //creating a new matrix
+    // NumericMatrix outmat(okX.length(),2);
+    // outmat(_,0) = okX;
+    // outmat(_,1) = okY;
     newList.push_back(clone(outmat));
   }
   return wrap(newList);
 };
 
+
+// A simple function to cut lines specified as matrix of coordinates and a
+// vector of distances
+// [[Rcpp::export]]
+NumericMatrix trim_line_for_isos(NumericMatrix line, float start_dist, float end_dist, bool donught, float d, float dd){
+
+  // Je vais avoir besoin de la longueur de cette ligne
+  float line_length = calc_line_length(line);
+  float diff;
+  NumericMatrix new_mat;
+
+  // on complete les longueur si on ne les a pas encore
+  if(start_dist < 0){
+    start_dist = end_dist + line_length;
+  }
+  if(end_dist < 0){
+    end_dist = start_dist + line_length;
+  }
+
+  // 1er cas, la distance pour le point de depart
+  // est trop grande, il faut racourcir au depart
+  if (start_dist > d){
+    diff = start_dist - d;
+    new_mat = reverseByRow(line);
+    new_mat = cut_line_at_dist(new_mat, (line_length - diff));
+    line = reverseByRow(new_mat);
+  }
+  // 2e cas, la distance pour le point d'arrivee
+  // est trop grande, il faut racourcir au points d'arrivee
+  if (end_dist > d){
+    diff = end_dist - d;
+    line_length = calc_line_length(line);
+    new_mat = cut_line_at_dist(line, (line_length - diff));
+    line = new_mat;
+  }
+  // si on est dans le cas des donught, il faut aussi faire la seconde inspection
+  if(donught){
+    // 1er cas la distance pour le point de depart est trop courte !
+    // il faut couper ce qui est en trop
+    if (start_dist < dd){
+      diff = dd - start_dist;
+      line_length = calc_line_length(line);
+      new_mat = reverseByRow(line);
+      new_mat = cut_line_at_dist(new_mat, (line_length - diff));
+      line = reverseByRow(new_mat);
+    }
+    // 2 cas la distance pour le point d'arrivee est trop courte !
+    // il faut couper ce qui est en trop
+    if (end_dist < dd){
+      diff = dd - end_dist;
+      line_length = calc_line_length(line);
+      new_mat = cut_line_at_dist(line, (line_length - diff));
+      line = new_mat;
+    }
+  }
+  return (line);
+};
+
+
+// A simple function to cut lines specified as matrix of coordinates and a
+// vector of distances
+// [[Rcpp::export]]
+List trim_lines_for_isos_cpp(List lines, NumericVector start_dists, NumericVector end_dists, bool donught, float d, float dd){
+
+  float start_dist, end_dist, diff, line_length;
+  //List newList;
+  std::vector<NumericMatrix> newList;
+  int i;
+  // on va commencer par iterer sur chacune des lignes
+  for(i=0; i < lines.length(); ++i){
+    NumericMatrix LineCoords = lines(i);
+    // et on applique simplement la fonction d'au-dessus
+    start_dist = start_dists(i);
+    end_dist = end_dists(i);
+    NumericMatrix NewLine = trim_line_for_isos(LineCoords,
+                                               start_dist, end_dist,
+                                               donught, d, dd);
+    newList.push_back(clone(NewLine));
+
+  }
+  return wrap(newList);
+};
 
 
 // *********************************************************************
