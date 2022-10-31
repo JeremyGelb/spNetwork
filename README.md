@@ -81,8 +81,8 @@ actual development version the implemented methods are:
     isochrones](https://jeremygelb.github.io/spNetwork/articles/Isochrones.html))
 
 Calculation on network can be long, efforts were made to reduce
-computation time by implementing several core functions with **Rcpp**
-and **RcppArmadillo** and by using multiprocessing when possible.
+computation time by implementing several functions with **Rcpp** and
+**RcppArmadillo** and by using multiprocessing when possible.
 
 ## Installing
 

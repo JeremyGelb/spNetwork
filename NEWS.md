@@ -4,6 +4,14 @@
 
 * It is now possible to create isochrones as donught instead of plain isochrones (no overlapping lines). This can be handy if the are used for mapping and to limit the size of the produced feature collections.
 
+## corrected bugs
+
+A bug occuring when splitting the data with a spatial grid has been corrected.
+
+## Documentation
+
+* There is a new vignette on the website about spatio-temporal dbscan with network distance.
+
 # spNetwork 0.4.3.4
 
 ## corrected bugs

@@ -86,7 +86,7 @@ calc_isochrones <- function(lines, dists, start_points, donught = FALSE, mindist
     }
   }
 
-  # step2 : snapping hte points on the lines
+  # step2 : snapping the points on the lines
   lines$OID <- 1:nrow(lines)
   snapped_points <- snapPointsToLines2(start_points, lines, "OID")
 

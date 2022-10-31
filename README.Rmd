@@ -67,7 +67,7 @@ This package can be used to perform several types of analysis on geographical ne
 * Graph analysis, using the functions of the package **igraph** (see the vignette [Building graphs](https://jeremygelb.github.io/spNetwork/articles/NetworkBuilding.html))
 * Isochrones, to delineate accessible area around points localized on a network (see the vignette [Calculating isochrones](https://jeremygelb.github.io/spNetwork/articles/Isochrones.html))
 
-Calculation on network can be long, efforts were made to reduce computation time by implementing several core functions with **Rcpp** and **RcppArmadillo** and by using multiprocessing when possible. 
+Calculation on network can be long, efforts were made to reduce computation time by implementing several functions with **Rcpp** and **RcppArmadillo** and by using multiprocessing when possible. 
 
 ## Installing
 

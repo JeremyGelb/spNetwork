@@ -433,6 +433,7 @@ simple_lines <- function(lines) {
     oids <- sapply(1:nrow(lines), function(i) {
         return(rep(i, counts[[i]]))
     })
+    dim(oids) <- NULL # just to be sure !
     if(nrow(lines)>1 & is.list(oids)){
         oids <- do.call("c", oids)
     }
