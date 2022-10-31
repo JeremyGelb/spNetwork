@@ -74,11 +74,13 @@ jobs:
           loadfonts()
         shell: Rscript {0}
 
-      - name: Query igraph for windows
+      - name: Query igraph and XML for windows
         if: runner.os == 'Windows'
         run: |
           install.packages('remotes')
           install.packages("igraph", type = "binary")
+          install.packages("XML", type = "binary")
+          install.packages("tmap")
         shell: Rscript {0}
 
       - name: Restore R package cache
