@@ -102,8 +102,26 @@ test_that("Testing the correction_factor function for a discontinuous NKDE", {
 
   expected_vals <- c(1,1,expected_val)
   # let us calculate the observed value
-  observed <- correction_factor(polygons,event,all_lines,
-                                "discontinuous", c(3,3,3), "uniform", 0.1, 2, 8, sparse=TRUE)
+  study_area = polygons
+  events = event
+  lines = all_lines
+  method = "discontinuous"
+  bws = c(3,3,3)
+  kernel_name = "uniform"
+  tol = 0.1
+  digits = 2
+  max_depth = 8
+  sparse=TRUE
+  observed <- correction_factor(study_area = polygons,
+                                events = event,
+                                lines = all_lines,
+                                method = "discontinuous",
+                                bws = c(3,3,3),
+                                kernel_name = "uniform",
+                                tol = 0.1,
+                                digits = 2,
+                                max_depth = 8,
+                                sparse=TRUE)
 
   observed2 <- correction_factor(polygons,event,all_lines,
                                 "discontinuous", c(3,3,3), "uniform", 0.1, 2, 8, sparse=FALSE)

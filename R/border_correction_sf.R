@@ -139,7 +139,7 @@ correction_factor <- function(study_area, events, lines, method, bws, kernel_nam
 
   # step 0 calculate the distances between the points and the border
   boundaries <- st_boundary(study_area)
-  dists <- as.numeric(st_distance(events, boundaries, by_element = TRUE))
+  dists <- as.numeric(st_distance(events, boundaries))
   ok_events <- subset(events, dists < bw)
   # step 1 create the border elements
   chunks <- split_border(study_area,bw)

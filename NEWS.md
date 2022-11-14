@@ -1,3 +1,9 @@
+# spNetwork 0.4.3.6
+
+## corrected bugs
+
+The new version of sf created an error because of a bad use of the argument by_element in the function st_distance. It is corrected and tested now. 
+
 # spNetwork 0.4.3.5
 
 ## New Features
