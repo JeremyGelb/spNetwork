@@ -221,9 +221,14 @@ prepare_elements_netlistw <- function(is,grid,snapped_points,lines,maxdistance){
             }else{
                 end_pts <-  spNetwork::spatial_request(buff, snapped_points_tree, snapped_points)
                 end_pts <- subset(end_pts,(end_pts$oids %in% start_pts$oids)== FALSE)
-                end_pts$pttype <- "end"
-                #combining all the points
-                all_pts <- rbind(start_pts,end_pts)
+                if(nrow(end_pts) > 0){
+                  end_pts$pttype <- "end"
+                  #combining all the points
+                  all_pts <- rbind(start_pts,end_pts)
+                }else{
+                  all_pts <- start_pts
+                }
+
             }
             #selecting the lines
             selected_lines <-  spNetwork::spatial_request(buff, lines_tree, lines)
@@ -570,10 +575,12 @@ network_listw.mc <- function(origins,lines,maxdistance, method="centroid", point
         iseq[[length(iseq)+1]] <- list(cnt+1,all_is[start:(start+grid_shape[[2]]-1)])
         cnt<-cnt+1
     }
+
     listelements <- future.apply::future_lapply(iseq,function(ii){
         elements <- prepare_elements_netlistw(ii[[2]],grid,snapped_points,lines,maxdistance)
         return(elements)
     }, future.packages = c("sf", "spNetwork"))
+
     listelements <- unlist(listelements,recursive = FALSE)
     ##iterating on the grid
     listvalues <- future.apply::future_lapply(listelements,function(elements){

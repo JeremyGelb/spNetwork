@@ -1,3 +1,9 @@
+# spNetwork 0.4.3.6.9000
+
+## corrected bugs
+
+Corrected a minor bug in the functions network_listw.mc and network_listw
+
 # spNetwork 0.4.3.6
 
 ## corrected bugs
