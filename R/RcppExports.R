@@ -286,7 +286,7 @@ NULL
 #' @param events_wid a NumericVector indicating the unique id of all the events
 #' @param weights a matrix with the weights associated with each event (row) for each
 #' bws_net (cols).
-#' @param bws_net an arma::vec with the network bandwidths to consider
+#' @param bws_net an arma::mat with the network bandwidths to consider for each event
 #' @param kernel_name a string with the name of the kernel to use
 #' @param line_list a DataFrame describing the lines
 #' @param max_depth the maximum recursion depth

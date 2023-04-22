@@ -288,7 +288,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // nkde_get_loo_values
-arma::mat nkde_get_loo_values(std::string method, List neighbour_list, NumericVector sel_events, NumericVector sel_events_wid, NumericVector events, NumericVector events_wid, arma::mat weights, arma::vec bws_net, std::string kernel_name, DataFrame line_list, int max_depth, bool cvl);
+arma::mat nkde_get_loo_values(std::string method, List neighbour_list, NumericVector sel_events, NumericVector sel_events_wid, NumericVector events, NumericVector events_wid, arma::mat weights, arma::mat bws_net, std::string kernel_name, DataFrame line_list, int max_depth, bool cvl);
 RcppExport SEXP _spNetwork_nkde_get_loo_values(SEXP methodSEXP, SEXP neighbour_listSEXP, SEXP sel_eventsSEXP, SEXP sel_events_widSEXP, SEXP eventsSEXP, SEXP events_widSEXP, SEXP weightsSEXP, SEXP bws_netSEXP, SEXP kernel_nameSEXP, SEXP line_listSEXP, SEXP max_depthSEXP, SEXP cvlSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -300,7 +300,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericVector >::type events(eventsSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type events_wid(events_widSEXP);
     Rcpp::traits::input_parameter< arma::mat >::type weights(weightsSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type bws_net(bws_netSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type bws_net(bws_netSEXP);
     Rcpp::traits::input_parameter< std::string >::type kernel_name(kernel_nameSEXP);
     Rcpp::traits::input_parameter< DataFrame >::type line_list(line_listSEXP);
     Rcpp::traits::input_parameter< int >::type max_depth(max_depthSEXP);

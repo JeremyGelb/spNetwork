@@ -650,8 +650,8 @@ split_by_grid_abw.mc <- function(grid,events,lines,bw,tol,digits){
 #' @param grid A spatial grid to split the data within
 #' @param events A feature collection of points representing the events points
 #' @param lines A feature collection of linestrings representing the network
-#' @param bw The fixed kernel bandwidth
-#' @param trim_bw The maximum size of local bandiwidths
+#' @param bw The fixed kernel bandwidth (can also be a vector)
+#' @param trim_bw The maximum size of local bandwidths (can also be a vector)
 #' @param method The method to use when calculating the NKDE
 #' @param kernel_name The name of the kernel to use
 #' @param max_depth The maximum recursion depth
@@ -667,7 +667,7 @@ split_by_grid_abw.mc <- function(grid,events,lines,bw,tol,digits){
 adaptive_bw <- function(grid,events,lines,bw,trim_bw,method,kernel_name,max_depth,tol,digits,sparse,verbose){
 
   ##step 1 split the datas !
-  selections <- split_by_grid_abw(grid,events,lines,trim_bw, tol, digits)
+  selections <- split_by_grid_abw(grid,events,lines,max(trim_bw), tol, digits)
   ## step 2 calculating the temp NKDE values
   if(verbose){
     print("start calculating the kernel values for the adaptive bandwidth...")
@@ -676,31 +676,62 @@ adaptive_bw <- function(grid,events,lines,bw,trim_bw,method,kernel_name,max_dept
 
   dfs <- lapply(1:n_quadra,function(i){
     sel <- selections[[i]]
-    bws <- rep(bw,nrow(sel$events))
+    # bws should be a vector if we only have on global bandwidth
+    if(length(bw) == 1){
+      bws <- rep(bw,nrow(sel$events))
+    }else{
+      # and it will be a matrix if we have several bandwidths
+      bws <- sapply(bw, function(x){
+        rep(x, nrow(sel$events))
+      })
+    }
+
     if(verbose){
       print(paste("    quadra ",i,"/",n_quadra,sep=""))
     }
-    values <- nkde_worker(sel$lines, sel$events,
-                          sel$samples, kernel_name,bw,
-                          bws, method, div = "none", digits,
-                          tol,sparse, max_depth, verbose)
+    values <- nkde_worker(lines =  sel$lines,
+                          events = sel$events,
+                          samples = sel$samples,
+                          kernel_name = kernel_name,
+                          bw = bw,
+                          bws = bws,
+                          method = method,
+                          div = "none",
+                          digits = digits,
+                          tol = tol,
+                          sparse = sparse,
+                          max_depth = max_depth,
+                          verbose = verbose)
     if(any(values==0)){
       # Adding a better way to explain the bug would be great !
       stop("This is embarassing, we should not get 0 values here (bug code 0001). Please report the bug at https://github.com/JeremyGelb/spNetwork/issues and provide the dataset used.")
     }
-    df <- data.frame("goid"=sel$samples$goid,
-                     "k" = values)
+    # df <- data.frame("goid"=sel$samples$goid,
+    #                  "k" = values)
+    df <- cbind(sel$samples$goid, values)
+
     return(df)
   })
 
    ## step 3  combining the results
   tot_df <- do.call(rbind,dfs)
-  tot_df <- tot_df[order(tot_df$goid),]
+  tot_df <- tot_df[order(tot_df[,1]),]
 
   ## step 4 calculating the new bandwidth !
-  delta <- calc_gamma(tot_df$k)
-  new_bw <- bw * (tot_df$k**(-1/2) * delta**(-1))
-  new_bw <- ifelse(new_bw<trim_bw,new_bw,trim_bw)
+  if(ncol(tot_df) == 2){
+    delta <- calc_gamma(tot_df$k)
+    new_bw <- bw * (tot_df$k**(-1/2) * delta**(-1))
+    new_bw <- ifelse(new_bw<trim_bw,new_bw,trim_bw)
+  }else{
+    new_bw <- sapply(2:ncol(tot_df), function(i){
+      k <- tot_df[,i]
+      delta <- calc_gamma(k)
+      nbw <- bw[[i-1]] * (k**(-1/2) * delta**(-1))
+      nbw <- ifelse(nbw<trim_bw[[i-1]],nbw,trim_bw[[i-1]])
+      return(nbw)
+    })
+  }
+
   return(new_bw)
 }
 
@@ -801,7 +832,9 @@ adaptive_bw.mc <- function(grid,events,lines,bw,trim_bw,method,kernel_name,max_d
 #' which the densities will be estimated.
 #' @param kernel_name The name of the kernel to use
 #' @param bw The global kernel bandwidth
-#' @param bws The kernel bandwidth (in meters) for each event
+#' @param bws The kernel bandwidth (in meters) for each event. Is usually a vector
+#' but could also be a matrix if several global bandwidths were used. In this
+#' case, the output value is also a matrix.
 #' @param method The method to use when calculating the NKDE, must be one of
 #' simple / discontinuous / continuous (see details for more information)
 #' @param div The divisor to use for the kernel. Must be "n" (the number of
@@ -860,7 +893,7 @@ nkde_worker <- function(lines, events, samples, kernel_name, bw, bws, method, di
     stop(paste("The matrix size will be exceeded (",a," x ",b,"), please consider using a finer grid to split the study area",sep=""))
   }
   #snapped_samples <- maptools::snapPointsToLines(samples,edges,idField = "edge_id")
-  snapped_samples <- snapPointsToLines2(samples,edges, snap_dist = max(bw), idField = "edge_id")
+  snapped_samples <- snapPointsToLines2(samples,edges, snap_dist = max(bws), idField = "edge_id")
   samples$edge_id <- snapped_samples$nearest_line_id
 
   ## step3 finding for each event, its corresponding node
@@ -885,6 +918,23 @@ nkde_worker <- function(lines, events, samples, kernel_name, bw, bws, method, di
     print("        calculating NKDE values ...")
   }
 
+  if(is.null(dim(bws))){
+    # in this case, bws is a simple vector
+    values <- calc_density(method, kernel_name, graph, events, samples, bws, nodes, edges, div, max_depth, verbose)
+  }else{
+    values <- apply(bws, MARGIN = 2, FUN = function(x){
+      vals <- calc_density(method, kernel_name, graph, events, samples, x, nodes, edges, div, max_depth, verbose = FALSE)
+      return(vals)
+    })
+  }
+  return(values)
+}
+
+
+# A worker function to calculate densities. It has been added to facilitate bw selection in case of
+# adaptive bandwidth
+calc_density <- function(method, kernel_name, graph, events, samples, bws, nodes, edges, div, max_depth, verbose){
+
   if(method == "simple"){
     # the cas of the simple method, no c++ here
     kernel_func <- select_kernel(kernel_name)
@@ -906,8 +956,8 @@ nkde_worker <- function(lines, events, samples, kernel_name, bw, bws, method, di
       ##and finally calculating the values
       if (sparse){
         values <- spNetwork::continuous_nkde_cpp_arma_sparse(neighbour_list, events$vertex_id, events$weight,
-                                                         st_drop_geometry(samples), bws, kernel_name, st_drop_geometry(nodes),
-                                                         graph_result$linelist, max_depth, verbose, div)
+                                                             st_drop_geometry(samples), bws, kernel_name, st_drop_geometry(nodes),
+                                                             graph_result$linelist, max_depth, verbose, div)
       }else{
         values <- spNetwork::continuous_nkde_cpp_arma(neighbour_list, events$vertex_id, events$weight,
                                                       st_drop_geometry(samples), bws, kernel_name, st_drop_geometry(nodes),
@@ -917,9 +967,9 @@ nkde_worker <- function(lines, events, samples, kernel_name, bw, bws, method, di
     }
 
     if(method == "discontinuous"){
-        #let this commented here to debug and test sessions
-        # invisible(capture.output(values <- discontinuous_nkde2(edge_list,neighbour_list, events$vertex_id, events$weight,
-        #                                                       samples@data, bw, kernel_func, nodes@data, graph_result$linelist, max_depth, verbose)))
+      #let this commented here to debug and test sessions
+      # invisible(capture.output(values <- discontinuous_nkde2(edge_list,neighbour_list, events$vertex_id, events$weight,
+      #                                                       samples@data, bw, kernel_func, nodes@data, graph_result$linelist, max_depth, verbose)))
       if(sparse){
         values <- spNetwork::discontinuous_nkde_cpp_arma_sparse(neighbour_list, events$vertex_id, events$weight,
                                                                 st_drop_geometry(samples), bws, kernel_name, st_drop_geometry(nodes), graph_result$linelist, max_depth, verbose)
@@ -939,14 +989,12 @@ nkde_worker <- function(lines, events, samples, kernel_name, bw, bws, method, di
   }else if (div == "bw"){
     #return(values$sum_k * (1/bw))
     # NOTE : if div == "bw", then the scaling is done during the estimation
+    # because we might have adaptive BW
     return(values$sum_k)
   }else if (div == "none"){
     return(values$sum_k)
   }
 }
-
-
-
 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #### main functions ####
