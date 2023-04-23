@@ -609,3 +609,269 @@ test_that("Testing that bw selection with Van Lieshout's Criterion gives the sam
 
 })
 
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#### TEST FOR BW SELECTION WITH CV LIKELIHOOD AND ADAPTIVE BW ####
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+test_that("Testing the bw selection function with CV likelihood and discontinuous kernel and adaptive bw", {
+
+  ## creating the simple situation
+  # start with de definition of some lines
+  wkt_lines <- c(
+    "LINESTRING (0 5, 0 0)",
+    "LINESTRING (-5 0, 0 0)",
+    "LINESTRING (0 -5, 0 0)",
+    "LINESTRING (5 0, 0 0)")
+
+  linesdf <- data.frame(wkt = wkt_lines,
+                        id = paste("l",1:length(wkt_lines),sep=""))
+
+
+  all_lines <- st_as_sf(linesdf, wkt = "wkt")
+
+  # definition of three events
+  event <- data.frame(x=c(0,1,0),
+                      y=c(3,0,-3),
+                      id = c(1,2,3))
+  event <- st_as_sf(event, coords = c("x","y"))
+  # tm_shape(all_lines) + tm_lines('black') + tm_shape(event) + tm_dots('red',size = 1)
+  # we will use adaptive bandwidths and we will only test the result for a bw = 10
+
+  # for each point, we split the kernel at the intersection (1/3)
+
+  # we must first evaluate the density at each event
+  bw <- 10
+
+  # for point 1
+  dens1 <- (quartic_kernel(0,bw) + # self density
+    1/3 * quartic_kernel(4,bw) + # first point on the left
+    1/3 * quartic_kernel(6,bw)) * (1/bw) # second point
+
+  # for point 2
+  dens2 <- (quartic_kernel(0,bw) + # self density
+              1/3 * quartic_kernel(4,bw) + # first point on top
+              1/3 * quartic_kernel(4,bw)) * (1/bw) # second point below
+
+  # for point 3
+  dens3 <- dens1
+
+  # we can now calculate the local bandwidths
+  k <- c(dens1, dens2, dens3)
+  delta <- calc_gamma(k)
+  bws <- bw * (k**(-1/2) * delta**(-1))
+
+  # we can now calculate the loo of each point
+  loo1 <- ((1/3) * quartic_kernel(4,bws[[2]]) * (1/bws[[2]]) +
+    (1/3) * quartic_kernel(6,bws[[3]]) * (1/bws[[3]]))
+
+  loo2 <- ((1/3) * quartic_kernel(4,bws[[1]]) * (1/bws[[1]]) +
+             (1/3) * quartic_kernel(4,bws[[3]]) * (1/bws[[3]]))
+
+  loo3 <- loo1
+
+  #so the CV likelihood is the sum for each point loo
+  #in other words, three times the sum of two kerneffect
+  loov <- c(loo1, loo2, loo3)
+  total <- sum(log(loov)) / 3
+
+
+  #let us calculate the value with our function
+  obs_value <- bw_cv_likelihood_calc(c(8,10),1,
+                                     lines = all_lines,
+                                     events = event, w = c(1,1,1),
+                                     check = F,
+                                     kernel_name = "quartic",
+                                     method = "discontinuous",
+                                     adaptive = TRUE,
+                                     trim_bws = c(50,50,50),
+                                     digits = 1,
+                                     agg = NULL, verbose = F,tol = 0.00001
+  )
+  expect_equal(obs_value[3,2], total)
+})
+
+
+test_that("Testing the bw selection function with CV likelihood and discontinuous kernel and adaptive bw with weights", {
+
+  ## creating the simple situation
+  # start with de definition of some lines
+
+  wkt_lines <- c(
+    "LINESTRING (0 5, 0 0)",
+    "LINESTRING (-5 0, 0 0)",
+    "LINESTRING (0 -5, 0 0)",
+    "LINESTRING (5 0, 0 0)")
+
+  linesdf <- data.frame(wkt = wkt_lines,
+                        id = paste("l",1:length(wkt_lines),sep=""))
+
+
+  all_lines <- st_as_sf(linesdf, wkt = "wkt")
+
+  # definition of three events
+  event <- data.frame(x=c(0,1,0),
+                      y=c(3,0,-3),
+                      id = c(1,2,3),
+                      w = c(2,1,1))
+
+  event <- st_as_sf(event, coords = c("x","y"))
+  # tm_shape(all_lines) + tm_lines('black') + tm_shape(event) + tm_dots('red',size = 1)
+  # we will use adaptive bandwidths and we will only test the result for a bw = 10
+
+  # for each point, we split the kernel at the intersection (1/3)
+
+  # we must first evaluate the density at each event
+  bw <- 10
+
+  # for point 1
+  dens1 <- (quartic_kernel(0,bw) * 2 + # self density
+              1/3 * quartic_kernel(4,bw) + # first point on the left
+              1/3 * quartic_kernel(6,bw)) * (1/bw) # second point
+
+  # for point 2
+  dens2 <- (quartic_kernel(0,bw) + # self density
+              1/3 * quartic_kernel(4,bw) * 2 + # first point on top
+              1/3 * quartic_kernel(4,bw)) * (1/bw) # second point below
+
+  # for point 3
+  dens3 <- (quartic_kernel(0,bw) + # self density
+              1/3 * quartic_kernel(4,bw) + # first point on the left
+              1/3 * quartic_kernel(6,bw) * 2) * (1/bw) # second point
+
+  # we can now calculate the local bandwidths
+  k <- c(dens1, dens2, dens3)
+  delta <- calc_gamma(k)
+  bws <- bw * (k**(-1/2) * delta**(-1))
+
+  # we can now calculate the loo of each point
+  loo1 <- ((1/3) * quartic_kernel(4,bws[[2]]) * (1/bws[[2]]) +
+             (1/3) * quartic_kernel(6,bws[[3]]) * (1/bws[[3]]))
+
+  loo2 <- ((1/3) * quartic_kernel(4,bws[[1]]) * 2 * (1/bws[[1]]) +
+             (1/3) * quartic_kernel(4,bws[[3]]) * (1/bws[[3]]))
+
+  loo3 <- ((1/3) * quartic_kernel(4,bws[[2]]) * (1/bws[[2]]) +
+             (1/3) * quartic_kernel(6,bws[[1]]) * 2 * (1/bws[[1]]))
+
+  #so the CV likelihood is the sum for each point loo
+  #in other words, three times the sum of two kerneffect
+  loov <- c(loo1, loo2, loo3)
+  total <- sum(log(loov)) / 3
+
+
+  #let us calculate the value with our function
+  obs_value <- bw_cv_likelihood_calc(c(8,10),1,
+                                     lines = all_lines,
+                                     events = event, w = event$w,
+                                     check = F,
+                                     kernel_name = "quartic",
+                                     method = "discontinuous",
+                                     adaptive = TRUE,
+                                     trim_bws = c(50,50,50),
+                                     digits = 1,
+                                     agg = NULL, verbose = F,tol = 0.00001
+  )
+  expect_equal(obs_value[3,2], total)
+})
+
+
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#### TEST FOR BW SELECTION WITH VAN LIESHOUT CRIT AND ADAPTIVE BW ####
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+test_that("Testing the bw selection function with Van Lieshout's Criterion and discontinuous kernel and adaptive bw", {
+  ## creating the simple situation
+  # start with de definition of some lines
+
+  wkt_lines <- c(
+    "LINESTRING (0 5, 0 0)",
+    "LINESTRING (-5 0, 0 0)",
+    "LINESTRING (0 -5, 0 0)",
+    "LINESTRING (5 0, 0 0)")
+
+  linesdf <- data.frame(wkt = wkt_lines,
+                        id = paste("l",1:length(wkt_lines),sep=""))
+
+
+  all_lines <- st_as_sf(linesdf, wkt = "wkt")
+
+  # definition of three events
+  event <- data.frame(x=c(0,1,0),
+                      y=c(3,0,-3),
+                      id = c(1,2,3))
+
+  event <- st_as_sf(event, coords = c("x","y"))
+  # tm_shape(all_lines) + tm_lines('black') + tm_shape(event) + tm_dots('red',size = 1)
+  # we will use adaptive bandwidths and we will only test the result for a bw = 10
+
+  # for each point, we split the kernel at the intersection (1/3)
+
+  # we must first evaluate the density at each event
+  bw <- 10
+
+  # for point 1
+  dens1 <- (quartic_kernel(0,bw) + # self density
+              1/3 * quartic_kernel(4,bw) + # first point on the right
+              1/3 * quartic_kernel(6,bw)) * (1/bw) # second point
+
+  # for point 2
+  dens2 <- (quartic_kernel(0,bw) + # self density
+              1/3 * quartic_kernel(4,bw) + # first point on top
+              1/3 * quartic_kernel(4,bw)) * (1/bw) # second point below
+
+  # for point 3
+  dens3 <- (quartic_kernel(0,bw) + # self density
+              1/3 * quartic_kernel(4,bw) + # first point on the left
+              1/3 * quartic_kernel(6,bw)) * (1/bw) # second point
+
+  # we can now calculate the local bandwidths
+  k <- c(dens1, dens2, dens3)
+  delta <- calc_gamma(k)
+  bws <- bw * (k**(-1/2) * delta**(-1))
+
+  # and calculate the local densities based on the local bws
+  # for point 1
+  dens1 <- (quartic_kernel(0,bws[[1]]) * (1/bws[[1]]) + # self density
+              1/3 * quartic_kernel(4,bws[[2]]) * (1/bws[[2]]) + # first point on the right
+              1/3 * quartic_kernel(6,bws[[3]]) * (1/bws[[3]])  # second point
+            )
+
+  # for point 2
+  dens2 <- (quartic_kernel(0,bws[[2]]) * (1/bws[[2]]) + # self density
+              1/3 * quartic_kernel(4,bws[[1]]) * (1/bws[[1]]) + # first point on top
+              1/3 * quartic_kernel(4,bws[[3]]) * (1/bws[[3]])) # second point below
+
+  # for point 3
+  dens3 <- (quartic_kernel(0,bws[[3]]) * (1/bws[[3]]) + # self density
+              1/3 * quartic_kernel(4,bws[[2]]) * (1/bws[[2]]) + # first point on the left
+              1/3 * quartic_kernel(6,bws[[1]]) * (1/bws[[1]])
+            )# second point
+
+  #so the score value is
+  Wl <- sum(as.numeric(st_length(all_lines)))
+  k <- c(dens1, dens2, dens3)
+  score <- (Wl - (sum((1/k))))**2
+
+
+  #let us calculate the value with our function
+  obs_value <- bw_cvl_calc(bw_range = c(8,10),
+                           bw_step = 1,
+                           lines = all_lines,
+                           events = event, w = c(1,1,1),
+                           check = F,
+                           kernel_name = "quartic",
+                           method = "discontinuous",
+                           adaptive = TRUE,
+                           trim_bws = c(50,50,50),
+                           digits = 1,
+                           agg = NULL,
+                           verbose = F,
+                           tol = 0.00001
+  )
+  expect_equal(obs_value[3,2], score)
+})

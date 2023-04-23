@@ -21,6 +21,7 @@
 bw_checks <- function(check,lines,samples,events,
                       kernel_name, method, bw_net_range = NULL, bw_time_range = NULL,
                       bw_net_step = NULL, bw_time_step = NULL,
+                      adaptive = FALSE, trim_net_bws = NULL, trim_time_bws = NULL,
                       diggle_correction = FALSE, study_area = NULL){
 
   if((kernel_name %in% c("triangle", "gaussian", "scaled gaussian", "tricube", "cosine" ,"triweight", "quartic", 'epanechnikov','uniform'))==FALSE){
@@ -61,6 +62,21 @@ bw_checks <- function(check,lines,samples,events,
   }
   if(check){
     check_geometries(lines,samples,events,study_area)
+  }
+  if(adaptive){
+
+    if(is.null(trim_net_bws) == FALSE){
+      s1 <- seq(bw_net_range[[1]], bw_net_range[[2]], bw_net_step)
+      if(length(trim_net_bws) != length(s1)){
+        stop("the lengths of the network bandwidths sequence and the provided triming values are not matching")
+      }
+    }
+    if(is.null(trim_time_bws) == FALSE){
+      s2 <- seq(bw_time_range[[1]], bw_time_range[[2]], bw_time_step)
+      if(length(trim_time_bws) != length(s2)){
+        stop("the lengths of the network bandwidths sequence and the provided triming values are not matching")
+      }
+    }
   }
 }
 

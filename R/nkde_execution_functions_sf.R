@@ -650,8 +650,8 @@ split_by_grid_abw.mc <- function(grid,events,lines,bw,tol,digits){
 #' @param grid A spatial grid to split the data within
 #' @param events A feature collection of points representing the events points
 #' @param lines A feature collection of linestrings representing the network
-#' @param bw The fixed kernel bandwidth (can also be a vector)
-#' @param trim_bw The maximum size of local bandwidths (can also be a vector)
+#' @param bw The fixed kernel bandwidth (can also be a vector, the value returned will be a matrix in that case)
+#' @param trim_bw The maximum size of local bandwidths (can also be a vector, must match bw)
 #' @param method The method to use when calculating the NKDE
 #' @param kernel_name The name of the kernel to use
 #' @param max_depth The maximum recursion depth
@@ -716,11 +716,11 @@ adaptive_bw <- function(grid,events,lines,bw,trim_bw,method,kernel_name,max_dept
    ## step 3  combining the results
   tot_df <- do.call(rbind,dfs)
   tot_df <- tot_df[order(tot_df[,1]),]
-
   ## step 4 calculating the new bandwidth !
   if(ncol(tot_df) == 2){
-    delta <- calc_gamma(tot_df$k)
-    new_bw <- bw * (tot_df$k**(-1/2) * delta**(-1))
+    k <- tot_df[,2]
+    delta <- calc_gamma(k)
+    new_bw <- bw * (k**(-1/2) * delta**(-1))
     new_bw <- ifelse(new_bw<trim_bw,new_bw,trim_bw)
   }else{
     new_bw <- sapply(2:ncol(tot_df), function(i){
@@ -744,8 +744,8 @@ adaptive_bw <- function(grid,events,lines,bw,trim_bw,method,kernel_name,max_dept
 #' @param grid A spatial grid to split the data within
 #' @param events A feature collection of points representing the events
 #' @param lines A feature collection of linestrings representing the network
-#' @param bw The fixed kernel bandwidth
-#' @param trim_bw The maximum size of local bandwidths
+#' @param bw The fixed kernel bandwidth (can also be a vector, the value returned will be a matrix in that case)
+#' @param trim_bw The maximum size of local bandwidths (can also be a vector, must match bw)
 #' @param method The method to use when calculating the NKDE
 #' @param kernel_name The name of the kernel to use
 #' @param max_depth The maximum recursion depth
@@ -772,11 +772,32 @@ adaptive_bw.mc <- function(grid,events,lines,bw,trim_bw,method,kernel_name,max_d
     progressr::with_progress({
       p <- progressr::progressor(along = selections)
       dfs <- future.apply::future_lapply(selections, function(sel) {
-        bws <- rep(bw,nrow(sel$events))
-        invisible(capture.output(values <- nkde_worker(sel$lines, sel$events,
-                                                       sel$samples, kernel_name,bw,
-                                                       bws, method, div = "none", digits,
-                                                       tol,sparse, max_depth, verbose)))
+
+        # bws should be a vector if we only have on global bandwidth
+        if(length(bw) == 1){
+          bws <- rep(bw,nrow(sel$events))
+        }else{
+          # and it will be a matrix if we have several bandwidths
+          bws <- sapply(bw, function(x){
+            rep(x, nrow(sel$events))
+          })
+        }
+
+        invisible(capture.output(values <- nkde_worker(lines =  sel$lines,
+                                                       events = sel$events,
+                                                       samples = sel$samples,
+                                                       kernel_name = kernel_name,
+                                                       bw = bw,
+                                                       bws = bws,
+                                                       method = method,
+                                                       div = "none",
+                                                       digits = digits,
+                                                       tol = tol,
+                                                       sparse = sparse,
+                                                       max_depth = max_depth,
+                                                       verbose = verbose)
+
+                                 ))
 
         df <- data.frame("goid"=sel$samples$goid,
                          "k" = values)
@@ -786,11 +807,30 @@ adaptive_bw.mc <- function(grid,events,lines,bw,trim_bw,method,kernel_name,max_d
     })
   }else{
     dfs <- future.apply::future_lapply(selections, function(sel) {
-      bws <- rep(bw,nrow(sel$events))
-      values <- nkde_worker(sel$lines, sel$events,
-                                  sel$samples, kernel_name,bw,
-                                  bws, method, div = "none", digits,
-                                  tol,sparse, max_depth, verbose)
+
+      # bws should be a vector if we only have on global bandwidth
+      if(length(bw) == 1){
+        bws <- rep(bw,nrow(sel$events))
+      }else{
+        # and it will be a matrix if we have several bandwidths
+        bws <- sapply(bw, function(x){
+          rep(x, nrow(sel$events))
+        })
+      }
+
+      values <- nkde_worker(lines =  sel$lines,
+                            events = sel$events,
+                            samples = sel$samples,
+                            kernel_name = kernel_name,
+                            bw = bw,
+                            bws = bws,
+                            method = method,
+                            div = "none",
+                            digits = digits,
+                            tol = tol,
+                            sparse = sparse,
+                            max_depth = max_depth,
+                            verbose = verbose)
 
       df <- data.frame("goid"=sel$samples$goid,
                        "k" = values)
@@ -807,9 +847,19 @@ adaptive_bw.mc <- function(grid,events,lines,bw,trim_bw,method,kernel_name,max_d
   }
 
   ## step 4 calculating the new bandwidth !
-  delta <- calc_gamma(tot_df$k)
-  new_bw <- bw * (tot_df$k**(-1/2) * delta**(-1))
-  new_bw <- ifelse(new_bw<trim_bw,new_bw,trim_bw)
+  if(ncol(tot_df) == 2){
+    delta <- calc_gamma(tot_df$k)
+    new_bw <- bw * (tot_df$k**(-1/2) * delta**(-1))
+    new_bw <- ifelse(new_bw<trim_bw,new_bw,trim_bw)
+  }else{
+    new_bw <- sapply(2:ncol(tot_df), function(i){
+      k <- tot_df[,i]
+      delta <- calc_gamma(k)
+      nbw <- bw[[i-1]] * (k**(-1/2) * delta**(-1))
+      nbw <- ifelse(nbw<trim_bw[[i-1]],nbw,trim_bw[[i-1]])
+      return(nbw)
+    })
+  }
   return(new_bw)
 }
 
@@ -920,10 +970,10 @@ nkde_worker <- function(lines, events, samples, kernel_name, bw, bws, method, di
 
   if(is.null(dim(bws))){
     # in this case, bws is a simple vector
-    values <- calc_density(method, kernel_name, graph, events, samples, bws, nodes, edges, div, max_depth, verbose)
+    values <- calc_density(method, kernel_name, graph_result, graph, events, samples, bws, nodes, edges, div, max_depth, verbose, sparse)
   }else{
     values <- apply(bws, MARGIN = 2, FUN = function(x){
-      vals <- calc_density(method, kernel_name, graph, events, samples, x, nodes, edges, div, max_depth, verbose = FALSE)
+      vals <- calc_density(method, kernel_name, graph_result, graph, events, samples, x, nodes, edges, div, max_depth, verbose = FALSE, sparse)
       return(vals)
     })
   }
@@ -933,7 +983,7 @@ nkde_worker <- function(lines, events, samples, kernel_name, bw, bws, method, di
 
 # A worker function to calculate densities. It has been added to facilitate bw selection in case of
 # adaptive bandwidth
-calc_density <- function(method, kernel_name, graph, events, samples, bws, nodes, edges, div, max_depth, verbose){
+calc_density <- function(method, kernel_name, graph_result, graph, events, samples, bws, nodes, edges, div, max_depth, verbose, sparse){
 
   if(method == "simple"){
     # the cas of the simple method, no c++ here
