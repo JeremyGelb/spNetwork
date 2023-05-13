@@ -369,3 +369,23 @@ bool map_contains_key(std::map<int, arma::vec>& map, int key){
   return true;
 }
 
+
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// #### base kernel integrals functions ####
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+//' @title c++ quartic kernel integral
+ //' @name quartic_kernel_cpp
+ //' @param d_start a vector of start distances for which the density must be calculated
+ //' @param d_end a vector of end distances for which the density must be calculated
+ //' @param bw a double representing the size of the kernel bandwidth
+ //' @keywords internal
+ // [[Rcpp::export]]
+ arma::vec quartic_kernel_int_cpp(arma::vec d_start, arma::vec d_end, double bw){
+   d_end.elem((arma::find(d_end>bw))).fill(bw);
+   d_start.elem((arma::find(d_start<0))).fill(0);
+   arma::vec i = d_start;
+   return i;
+ }
+
+

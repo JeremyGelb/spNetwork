@@ -83,7 +83,7 @@ bw_checks <- function(check,lines,samples,events,
 
 #' @title Time and Network bandwidth correction calculation
 #'
-#' @description Caclulating the border correction factor for both time and network bandwidths
+#' @description Calculating the border correction factor for both time and network bandwidths
 #'
 #' @param net_bws A vector of network bandwidths
 #' @param time_bws A vector of time bandwidths
@@ -106,8 +106,9 @@ bw_checks <- function(check,lines,samples,events,
 #' @keywords internal
 #' @examples
 #' # no example provided, this is an internal function
-bw_tnkde_corr_factor <- function(net_bws, time_bws, diggle_correction, study_area, events, events_loc, lines,
+bw_tnkde_corr_factor <- function(net_bws,time_bws, diggle_correction, study_area, events, events_loc, lines,
                                  method, kernel_name, tol, digits, max_depth, sparse){
+
   net_bws_corr <- lapply(net_bws, function(bw){
     if(diggle_correction){
       bws <- rep(bw,nrow(events_loc))
@@ -136,6 +137,82 @@ bw_tnkde_corr_factor <- function(net_bws, time_bws, diggle_correction, study_are
   })
   return(list(net_bws_corr, time_bws_corr))
 }
+
+
+#' @title Time and Network bandwidth correction calculation for arrays
+#'
+#' @description Calculating the border correction factor for both time and network bandwidths when
+#' we have to deal with adaptive bandwidths and arrays
+#'
+#' @param net_bws An array of network bandwidths
+#' @param time_bws An array of time bandwidths
+#' @template diggle_corr-arg
+#' @param events A feature collection of points representing the events
+#' @param events_loc A feature collection of points representing the unique location of events
+#' @param lines A feature collection of linestrings representing the underlying lines of the network
+#' @param method The name of a NKDE method
+#' @param kernel_name The name of the kernel to use
+#' @param samples A feature collection of points representing the sample location
+#' @param kernel_name The name of the kernel to use
+#' @param method The name of the NKDE to use
+#' @param tol  float indicating the minimum distance between the events and the
+#'   lines' extremities when adding the point to the network. When points are
+#'   closer, they are added at the extremity of the lines.
+#' @param digits An integer, the number of digits to keep for the spatial coordinates
+#' @param max_depth The maximal depth for continuous or discontinuous NKDE
+#' @param time_limits A vector with the upper and lower limit of the time period studied
+#' @template sparse-arg
+#' @keywords internal
+#' @examples
+#' # no example provided, this is an internal function
+bw_tnkde_corr_factor_arr <- function(net_bws,time_bws, diggle_correction, study_area, events, events_loc, lines,
+                                 method, kernel_name, tol, digits, max_depth, sparse,
+                                 time_limits = NULL
+                                 ){
+
+  # preparing the arrays that will contain the correction factor
+  net_bws_corr <- array(1, dim(net_bws))
+  time_bws_corr <- array(1, dim(net_bws))
+
+  # if we need to apply the correction, we start the calculation
+  # otherwise, we keep the simple 1 values
+  if(diggle_correction){
+
+    ## calculating the correction factor on the network
+    ## this part could be better if I modified the function correction_factor
+    ## to make a version that would accept an array as an input instead of iterating.
+    for(i in 1:dim(net_bws)[[1]]){
+      for(j in 1:dim(net_bws)[[2]]){
+        bws <- net_bws[i,j,]
+        corr_factor <- correction_factor(study_area, events_loc, lines, method, bws,
+                                         kernel_name, tol, digits, max_depth, sparse)
+        corr_factor <- corr_factor[events$goid]
+        net_bws_corr[i,j,] <- corr_factor
+      }
+    }
+
+    ## calculating the correction factor in time
+    for(i in 1:dim(time_bws)[[1]]){
+      for(j in 1:dim(time_bws)[[2]]){
+        bws <- time_bws[i,j,]
+        corr_factor <- correction_factor_time(events_time = events$time,
+                                              samples_time = events$time,
+                                              bws_time = bws,
+                                              kernel_name = kernel_name,
+                                              time_limits = time_limits)
+        time_bws_corr[i,j,] <- corr_factor
+      }
+    }
+
+  }
+
+  ## the last step is to get the correction for each observation at each
+  ## bandwidth in space and time
+  net_time_corr <- net_bws_corr * time_bws_corr
+
+  return(net_time_corr)
+}
+
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #### The single core version ####
@@ -221,6 +298,7 @@ bw_tnkde_cv_likelihood_calc <- function(bw_net_range, bw_net_step,
                                          lines, events, time_field,
                                          w, kernel_name, method,
                                          diggle_correction = FALSE, study_area = NULL,
+                                         adaptive = FALSE, trim_net_bws = NULL, trim_time_bws = NULL,
                                          max_depth = 15, digits=5, tol=0.1, agg=NULL, sparse=TRUE,
                                          zero_strat = "min_double",
                                          grid_shape=c(1,1), sub_sample=1, verbose=TRUE, check=TRUE){
@@ -238,7 +316,8 @@ bw_tnkde_cv_likelihood_calc <- function(bw_net_range, bw_net_step,
   ## checking inputs
   bw_checks(check, lines, samples, events,
                   kernel_name, method, bw_net_range = bw_net_range, bw_time_range = bw_time_range,
-                  bw_net_step = bw_net_step, bw_time_step = bw_time_step,
+                  bw_net_step = bw_net_step, bw_time_step = bw_time_step, trim_net_bws = trim_net_bws,
+                  trim_time_bws = trim_time_bws, adaptive = adaptive,
                   diggle_correction = diggle_correction, study_area = study_area)
 
   if(zero_strat %in% c("min_double", "remove") == FALSE){
@@ -265,20 +344,62 @@ bw_tnkde_cv_likelihood_calc <- function(bw_net_range, bw_net_step,
   net_bws <- seq(from = bw_net_range[[1]], to = bw_net_range[[2]], by = bw_net_step)
   time_bws <- seq(from = bw_time_range[[1]], to = bw_time_range[[2]], by = bw_time_step)
 
+  ## calculating the adaptive bws if required
+  ## note : we have a bw for each observation * bw_net * bet_time
+  ## we will structure this data as an array with dimensions c(net_bw, time_bw, event)
+  if(adaptive){
+    all_bws <- adaptive_bw_tnkde(grid = grid,
+                                 events_loc = events_loc,
+                                 events = events,
+                                 lines = lines,
+                                 bw_net = net_bws,
+                                 bw_time = time_bws,
+                                 trim_bw_net = trim_net_bws,
+                                 trim_bw_time = trim_time_bws,
+                                 method = method,
+                                 kernel_name = kernel_name,
+                                 max_depth = max_depth,
+                                 div = div,
+                                 tol = tol,
+                                 digits = digits,
+                                 sparse = sparse,
+                                 verbose = verbose)
+    all_bws_net <- all_bws$bws_net
+    all_bws_time <- all_bws$bws_time
+  }else{
+    # if we are not using an adaptive bandwidth, we will avoid the creation of the
+    # arrays because it can take a lot of space in memory
+    all_bws_net <- net_bws
+    all_bws_time <- time_bws
+  }
+
+
   if(verbose){
     print("Calculating the correction factor if required")
   }
 
+  ## WRITE A TEST FOR THIS ! DONE !
   ## calculating network corr_factors
-  corr_factors <- bw_tnkde_corr_factor(net_bws, time_bws, diggle_correction, study_area, events, events_loc, lines,
-                                   method, kernel_name, tol, digits, max_depth, sparse)
+  corr_factors <- bw_tnkde_corr_factor_arr(all_bws_net,
+                                       all_bws_time,
+                                       diggle_correction,
+                                       study_area,
+                                       events,
+                                       events_loc,
+                                       lines,
+                                       method,
+                                       kernel_name,
+                                       tol,
+                                       digits,
+                                       max_depth,
+                                       sparse)
   net_bws_corr <- corr_factors[[1]]
   time_bws_corr <- corr_factors[[2]]
 
 
   ## NB : the weights can change because of the different BW in time and space
   ## The weights will be passed to c++, to is must be in an easy format, like an array
-  ## event_weights(rows = bws_net, cols = bws_time, slices = events)
+
   events_weight <- array(0, dim = c(length(net_bws), length(time_bws), nrow(events)))
 
   for (i in 1:length(time_bws_corr)){

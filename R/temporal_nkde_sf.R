@@ -507,6 +507,8 @@ tnkde <- function(lines, events, time_field, w, samples_loc, samples_time, kerne
     corr_factor_time <- correction_factor_time(events[[time_field]], samples_time, bws_time, kernel_name)
     # the final density is (dnet*corr_net * dtime*corr_time)*w
     # because we only have multiplications, I can do the product here
+    # note : mutliplying the correction factor is equivalent to calculate the total inside mass
+    # and taking its inverse
     corr_factor <- corr_factor_net * corr_factor_time
   }else{
     corr_factor <- rep(1,nrow(events))

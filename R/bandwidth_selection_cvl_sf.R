@@ -214,12 +214,7 @@
 #' @template nkde_geoms-args
 #' @template sparse-arg
 #' @template grid_shape-arg
-#' @param adaptive A boolean indicating if an adaptive bandwidth must be used.
-#' If adaptive = TRUE, the local bandwidth are derived from the global bandwidths
-#' calculated from bw_range and bw_step.
-#' @param trim_bws A vector indicating the maximum value an adaptive bandwidth can
-#' reach. Higher values will be trimmed. It must have the same length as
-#' seq(bw_range[[1]],bw_range[[2]], bw_step).
+#' @template bw_selection_adapt-args
 #' @param sub_sample A float between 0 and 1 indicating the percentage of quadra
 #' to keep in the calculus. For large datasets, it may be useful to limit the
 #' bandwidth evaluation and thus reduce calculation time.
@@ -248,7 +243,7 @@
 #'}
 bw_cvl_calc <- function(bw_range, bw_step,lines, events, w, kernel_name, method,
                         diggle_correction = FALSE, study_area = NULL,
-                        adaptive = FALSE, trim_bws = NULL,
+                        adaptive = FALSE, trim_bws = NULL, mat_bws = NULL,
                         max_depth = 15,
                         digits=5, tol=0.1, agg=NULL, sparse=TRUE,
                         zero_strat = "min_double",
@@ -308,8 +303,22 @@ bw_cvl_calc <- function(bw_range, bw_step,lines, events, w, kernel_name, method,
       rep(x,nrow(events))
     })
   }else{
-    mat_bws <- adaptive_bw(grid, events, lines, all_bws, trim_bws, method,
-                           kernel_name, max_depth, tol, digits, sparse, verbose)
+    if(is.null(mat_bws)){
+      mat_bws <- adaptive_bw(grid, events, lines, all_bws, trim_bws, method,
+                             kernel_name, max_depth, tol, digits, sparse, verbose)
+    }else{
+
+      # in the case where all the bandwidths were provided by the user
+      # we only have to extract the relevant informations from this matrix
+      all_bws <- colnames(mat_bws)
+      if(is.null(all_bws)){
+        all_bws <- 1:ncol(mat_bws)
+      }
+
+      if(nrow(mat_bws) != nrow(events)){
+        stop("The number of rows in mat_bws must be the same as the number of rows in events")
+      }
+    }
   }
 
   events_weight <- apply(mat_bws, MARGIN = 2, FUN = function(bws){
@@ -417,6 +426,7 @@ bw_cvl_calc <- function(bw_range, bw_step,lines, events, w, kernel_name, method,
 #' @template nkde_geoms-args
 #' @template sparse-arg
 #' @template grid_shape-arg
+#' @template bw_selection_adapt-args
 #' @param adaptive A boolean indicating if an adaptive bandwidth must be used.
 #' If adaptive = TRUE, the local bandwidth are derived from the global bandwidths
 #' calculated from bw_range and bw_step.
@@ -454,7 +464,7 @@ bw_cvl_calc <- function(bw_range, bw_step,lines, events, w, kernel_name, method,
 #' }
 bw_cvl_calc.mc <- function(bw_range,bw_step,lines, events, w, kernel_name, method,
                            diggle_correction = FALSE, study_area = NULL,
-                           adaptive = FALSE, trim_bws = NULL,
+                           adaptive = FALSE, trim_bws = NULL, mat_bws = NULL,
                            max_depth = 15,
                            digits=5, tol=0.1, agg=NULL, sparse=TRUE,
                            zero_strat = "min_double",
@@ -511,8 +521,22 @@ bw_cvl_calc.mc <- function(bw_range,bw_step,lines, events, w, kernel_name, metho
       rep(x,nrow(events))
     })
   }else{
-    mat_bws <- adaptive_bw(grid, events, lines, all_bws, trim_bws, method,
-                           kernel_name, max_depth, tol, digits, sparse, verbose)
+    if(is.null(mat_bws)){
+      mat_bws <- adaptive_bw(grid, events, lines, all_bws, trim_bws, method,
+                             kernel_name, max_depth, tol, digits, sparse, verbose)
+    }else{
+
+      # in the case where all the bandwidths were provided by the user
+      # we only have to extract the relevant informations from this matrix
+      all_bws <- colnames(mat_bws)
+      if(is.null(all_bws)){
+        all_bws <- 1:ncol(mat_bws)
+      }
+
+      if(nrow(mat_bws) != nrow(events)){
+        stop("The number of rows in mat_bws must be the same as the number of rows in events")
+      }
+    }
   }
 
   events_weight <- apply(mat_bws, MARGIN = 2, FUN = function(bws){

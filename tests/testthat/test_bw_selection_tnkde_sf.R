@@ -434,3 +434,86 @@ test_that("Testing the bw selection function with CV likelihood in multicore and
   expect_true(test1 & test2)
 })
 
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#### TEST FOR BW SELECTION WITH CV LIKELIHOOD WITH ADAPTIVE BW ####
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+## PAS TERMINE
+
+test_that("Testing the bw selection function with CV likelihood and simple kernel AND adaptive BW", {
+  ## creating the simple sf::st_as_sf
+  # start with de definition of some lines
+
+  wkt_lines <- c(
+    "LINESTRING (0 5, 0 0)",
+    "LINESTRING (-5 0, 0 0)",
+    "LINESTRING (0 -5, 0 0)",
+    "LINESTRING (5 0, 0 0)")
+
+  linesdf <- data.frame(wkt = wkt_lines,
+                        id = paste("l",1:length(wkt_lines),sep=""))
+
+  all_lines <- st_as_sf(linesdf, wkt = "wkt")
+
+  # definition of three events
+  event <- data.frame(x=c(0,2,0,2),
+                      y=c(3,0,-3,0))
+  event$Time <- c(5,5,6,5)
+  event <- st_as_sf(event, coords = c("x","y"))
+
+  bws_net <- c(10, 15, 20)
+  bws_time <- c(6,7)
+
+  # #at e1, the time distance to e2 is 2, with a bw_time of 6
+  # loo1 <- sum(log(
+  #   (quartic_kernel(2,bw_time) * quartic_kernel(6,bw_net) +
+  #      quartic_kernel(1,bw_time) * quartic_kernel(6,bw_net)) * (1/(bw_net*bw_time))
+  # ))
+  #
+  # loo2 <- sum(log(
+  #   (quartic_kernel(2,bw_time) * quartic_kernel(6,bw_net) +
+  #      quartic_kernel(1,bw_time) * quartic_kernel(6,bw_net)) * (1/(bw_net*bw_time))
+  # ))
+  #
+  # loo3 <- sum(log(
+  #   (quartic_kernel(1,bw_time) * quartic_kernel(6,bw_net) +
+  #      quartic_kernel(1,bw_time) * quartic_kernel(6,bw_net)) * (1/(bw_net*bw_time))
+  # ))
+  #
+  #
+  # #so the CV likelihood is the sum for each point loo
+  # #in other words, three times the sum of two kerneffect
+  # total <- (loo1 + loo2 + loo3) / 3
+
+
+  #let us calculate the value with our function
+  obs_value <- bw_tnkde_cv_likelihood_calc(bw_net_range = c(10,20),
+                                          bw_net_step = 5,
+                                          bw_time_range = c(6,7),
+                                          bw_time_step = 1,
+                                          lines = all_lines,
+                                          events = event,
+                                          time_field = "Time",
+                                          w = c(1,1,1,1),
+                                          kernel_name = "quartic",
+                                          method = "simple",
+                                          diggle_correction = FALSE,
+                                          study_area = NULL,
+                                          adaptive = TRUE,
+                                          trim_net_bws = c(20,30,40),
+                                          trim_time_bws = c(12,14),
+                                          max_depth = 15,
+                                          digits=5,
+                                          tol=0.001,
+                                          agg=NULL,
+                                          sparse=TRUE,
+                                          grid_shape=c(3,3),
+                                          sub_sample=1,
+                                          verbose=FALSE,
+                                          check=FALSE)
+
+  expect_equal(obs_value[1,1], total)
+})
+
+

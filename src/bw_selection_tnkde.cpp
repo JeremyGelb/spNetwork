@@ -6,7 +6,7 @@
 
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// THE FUNCTIONS TO CALCULATE BW SELECTION CV LOO TEMPORAL FOR SIMPLE NKDE
+// THE FUNCTIONS TO CALCULATE BW SELECTION CV LOO TEMPORAL FOR SIMPLE TNKDE
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -562,7 +562,7 @@ arma::rowvec adaptive_bw_tnkde_cpp(std::string method,
 
   //step 1 : mettre toutes les valeurs a 0 (bw_net 0 et bw_time 0)
   // NOTE WE calculate the values only for the events in sel_events
-  arma::cube base_k(1, 1, sel_events.length());
+  arma::cube base_k(bws_time.n_elem, bws_net.n_elem, sel_events.length());
 
   //calculer la matrice des lignes
   //IntegerMatrix edge_mat = make_matrix(line_list,neighbour_list);
@@ -615,6 +615,113 @@ arma::rowvec adaptive_bw_tnkde_cpp(std::string method,
 
   return result;
 }
+
+
+//' @title The exposed function to calculate adaptive bandwidth with space-time
+ //' interaction for TNKDE (INTERNAL)
+ //' @name adaptive_bw_tnkde_cpp2
+ //' @param method a string, one of "simple", "continuous", "discontinuous"
+ //' @param neighbour_list a List, giving for each node an IntegerVector with
+ //' its neighbours
+ //' @param sel_events a Numeric vector indicating the selected events (id of nodes)
+ //' @param sel_events_wid a Numeric Vector indicating the unique if of the selected events
+ //' @param sel_events_time a Numeric Vector indicating the time of the selected events
+ //' @param events a NumericVector indicating the nodes in the graph being events
+ //' @param events_wid a NumericVector indicating the unique id of all the events
+ //' @param events_time a NumericVector indicating the timestamp of each event
+ //' @param weights a cube with the weights associated with each event for each
+ //' bws_net and bws_time.
+ //' @param bws_net an arma::vec with the network bandwidths to consider
+ //' @param bws_time an arma::vec with the time bandwidths to consider
+ //' @param kernel_name a string with the name of the kernel to use
+ //' @param line_list a DataFrame describing the lines
+ //' @param max_depth the maximum recursion depth
+ //' @param min_tol a double indicating by how much 0 in density values must be replaced
+ //' @return a vector with the estimated density at each event location
+ //' @export
+ //' @examples
+ //' # no example provided, this is an internal function
+ // [[Rcpp::export]]
+ arma::cube adaptive_bw_tnkde_cpp2(std::string method,
+                                    List neighbour_list,
+                                    NumericVector sel_events,
+                                    NumericVector sel_events_wid,
+                                    NumericVector sel_events_time,
+                                    NumericVector events,
+                                    NumericVector events_wid,
+                                    NumericVector events_time,
+                                    arma::vec weights,
+                                    arma::vec bws_net,
+                                    arma::vec bws_time,
+                                    std::string kernel_name,
+                                    DataFrame line_list,
+                                    int max_depth,
+                                    double min_tol){
+   Rcout << "step0\n";
+   //selecting the kernel function
+   fptros kernel_func = select_kernelos(kernel_name);
+   Rcout << "step1\n";
+   //step0 extract the columns of the dataframe
+   NumericVector line_weights = line_list["weight"];
+   Rcout << "step2\n";
+   //step 1 : mettre toutes les valeurs a 0 (bw_net 0 et bw_time 0)
+   // NOTE WE calculate the values only for the events in sel_events
+   arma::cube base_k(bws_net.n_elem, bws_time.n_elem, sel_events.length());
+   Rcout << "step3\n";
+   //calculer la matrice des lignes
+   //IntegerMatrix edge_mat = make_matrix(line_list,neighbour_list);
+   arma::sp_mat edge_mat = make_matrix_sparse(line_list,neighbour_list);
+   arma::cube k;
+   Rcout << "step3\n";
+   //step2 : iterer sur chaque event de la zone d'etude
+   int cnt_e = events.length()-1;
+   for(int i=0; i <= cnt_e; ++i){
+     Rcout << "Iterating on " <<  i<<"\n";
+     //preparer les differentes valeurs de departs pour l'event y
+     int y = events[i];
+     int wid = events_wid[i];
+     double v_time = events_time[i];
+     // launching recursion
+     // here we got the the influences of the vertex y on each other selected event in quadra
+     if(method == "simple"){
+       k = ess_kernel_loo_tnkde(kernel_func, edge_mat, sel_events,sel_events_wid,
+                                sel_events_time, neighbour_list,
+                                y, wid, v_time,
+                                bws_net, bws_time,
+                                line_weights, max_depth);
+
+     }else if (method == "discontinuous"){
+       k = esd_kernel_loo_tnkde(kernel_func, edge_mat, sel_events,sel_events_wid,
+                                sel_events_time, neighbour_list,
+                                y, wid, v_time,
+                                bws_net, bws_time,
+                                line_weights, max_depth);
+     }else{
+       k = esc_kernel_loo_tnkde(kernel_func, edge_mat, sel_events,sel_events_wid,
+                                sel_events_time, neighbour_list,
+                                y, wid, v_time,
+                                bws_net, bws_time,
+                                line_weights, max_depth);
+     }
+     Rcout << "Here is k : \n";
+     Rcout << k <<"\n\n";
+     // NOTE : the scaling by bws is applied above
+     float w = weights(i);
+     for(int ii = 0; ii < sel_events.length(); ii++){
+       k.slice(ii) = k.slice(ii) * w;
+     }
+     Rcout << "weight applied !\n";
+     // and summing the values at each iteration (% is the element wise product)
+     base_k += k;
+   };
+   // and calculate the final values
+   Rcout << "end of iterations !\n";
+   arma::uvec neg_elems = arma::find(base_k <= 0);
+   base_k.elem(neg_elems).fill(min_tol);
+
+   return base_k;
+ }
+
 
 
 

@@ -166,3 +166,322 @@ test_that("Testing the adaptive_bw_tnkde.mc function", {
 })
 
 
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#### TESTING THE ADAPTIVE BW FUNCTION WHEN SEVERAL BWS ARE GIVEN ####
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+test_that("Testing the adaptive_bw_tnkde function with multiple bws (simple)", {
+
+  wkt_lines <- c(
+    "LINESTRING (0 5, 0 0)",
+    "LINESTRING (-5 0, 0 0)",
+    "LINESTRING (0 -5, 0 0)",
+    "LINESTRING (5 0, 0 0)")
+
+  linesdf <- data.frame(wkt = wkt_lines,
+                        id = paste("l",1:length(wkt_lines),sep=""))
+
+  all_lines <- st_as_sf(linesdf, wkt = "wkt")
+
+  # definition of three events
+  event <- data.frame(x=c(0,2,0,2),
+                      y=c(3,0,-3,0))
+  event$Time <- c(5,5,6,5)
+  event <- st_as_sf(event, coords = c("x","y"))
+
+  bws_net <- c(10, 15, 20)
+  bws_time <- c(6,7)
+
+  # we will calculate the expected kernel densities at each location
+  # for the simple TNKDE
+
+  bw_net <- 10
+  bw_time <- 6
+
+  ## location 1
+  k1 <- quartic_kernel(0,bw_net) * quartic_kernel(0,bw_time)
+  k1 <- k1 / (bw_net * bw_time)
+
+  k2 <- quartic_kernel(5,bw_net) * quartic_kernel(0,bw_time)
+  k2 <- (k2 * 2) / (bw_net * bw_time)
+
+  k3 <- quartic_kernel(6,bw_net) * quartic_kernel(1,bw_time)
+  k3 <- k3 / (bw_net * bw_time)
+
+  dens1 <- k1 + k2 + k3
+
+
+  ## location 2
+  k1 <- quartic_kernel(0,bw_net) * quartic_kernel(0,bw_time)
+  k1 <- (k1 * 2) / (bw_net * bw_time)
+
+  k2 <- quartic_kernel(5,bw_net) * quartic_kernel(0,bw_time)
+  k2 <- k2 / (bw_net * bw_time)
+
+  k3 <- quartic_kernel(5,bw_net) * quartic_kernel(1,bw_time)
+  k3 <- k3 / (bw_net * bw_time)
+
+  dens2 <- k1 + k2 + k3
+
+  ## location 3
+  k1 <- quartic_kernel(0,bw_net) * quartic_kernel(0,bw_time)
+  k1 <- (k1) / (bw_net * bw_time)
+
+  k2 <- quartic_kernel(5,bw_net) * quartic_kernel(1,bw_time)
+  k2 <- (k2 * 2) / (bw_net * bw_time)
+
+  k3 <- quartic_kernel(6,bw_net) * quartic_kernel(1,bw_time)
+  k3 <- k3 / (bw_net * bw_time)
+
+  dens3 <- k1 + k2 + k3
+
+  # la première valeur attendue avec les bw 10,6
+  hf0 <- c(dens1, dens2, dens3, dens2)
+  gamma_val <- calc_gamma(hf0)
+  abws_net1 <- bw_net * (1/sqrt(hf0)) * (1/gamma_val)
+  abws_time1 <- bw_time * (1/sqrt(hf0)) * (1/gamma_val)
+
+
+  # deuxieme comparaison
+  bw_net <- 15
+  bw_time <- 7
+
+  ## location 1
+  k1 <- quartic_kernel(0,bw_net) * quartic_kernel(0,bw_time)
+  k1 <- k1 / (bw_net * bw_time)
+
+  k2 <- quartic_kernel(5,bw_net) * quartic_kernel(0,bw_time)
+  k2 <- (k2 * 2) / (bw_net * bw_time)
+
+  k3 <- quartic_kernel(6,bw_net) * quartic_kernel(1,bw_time)
+  k3 <- k3 / (bw_net * bw_time)
+
+  dens1 <- k1 + k2 + k3
+
+
+  ## location 2
+  k1 <- quartic_kernel(0,bw_net) * quartic_kernel(0,bw_time)
+  k1 <- (k1 * 2) / (bw_net * bw_time)
+
+  k2 <- quartic_kernel(5,bw_net) * quartic_kernel(0,bw_time)
+  k2 <- k2 / (bw_net * bw_time)
+
+  k3 <- quartic_kernel(5,bw_net) * quartic_kernel(1,bw_time)
+  k3 <- k3 / (bw_net * bw_time)
+
+  dens2 <- k1 + k2 + k3
+
+  ## location 3
+  k1 <- quartic_kernel(0,bw_net) * quartic_kernel(0,bw_time)
+  k1 <- (k1) / (bw_net * bw_time)
+
+  k2 <- quartic_kernel(5,bw_net) * quartic_kernel(1,bw_time)
+  k2 <- (k2 * 2) / (bw_net * bw_time)
+
+  k3 <- quartic_kernel(6,bw_net) * quartic_kernel(1,bw_time)
+  k3 <- k3 / (bw_net * bw_time)
+
+  dens3 <- k1 + k2 + k3
+
+  # la première valeur attendue avec les bw 10,6
+  hf0 <- c(dens1, dens2, dens3, dens2)
+  gamma_val <- calc_gamma(hf0)
+  abws_net2 <- bw_net * (1/sqrt(hf0)) * (1/gamma_val)
+  abws_time2 <- bw_time * (1/sqrt(hf0)) * (1/gamma_val)
+
+  ## on se lance dans la preparation des donnees brutes
+  events <- event
+  time_field <- "Time"
+  w <- c(1,1,1,1)
+
+  samples <- events
+
+  events$time <- events[[time_field]]
+  events$weight <- w
+  div <- "bw"
+  events$wid <- 1:nrow(events)
+  bw_net_range <- c(10,20)
+  bw_net_step <- 5
+  bw_time_range <- c(6,7)
+  bw_time_step <- 1
+  agg <- NULL
+  digits <- 2
+  tol <- 0.001
+  lines <- all_lines
+  grid_shape <- c(3,3)
+
+  data <- prepare_data(samples, lines, events, w , digits,tol,agg)
+  lines <- data$lines
+  events_loc <- data$events
+  idx <- closest_points(events, events_loc)
+  events$goid <- events_loc$goid[idx]
+  grid <- build_grid(grid_shape,list(lines,samples,events))
+  net_bws <- seq(from = bw_net_range[[1]], to = bw_net_range[[2]], by = bw_net_step)
+  time_bws <- seq(from = bw_time_range[[1]], to = bw_time_range[[2]], by = bw_time_step)
+
+  all_bws <- adaptive_bw_tnkde(grid = grid,
+                               events_loc = events_loc,
+                               events = events,
+                               lines = lines,
+                               bw_net = net_bws,
+                               bw_time = time_bws,
+                               trim_bw_net = net_bws * 2,
+                               trim_bw_time = time_bws * 2,
+                               method = "simple",
+                               kernel_name = "quartic",
+                               max_depth = 8,
+                               div = "bw",
+                               tol = tol,
+                               digits = digits,
+                               sparse = TRUE,
+                               verbose = TRUE)
+
+  # comparaison 1 :
+  obt_net_1 <- all_bws[[1]][1,1,]
+  obt_time_1 <- all_bws[[2]][1,1,]
+
+  expect_equal(obt_net_1, abws_net1)
+  expect_equal(obt_time_1, abws_time1)
+
+  # comparaison 2
+  obt_net_2 <- all_bws[[1]][2,2,]
+  obt_time_2 <- all_bws[[2]][2,2,]
+
+  expect_equal(obt_net_2, abws_net2)
+  expect_equal(obt_time_2, abws_time2)
+
+})
+
+
+
+test_that("Testing the adaptive_bw_tnkde function with multiple bws (simple)", {
+
+  wkt_lines <- c(
+    "LINESTRING (0 5, 0 0)",
+    "LINESTRING (-5 0, 0 0)",
+    "LINESTRING (0 -5, 0 0)",
+    "LINESTRING (5 0, 0 0)")
+
+  linesdf <- data.frame(wkt = wkt_lines,
+                        id = paste("l",1:length(wkt_lines),sep=""))
+
+  all_lines <- st_as_sf(linesdf, wkt = "wkt")
+
+  # definition of three events
+  event <- data.frame(x=c(0,2,0,2),
+                      y=c(3,0,-3,0))
+  event$Time <- c(5,5,6,5)
+  event <- st_as_sf(event, coords = c("x","y"))
+
+  bws_net <- c(10, 15, 20)
+  bws_time <- c(6,7)
+
+  # we will calculate the expected kernel densities at each location
+  # for the simple TNKDE
+
+  bw_net <- 10
+  bw_time <- 6
+
+  ## location 1
+  k1 <- quartic_kernel(0,bw_net) * quartic_kernel(0,bw_time)
+  k1 <- k1 / (bw_net * bw_time)
+
+  k2 <- (quartic_kernel(5,bw_net) * (1/3)) * quartic_kernel(0,bw_time)
+  k2 <- (k2 * 2) / (bw_net * bw_time)
+
+  k3 <- (quartic_kernel(6,bw_net) * (1/3)) * quartic_kernel(1,bw_time)
+  k3 <- k3 / (bw_net * bw_time)
+
+  dens1 <- k1 + k2 + k3
+
+
+  ## location 2
+  k1 <- quartic_kernel(0,bw_net) * quartic_kernel(0,bw_time)
+  k1 <- (k1 * 2) / (bw_net * bw_time)
+
+  k2 <- (quartic_kernel(5,bw_net) * (1/3)) * quartic_kernel(0,bw_time)
+  k2 <- k2 / (bw_net * bw_time)
+
+  k3 <- (quartic_kernel(5,bw_net)* (1/3)) * quartic_kernel(1,bw_time)
+  k3 <- k3 / (bw_net * bw_time)
+
+  dens2 <- k1 + k2 + k3
+
+  ## location 3
+  k1 <- quartic_kernel(0,bw_net) * quartic_kernel(0,bw_time)
+  k1 <- (k1) / (bw_net * bw_time)
+
+  k2 <- (quartic_kernel(5,bw_net)* (1/3)) * quartic_kernel(1,bw_time)
+  k2 <- (k2 * 2) / (bw_net * bw_time)
+
+  k3 <- (quartic_kernel(6,bw_net)* (1/3)) * quartic_kernel(1,bw_time)
+  k3 <- k3 / (bw_net * bw_time)
+
+  dens3 <- k1 + k2 + k3
+
+  # la première valeur attendue avec les bw 10,6
+  hf0 <- c(dens1, dens2, dens3, dens2)
+  gamma_val <- calc_gamma(hf0)
+  abws_net1 <- bw_net * (1/sqrt(hf0)) * (1/gamma_val)
+  abws_time1 <- bw_time * (1/sqrt(hf0)) * (1/gamma_val)
+
+
+  ## on se lance dans la preparation des donnees brutes
+  events <- event
+  time_field <- "Time"
+  w <- c(1,1,1,1)
+
+  samples <- events
+
+  events$time <- events[[time_field]]
+  events$weight <- w
+  div <- "bw"
+  events$wid <- 1:nrow(events)
+  bw_net_range <- c(10,20)
+  bw_net_step <- 5
+  bw_time_range <- c(6,7)
+  bw_time_step <- 1
+  agg <- NULL
+  digits <- 2
+  tol <- 0.001
+  lines <- all_lines
+  grid_shape <- c(3,3)
+
+  data <- prepare_data(samples, lines, events, w , digits,tol,agg)
+  lines <- data$lines
+  events_loc <- data$events
+  idx <- closest_points(events, events_loc)
+  events$goid <- events_loc$goid[idx]
+  grid <- build_grid(grid_shape,list(lines,samples,events))
+  net_bws <- seq(from = bw_net_range[[1]], to = bw_net_range[[2]], by = bw_net_step)
+  time_bws <- seq(from = bw_time_range[[1]], to = bw_time_range[[2]], by = bw_time_step)
+
+  all_bws <- adaptive_bw_tnkde(grid = grid,
+                               events_loc = events_loc,
+                               events = events,
+                               lines = lines,
+                               bw_net = net_bws,
+                               bw_time = time_bws,
+                               trim_bw_net = net_bws * 2,
+                               trim_bw_time = time_bws * 2,
+                               method = "discontinuous",
+                               kernel_name = "quartic",
+                               max_depth = 8,
+                               div = "bw",
+                               tol = tol,
+                               digits = digits,
+                               sparse = TRUE,
+                               verbose = TRUE)
+
+  # comparaison 1 :
+  obt_net_1 <- all_bws[[1]][1,1,]
+  obt_time_1 <- all_bws[[2]][1,1,]
+
+  expect_equal(obt_net_1, abws_net1)
+  expect_equal(obt_time_1, abws_time1)
+
+
+})
+
+
+

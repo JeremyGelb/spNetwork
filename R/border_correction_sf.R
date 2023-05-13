@@ -135,6 +135,7 @@ correction_factor <- function(study_area, events, lines, method, bws, kernel_nam
 
   kernel_func <- select_kernel(kernel_name)
   events$goid <- 1:nrow(events)
+  events$bws <- bws
   bw <- max(bws)
 
   # step 0 calculate the distances between the points and the border
@@ -233,13 +234,23 @@ correction_factor <- function(study_area, events, lines, method, bws, kernel_nam
       }
     }
     if(method=="simple"){
-      dfs <- corrfactor_simple(graph,sel_events,edges,bws)
+      #dfs <- corrfactor_simple(graph,sel_events,edges,sel_events$bws)
+      dfs <- corrfactor_discontinuous_sparse(neighbour_list,
+                                             sel_events$vertex_id,
+                                             graph_result$linelist,
+                                             bws, max_depth)
+      dfs <- lapply(dfs, function(x){
+        x$alpha <- 1
+        return(x)
+      })
     }
 
     # and finaly calculate the correction factor by integrals
+    # more exactly, it calculate the mass of the event OUTSIDE
+    # the study area
     corrfactor <- sapply(1:length(dfs),function(j){
       df <- dfs[[j]]
-      bw <- bws[[j]]
+      bw <- sel_events$bws[[j]]
       contribs <- sapply(1:nrow(df),function(i){
         row <- df[i,]
         start <- row$distances
@@ -258,6 +269,8 @@ correction_factor <- function(study_area, events, lines, method, bws, kernel_nam
       return(sum(outside$contribs))
     })
     #corrfactor <- ifelse(corrfactor==0,1,corrfactor)
+    # and we get here the correction factor by getting the inverse of
+    # the mass inside (1-outside)
     corrfactor <- 1/(1-corrfactor)
     df <- data.frame("corrfactor" = corrfactor,
                      "goid" = sel_events$goid)
@@ -288,25 +301,32 @@ correction_factor <- function(study_area, events, lines, method, bws, kernel_nam
 #' be sampled
 #' @param bws_time A numeric vector with the temporal bandwidths
 #' @param kernel_name The name of the kernel to use
+#' @param time_limits A vector with the upper and lower limit of the time period studied
 #' @importFrom cubature cubintegrate
 #' @return A numeric vector with the correction factor values for each event
 #' @keywords internal
 #' @examples
 #' #no example provided, this is an internal function
-correction_factor_time <- function(events_time, samples_time, bws_time, kernel_name){
+correction_factor_time <- function(events_time, samples_time, bws_time, kernel_name, time_limits = NULL){
   kernel_func <- select_kernel(kernel_name)
 
   # step1 : determine the study period
-  start_time <- min(samples_time)
-  end_time <- max(samples_time)
+  if(is.null(time_limits)){
+    start_time <- min(samples_time)
+    end_time <- max(samples_time)
+  }else{
+    start_time <- min(time_limits)
+    end_time <- max(time_limits)
+  }
+
 
 
   # step2 : calculating for each event if it is above or under the limits
   low_diff <- events_time-bws_time - start_time
   low_diff <- ifelse(low_diff < 0, abs(low_diff), 0)
 
-  up_diff <- end_time - (events_time  + bws_time)
-  up_diff <- ifelse(up_diff < 0, abs(up_diff), 0)
+  up_diff <- end_time - events_time
+  up_diff <- ifelse(up_diff < 0, 0, up_diff)
 
   # calculating the part of the density outside the area (lower bound)
   get_integral1 <- function(bw, low_diff){
@@ -318,13 +338,13 @@ correction_factor_time <- function(events_time, samples_time, bws_time, kernel_n
 
   # calculating the part of the density outside the area (upper bound)
   get_integral2 <- function(bw, up_diff){
-    cubintegrate(kernel_func,lower=0,upper=up_diff,
+    cubintegrate(kernel_func,lower=up_diff,upper=bw,
                  bw=bw, relTol = 1e-15)$integral
   }
   get_inegral_vec <- Vectorize(get_integral2, vectorize.args = c("up_diff","bw"))
   out_upper <- get_inegral_vec(up_diff = up_diff, bw = bws_time)
 
-  diffs <- (1-out_lower) + (1-out_upper) - 1
-  return(1/diffs)
+  in_density <- 1 - (out_upper + out_lower)
+  return(1/in_density)
 
 }
