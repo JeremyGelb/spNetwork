@@ -104,15 +104,25 @@ utils::globalVariables(c("spid", "weight", ".", "bws")) # nocov end
 clean_events <- function(events,digits=5,agg=NULL){
   if(is.null(agg)){
     events$spid <- sp_char_index(st_coordinates(events),digits)
+
+    if("time" %in% names(events)){
+      events$spid <- paste0(events$spid,"_",events$time)
+    }
+
     edf <- st_drop_geometry(events)
-    #new_events <- data.table(edf[c("weight","spid","bws")])
     new_events <- data.table(edf)
     n1 <- names(new_events)[names(new_events) %in% c("weight","spid") == FALSE]
 
     #agg_events <- new_events[, .(sum(weight),sum(bws)), by = .(spid)]
     agg_events <- new_events[, lapply(.SD, max) , by = .(spid),  .SDcols = n1]
     agg_events$weight <- new_events[, .(sum(weight)), by = .(spid)][,2]
-    agg_events[,  c("X", "Y") := tstrsplit(spid, "_", fixed = TRUE)]
+    if("time" %in% names(events)){
+      agg_events[,  c("X", "Y","time") := tstrsplit(spid, "_", fixed = TRUE)]
+      agg_events$time <- as.numeric(agg_events$time)
+    }else{
+      agg_events[,  c("X", "Y") := tstrsplit(spid, "_", fixed = TRUE)]
+    }
+
 
     agg_events$X <- as.numeric(agg_events$X)
     agg_events$Y <- as.numeric(agg_events$Y)
@@ -121,9 +131,45 @@ clean_events <- function(events,digits=5,agg=NULL){
                            coords = c("X", "Y"),
                            crs = st_crs(events))
   }else{
-    new_events <- aggregate_points(events,agg)
-    new_events$spid <- sp_char_index(st_coordinates(new_events),digits)
+    if("time" %in% names(events)){
+      XY <- st_coordinates(events)
+      events$X <- XY[,1]
+      events$Y <- XY[,2]
+      events$gp <- aggregate_points(events,agg, return_ids = TRUE)
+
+      if(sum(events$gp) == 0){
+        new_events <- events
+        new_events$gp <- NULL
+        new_events$spid <- sp_char_index(st_coordinates(new_events),digits)
+      }else{
+        events <- st_drop_geometry(events)
+        part1 <- subset(events, events$gp == 0)
+        part2 <- setDT(subset(events, events$gp != 0))
+        mean_coords <- part2[,.(m_X = mean(X),
+                              m_Y = mean(Y)
+                              ), by = "gp"]
+        events2 <- setDT(merge(part2, mean_coords, by = "gp", all.x = TRUE))
+        events2$m_X <- ifelse(is.na(events2$m_X), events2$X,events2$m_X)
+        events2$m_Y <- ifelse(is.na(events2$m_Y), events2$X,events2$m_Y)
+        new_events <- events2[, .(X = data.table::first(m_X),
+                               Y = data.table::first(m_Y),
+                               weight = sum(weight)
+        ), by = c("gp","time")]
+        new_events <- rbind(new_events, part1[names(new_events)])
+        new_events$gp <- NULL
+
+      }
+
+
+    }else{
+      new_events <- aggregate_points(events,agg)
+      new_events$spid <- sp_char_index(st_coordinates(new_events),digits)
+    }
   }
+
+  # we can now add the goid : unique id of each location
+  coords <- st_coordinates(new_events)
+  new_events$goid <- as.numeric(as.factor(sp_char_index(coords,digits)))
 
   return(new_events)
 
@@ -142,26 +188,35 @@ clean_events <- function(events,digits=5,agg=NULL){
 #' @param weight The name of the column to use as weight (default is "weight").
 #' The values of the aggregated points for this column will be summed. For all
 #' the other columns, only the max value is retained.
+#' @param return_ids A boolean (default is FALSE), if TRUE, then an index indicating
+#' for each point the group it belongs to is returned. If FALSE, then a spatial
+#' point features is returned with the points already aggregated.
 #' @return A new feature collection of points
 #' @export
 #' @examples
 #' data(bike_accidents)
 #' bike_accidents$weight <- 1
 #' agg_points <- aggregate_points(bike_accidents, 5)
-aggregate_points <- function(points, maxdist, weight = "weight"){
+aggregate_points <- function(points, maxdist, weight = "weight", return_ids = FALSE){
 
   num_cols <- unlist(lapply(points, is.numeric))
   num_names <- names(points)[num_cols]
 
   ## reimplementation avec dbscan
   coords <- st_coordinates(points)
+  points$X <- coords[,1]
+  points$Y <- coords[,2]
   result <- dbscan::dbscan(coords, eps = maxdist, minPts = 2)
+
+  if(return_ids){
+    return(result$cluster)
+  }
+
   pt_list <- split(points, f = result$cluster)
   if(length(pt_list) == 1){
     all_pts <- points
   }else{
     old_pts <- pt_list[[1]]
-    #mat1 <- cbind(st_coordinates(old_pts), old_pts$weight)
     mat1 <- cbind(st_coordinates(old_pts), st_drop_geometry(old_pts))
     new_pts <- data.frame(t(sapply(2:length(pt_list), function(i){
       pts <- pt_list[[i]]
@@ -210,10 +265,15 @@ prepare_data <- function(samples,lines,events, w ,digits,tol, agg){
 
   ## step1 cleaning the events
   events$weight <- w
+
+  # the goid for the events is added here
+  # two events at the same location will have the same goid
+  # but the events with different time stamp must not be aggregated
+  # geographically
   events <- clean_events(events,digits,agg)
 
   ## step2 defining the global IDS
-  events$goid <- 1:nrow(events)
+  #events$goid <- 1:nrow(events)
   samples$goid <- 1:nrow(samples)
   samples <- samples[c("goid")]
 

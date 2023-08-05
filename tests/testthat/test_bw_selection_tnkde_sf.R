@@ -7,6 +7,7 @@ library(sf)
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 test_that("Testing the bw selection function with CV likelihood and simple kernel", {
+
   ## creating the simple sf::st_as_sf
   # start with de definition of some lines
   wkt_lines <- c(
@@ -54,7 +55,7 @@ test_that("Testing the bw selection function with CV likelihood and simple kerne
 
 
   #let us calculate the value with our function
-  obs_value <-bw_tnkde_cv_likelihood_calc(bw_net_range = c(10,15),
+  obs_value <- bw_tnkde_cv_likelihood_calc(bw_net_range = c(10,15),
                                            bw_net_step = 5,
                                            bw_time_range = c(6,7),
                                            bw_time_step = 1,
@@ -439,8 +440,7 @@ test_that("Testing the bw selection function with CV likelihood in multicore and
 #### TEST FOR BW SELECTION WITH CV LIKELIHOOD WITH ADAPTIVE BW ####
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-## PAS TERMINE
-
+## TEST FONCTIONNEL POUR LA VERSION SIMPLE
 test_that("Testing the bw selection function with CV likelihood and simple kernel AND adaptive BW", {
   ## creating the simple sf::st_as_sf
   # start with de definition of some lines
@@ -459,33 +459,57 @@ test_that("Testing the bw selection function with CV likelihood and simple kerne
   # definition of three events
   event <- data.frame(x=c(0,2,0,2),
                       y=c(3,0,-3,0))
-  event$Time <- c(5,5,6,5)
+  event$Time <- c(5,5,6,6)
   event <- st_as_sf(event, coords = c("x","y"))
+
+  # tm_shape(all_lines) + tm_lines('black') + tm_shape(events) + tm_dots('red', size = 0.5)
 
   bws_net <- c(10, 15, 20)
   bws_time <- c(6,7)
 
-  # #at e1, the time distance to e2 is 2, with a bw_time of 6
-  # loo1 <- sum(log(
-  #   (quartic_kernel(2,bw_time) * quartic_kernel(6,bw_net) +
-  #      quartic_kernel(1,bw_time) * quartic_kernel(6,bw_net)) * (1/(bw_net*bw_time))
-  # ))
-  #
-  # loo2 <- sum(log(
-  #   (quartic_kernel(2,bw_time) * quartic_kernel(6,bw_net) +
-  #      quartic_kernel(1,bw_time) * quartic_kernel(6,bw_net)) * (1/(bw_net*bw_time))
-  # ))
-  #
-  # loo3 <- sum(log(
-  #   (quartic_kernel(1,bw_time) * quartic_kernel(6,bw_net) +
-  #      quartic_kernel(1,bw_time) * quartic_kernel(6,bw_net)) * (1/(bw_net*bw_time))
-  # ))
-  #
-  #
-  # #so the CV likelihood is the sum for each point loo
-  # #in other words, three times the sum of two kerneffect
-  # total <- (loo1 + loo2 + loo3) / 3
+  # first : for the pair of bws 10,6
+  # I need to calculate the local densities
+  # and use it to caculate the local bandwidths
+  bw_time <- 6
+  bw_net <- 10
+  net_dist_mat <- rbind(
+    c(0,5,6,5),
+    c(5,0,5,0),
+    c(6,5,0,5),
+    c(5,0,5,0)
+  )
+  time_dist_mat <- rbind(
+    c(0,0,1,1),
+    c(0,0,1,1),
+    c(1,1,0,0),
+    c(1,1,0,0)
+  )
+  n <- nrow(time_dist_mat)
+  hf0 <- sapply(1:n, function(i){
 
+    # ids <- setdiff(c(1:n),i)
+    #
+    # sum(quartic_kernel(net_dist_mat[i,ids],10) *
+    #       quartic_kernel(time_dist_mat[i,ids],6))
+
+    sum(quartic_kernel(net_dist_mat[i,],bw_net) *
+      quartic_kernel(time_dist_mat[i,],bw_time))
+
+  }) * (1/(10*6))
+
+  gamma_val <- calc_gamma(hf0)
+  abws_net <- bw_net * (1/sqrt(hf0)) * (1/gamma_val)
+  abws_time <- bw_time * (1/sqrt(hf0)) * (1/gamma_val)
+
+  # second, I can use the local densities to calculate the loo values
+  loo_values <- sapply(1:n, function(i){
+    bw_net <- abws_net[[i]]
+    bw_time <- abws_time[[i]]
+    ids <- setdiff(c(1:n),i)
+    sum(quartic_kernel(net_dist_mat[i,ids],abws_net[[i]]) *
+          quartic_kernel(time_dist_mat[i,ids],abws_time[[i]])) * (1/(abws_net[[i]]*abws_time[[i]]))
+  })
+  loo_value <- sum(log(loo_values)) / n
 
   #let us calculate the value with our function
   obs_value <- bw_tnkde_cv_likelihood_calc(bw_net_range = c(10,20),
@@ -508,12 +532,298 @@ test_that("Testing the bw selection function with CV likelihood and simple kerne
                                           tol=0.001,
                                           agg=NULL,
                                           sparse=TRUE,
-                                          grid_shape=c(3,3),
+                                          grid_shape=c(1,1),
                                           sub_sample=1,
                                           verbose=FALSE,
                                           check=FALSE)
 
-  expect_equal(obs_value[1,1], total)
+  expect_equal(obs_value[1,1], loo_value)
 })
+
+## TEST POUR LA VERSION DISCONTINUE
+test_that("Testing the bw selection function with CV likelihood and discontinuous kernel AND adaptive BW", {
+  ## creating the simple sf::st_as_sf
+  # start with de definition of some lines
+
+  wkt_lines <- c(
+    "LINESTRING (0 5, 0 0)",
+    "LINESTRING (-5 0, 0 0)",
+    "LINESTRING (0 -5, 0 0)",
+    "LINESTRING (5 0, 0 0)")
+
+  linesdf <- data.frame(wkt = wkt_lines,
+                        id = paste("l",1:length(wkt_lines),sep=""))
+
+  all_lines <- st_as_sf(linesdf, wkt = "wkt")
+
+  # definition of three events
+  event <- data.frame(x=c(0,2,0,2),
+                      y=c(3,0,-3,0))
+  event$Time <- c(5,5,6,6)
+  event <- st_as_sf(event, coords = c("x","y"))
+
+  # tm_shape(all_lines) + tm_lines('black') + tm_shape(events) + tm_dots('red', size = 0.5)
+
+  bws_net <- c(10, 15, 20)
+  bws_time <- c(6,7)
+
+  # first : for the pair of bws 10,6
+  # I need to calculate the local densities
+  # and use it to caculate the local bandwidths
+  bw_time <- 6
+  bw_net <- 10
+  net_dist_mat <- rbind(
+    c(0,5,6,5),
+    c(5,0,5,0),
+    c(6,5,0,5),
+    c(5,0,5,0)
+  )
+  time_dist_mat <- rbind(
+    c(0,0,1,1),
+    c(0,0,1,1),
+    c(1,1,0,0),
+    c(1,1,0,0)
+  )
+
+  alpha_mat <- rbind(
+    c(1,3,3,3),
+    c(3,1,3,1),
+    c(3,3,1,3),
+    c(3,1,3,1)
+  )
+
+  n <- nrow(time_dist_mat)
+  hf0 <- sapply(1:n, function(i){
+
+    sum( (quartic_kernel(net_dist_mat[i,],bw_net) / alpha_mat[i,]) *
+          quartic_kernel(time_dist_mat[i,],bw_time))
+
+  }) * (1/(10*6))
+
+  gamma_val <- calc_gamma(hf0)
+  abws_net <- bw_net * (1/sqrt(hf0)) * (1/gamma_val)
+  abws_time <- bw_time * (1/sqrt(hf0)) * (1/gamma_val)
+
+  # second, I can use the local densities to calculate the loo values
+  loo_values <- sapply(1:n, function(i){
+    bw_net <- abws_net[[i]]
+    bw_time <- abws_time[[i]]
+    ids <- setdiff(c(1:n),i)
+    sum( (quartic_kernel(net_dist_mat[i,ids],abws_net[[i]]) /  alpha_mat[i,ids])*
+          quartic_kernel(time_dist_mat[i,ids],abws_time[[i]])) * (1/(abws_net[[i]]*abws_time[[i]]))
+  })
+  loo_value <- sum(log(loo_values)) / n
+
+  #let us calculate the value with our function
+  obs_value <- bw_tnkde_cv_likelihood_calc(bw_net_range = c(10,20),
+                                           bw_net_step = 5,
+                                           bw_time_range = c(6,7),
+                                           bw_time_step = 1,
+                                           lines = all_lines,
+                                           events = event,
+                                           time_field = "Time",
+                                           w = c(1,1,1,1),
+                                           kernel_name = "quartic",
+                                           method = "discontinuous",
+                                           diggle_correction = FALSE,
+                                           study_area = NULL,
+                                           adaptive = TRUE,
+                                           trim_net_bws = c(20,30,40),
+                                           trim_time_bws = c(12,14),
+                                           max_depth = 15,
+                                           digits=5,
+                                           tol=0.001,
+                                           agg=NULL,
+                                           sparse=TRUE,
+                                           grid_shape=c(1,1),
+                                           sub_sample=1,
+                                           verbose=FALSE,
+                                           check=FALSE)
+
+  expect_equal(obs_value[1,1], loo_value)
+})
+
+## TEST POUR LA VERSION CONTINUE
+# PAS TERMINE
+test_that("Testing the bw selection function with CV likelihood and continuous kernel AND adaptive BW", {
+  ## creating the simple sf::st_as_sf
+  # start with de definition of some lines
+
+  wkt_lines <- c(
+    "LINESTRING (0 5, 0 0)",
+    "LINESTRING (-5 0, 0 0)",
+    "LINESTRING (0 -5, 0 0)",
+    "LINESTRING (5 0, 0 0)"
+    # "LINESTRING (-5 5, 0 5)",
+    # "LINESTRING (-5 -5, 0 -5)",
+    # "LINESTRING (0 5, 5 5)",
+    # "LINESTRING (0 -5, 5 -5)"
+    )
+
+  linesdf <- data.frame(wkt = wkt_lines,
+                        id = paste("l",1:length(wkt_lines),sep=""))
+
+  all_lines <- st_as_sf(linesdf, wkt = "wkt")
+
+  # definition of three events
+  event <- data.frame(x=c(0,2,0,2),
+                      y=c(3,0,-3,0))
+  event$Time <- c(5,5,6,6)
+  event <- st_as_sf(event, coords = c("x","y"))
+
+  # tm_shape(all_lines) + tm_lines('black') + tm_shape(events) + tm_dots('red', size = 0.5)
+
+  bws_net <- c(10, 15, 20)
+  bws_time <- c(6,7)
+
+  time_dist_mat <- rbind(
+    c(0,0,1,1),
+    c(0,0,1,1),
+    c(1,1,0,0),
+    c(1,1,0,0)
+  )
+
+  # first : for the pair of bws 10,6
+  # I need to calculate the local densities
+  # and use it to caculate the local bandwidths
+  bw_time <- 6
+  bw_net <- 10
+  # I will have to calculate everything by hand because vector based
+  # calculating is not possible in this complex case
+
+  # for the first event
+  dd1 <- quartic_kernel(0, bw_net) # self effect
+  dd1 <- dd1 + (quartic_kernel(6,bw_net) * (-2/4))# backfire from below
+  dd2 <- quartic_kernel(5, bw_net) * (2/4) # effect of event 2
+  dd3 <- quartic_kernel(6, bw_net) * (2/4) # effect of event 3
+  dd4 <- quartic_kernel(5, bw_net) * (2/4) # effect of event 4
+  dens1_net <- c(dd1, dd2, dd3, dd4)
+
+  dens1_time <- c(quartic_kernel(time_dist_mat[1,], bw_time))
+  dens1 <- sum((dens1_net * dens1_time)) * (1/(bw_time*bw_net))
+
+  # for the second event
+  dens2_net <- c(
+    (quartic_kernel(5, bw_net) * (2/4)),  # effect from event 1
+    quartic_kernel(0, bw_net) + # self direct density
+                   ( (-2/4) * (quartic_kernel(4, bw_net))), #backfire from center
+    (quartic_kernel(5, bw_net) * (2/4)),  # effect from event 3
+     quartic_kernel(0, bw_net) + # effect from event 4 (same location)
+       ( (-2/4) * (quartic_kernel(4, bw_net))) #backfire from center
+  )
+
+  dens2_time <- c(quartic_kernel(time_dist_mat[2,], bw_time))
+  dens2 <- sum((dens2_net * dens2_time)) * (1/(bw_time*bw_net))
+
+  # for the third event
+  dens3_net <- c(
+    (quartic_kernel(6, bw_net) * (2/4)),  # effect from event 1
+    (quartic_kernel(5, bw_net) * (2/4)),  # effect from event 2
+    (quartic_kernel(0, bw_net) + # self direct density
+                   ( (-2/4) * (quartic_kernel(6, bw_net)))), #backfire from center
+    (quartic_kernel(5, bw_net) * (2/4))  # effect from event 4
+  )
+
+  dens3_time <- c(quartic_kernel(time_dist_mat[3,], bw_time))
+  dens3 <- sum((dens3_net * dens3_time)) * (1/(bw_time*bw_net))
+
+  # for the fourth event
+  dens4_net <- c(
+    (quartic_kernel(5, bw_net) * (2/4)),  # effect from event 1
+    (quartic_kernel(0, bw_net) + # effect from event 2 (same location)
+       ( (-2/4) * (quartic_kernel(4, bw_net)))), #backfire from center
+    (quartic_kernel(5, bw_net) * (2/4)),  # effect from event 3
+    (quartic_kernel(0, bw_net) + # self direct density
+                   ( (-2/4) * (quartic_kernel(4, bw_net)))) #backfire from center
+  )
+
+  dens4_time <- c(quartic_kernel(time_dist_mat[4,], bw_time))
+  dens4 <- sum((dens4_net * dens4_time)) *  (1/(bw_time*bw_net))
+
+  hf0 <- c(dens1, dens2, dens3, dens4)
+
+  n <- nrow(time_dist_mat)
+
+  gamma_val <- calc_gamma(hf0)
+  abws_net <- bw_net * (1/sqrt(hf0)) * (1/gamma_val)
+  abws_time <- bw_time * (1/sqrt(hf0)) * (1/gamma_val)
+
+  # second, I can use the local bandwidths to calculate the loo values
+  # for the first event
+  dd2 <- quartic_kernel(5, abws_net[[1]]) * (2/4) # effect of event 2
+  dd3 <- quartic_kernel(6, abws_net[[1]]) * (2/4) # effect of event 3
+  dd4 <- quartic_kernel(5, abws_net[[1]]) * (2/4) # effect of event 4
+  dens1_net <- c(dd2, dd3, dd4)
+
+  dens1_time <- c(quartic_kernel(time_dist_mat[1,c(2,3,4)], abws_time[[1]]))
+  dens1 <- sum((dens1_net * dens1_time)) * (1/(abws_net[[1]]*abws_time[[1]]))
+
+  # for the second event
+  dens2_net <- c(
+    (quartic_kernel(5, abws_net[[2]]) * (2/4)),  # effect from event 1
+    (quartic_kernel(5, abws_net[[2]]) * (2/4)),  # effect from event 3
+    quartic_kernel(0, abws_net[[2]]) + # effect from event 4 (same location)
+      ( (-2/4) * (quartic_kernel(4, abws_net[[2]]))) #backfire from center
+  )
+
+  dens2_time <- c(quartic_kernel(time_dist_mat[2,c(1,3,4)], abws_time[[2]]))
+  dens2 <- sum((dens2_net * dens2_time)) * (1/(abws_net[[2]]*abws_time[[2]]))
+
+  # for the third event
+  dens3_net <- c(
+    (quartic_kernel(6, abws_net[[3]]) * (2/4)),  # effect from event 1
+    (quartic_kernel(5, abws_net[[3]]) * (2/4)),  # effect from event 2
+    (quartic_kernel(5, abws_net[[3]]) * (2/4))  # effect from event 4
+  )
+
+  dens3_time <- c(quartic_kernel(time_dist_mat[3,c(1,2,4)], abws_time[[3]]))
+  dens3 <- sum((dens3_net * dens3_time)) * (1/(abws_time[[3]]*abws_net[[3]]))
+
+  # for the fourth event
+  dens4_net <- c(
+    (quartic_kernel(5, abws_net[[4]]) * (2/4)),  # effect from event 1
+    (quartic_kernel(0, abws_net[[4]]) + # effect from event 2 (same location)
+       ( (-2/4) * (quartic_kernel(4, abws_net[[4]])))), #backfire from center
+    (quartic_kernel(5, abws_net[[4]]) * (2/4))  # effect from event 3
+  )
+
+  dens4_time <- c(quartic_kernel(time_dist_mat[4,c(1,2,3)], abws_time[[4]]))
+  dens4 <- sum((dens4_net * dens4_time)) *  (1/(abws_time[[4]]*abws_net[[4]]))
+
+
+
+
+  loo_value <- sum(log(c(dens1, dens2, dens3, dens4))) / 4
+
+  #let us calculate the value with our function
+  # TODO : MAKE THE TEST WORK WITH A GRID !
+  obs_value <- bw_tnkde_cv_likelihood_calc(bw_net_range = c(10,20),
+                                           bw_net_step = 5,
+                                           bw_time_range = c(6,7),
+                                           bw_time_step = 1,
+                                           lines = all_lines,
+                                           events = event,
+                                           time_field = "Time",
+                                           w = c(1,1,1,1),
+                                           kernel_name = "quartic",
+                                           method = "continuous",
+                                           diggle_correction = FALSE,
+                                           study_area = NULL,
+                                           adaptive = TRUE,
+                                           trim_net_bws = c(20,30,40),
+                                           trim_time_bws = c(12,14),
+                                           max_depth = 15,
+                                           digits=5,
+                                           tol=0.001,
+                                           agg=NULL,
+                                           sparse=TRUE,
+                                           grid_shape=c(3,3),
+                                           sub_sample=1,
+                                           verbose=FALSE,
+                                           check=FALSE)
+
+  expect_equal(obs_value[1,1], loo_value)
+})
+
 
 

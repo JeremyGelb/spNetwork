@@ -104,6 +104,8 @@ bw_checks <- function(check,lines,samples,events,
 #' @param max_depth The maximal depth for continuous or discontinuous NKDE
 #' @template sparse-arg
 #' @keywords internal
+#' @returns A list of two elements, first the network correction factors, then
+#' the time correction factors.
 #' @examples
 #' # no example provided, this is an internal function
 bw_tnkde_corr_factor <- function(net_bws,time_bws, diggle_correction, study_area, events, events_loc, lines,
@@ -364,6 +366,8 @@ bw_tnkde_cv_likelihood_calc <- function(bw_net_range, bw_net_step,
                                  digits = digits,
                                  sparse = sparse,
                                  verbose = verbose)
+    print('Here are the precaculated adaptive bws')
+    print(all_bws)
     all_bws_net <- all_bws$bws_net
     all_bws_time <- all_bws$bws_time
   }else{
@@ -378,39 +382,66 @@ bw_tnkde_cv_likelihood_calc <- function(bw_net_range, bw_net_step,
     print("Calculating the correction factor if required")
   }
 
-  ## WRITE A TEST FOR THIS ! DONE !
   ## calculating network corr_factors
-  corr_factors <- bw_tnkde_corr_factor_arr(all_bws_net,
-                                       all_bws_time,
-                                       diggle_correction,
-                                       study_area,
-                                       events,
-                                       events_loc,
-                                       lines,
-                                       method,
-                                       kernel_name,
-                                       tol,
-                                       digits,
-                                       max_depth,
-                                       sparse)
-  net_bws_corr <- corr_factors[[1]]
-  time_bws_corr <- corr_factors[[2]]
+
+  events_weight <- array(0, dim = c(length(net_bws), length(time_bws), nrow(events)))
+
+  if(adaptive){
+    # TODO : check the correction factor calculation if two points
+    # have the same coordinates in space but not in taime
+    # (case of density to apply locally)
+    corr_factors <- bw_tnkde_corr_factor_arr(all_bws_net,
+                                             all_bws_time,
+                                             diggle_correction,
+                                             study_area,
+                                             events,
+                                             events_loc,
+                                             lines,
+                                             method,
+                                             kernel_name,
+                                             tol,
+                                             digits,
+                                             max_depth,
+                                             sparse)
+    for (i in 1:length(net_bws)){
+      for (j in 1:length(time_bws)){
+        events_weight[i,j,] <- events$weight * corr_factors[i,j,]
+      }
+    }
+
+  }else{
+    corr_factors <- bw_tnkde_corr_factor(all_bws_net,
+                                             all_bws_time,
+                                             diggle_correction,
+                                             study_area,
+                                             events,
+                                             events_loc,
+                                             lines,
+                                             method,
+                                             kernel_name,
+                                             tol,
+                                             digits,
+                                             max_depth,
+                                             sparse)
+    net_bws_corr <- corr_factors[[1]]
+    time_bws_corr <- corr_factors[[2]]
+
+    for (i in 1:length(time_bws_corr)){
+      bw_time <- time_bws[[i]]
+      corr_time <- time_bws_corr[[i]]
+      for (j in 1:length(net_bws_corr)){
+        bw_net <- net_bws[[j]]
+        corr_net <- net_bws_corr[[j]]
+        events_weight[j,i,] <- events$weight * corr_time * corr_net
+      }
+    }
+
+  }
+
 
 
   ## NB : the weights can change because of the different BW in time and space
   ## The weights will be passed to c++, to is must be in an easy format, like an array
-
-  events_weight <- array(0, dim = c(length(net_bws), length(time_bws), nrow(events)))
-
-  for (i in 1:length(time_bws_corr)){
-    bw_time <- time_bws[[i]]
-    corr_time <- time_bws_corr[[i]]
-    for (j in 1:length(net_bws_corr)){
-      bw_net <- net_bws[[j]]
-      corr_net <- net_bws_corr[[j]]
-      events_weight[j,i,] <- events$weight * corr_time * corr_net
-    }
-  }
 
   max_bw_net <- max(net_bws)
 
@@ -448,15 +479,21 @@ bw_tnkde_cv_likelihood_calc <- function(bw_net_range, bw_net_step,
     quad_events <- sel$samples
     sel_weights <- events_weight[,,sel_events$wid]
 
-    values <- tnkde_worker_bw_sel(sel$lines,
-                                  quad_events,
-                                  sel_events_loc,
-                                  sel_events,
-                                  sel_weights,
-                                  kernel_name, net_bws,
-                                  time_bws,
-                                  method, div, digits,
-                                  tol,sparse, max_depth, verbose)
+    values <- tnkde_worker_bw_sel(lines = sel$lines,
+                                  quad_events = quad_events,
+                                  events_loc = sel_events_loc,
+                                  events = sel_events,
+                                  w = sel_weights,
+                                  kernel_name = kernel_name,
+                                  bws_net = all_bws_net,
+                                  bws_time = all_bws_time,
+                                  method = method,
+                                  div = div,
+                                  digits = digits,
+                                  tol = tol,
+                                  sparse = sparse,
+                                  max_depth = max_depth,
+                                  verbose = verbose)
 
 
     if(verbose){
@@ -469,6 +506,7 @@ bw_tnkde_cv_likelihood_calc <- function(bw_net_range, bw_net_step,
   dfs[sapply(dfs, is.null)] <- NULL
   dfs$along <- 3
   final_array <- do.call(abind::abind, dfs)
+
   if(zero_strat == "min_double"){
     bin_arr <- final_array == 0
     final_array[bin_arr] <- .Machine$double.xmin
@@ -744,8 +782,10 @@ bw_tnkde_cv_likelihood_calc.mc <- function(bw_net_range, bw_net_step,
 #' the same location. They are linked by the goid column
 #' @param w A numeric array with the weight of the events for each pair of bandwidth
 #' @param kernel_name The name of the kernel to use (string)
-#' @param bws_net A numeric vector with the network bandwidths
-#' @param bws_time A numeric vector with the time bandwidths
+#' @param bws_net A numeric vector with the network bandwidths. Could also be an
+#' array if an adaptive bandwidth is calculated.
+#' @param bws_time A numeric vector with the time bandwidths. Could also be an
+#' array if an adaptive bandwidth is calculated.
 #' @param div The type of divisor (not used currently)
 #' @param max_depth The maximum depth of recursion
 #' @param method The type of NKDE to use (string)
@@ -769,6 +809,10 @@ tnkde_worker_bw_sel <- function(lines, quad_events, events_loc, events, w, kerne
     return(NULL)
   }
 
+  # small test to check if we are dealing with adaptive bandwidths or fixed bandwidths
+  adaptive <- inherits(bws_net, "array")
+
+
   ## step1 creating the graph
   graph_result <- build_graph(lines,digits = digits,line_weight = "length")
   graph <- graph_result$graph
@@ -784,8 +828,8 @@ tnkde_worker_bw_sel <- function(lines, quad_events, events_loc, events, w, kerne
   quad_events2 <- st_drop_geometry(quad_events)
 
   #first a join for all the events in the bw
-  vertex_id <- NULL # avoid a NOTE
-  i.vertex_id <- NULL # avoid a NOTE
+  vertex_id <- NULL # avoid a CRAN NOTE
+  i.vertex_id <- NULL # avoid a CRAN NOTE
   setDT(events2)[events_loc2, on = "goid", vertex_id := i.vertex_id]
 
   #and a second join for the quad_events
@@ -795,17 +839,41 @@ tnkde_worker_bw_sel <- function(lines, quad_events, events_loc, events, w, kerne
   neighbour_list <- adjacent_vertices(graph,nodes$id,mode="out")
   neighbour_list <- lapply(neighbour_list,function(x){return (as.numeric(x))})
 
-  kernel_values <- tnkde_get_loo_values(method,
-                                        neighbour_list,
-                                        quad_events2$vertex_id,
-                                        quad_events2$wid,
-                                        quad_events2$time,
-                                        events2$vertex_id,
-                                        events2$wid, events2$time, w,
-                                        bws_net, bws_time,
-                                        kernel_name, graph_result$linelist, max_depth,
-                                        .Machine$double.xmin
-  )
+  ## Here I must rework the C++ function to be sure it can use a
+  ## cube for space and time bandwidths
+  ## I will create a second function with a similar name
+  if(adaptive){
+    print("this is bws_net")
+    print(bws_net)
+    print("this is bws_time")
+    print(bws_time)
+    kernel_values <- tnkde_get_loo_values2(method,
+                                          neighbour_list,
+                                          quad_events2$vertex_id,
+                                          quad_events2$wid,
+                                          quad_events2$time,
+                                          events2$vertex_id,
+                                          events2$wid, events2$time,w,
+                                          bws_net, bws_time,
+                                          kernel_name, graph_result$linelist, max_depth,
+                                          .Machine$double.xmin
+    )
+    print('obtained k values  : ')
+    print(kernel_values)
+  }else{
+    kernel_values <- tnkde_get_loo_values(method,
+                                          neighbour_list,
+                                          quad_events2$vertex_id,
+                                          quad_events2$wid,
+                                          quad_events2$time,
+                                          events2$vertex_id,
+                                          events2$wid, events2$time, w,
+                                          bws_net, bws_time,
+                                          kernel_name, graph_result$linelist, max_depth,
+                                          .Machine$double.xmin
+    )
+  }
+
 
   # kernel_values is supposed to be an array (bw_net, bw_time, events)
   return(kernel_values)

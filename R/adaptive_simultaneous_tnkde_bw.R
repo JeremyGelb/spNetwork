@@ -69,9 +69,11 @@ worker_adaptive_bw_tnkde <- function(lines,
   setDT(quad_events2)[events_loc2, on = "goid", vertex_id := i.vertex_id]
 
   ## step3 starting the calculations !
+  print(graph)
   neighbour_list <- adjacent_vertices(graph,nodes$id,mode="out")
   neighbour_list <- lapply(neighbour_list,function(x){return (as.numeric(x))})
-
+  print("here is the neighbour list : ")
+  print(neighbour_list)
 
   kernel_values <- adaptive_bw_tnkde_cpp2(method = method,
                                          neighbour_list = neighbour_list,
@@ -88,24 +90,29 @@ worker_adaptive_bw_tnkde <- function(lines,
                                          line_list = graph_result$linelist,
                                          max_depth = max_depth,
                                          min_tol =.Machine$double.xmin)
-  ## and adding the self weight
-  kfun <- select_kernel(kernel_name)
-  bws_prod_mat <- outer(bw_net, bw_time)
-  kern_prod_mat <- outer(kfun(0, bw_net), kfun(0, bw_time))
-  # NOTE :
-  # WHEN two events are merged and get a weight of 2 we must
-  # adjust their weight accordingly here
-  w2 <- events_loc2$weight[match(quad_events2$goid,events_loc2$goid)]
-  kern_prod_arr <- sapply(w2, function(x){
-    (x * kern_prod_mat) / bws_prod_mat
-  }, simplify = "array")
-  #kernel_values <- kernel_values + replicate(dim(kernel_values)[[3]], new_mat)
-  kernel_values <- kernel_values + kern_prod_arr
-  # HERE : I have validated that I get the same result from the new method with adaptive_bw_tnkde_cpp2
-  # the result is an array rather than a vector and can accomodate several bws for network and time
-  # VS the old version
-  #kernel_values <- kernel_values + ((kfun(0, bw_net)*kfun(0, bw_time))/(bw_net * bw_time))
+  # the self weight is already added from
+  # the function above if the method is continuous
+  if(method != "continuous"){
+    ## and adding the self weight
+    kfun <- select_kernel(kernel_name)
+    bws_prod_mat <- outer(bw_net, bw_time)
+    kern_prod_mat <- outer(kfun(0, bw_net), kfun(0, bw_time))
+    # NOTE :
+    # WHEN two events are merged and get a weight of 2 we must
+    # adjust their weight accordingly here
+    w2 <- events_loc2$weight[match(quad_events2$goid,events_loc2$goid)]
+    kern_prod_arr <- sapply(w2, function(x){
+      (x * kern_prod_mat) / bws_prod_mat
+    }, simplify = "array")
+    #kernel_values <- kernel_values + replicate(dim(kernel_values)[[3]], new_mat)
+    kernel_values <- kernel_values + kern_prod_arr
+    # HERE : I have validated that I get the same result from the new method with adaptive_bw_tnkde_cpp2
+    # the result is an array rather than a vector and can accomodate several bws for network and time
+    # VS the old version
+    #kernel_values <- kernel_values + ((kfun(0, bw_net)*kfun(0, bw_time))/(bw_net * bw_time))
 
+
+  }
 
   ## at that point, we have a list of numeric vectors or a list of dataframes, one for each bw
   return(kernel_values)
@@ -160,13 +167,13 @@ adaptive_bw_tnkde <- function(grid, events_loc, events, lines,
     print(i)
     sel <- selections[[i]]
 
-    #sel_events <- subset(events, events$goid %in% sel$events$goid)
+    # sel_events gives us the events inside the quadra considered
     sel_events <- subset(events, events$goid %in% sel$samples$goid)
 
     # nice tnkde worker function !
     values <- worker_adaptive_bw_tnkde(lines = sel$lines,
                                   quad_events = sel_events, # the events for wich we need to calculate the density
-                                  events_loc = sel$events, # the locations of all the events
+                                  events_loc = sel$events, # the locations of all the events in the quadra
                                   events = sel$samples,
                                   w = sel_events$weight,
                                   kernel_name = kernel_name,
@@ -204,6 +211,8 @@ adaptive_bw_tnkde <- function(grid, events_loc, events, lines,
   final_bws_net <- array(0,dim = dim(tot_arr))
   final_bws_time <- array(0,dim = dim(tot_arr))
 
+  print("here are the estimated densities before calculating local bws")
+  print(tot_arr)
   for(i in 1:length(bw_net)){
     for(j in 1:length(bw_time)){
       k <- tot_arr[i,j,]

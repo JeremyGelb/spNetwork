@@ -326,6 +326,9 @@ nkde_get_loo_values <- function(method, neighbour_list, sel_events, sel_events_w
 #' @keywords internal
 NULL
 
+#' @title The worker function to calculate simple TNKDE likelihood cv (adaptive case)
+NULL
+
 #' @title The worker function to calculate discontinuous TNKDE likelihood cv
 #' @name esd_kernel_loo_tnkde
 #' @description The worker function to calculate discontinuous TNKDE likelihood cv (INTERNAL)
@@ -346,6 +349,9 @@ NULL
 #' each pair of bandwidths (cube(bws_net, bws_time, events))
 NULL
 
+#' @title The worker function to calculate discontinuous TNKDE likelihood cv (adaptive case)
+NULL
+
 #' @title The worker function to calculate continuous TNKDE likelihood cv
 #' @name esc_kernel_loo_tnkde
 #' @description The worker function to calculate continuous TNKDE likelihood cv (INTERNAL)
@@ -364,6 +370,12 @@ NULL
 #' @param max_depth the maximum recursion depth
 #' @return a cube with the impact of the event v on each other event for
 #' each pair of bandwidths (cube(bws_net, bws_time, events))
+NULL
+
+#' @title The worker function to calculate continuous TNKDE likelihood cv (adaptive case)
+NULL
+
+#' @title The exposed function to calculate TNKDE likelihood cv
 NULL
 
 #' @title The exposed function to calculate adaptive bandwidth with space-time
@@ -395,6 +407,10 @@ NULL
 #' # no example provided, this is an internal function
 tnkde_get_loo_values <- function(method, neighbour_list, sel_events, sel_events_wid, sel_events_time, events, events_wid, events_time, weights, bws_net, bws_time, kernel_name, line_list, max_depth, min_tol) {
     .Call(`_spNetwork_tnkde_get_loo_values`, method, neighbour_list, sel_events, sel_events_wid, sel_events_time, events, events_wid, events_time, weights, bws_net, bws_time, kernel_name, line_list, max_depth, min_tol)
+}
+
+tnkde_get_loo_values2 <- function(method, neighbour_list, sel_events, sel_events_wid, sel_events_time, events, events_wid, events_time, weights, bws_net, bws_time, kernel_name, line_list, max_depth, min_tol) {
+    .Call(`_spNetwork_tnkde_get_loo_values2`, method, neighbour_list, sel_events, sel_events_wid, sel_events_time, events, events_wid, events_time, weights, bws_net, bws_time, kernel_name, line_list, max_depth, min_tol)
 }
 
 #' @title The exposed function to calculate adaptive bandwidth with space-time
