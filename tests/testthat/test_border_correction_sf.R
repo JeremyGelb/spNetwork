@@ -204,3 +204,98 @@ test_that("Testing the correction_factor function for a continuous NKDE", {
 
 })
 
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#### TEST FOR CORRECTION FACTOR WITH DISCONTINUOUS TNKDE ####
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+test_that("Testing the correction_factor function for a discontinuous TNKDE", {
+
+  # defining a simple situation
+  wkt_lines <- c(
+    "LINESTRING (0 5, 0 0)",
+    "LINESTRING (-5 0, 0 0)",
+    "LINESTRING (0 -5, 0 0)",
+    "LINESTRING (5 0, 0 0)",
+    "LINESTRING (-5 -5, 0 -5)",
+    "LINESTRING (0 -5, 5 -5)"
+  )
+
+  linesdf <- data.frame(wkt = wkt_lines,
+                        id = paste("l",1:length(wkt_lines),sep=""))
+
+  all_lines <- st_as_sf(linesdf, wkt = "wkt")
+
+  wkt_polygon <- "POLYGON ((-5 -4, 5 -4, 5 5, -5 5, -5 -4))"
+  polydf <- data.frame(wkt = wkt_polygon,
+                       id = 1)
+  polygons <- st_as_sf(polydf, wkt = "wkt")
+
+  # definition of three events
+  event <- data.frame(x=c(0,0),
+                      y=c(3,-3),
+                      t=c(2,5),
+                      id = c(1,3))
+  event <- st_as_sf(event, coords = c("x","y"))
+
+  # tm_shape(all_lines) + tm_lines('black') + tm_shape(polygons) + tm_borders('blue') + tm_shape(event) + tm_dots('red', size = 1)
+
+  # evaluating the correction for the discontinuous case
+  # here, we only need to apply the correction to 1 event (the last one)
+  # in this case, the BW is 3 for space and 2 for time
+  # the time boundaries are 0 - 6
+  time_bounds <- c(0,6)
+
+  # we calculate here the correction factor for the network part
+  dens1 <- cubintegrate(uniform_kernel,lower=1,upper=2,
+                        bw=3, relTol = 1e-15)$integral
+
+  dens2 <- cubintegrate(uniform_kernel,lower=2,upper=3,
+                        bw=3, relTol = 1e-15)$integral * 0.5
+
+
+  # and we do the same for time
+  # the part going after 6
+  dens3 <-  cubintegrate(uniform_kernel,lower=1,upper=2,
+                                 bw=2, relTol = 1e-15)$integral
+
+  out_density <- (dens1 + (2*dens2)) * dens3
+
+  expected_val <- corr_factor <- 1/(1-out_density)
+
+  expected_vals <- c(1,expected_val)
+
+  # let us calculate the observed value
+  study_area = polygons
+  events = event
+  lines = all_lines
+  method = "discontinuous"
+  kernel_name = "uniform"
+  tol = 0.1
+  digits = 2
+  max_depth = 8
+  sparse=TRUE
+  net_corr_factor1 <- correction_factor(study_area = polygons,
+                                events = event,
+                                lines = all_lines,
+                                method = "discontinuous",
+                                bws = c(3,3),
+                                kernel_name = "uniform",
+                                tol = 0.1,
+                                digits = 2,
+                                max_depth = 8,
+                                sparse=TRUE)
+
+
+  net_out_mass <- 1 - (net_corr_factor1**-1)
+  time_out_mass <- correction_factor_time(event$t, c(0,6), c(2,2), "uniform")
+
+  observed <- 1 / (1- (net_out_mass * time_out_mass))
+
+
+  test1 <- round(sum(expected_vals - observed),10) == 0
+
+  expect_true(test1)
+
+})
+

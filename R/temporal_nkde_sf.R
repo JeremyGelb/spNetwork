@@ -503,11 +503,18 @@ tnkde <- function(lines, events, time_field, w, samples_loc, samples_time, kerne
     if(verbose){
       print("Calculating the correction factor")
     }
+    # corr_factor_net <- correction_factor(study_area,events_loc,lines,method, bws_net, kernel_name, tol, digits, max_depth, sparse)
+    # corr_factor_time <- correction_factor_time(events[[time_field]], samples_time, bws_time, kernel_name)
+    # # the final density is (dnet*corr_net * dtime*corr_time)*w
+    # # because we only have multiplications, I can do the product here
+    # corr_factor <- corr_factor_net * corr_factor_time
+
+    outside_mass_time <- correction_factor_time(events[[time_field]], samples_time, bws_time, kernel_name)
     corr_factor_net <- correction_factor(study_area,events_loc,lines,method, bws_net, kernel_name, tol, digits, max_depth, sparse)
-    corr_factor_time <- correction_factor_time(events[[time_field]], samples_time, bws_time, kernel_name)
-    # the final density is (dnet*corr_net * dtime*corr_time)*w
-    # because we only have multiplications, I can do the product here
-    corr_factor <- corr_factor_net * corr_factor_time
+    # NOTE : we need to convert back the correction factor to mass outside network
+    outside_mass_net <- 1-(1/(corr_factor_net))
+    corr_factor <- 1/(1-(outside_mass_net * outside_mass_time))
+
   }else{
     corr_factor <- rep(1,nrow(events))
   }
@@ -742,11 +749,17 @@ tnkde.mc <- function(lines, events, time_field, w, samples_loc, samples_time, ke
     if(verbose){
       print("Calculating the correction factor")
     }
-    corr_factor_net <- correction_factor(study_area,events_loc,lines,method, bws_net, kernel_name, tol, digits, max_depth, sparse)
-    corr_factor_time <- correction_factor_time(events[[time_field]], samples_time, bws_time, kernel_name)
-    # the final density is (dnet*corr_net * dtime*corr_time)*w
+    # corr_factor_net <- correction_factor(study_area,events_loc,lines,method, bws_net, kernel_name, tol, digits, max_depth, sparse)
+    # corr_factor_time <- correction_factor_time(events[[time_field]], samples_time, bws_time, kernel_name)
+    # the final correction factor is 1 / (1 - outside density)
+    # and ontisde density is outside_time * outside_network
     # because we only have multiplications, I can do the product here
-    corr_factor <- corr_factor_net * corr_factor_time
+
+    outside_mass_time <- correction_factor_time(events[[time_field]], samples_time, bws_time, kernel_name)
+    corr_factor_net <- correction_factor(study_area,events_loc,lines,method, bws_net, kernel_name, tol, digits, max_depth, sparse)
+    # NOTE : we need to convert back the correction factor to mass outside network
+    outside_mass_net <- 1-(1/(corr_factor_net))
+    corr_factor <- 1/(1-(outside_mass_net * outside_mass_time))
   }else{
     corr_factor <- rep(1,nrow(events))
   }

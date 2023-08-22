@@ -1,3 +1,9 @@
+# spNetwork 0.4.3.7
+
+## corrected bugs
+
+Corrected an error in the way the border correction was calculated for the TNKDE
+
 # spNetwork 0.4.3.6.9000
 
 ## corrected bugs

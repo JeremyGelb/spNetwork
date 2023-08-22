@@ -324,7 +324,9 @@ correction_factor_time <- function(events_time, samples_time, bws_time, kernel_n
   get_inegral_vec <- Vectorize(get_integral2, vectorize.args = c("up_diff","bw"))
   out_upper <- get_inegral_vec(up_diff = up_diff, bw = bws_time)
 
-  diffs <- (1-out_lower) + (1-out_upper) - 1
-  return(1/diffs)
+  # diffs <- (1-out_lower) + (1-out_upper) - 1
+  # return(1/diffs)
+  outer_part <- out_lower + out_upper
+  return(outer_part)
 
 }
