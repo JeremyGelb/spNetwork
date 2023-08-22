@@ -631,7 +631,7 @@ tnkde <- function(lines, events, time_field, w, samples_loc, samples_time, kerne
 #' # choosing sample in times (every 10 days)
 #' sample_time <- seq(0, max(bike_accidents$Time), 10)
 #'
-#' future::plan(future::multisession(workers=2))
+#' future::plan(future::multisession(workers=1))
 #'
 #' # calculating the densities
 #' tnkde_densities <- tnkde.mc(lines = mtl_network,

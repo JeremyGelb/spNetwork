@@ -389,7 +389,7 @@ bw_tnkde_cv_likelihood_calc <- function(bw_net_range, bw_net_step,
 #' bike_accidents$Time <- as.numeric(bike_accidents$Time)
 #' bike_accidents <- subset(bike_accidents, bike_accidents$Time>=89)
 #'
-#' future::plan(future::multisession(workers=2))
+#' future::plan(future::multisession(workers=1))
 #'
 #' # calculating the cross validation values
 #' cv_scores <- bw_tnkde_cv_likelihood_calc.mc(

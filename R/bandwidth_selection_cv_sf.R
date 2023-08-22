@@ -455,7 +455,7 @@ bw_cv_likelihood_calc <- function(bw_range,bw_step,lines, events, w, kernel_name
 #' \donttest{
 #' data(mtl_network)
 #' data(bike_accidents)
-#' future::plan(future::multisession(workers=2))
+#' future::plan(future::multisession(workers=1))
 #' cv_scores <- bw_cv_likelihood_calc.mc(c(200,800),50,
 #'                                mtl_network, bike_accidents,
 #'                                rep(1,nrow(bike_accidents)),

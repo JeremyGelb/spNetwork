@@ -37,7 +37,7 @@ Cut the lines of a feature collection of linestrings into lixels with a specifie
 \examples{
 \donttest{
 data(mtl_network)
-future::plan(future::multisession(workers=2))
+future::plan(future::multisession(workers=1))
 lixels <- lixelize_lines.mc(mtl_network,150,50)
 ## make sure any open connections are closed afterward
 if (!inherits(future::plan(), "sequential")){

@@ -54,7 +54,7 @@ test_that("Testing that split_by_grid.mc and split_by_grid return the same thing
 
   ## testing with split all
   elements1 <- split_by_grid(grid, event, event, all_lines, bw = 1, tol = 0.1, digits = 2, split_all = T)
-  future::plan(future::multisession(workers=2))
+  future::plan(future::multisession(workers=1))
   elements2 <- split_by_grid.mc(grid = grid,
                                 events = event,
                                 samples = event,
@@ -75,7 +75,7 @@ test_that("Testing that split_by_grid.mc and split_by_grid return the same thing
 
   ## testing without split all
   elements1 <- split_by_grid(grid, event, event, all_lines, bw = 1, tol = 0.1, digits = 2, split_all = FALSE)
-  future::plan(future::multisession(workers=2))
+  future::plan(future::multisession(workers=1))
   elements2 <- split_by_grid.mc(grid = grid,
                                 events = event,
                                 samples = event,
@@ -151,7 +151,7 @@ test_that("Testing that split_by_grid_abw.mc and split_by_grid_abw return the sa
 
   ## testing with split all
   elements1 <- split_by_grid_abw(grid, event, all_lines, bw = 1, tol = 0.1, digits = 2)
-  future::plan(future::multisession(workers=2))
+  future::plan(future::multisession(workers=1))
   elements2 <- split_by_grid_abw.mc(grid, event, all_lines, bw = 1, tol = 0.1, digits = 2)
 
   tests <- sapply(1:length(elements1), function(i){

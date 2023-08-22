@@ -406,7 +406,7 @@ test_that("Testing the bw selection function with CV likelihood in multicore and
                                            verbose=TRUE,
                                            check=FALSE)
 
-  future::plan(future::multisession(workers=2))
+  future::plan(future::multisession(workers=1))
   obs_value2 <-bw_tnkde_cv_likelihood_calc.mc(bw_net_range = c(11,12),
                                            bw_net_step = 1,
                                            bw_time_range = c(6,7),

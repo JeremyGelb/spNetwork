@@ -86,7 +86,7 @@ Calculate the cross k and g functions for a set of points on a
 data(main_network_mtl)
 data(mtl_libraries)
 data(mtl_theatres)
-future::plan(future::multisession(workers=2))
+future::plan(future::multisession(workers=1))
 result <- cross_kfunctions.mc(main_network_mtl, mtl_libraries, mtl_theatres,
                            start = 0, end = 2500, step = 10, width = 250,
                            nsim = 50, conf_int = 0.05, digits = 2,

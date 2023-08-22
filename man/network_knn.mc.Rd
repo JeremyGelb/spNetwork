@@ -74,7 +74,7 @@ Calculate the K-nearest points for a set of points on a network with multicore s
 \donttest{
 data(main_network_mtl)
 data(mtl_libraries)
-future::plan(future::multisession(workers=2))
+future::plan(future::multisession(workers=1))
 results <- network_knn.mc(mtl_libraries, main_network_mtl,
     k = 3, maxdistance = 1000, line_weight = "length",
     grid_shape=c(1,1), verbose = FALSE)

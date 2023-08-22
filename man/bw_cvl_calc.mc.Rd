@@ -119,7 +119,7 @@ For more details, see help(bw_cvl_calc)
 \donttest{
 data(mtl_network)
 data(bike_accidents)
-future::plan(future::multisession(workers=2))
+future::plan(future::multisession(workers=1))
 cv_scores <- bw_cvl_calc.mc(c(200,400),50,
                                mtl_network, bike_accidents,
                                rep(1,nrow(bike_accidents)),

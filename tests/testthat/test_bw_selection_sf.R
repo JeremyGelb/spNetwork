@@ -498,7 +498,7 @@ test_that("Testing that bw selection by cv-likelihood gives the same score in si
   lines <- subset(mtl_network, inter_idx2)
 
   ## multicore cv score
-  future::plan(future::multisession(workers=2))
+  future::plan(future::multisession(workers=1))
 
   cv_scores.mc <- bw_cv_likelihood_calc.mc(c(200,400),100,
                                  lines, events,

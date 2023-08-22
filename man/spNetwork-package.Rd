@@ -6,7 +6,7 @@
 \alias{spNetwork-package}
 \title{spNetwork: Spatial Analysis on Network}
 \description{
-Perform spatial analysis on network. Implement several methods for spatial analysis on network: Network Kernel Density estimation, building of spatial matrices based on network distance ('listw' objects from 'spdep' package), K functions estimation for point pattern analysis on network, k nearest neighbours on network, reachable area calculation, and graph generation References: Okabe et al (2019) <doi:10.1080/13658810802475491>; Okabe et al (2012, ISBN:978-0470770818);Baddeley et al (2015, ISBN:9781482210200).
+Perform spatial analysis on network. Implement several methods for spatial analysis on network: Network Kernel Density estimation, building of spatial matrices based on network distance ('listw' objects from 'spdep' package), K functions estimation for point pattern analysis on network, k nearest neighbours on network, reachable area calculation, and graph generation References: Okabe et al (2019) \doi{10.1080/13658810802475491}; Okabe et al (2012, ISBN:978-0470770818);Baddeley et al (2015, ISBN:9781482210200).
 }
 \seealso{
 Useful links:

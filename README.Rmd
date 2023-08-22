@@ -161,7 +161,7 @@ listw <- network_listw(bike_accidents,
 
 # using the matrix to find isolated accidents (more than 500m)
 no_link <- sapply(listw$neighbours, function(n){
-  if(n == 0){
+  if(length(n) == 0){
     return(TRUE)
   }else{
     return(FALSE)

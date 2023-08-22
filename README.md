@@ -9,7 +9,7 @@
 
 [![R-CMD-check](https://github.com/JeremyGelb/spNetwork/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/JeremyGelb/spNetwork/actions/workflows/R-CMD-check.yaml)
 
-[![](https://img.shields.io/badge/devel%20version-0.4.3.6-green.svg)](https://jeremygelb.github.io/spNetwork/)
+[![](https://img.shields.io/badge/devel%20version-0.4.3.7-green.svg)](https://jeremygelb.github.io/spNetwork/)
 [![](https://www.r-pkg.org/badges/version/spNetwork?color=blue)](https://cran.r-project.org/package=spNetwork)
 [![](http://cranlogs.r-pkg.org/badges/grand-total/spNetwork?color=blue)](https://cran.r-project.org/package=spNetwork)
 [![](http://cranlogs.r-pkg.org/badges/last-month/spNetwork?color=green)](https://cran.r-project.org/package=spNetwork)
@@ -54,31 +54,31 @@ geographical networks. This type of network have spatial coordinates
 associated with their nodes. They can be directed or undirected. In the
 actual development version the implemented methods are:
 
--   Network Kernel Density Estimate, a method estimating density of a
-    point pattern constrained on a network (see the vignettes [Network
-    Kernel Density
-    Estimate](https://jeremygelb.github.io/spNetwork/articles/NKDE.html)
-    and [Details about
-    NKDE](https://jeremygelb.github.io/spNetwork/articles/NKDEdetailed.html)).
--   Temporal Network Kernel Density Estimate, a temporal extension of
-    the previous methods [Temporal Network Kernel Density
-    Estimate](https://jeremygelb.github.io/spNetwork/articles/TNKDE.html).
--   Spatial weight matrices based on network distances, which can be
-    used in a great number of traditional methods in spatial analysis
-    (see the vignette [Spatial Weight
-    Matrices](https://jeremygelb.github.io/spNetwork/articles/SpatialWeightMatrices.html)).
--   Network k Functions, used to investigate the spatial distribution of
-    a set of points on a network at several scales (see the vignette
-    [Network k
-    Functions](https://jeremygelb.github.io/spNetwork/articles/KNetworkFunctions.html)).
--   K nearest neighbours, to calculate for each point on a network its K
-    nearest neighbour (see the function `network_knn`).
--   Graph analysis, using the functions of the package **igraph** (see
-    the vignette [Building
-    graphs](https://jeremygelb.github.io/spNetwork/articles/NetworkBuilding.html))
--   Isochrones, to delineate accessible area around points localized on
-    a network (see the vignette [Calculating
-    isochrones](https://jeremygelb.github.io/spNetwork/articles/Isochrones.html))
+- Network Kernel Density Estimate, a method estimating density of a
+  point pattern constrained on a network (see the vignettes [Network
+  Kernel Density
+  Estimate](https://jeremygelb.github.io/spNetwork/articles/NKDE.html)
+  and [Details about
+  NKDE](https://jeremygelb.github.io/spNetwork/articles/NKDEdetailed.html)).
+- Temporal Network Kernel Density Estimate, a temporal extension of the
+  previous methods [Temporal Network Kernel Density
+  Estimate](https://jeremygelb.github.io/spNetwork/articles/TNKDE.html).
+- Spatial weight matrices based on network distances, which can be used
+  in a great number of traditional methods in spatial analysis (see the
+  vignette [Spatial Weight
+  Matrices](https://jeremygelb.github.io/spNetwork/articles/SpatialWeightMatrices.html)).
+- Network k Functions, used to investigate the spatial distribution of a
+  set of points on a network at several scales (see the vignette
+  [Network k
+  Functions](https://jeremygelb.github.io/spNetwork/articles/KNetworkFunctions.html)).
+- K nearest neighbours, to calculate for each point on a network its K
+  nearest neighbour (see the function `network_knn`).
+- Graph analysis, using the functions of the package **igraph** (see the
+  vignette [Building
+  graphs](https://jeremygelb.github.io/spNetwork/articles/NetworkBuilding.html))
+- Isochrones, to delineate accessible area around points localized on a
+  network (see the vignette [Calculating
+  isochrones](https://jeremygelb.github.io/spNetwork/articles/Isochrones.html))
 
 Calculation on network can be long, efforts were made to reduce
 computation time by implementing several functions with **Rcpp** and
@@ -103,21 +103,21 @@ devtools::install_github("JeremyGelb/spNetwork")
 The packages uses mainly the following packages in its internal
 structure :
 
--   igraph
--   sf
--   future
--   future.apply
--   data.table
--   Rcpp
--   RcppArmadillo
--   BH
+- igraph
+- sf
+- future
+- future.apply
+- data.table
+- Rcpp
+- RcppArmadillo
+- BH
 
 ## Some examples
 
 We provide here some short examples of several features. Please, check
 the vignettes for more details.
 
--   realizing a kernel network density estimate
+- realizing a kernel network density estimate
 
 ``` r
 library(spNetwork)
@@ -162,7 +162,7 @@ Estimate](https://jeremygelb.github.io/spNetwork/articles/TNKDE.html)
 
 <img src="vignettes/images/animated_map.gif" width="75%" style="display: block; margin: auto;" />
 
--   Building a spatial matrix based on network distance
+- Building a spatial matrix based on network distance
 
 ``` r
 library(spdep)
@@ -180,7 +180,7 @@ listw <- network_listw(bike_accidents,
 
 # using the matrix to find isolated accidents (more than 500m)
 no_link <- sapply(listw$neighbours, function(n){
-  if(n == 0){
+  if(length(n) == 0){
     return(TRUE)
   }else{
     return(FALSE)
@@ -203,7 +203,7 @@ Note that you can use this in every spatial analysis you would like to
 perform. With the converter function of spdep (like listw2mat), you can
 convert the listw object into regular matrix if needed
 
--   Calculating k function
+- Calculating k function
 
 ``` r
 # loading the data
@@ -229,11 +229,11 @@ suggestion or if you encounter a bug.
 
 Features that will be added to the package in the future:
 
--   temporal NKDE, a two dimensional kernel density estimation in
-    network space and time
--   rework for using `sf` objects rather than `sp` (`rgeos` and
-    `maptools` will be deprecated in 2023). This work is undergoing,
-    please report any bug or error in the new documentation.
+- temporal NKDE, a two dimensional kernel density estimation in network
+  space and time
+- rework for using `sf` objects rather than `sp` (`rgeos` and `maptools`
+  will be deprecated in 2023). This work is undergoing, please report
+  any bug or error in the new documentation.
 
 ## Reporting a bug
 
@@ -250,7 +250,7 @@ guidelines:
 
 ## Authors
 
--   **Jeremy Gelb** - *Creator and maintainer*
+- **Jeremy Gelb** - *Creator and maintainer*
 
 ## Contribute
 
@@ -283,5 +283,5 @@ License](https://github.com/JeremyGelb/spNetwork/blob/master/LICENSE.txt).
 
 ## Acknowledgments
 
--   Hat tip to Philippe Apparicio for his support during the development
--   Hat tip to Hadley Wickham and his helpful book *R packages*
+- Hat tip to Philippe Apparicio for his support during the development
+- Hat tip to Hadley Wickham and his helpful book *R packages*
