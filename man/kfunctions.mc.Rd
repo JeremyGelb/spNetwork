@@ -84,7 +84,7 @@ For details, please look at the function kfunctions.
 \donttest{
 data(main_network_mtl)
 data(mtl_libraries)
-future::plan(future::multisession(workers=2))
+future::plan(future::multisession(workers=1))
 result <- kfunctions.mc(main_network_mtl, mtl_libraries,
      start = 0, end = 2500, step = 10,
      width = 200, nsim = 50,

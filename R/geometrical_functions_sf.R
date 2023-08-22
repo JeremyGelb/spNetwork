@@ -370,7 +370,7 @@ lixelize_lines<- function(lines, lx_length, mindist = NULL) {
 #' @examples
 #' \donttest{
 #' data(mtl_network)
-#' future::plan(future::multisession(workers=2))
+#' future::plan(future::multisession(workers=1))
 #' lixels <- lixelize_lines.mc(mtl_network,150,50)
 #' ## make sure any open connections are closed afterward
 #' if (!inherits(future::plan(), "sequential")){

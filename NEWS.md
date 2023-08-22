@@ -1,5 +1,10 @@
 # spNetwork 0.4.3.7
 
+This is only a maintenance release. A bug in CRAN caused by multiprocessing in example caused the rejection of hte package.
+All the test and examples are now using only one worker.
+
+# spNetwork 0.4.3.6.9001
+
 ## corrected bugs
 
 Corrected an error in the way the border correction was calculated for the TNKDE
