@@ -14,8 +14,6 @@ adaptive_bw_1d(events, w, bw, kernel_name)
 \item{bw}{A float, the bandiwdth to use}
 
 \item{kernel_name}{The name of the kernel to use}
-
-\item{samples}{A numeric vector representing the moments to sample}
 }
 \description{
 Calculate adaptive bandwidths in one dimension

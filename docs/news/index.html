@@ -82,81 +82,71 @@
     </div>
 
     <div class="section level2">
-<h2 class="page-header" data-toc-text="0.4.3.7" id="spnetwork-0437">spNetwork 0.4.3.7<a class="anchor" aria-label="anchor" href="#spnetwork-0437"></a></h2>
+<h2 class="page-header" data-toc-text="0.4.3.7" id="spnetwork-0437">spNetwork 0.4.3.7<small>2023-04-11</small><a class="anchor" aria-label="anchor" href="#spnetwork-0437"></a></h2>
+<p>This is only a maintenance release. A bug in CRAN caused by multiprocessing in example caused the rejection of hte package. All the test and examples are now using only one worker.</p>
+</div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.4.3.6.9001" id="spnetwork-04369001">spNetwork 0.4.3.6.9001<a class="anchor" aria-label="anchor" href="#spnetwork-04369001"></a></h2>
 <div class="section level3">
-<h3 id="corrected-bugs-0-4-3-7">corrected bugs<a class="anchor" aria-label="anchor" href="#corrected-bugs-0-4-3-7"></a></h3>
-<p>Corrected an error in the way the border correction was calculated
-for the TNKDE</p>
+<h3 id="corrected-bugs-0-4-3-6-9001">corrected bugs<a class="anchor" aria-label="anchor" href="#corrected-bugs-0-4-3-6-9001"></a></h3>
+<p>Corrected an error in the way the border correction was calculated for the TNKDE</p>
 </div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.4.3.6.9000" id="spnetwork-04369000">spNetwork 0.4.3.6.9000<a class="anchor" aria-label="anchor" href="#spnetwork-04369000"></a></h2>
 <div class="section level3">
 <h3 id="corrected-bugs-0-4-3-6-9000">corrected bugs<a class="anchor" aria-label="anchor" href="#corrected-bugs-0-4-3-6-9000"></a></h3>
-<p>Corrected a minor bug in the functions network_listw.mc and
-network_listw</p>
+<p>Corrected a minor bug in the functions network_listw.mc and network_listw</p>
 </div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.4.3.6" id="spnetwork-0436">spNetwork 0.4.3.6<small>2022-11-11</small><a class="anchor" aria-label="anchor" href="#spnetwork-0436"></a></h2>
 <div class="section level3">
 <h3 id="corrected-bugs-0-4-3-6">corrected bugs<a class="anchor" aria-label="anchor" href="#corrected-bugs-0-4-3-6"></a></h3>
-<p>The new version of sf created an error because of a bad use of the
-argument by_element in the function st_distance. It is corrected and
-tested now.</p>
+<p>The new version of sf created an error because of a bad use of the argument by_element in the function st_distance. It is corrected and tested now.</p>
 </div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.4.3.5" id="spnetwork-0435">spNetwork 0.4.3.5<a class="anchor" aria-label="anchor" href="#spnetwork-0435"></a></h2>
 <div class="section level3">
 <h3 id="new-features-0-4-3-5">New Features<a class="anchor" aria-label="anchor" href="#new-features-0-4-3-5"></a></h3>
-<ul><li>It is now possible to create isochrones as donught instead of plain
-isochrones (no overlapping lines). This can be handy if the are used for
-mapping and to limit the size of the produced feature collections.</li>
+<ul><li>It is now possible to create isochrones as donught instead of plain isochrones (no overlapping lines). This can be handy if the are used for mapping and to limit the size of the produced feature collections.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="corrected-bugs-0-4-3-5">corrected bugs<a class="anchor" aria-label="anchor" href="#corrected-bugs-0-4-3-5"></a></h3>
-<p>A bug occuring when splitting the data with a spatial grid has been
-corrected.</p>
+<p>A bug occuring when splitting the data with a spatial grid has been corrected.</p>
 </div>
 <div class="section level3">
 <h3 id="documentation-0-4-3-5">Documentation<a class="anchor" aria-label="anchor" href="#documentation-0-4-3-5"></a></h3>
-<ul><li>There is a new vignette on the website about spatio-temporal dbscan
-with network distance.</li>
+<ul><li>There is a new vignette on the website about spatio-temporal dbscan with network distance.</li>
 </ul></div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.4.3.4" id="spnetwork-0434">spNetwork 0.4.3.4<a class="anchor" aria-label="anchor" href="#spnetwork-0434"></a></h2>
 <div class="section level3">
 <h3 id="corrected-bugs-0-4-3-4">corrected bugs<a class="anchor" aria-label="anchor" href="#corrected-bugs-0-4-3-4"></a></h3>
-<ul><li>corrected two minor bugs with the kfunctions, kfunctions.mc,
-cross_kfunctions and cross_kfunctions.mc (<a href="https://github.com/JeremyGelb/spNetwork/issues/8" class="external-link">issue
-8</a>)</li>
+<ul><li>corrected two minor bugs with the kfunctions, kfunctions.mc, cross_kfunctions and cross_kfunctions.mc (<a href="https://github.com/JeremyGelb/spNetwork/issues/8" class="external-link">issue 8</a>)</li>
 </ul></div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.4.3.3" id="spnetwork-0433">spNetwork 0.4.3.3<a class="anchor" aria-label="anchor" href="#spnetwork-0433"></a></h2>
 <div class="section level3">
 <h3 id="corrected-bugs-0-4-3-3">corrected bugs<a class="anchor" aria-label="anchor" href="#corrected-bugs-0-4-3-3"></a></h3>
-<ul><li>When using the nkde and nkde.mc functions, one could get an error if
-the samples or the events had a X or a Y column. This has been
-corrected.</li>
+<ul><li>When using the nkde and nkde.mc functions, one could get an error if the samples or the events had a X or a Y column. This has been corrected.</li>
 </ul></div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.4.3.2" id="spnetwork-0432">spNetwork 0.4.3.2<small>2022-05-14</small><a class="anchor" aria-label="anchor" href="#spnetwork-0432"></a></h2>
 <div class="section level3">
 <h3 id="other-changes-0-4-3-2">other changes<a class="anchor" aria-label="anchor" href="#other-changes-0-4-3-2"></a></h3>
-<ul><li>The package searchTrees is not on CRAN anymore. It has been replaced
-in spNetwork by home made c++ classes using the BH library.</li>
+<ul><li>The package searchTrees is not on CRAN anymore. It has been replaced in spNetwork by home made c++ classes using the BH library.</li>
 </ul></div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.4.3.1" id="spnetwork-0431">spNetwork 0.4.3.1<small>2022-04-23</small><a class="anchor" aria-label="anchor" href="#spnetwork-0431"></a></h2>
 <div class="section level3">
 <h3 id="other-changes-0-4-3-1">other changes<a class="anchor" aria-label="anchor" href="#other-changes-0-4-3-1"></a></h3>
-<ul><li>example datasets are now stored in .rda file and can be loaded with
-the function <code>data</code>
+<ul><li>example datasets are now stored in .rda file and can be loaded with the function <code>data</code>
 </li>
 </ul></div>
 </div>
@@ -164,82 +154,51 @@ the function <code>data</code>
 <h2 class="page-header" data-toc-text="0.4.1.9000" id="spnetwork-0419000">spNetwork 0.4.1.9000<a class="anchor" aria-label="anchor" href="#spnetwork-0419000"></a></h2>
 <div class="section level3">
 <h3 id="new-features-0-4-1-9000">New Features<a class="anchor" aria-label="anchor" href="#new-features-0-4-1-9000"></a></h3>
-<ul><li><p>It is possible now to choose between two strategies to deal with
-density at 0 when calculating LOO likelihood for several bandwidths. For
-more details, see the parameter <em>zero_strat</em> in the functions
-<em>bw_cvl_calc</em>, <em>bw_cvl_calc.mc</em>,
-<em>bw_cv_likelihood_calc</em>, <em>bw_cv_likelihood_calc.mc</em>,
-<em>bws_tnkde_cv_likelihood_calc</em> and
-<em>bws_tnkde_cv_likelihood_calc.mc</em>.</p></li>
-<li><p>It is possible now to set directly the size of local bandwidths
-for the functions <em>nkde</em>, <em>nkde.mc</em>, <em>tnkde</em> and
-<em>tnkde.mc</em>. This feature is currently experimental, please submit
-an issue if you encounter a bug.</p></li>
-<li><p>One can now use the identity matrix type for neighbour weighting
-(<em>network_listw</em>). It is useful if one wants to apply different
-function to calculate the weights and to compare the results.</p></li>
-<li><p>Adaptive bandwidth for TNKDE can now be calculated separately or
-simultaneously. For more details, see the parameter
-<em>adaptive_separate</em>.</p></li>
+<ul><li><p>It is possible now to choose between two strategies to deal with density at 0 when calculating LOO likelihood for several bandwidths. For more details, see the parameter <em>zero_strat</em> in the functions <em>bw_cvl_calc</em>, <em>bw_cvl_calc.mc</em>, <em>bw_cv_likelihood_calc</em>, <em>bw_cv_likelihood_calc.mc</em>, <em>bws_tnkde_cv_likelihood_calc</em> and <em>bws_tnkde_cv_likelihood_calc.mc</em>.</p></li>
+<li><p>It is possible now to set directly the size of local bandwidths for the functions <em>nkde</em>, <em>nkde.mc</em>, <em>tnkde</em> and <em>tnkde.mc</em>. This feature is currently experimental, please submit an issue if you encounter a bug.</p></li>
+<li><p>One can now use the identity matrix type for neighbour weighting (<em>network_listw</em>). It is useful if one wants to apply different function to calculate the weights and to compare the results.</p></li>
+<li><p>Adaptive bandwidth for TNKDE can now be calculated separately or simultaneously. For more details, see the parameter <em>adaptive_separate</em>.</p></li>
 </ul></div>
 <div class="section level3">
 <h3 id="documentation-0-4-1-9000">documentation<a class="anchor" aria-label="anchor" href="#documentation-0-4-1-9000"></a></h3>
-<ul><li><p>The vignette <em>Details about NKDE”</em> has been removed from
-the package because it could not be knitted on some CRAN machines. It is
-still accessible on the website.</p></li>
-<li><p>A new vignette <em>K-nearest neighbour adaptive bandwidth</em>
-has also be added to the website. It presents how spNetwork can use user
-defined local bandwidths.</p></li>
+<ul><li><p>The vignette <em>Details about NKDE”</em> has been removed from the package because it could not be knitted on some CRAN machines. It is still accessible on the website.</p></li>
+<li><p>A new vignette <em>K-nearest neighbour adaptive bandwidth</em> has also be added to the website. It presents how spNetwork can use user defined local bandwidths.</p></li>
 </ul></div>
 <div class="section level3">
 <h3 id="corrected-bugs-0-4-1-9000">corrected bugs<a class="anchor" aria-label="anchor" href="#corrected-bugs-0-4-1-9000"></a></h3>
-<ul><li>The new c++ function for adding vertex on lines was buggy and could
-break the geometry of the original lines. This has been fixed.</li>
-<li>On Linux with gcc-12, the package couldn’t be compiled. This has
-been fixed.</li>
+<ul><li>The new c++ function for adding vertex on lines was buggy and could break the geometry of the original lines. This has been fixed.</li>
+<li>On Linux with gcc-12, the package couldn’t be compiled. This has been fixed.</li>
 </ul></div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.4.0.9000" id="spnetwork-0409000">spNetwork 0.4.0.9000<a class="anchor" aria-label="anchor" href="#spnetwork-0409000"></a></h2>
 <div class="section level3">
 <h3 id="new-features-0-4-0-9000">New Features<a class="anchor" aria-label="anchor" href="#new-features-0-4-0-9000"></a></h3>
-<ul><li>the package has been reworked to use sf rather than rgeos, maptools
-and sp. All the tests passed and the documentation has been
-modified.</li>
+<ul><li>the package has been reworked to use sf rather than rgeos, maptools and sp. All the tests passed and the documentation has been modified.</li>
 </ul></div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.3.0.9000" id="spnetwork-0309000">spNetwork 0.3.0.9000<a class="anchor" aria-label="anchor" href="#spnetwork-0309000"></a></h2>
 <div class="section level3">
 <h3 id="new-features-0-3-0-9000">New Features<a class="anchor" aria-label="anchor" href="#new-features-0-3-0-9000"></a></h3>
-<ul><li>Added a set of functions to perform Temporal Network Kernel Density
-Estimation (see vignette TNKDE)</li>
+<ul><li>Added a set of functions to perform Temporal Network Kernel Density Estimation (see vignette TNKDE)</li>
 </ul></div>
 <div class="section level3">
 <h3 id="documentation-0-3-0-9000">documentation<a class="anchor" aria-label="anchor" href="#documentation-0-3-0-9000"></a></h3>
-<ul><li>A new vignette is presenting the Temporal Network Kernel Density
-Estimation</li>
+<ul><li>A new vignette is presenting the Temporal Network Kernel Density Estimation</li>
 <li>Adding a CITATION file</li>
 </ul></div>
 <div class="section level3">
 <h3 id="performance-0-3-0-9000">performance<a class="anchor" aria-label="anchor" href="#performance-0-3-0-9000"></a></h3>
-<ul><li>Performance was improved for data-driven bandwidth selection for
-NKDE</li>
-<li>The function <em>lines_points_along</em> has been reworked with c++
-and is now way faster</li>
-<li>The function <em>lines_center</em> has been reworked with c++ and is
-now way faster</li>
+<ul><li>Performance was improved for data-driven bandwidth selection for NKDE</li>
+<li>The function <em>lines_points_along</em> has been reworked with c++ and is now way faster</li>
+<li>The function <em>lines_center</em> has been reworked with c++ and is now way faster</li>
 </ul></div>
 <div class="section level3">
 <h3 id="corrected-bugs-0-3-0-9000">corrected bugs<a class="anchor" aria-label="anchor" href="#corrected-bugs-0-3-0-9000"></a></h3>
-<ul><li><p>An error was raised when points were sharing the exact same
-locations in the function <em>network_knn</em>. It has been corrected an
-a warning was added to clarify the situation.</p></li>
-<li><p>A clearer error message is now raised when multiple geometries
-are passed to the <em>nkde</em> and <em>nkde.mc</em> functions.</p></li>
-<li><p>When using the discontinuous NKDE, NA values were returned if an
-event was located exactly at the extremity of an edge with no
-connexions. This has been corrected.</p></li>
+<ul><li><p>An error was raised when points were sharing the exact same locations in the function <em>network_knn</em>. It has been corrected an a warning was added to clarify the situation.</p></li>
+<li><p>A clearer error message is now raised when multiple geometries are passed to the <em>nkde</em> and <em>nkde.mc</em> functions.</p></li>
+<li><p>When using the discontinuous NKDE, NA values were returned if an event was located exactly at the extremity of an edge with no connexions. This has been corrected.</p></li>
 </ul></div>
 </div>
     <div class="section level2">
@@ -250,60 +209,33 @@ connexions. This has been corrected.</p></li>
 <h2 class="page-header" data-toc-text="0.2.0" id="spnetwork-020">spNetwork 0.2.0<small>2021-10-09</small><a class="anchor" aria-label="anchor" href="#spnetwork-020"></a></h2>
 <div class="section level3">
 <h3 id="new-features-0-2-0">New Features<a class="anchor" aria-label="anchor" href="#new-features-0-2-0"></a></h3>
-<ul><li>Added two functions for data-driven bandwidth selection (see
-vignette NKDE)</li>
-<li>Added a function to simplify network before processing
-(<em>simplify_network</em>), reducing network complexity by removing
-useless edges or merge continuous edges can improve performance. This
-function is still experimental and must be used only for undirected
-networks.</li>
-<li>Added two functions to calculate k nearest neighbours:
-<em>network_knn</em> and <em>network_knn.mc</em>
+<ul><li>Added two functions for data-driven bandwidth selection (see vignette NKDE)</li>
+<li>Added a function to simplify network before processing (<em>simplify_network</em>), reducing network complexity by removing useless edges or merge continuous edges can improve performance. This function is still experimental and must be used only for undirected networks.</li>
+<li>Added two functions to calculate k nearest neighbours: <em>network_knn</em> and <em>network_knn.mc</em>
 </li>
-<li>Added a function to calculate isochrones on a geographical network:
-<em>calc_isochrones</em> and a Vignette (<em>Calculating
-isochrones</em>) to give an example.</li>
-<li>Making some internal functions visible for the user to allow graph
-analysis on networks, see the new vignette <em>Building
-networks</em>.</li>
+<li>Added a function to calculate isochrones on a geographical network: <em>calc_isochrones</em> and a Vignette (<em>Calculating isochrones</em>) to give an example.</li>
+<li>Making some internal functions visible for the user to allow graph analysis on networks, see the new vignette <em>Building networks</em>.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="documentation-0-2-0">documentation<a class="anchor" aria-label="anchor" href="#documentation-0-2-0"></a></h3>
-<p>Several vignettes were added to present the new features. A pkgdown
-website was also built to give a more attractive way to browse the
-documentation.</p>
-<p>We follow now the code coverage. We want to reach 70% coverage before
-the next CRAN release.</p>
+<p>Several vignettes were added to present the new features. A pkgdown website was also built to give a more attractive way to browse the documentation.</p>
+<p>We follow now the code coverage. We want to reach 70% coverage before the next CRAN release.</p>
 </div>
 <div class="section level3">
 <h3 id="corrected-bugs-0-2-0">corrected bugs<a class="anchor" aria-label="anchor" href="#corrected-bugs-0-2-0"></a></h3>
-<ul><li>issue 1 fixed by changing the function maptools::snapPointsToLines
-for a home-made function. The package BH including the c++ boost library
-is used to realize fast spatial query.</li>
-<li>issue 2 fixed by handling the special case of lines of length
-0.</li>
-<li>an error was raised when using <em>listw_network</em> with polygons
-and the method = “pointsalong”. This was caused by a minor error in the
-code and works now as expected.</li>
-<li>an error was present in the Diggle correction factor, leading to
-overestimation of the correction. This error has been corrected.</li>
-<li>for the k functions, a minor error in the calculus was corrected,
-affecting only the scale of the result. These functions are now formally
-tested.</li>
-<li>In the nkde function, when using an integer matrix, an error was
-crashing the R session in some case. This has been corrected.</li>
+<ul><li>issue 1 fixed by changing the function maptools::snapPointsToLines for a home-made function. The package BH including the c++ boost library is used to realize fast spatial query.</li>
+<li>issue 2 fixed by handling the special case of lines of length 0.</li>
+<li>an error was raised when using <em>listw_network</em> with polygons and the method = “pointsalong”. This was caused by a minor error in the code and works now as expected.</li>
+<li>an error was present in the Diggle correction factor, leading to overestimation of the correction. This error has been corrected.</li>
+<li>for the k functions, a minor error in the calculus was corrected, affecting only the scale of the result. These functions are now formally tested.</li>
+<li>In the nkde function, when using an integer matrix, an error was crashing the R session in some case. This has been corrected.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="performance-0-2-0">performance<a class="anchor" aria-label="anchor" href="#performance-0-2-0"></a></h3>
-<ul><li>Performance was improved for functions <em>listw_network</em>,
-<em>listw_network.mc</em>, <em>kfunctions</em>, <em>kfunctions.mc</em>,
-<em>cross_kfunctions</em> and <em>cross_kfunctions.mc</em>, by reducing
-the complexity of the network with no loss of accuracy.</li>
-<li>Several geometrical functions have been accelerated by c++ code
-using the boost library</li>
+<ul><li>Performance was improved for functions <em>listw_network</em>, <em>listw_network.mc</em>, <em>kfunctions</em>, <em>kfunctions.mc</em>, <em>cross_kfunctions</em> and <em>cross_kfunctions.mc</em>, by reducing the complexity of the network with no loss of accuracy.</li>
+<li>Several geometrical functions have been accelerated by c++ code using the boost library</li>
 <li>upgraded c++ compilation requirement to c++17</li>
-<li>the functions used for the nkde calculation were reworked. Sensible
-speed gain can be observed.</li>
+<li>the functions used for the nkde calculation were reworked. Sensible speed gain can be observed.</li>
 </ul></div>
 </div>
     <div class="section level2">
@@ -328,8 +260,7 @@ speed gain can be observed.</li>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

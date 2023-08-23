@@ -87,23 +87,23 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">network_listw.mc</span><span class="op">(</span>
-  <span class="va">origins</span>,
-  <span class="va">lines</span>,
-  <span class="va">maxdistance</span>,
-  method <span class="op">=</span> <span class="st">"centroid"</span>,
-  point_dist <span class="op">=</span> <span class="cn">NULL</span>,
-  snap_dist <span class="op">=</span> <span class="cn">Inf</span>,
-  line_weight <span class="op">=</span> <span class="st">"length"</span>,
-  mindist <span class="op">=</span> <span class="fl">10</span>,
-  direction <span class="op">=</span> <span class="cn">NULL</span>,
-  dist_func <span class="op">=</span> <span class="st">"inverse"</span>,
-  matrice_type <span class="op">=</span> <span class="st">"B"</span>,
-  grid_shape <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>,
-  verbose <span class="op">=</span> <span class="cn">FALSE</span>,
-  digits <span class="op">=</span> <span class="fl">3</span>,
-  tol <span class="op">=</span> <span class="fl">0.1</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">network_listw.mc</span><span class="op">(</span></span>
+<span>  <span class="va">origins</span>,</span>
+<span>  <span class="va">lines</span>,</span>
+<span>  <span class="va">maxdistance</span>,</span>
+<span>  method <span class="op">=</span> <span class="st">"centroid"</span>,</span>
+<span>  point_dist <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  snap_dist <span class="op">=</span> <span class="cn">Inf</span>,</span>
+<span>  line_weight <span class="op">=</span> <span class="st">"length"</span>,</span>
+<span>  mindist <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  direction <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  dist_func <span class="op">=</span> <span class="st">"inverse"</span>,</span>
+<span>  matrice_type <span class="op">=</span> <span class="st">"B"</span>,</span>
+<span>  grid_shape <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  digits <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  tol <span class="op">=</span> <span class="fl">0.1</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -111,11 +111,17 @@
     <dl><dt>origins</dt>
 <dd><p>A feature collection of linestrings, points or polygons for
 which the spatial neighbouring list will be built.</p></dd>
+
+
 <dt>lines</dt>
 <dd><p>A feature collection of linestrings representing the network</p></dd>
+
+
 <dt>maxdistance</dt>
 <dd><p>The maximum distance between two observations to consider
 them as neighbours.</p></dd>
+
+
 <dt>method</dt>
 <dd><p>A string indicating how the starting points will be built. If
 'centroid' is used, then the centre of lines or polygons is used. If
@@ -123,65 +129,89 @@ them as neighbours.</p></dd>
 or along lines as starting and end points. If 'ends' is used (only for
 lines) the first and last vertices of lines are used as starting and ending
 points.</p></dd>
+
+
 <dt>point_dist</dt>
 <dd><p>A float, defining the distance between points when the
 method pointsalong is selected.</p></dd>
+
+
 <dt>snap_dist</dt>
 <dd><p>the maximum distance to snap the start and end points on the
 network.</p></dd>
+
+
 <dt>line_weight</dt>
 <dd><p>The weights to use for lines. Default is "length" (the
 geographical length), but can be the name of a column. The value is
 considered proportional with the geographical length of the lines.</p></dd>
+
+
 <dt>mindist</dt>
 <dd><p>The minimum distance between two different observations. It is
 important for it to be different from 0 when a W style is used.</p></dd>
+
+
 <dt>direction</dt>
 <dd><p>Indicates a field giving information about authorized
 travelling direction on lines. if NULL, then all lines can be used in both
 directions. Must be the name of a column otherwise. The values of the
 column must be "FT" (From - To), "TF" (To - From) or "Both".</p></dd>
+
+
 <dt>dist_func</dt>
 <dd><p>Indicates the function to use to convert the distance
 between observation in spatial weights. Can be 'identity', 'inverse',
 'squared inverse' or a function with one parameter x that will be
 vectorized internally</p></dd>
+
+
 <dt>matrice_type</dt>
 <dd><p>The type of the weighting scheme. Can be 'B' for Binary,
 'W' for row weighted, or 'I' (identity) see the documentation of
 spdep::nb2listw for details</p></dd>
+
+
 <dt>grid_shape</dt>
 <dd><p>A vector of length 2 indicating the shape of the grid to
 use for splitting the dataset. Default is c(1,1), so all the calculation is
 done in one go. It might be necessary to split it if the dataset is large.</p></dd>
+
+
 <dt>verbose</dt>
 <dd><p>A Boolean indicating if the function should print its progress</p></dd>
+
+
 <dt>digits</dt>
 <dd><p>The number of digits to retain in the spatial coordinates (
 simplification used to reduce risk of topological error)</p></dd>
+
+
 <dt>tol</dt>
 <dd><p>A float indicating the spatial tolerance when points are added as
 vertices to lines.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A listw object (spdep like) if matrice_type is "B" or "W". If
+    
+
+<p>A listw object (spdep like) if matrice_type is "B" or "W". If
   matrice_type is I, then a list with a nblist object and a list of weights
   is returned.</p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="co"># \donttest{</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span>
-<span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/multisession.html" class="external-link">multisession</a></span><span class="op">(</span>workers<span class="op">=</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span>
-<span class="va">listw</span> <span class="op">&lt;-</span> <span class="fu">network_listw.mc</span><span class="op">(</span><span class="va">mtl_network</span>,<span class="va">mtl_network</span>,maxdistance<span class="op">=</span><span class="fl">500</span>,
-        method <span class="op">=</span> <span class="st">"centroid"</span>, line_weight <span class="op">=</span> <span class="st">"length"</span>,
-        dist_func <span class="op">=</span> <span class="st">'squared inverse'</span>, matrice_type<span class="op">=</span><span class="st">'B'</span>, grid_shape <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span>
-<span class="co">## make sure any open connections are closed afterward</span>
-<span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">inherits</a></span><span class="op">(</span><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"sequential"</span><span class="op">)</span><span class="op">)</span> <span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="fu">future</span><span class="fu">::</span><span class="va"><a href="https://future.futureverse.org/reference/sequential.html" class="external-link">sequential</a></span><span class="op">)</span>
-<span class="co"># }</span>
-</code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># \donttest{</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span></span>
+<span><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/multisession.html" class="external-link">multisession</a></span><span class="op">(</span>workers<span class="op">=</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">listw</span> <span class="op">&lt;-</span> <span class="fu">network_listw.mc</span><span class="op">(</span><span class="va">mtl_network</span>,<span class="va">mtl_network</span>,maxdistance<span class="op">=</span><span class="fl">500</span>,</span>
+<span>        method <span class="op">=</span> <span class="st">"centroid"</span>, line_weight <span class="op">=</span> <span class="st">"length"</span>,</span>
+<span>        dist_func <span class="op">=</span> <span class="st">'squared inverse'</span>, matrice_type<span class="op">=</span><span class="st">'B'</span>, grid_shape <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">## make sure any open connections are closed afterward</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">inherits</a></span><span class="op">(</span><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"sequential"</span><span class="op">)</span><span class="op">)</span> <span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="fu">future</span><span class="fu">::</span><span class="va"><a href="https://future.futureverse.org/reference/sequential.html" class="external-link">sequential</a></span><span class="op">)</span></span>
+<span><span class="co"># }</span></span></code></pre></div>
     </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -195,8 +225,7 @@ vertices to lines.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

@@ -89,26 +89,26 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">k_nt_functions.mc</span><span class="op">(</span>
-  <span class="va">lines</span>,
-  <span class="va">points</span>,
-  <span class="va">points_time</span>,
-  <span class="va">start_net</span>,
-  <span class="va">end_net</span>,
-  <span class="va">step_net</span>,
-  <span class="va">width_net</span>,
-  <span class="va">start_time</span>,
-  <span class="va">end_time</span>,
-  <span class="va">step_time</span>,
-  <span class="va">width_time</span>,
-  <span class="va">nsim</span>,
-  conf_int <span class="op">=</span> <span class="fl">0.05</span>,
-  digits <span class="op">=</span> <span class="fl">2</span>,
-  tol <span class="op">=</span> <span class="fl">0.1</span>,
-  resolution <span class="op">=</span> <span class="cn">NULL</span>,
-  agg <span class="op">=</span> <span class="cn">NULL</span>,
-  verbose <span class="op">=</span> <span class="cn">TRUE</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">k_nt_functions.mc</span><span class="op">(</span></span>
+<span>  <span class="va">lines</span>,</span>
+<span>  <span class="va">points</span>,</span>
+<span>  <span class="va">points_time</span>,</span>
+<span>  <span class="va">start_net</span>,</span>
+<span>  <span class="va">end_net</span>,</span>
+<span>  <span class="va">step_net</span>,</span>
+<span>  <span class="va">width_net</span>,</span>
+<span>  <span class="va">start_time</span>,</span>
+<span>  <span class="va">end_time</span>,</span>
+<span>  <span class="va">step_time</span>,</span>
+<span>  <span class="va">width_time</span>,</span>
+<span>  <span class="va">nsim</span>,</span>
+<span>  conf_int <span class="op">=</span> <span class="fl">0.05</span>,</span>
+<span>  digits <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  tol <span class="op">=</span> <span class="fl">0.1</span>,</span>
+<span>  resolution <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  agg <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -117,59 +117,98 @@
 <dd><p>A feature collection of linestrings representing the underlying network. The
 geometries must be simple Linestrings (may crash if some geometries
  are invalid) without MultiLineSring</p></dd>
+
+
 <dt>points</dt>
 <dd><p>A feature collection of points representing the points on the
 network. These points will be snapped on their nearest line</p></dd>
+
+
 <dt>points_time</dt>
 <dd><p>A numeric vector indicating when the point occured</p></dd>
+
+
 <dt>start_net</dt>
 <dd><p>A double, the lowest network distance used to evaluate the k and g functions</p></dd>
+
+
 <dt>end_net</dt>
 <dd><p>A double, the highest network distance used to evaluate  the k and g functions</p></dd>
+
+
 <dt>step_net</dt>
 <dd><p>A double, the step between two evaluations of the k and g for the network distance
 function. start_net, end_net and step_net are used to create a vector of distances with the function seq</p></dd>
+
+
 <dt>width_net</dt>
 <dd><p>The width (network distance) of each donut for the g-function. Half of the width is applied on
 both sides of the considered distance</p></dd>
+
+
 <dt>start_time</dt>
 <dd><p>A double, the lowest time distance used to evaluate the k and g functions</p></dd>
+
+
 <dt>end_time</dt>
 <dd><p>A double, the highest time distance used to evaluate  the k and g functions</p></dd>
+
+
 <dt>step_time</dt>
 <dd><p>A double, the step between two evaluations of the k and g for the time distance
 function. start_time, end_time and step_time are used to create a vector of distances with the function seq</p></dd>
+
+
 <dt>width_time</dt>
 <dd><p>The width (time distance) of each donut for the g-function. Half of the width is applied on
 both sides of the considered distance</p></dd>
+
+
 <dt>nsim</dt>
 <dd><p>An integer indicating the number of Monte Carlo simulations
 to perform for inference</p></dd>
+
+
 <dt>conf_int</dt>
 <dd><p>A double indicating the width confidence interval (default =
 0.05) calculated on the Monte Carlo simulations</p></dd>
+
+
 <dt>digits</dt>
 <dd><p>An integer indicating the number of digits to retain from the
 spatial coordinates</p></dd>
+
+
 <dt>tol</dt>
 <dd><p>When adding the points to the network, specify the minimum
 distance between these points and the lines' extremities. When points are
 closer, they are added at the extremity of the lines</p></dd>
+
+
 <dt>resolution</dt>
 <dd><p>When simulating random points on the network, selecting a
 resolution will reduce greatly the calculation time. When resolution is null
 the random points can occur everywhere on the graph. If a value is specified,
 the edges are split according to this value and the random points can only be
 vertices on the new network</p></dd>
+
+
 <dt>agg</dt>
 <dd><p>A double indicating if the events must be aggregated within a distance.
 If NULL, the events are aggregated only by rounding the coordinates</p></dd>
+
+
 <dt>verbose</dt>
 <dd><p>A Boolean indicating if progress messages should be displayed</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A list with the following values : <br></p><ul><li><p>obs_k A matrix with the observed k-values</p></li>
+    
+
+<p>A list with the following values : <br></p>
+<p></p>
+<ul><li><p>obs_k A matrix with the observed k-values</p></li>
 <li><p>lower_k A matrix with the lower bounds of the simulated k-values</p></li>
 <li><p>upper_k A matrix with the upper bounds of the simulated k-values</p></li>
 <li><p>obs_g A matrix with the observed g-values</p></li>
@@ -209,8 +248,7 @@ If NULL, the events are aggregated only by rounding the coordinates</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

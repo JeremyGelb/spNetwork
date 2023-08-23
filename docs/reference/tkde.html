@@ -89,37 +89,49 @@ time and events</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">tkde</span><span class="op">(</span><span class="va">events</span>, <span class="va">w</span>, <span class="va">samples</span>, <span class="va">bw</span>, <span class="va">kernel_name</span>, adaptive <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">tkde</span><span class="op">(</span><span class="va">events</span>, <span class="va">w</span>, <span class="va">samples</span>, <span class="va">bw</span>, <span class="va">kernel_name</span>, adaptive <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>events</dt>
 <dd><p>A numeric vector representing the moments of occurrence of events</p></dd>
+
+
 <dt>w</dt>
 <dd><p>The weight of the events</p></dd>
+
+
 <dt>samples</dt>
 <dd><p>A numeric vector representing the moments to sample</p></dd>
+
+
 <dt>bw</dt>
 <dd><p>A float, the bandwidth to use</p></dd>
+
+
 <dt>kernel_name</dt>
 <dd><p>The name of the kernel to use</p></dd>
+
+
 <dt>adaptive</dt>
 <dd><p>Boolean</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A numeric vector with the density values at the requested timestamps</p>
+    
+
+<p>A numeric vector with the density values at the requested timestamps</p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">)</span>
-<span class="va">bike_accidents</span><span class="op">$</span><span class="va">Date</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html" class="external-link">as.POSIXct</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">$</span><span class="va">Date</span>, format <span class="op">=</span> <span class="st">"%Y/%m/%d"</span><span class="op">)</span>
-<span class="va">start</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">$</span><span class="va">Date</span><span class="op">)</span>
-<span class="va">diff</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/difftime.html" class="external-link">difftime</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">$</span><span class="va">Date</span> , <span class="va">start</span>, units <span class="op">=</span> <span class="st">"days"</span><span class="op">)</span><span class="op">)</span>
-<span class="va">density</span> <span class="op">&lt;-</span> <span class="fu">tkde</span><span class="op">(</span><span class="va">diff</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">diff</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">diff</span><span class="op">)</span>,<span class="fl">1</span><span class="op">)</span>, <span class="fl">2</span>, <span class="st">"quartic"</span><span class="op">)</span>
-</code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">)</span></span>
+<span><span class="va">bike_accidents</span><span class="op">$</span><span class="va">Date</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html" class="external-link">as.POSIXct</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">$</span><span class="va">Date</span>, format <span class="op">=</span> <span class="st">"%Y/%m/%d"</span><span class="op">)</span></span>
+<span><span class="va">start</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">$</span><span class="va">Date</span><span class="op">)</span></span>
+<span><span class="va">diff</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/difftime.html" class="external-link">difftime</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">$</span><span class="va">Date</span> , <span class="va">start</span>, units <span class="op">=</span> <span class="st">"days"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">density</span> <span class="op">&lt;-</span> <span class="fu">tkde</span><span class="op">(</span><span class="va">diff</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">diff</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">diff</span><span class="op">)</span>,<span class="fl">1</span><span class="op">)</span>, <span class="fl">2</span>, <span class="st">"quartic"</span><span class="op">)</span></span></code></pre></div>
     </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -133,8 +145,7 @@ time and events</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

@@ -54,8 +54,6 @@ used by the Rcpp functions. These matrices are used to store edge indices
 between two nodes in a graph. Regular matrices are faster, but require more
 memory, in particular with multiprocessing. Sparse matrices are slower (a
 bit), but require much less memory.}
-
-\item{samples}{A feature collection of points representing the sample location}
 }
 \description{
 Caclulating the border correction factor for both time and network bandwidths

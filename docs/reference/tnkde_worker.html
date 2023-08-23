@@ -87,25 +87,25 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">tnkde_worker</span><span class="op">(</span>
-  <span class="va">lines</span>,
-  <span class="va">events_loc</span>,
-  <span class="va">events</span>,
-  <span class="va">samples_loc</span>,
-  <span class="va">samples_time</span>,
-  <span class="va">kernel_name</span>,
-  <span class="va">bw_net</span>,
-  <span class="va">bw_time</span>,
-  <span class="va">bws_net</span>,
-  <span class="va">bws_time</span>,
-  <span class="va">method</span>,
-  <span class="va">div</span>,
-  <span class="va">digits</span>,
-  <span class="va">tol</span>,
-  <span class="va">sparse</span>,
-  <span class="va">max_depth</span>,
-  verbose <span class="op">=</span> <span class="cn">FALSE</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">tnkde_worker</span><span class="op">(</span></span>
+<span>  <span class="va">lines</span>,</span>
+<span>  <span class="va">events_loc</span>,</span>
+<span>  <span class="va">events</span>,</span>
+<span>  <span class="va">samples_loc</span>,</span>
+<span>  <span class="va">samples_time</span>,</span>
+<span>  <span class="va">kernel_name</span>,</span>
+<span>  <span class="va">bw_net</span>,</span>
+<span>  <span class="va">bw_time</span>,</span>
+<span>  <span class="va">bws_net</span>,</span>
+<span>  <span class="va">bws_time</span>,</span>
+<span>  <span class="va">method</span>,</span>
+<span>  <span class="va">div</span>,</span>
+<span>  <span class="va">digits</span>,</span>
+<span>  <span class="va">tol</span>,</span>
+<span>  <span class="va">sparse</span>,</span>
+<span>  <span class="va">max_depth</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -114,47 +114,77 @@
 <dd><p>A feature collection of linestrings with the sampling points. The
 geometries must be simple Linestrings (may crash if some geometries
  are invalid)</p></dd>
+
+
 <dt>events_loc</dt>
 <dd><p>A feature collection of points representing the aggergated events on the
 network. The points will be snapped on the network.</p></dd>
+
+
 <dt>events</dt>
 <dd><p>A feature collection of points representing the base events on the
 network</p></dd>
+
+
 <dt>samples_loc</dt>
 <dd><p>A feature collection of points representing the locations for
 which the densities will be estimated.</p></dd>
+
+
 <dt>samples_time</dt>
 <dd><p>A numeric vector representing when each density will be
 estimated</p></dd>
+
+
 <dt>kernel_name</dt>
 <dd><p>The name of the kernel to use</p></dd>
+
+
 <dt>bw_net</dt>
 <dd><p>The global network kernel bandwidth</p></dd>
+
+
 <dt>bw_time</dt>
 <dd><p>The global time kernel bandwidth</p></dd>
+
+
 <dt>bws_net</dt>
 <dd><p>The network kernel bandwidth (in meters) for each event</p></dd>
+
+
 <dt>bws_time</dt>
 <dd><p>The time bandwidth for each event</p></dd>
+
+
 <dt>method</dt>
 <dd><p>The method to use when calculating the NKDE, must be one of
 simple / discontinuous / continuous (see details for more information)</p></dd>
+
+
 <dt>div</dt>
 <dd><p>The divisor to use for the kernel. Must be "n" (the number of
 events within the radius around each sampling point), "bw" (the bandwidth)
 "none" (the simple sum).</p></dd>
+
+
 <dt>digits</dt>
 <dd><p>The number of digits to keep in the spatial coordinates. It
 ensures that topology is good when building the network. Default is 3</p></dd>
+
+
 <dt>tol</dt>
 <dd><p>When adding the events and the sampling points to the network,
 the minimum distance between these points and the lines extremities. When
 points are closer, they are added at the extremity of the lines.</p></dd>
+
+
 <dt>sparse</dt>
 <dd><p>A Boolean indicating if sparse or regular matrices should be
 used by the Rcpp functions. Regular matrices are faster, but require more
 memory and could lead to error, in particular with multiprocessing. Sparse
 matrices are slower, but require much less memory.</p></dd>
+
+
 <dt>max_depth</dt>
 <dd><p>When using the continuous and discontinuous methods, the
 calculation time and memory use can go wild  if the network has a lot of
@@ -164,19 +194,23 @@ kernel is divided at intersections, a value of 8 should yield good
 estimates. A larger value can be used without problem for the discontinuous
 method. For the continuous method, a larger value will strongly impact
 calculation speed.</p></dd>
+
+
 <dt>verbose</dt>
 <dd><p>A Boolean, indicating if the function should print messages
 about the process.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A numeric matrix with the nkde values</p>
+    
+
+<p>A numeric matrix with the nkde values</p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="co">#This is an internal function, no example provided</span>
-</code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co">#This is an internal function, no example provided</span></span></code></pre></div>
     </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -190,8 +224,7 @@ about the process.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

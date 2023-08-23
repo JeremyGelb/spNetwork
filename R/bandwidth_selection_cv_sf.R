@@ -662,7 +662,12 @@ bw_cv_likelihood_calc.mc <- function(bw_range,bw_step,lines, events, w, kernel_n
 #' @param zero_strat A string indicating what to do when density is 0 when calculating LOO density estimate for an isolated event.
 #' "min_double" (default) replace the 0 value by the minimum double possible on the machine. "remove" will remove them from the final
 #' score. The first approach penalizes more strongly the small bandwidths.
-#' @template nkde_geoms-args
+#' @param digits The number of digits to retain from the spatial coordinates. It
+#'   ensures that topology is good when building the network. Default is 3. Too high a
+#'   precision (high number of digits) might break some connections
+#' @param tol A float indicating the minimum distance between the events and the
+#'   lines' extremities when adding the point to the network. When points are
+#'   closer, they are added at the extremity of the lines.
 #' @template sparse-arg
 #' @param verbose A boolean
 #' @param cvl A boolean indicating if the cvl method (TRUE) or the loo (FALSE) method must be used

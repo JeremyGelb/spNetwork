@@ -179,7 +179,8 @@ lines_coordinates_as_list <- function(lines){
 #'
 #' @description A function to convert a list of matrices to as sf object with linestring geometry type
 #'
-#' @param lines A list of matrices
+#' @param coord_list A list of matrices
+#' @param crs The CRS to use to create the lines
 #' @return A sf object with linestring type geometries
 #' @importFrom sf st_coordinates st_cast
 #' @importFrom dplyr summarise group_by %>%
@@ -992,7 +993,7 @@ heal_edges <- function(lines,digits = 3, verbose = TRUE){
 #' @description Keep unique edges based on start and end point
 #'
 #' @param lines A feature collection of linestrings
-#' @param keep_sortest A boolean, if TRUE, then the shortest line is keeped if
+#' @param keep_shortest A boolean, if TRUE, then the shortest line is keeped if
 #' several lines have the same starting point and ending point. if FALSE, then the
 #' longest line is keeped.
 #' @param digits An integer indicating the number of digits to keep in coordinates

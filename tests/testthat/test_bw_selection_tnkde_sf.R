@@ -54,7 +54,7 @@ test_that("Testing the bw selection function with CV likelihood and simple kerne
 
 
   #let us calculate the value with our function
-  obs_value <-bw_tnkde_cv_likelihood_calc(bw_net_range = c(10,15),
+  obs_value <-bws_tnkde_cv_likelihood_calc(bw_net_range = c(10,15),
                                            bw_net_step = 5,
                                            bw_time_range = c(6,7),
                                            bw_time_step = 1,
@@ -123,7 +123,7 @@ test_that("Testing the bw selection function with CV likelihood and simple kerne
 
 
   #let us calculate the value with our function
-  obs_value <- bw_tnkde_cv_likelihood_calc(bw_net_range = c(7,15),
+  obs_value <- bws_tnkde_cv_likelihood_calc(bw_net_range = c(7,15),
                                            bw_net_step = 5,
                                            bw_time_range = c(6,7),
                                            bw_time_step = 1,
@@ -199,7 +199,7 @@ test_that("Testing the bw selection function with CV likelihood and discontinuou
 
 
   #let us calculate the value with our function
-  obs_value <-bw_tnkde_cv_likelihood_calc(bw_net_range = c(10,15),
+  obs_value <-bws_tnkde_cv_likelihood_calc(bw_net_range = c(10,15),
                                            bw_net_step = 5,
                                            bw_time_range = c(6,7),
                                            bw_time_step = 1,
@@ -291,7 +291,7 @@ test_that("Testing the bw selection function with CV likelihood and continuous k
 
 
   #let us calculate the value with our function
-  obs_value <-bw_tnkde_cv_likelihood_calc(bw_net_range = c(11,12),
+  obs_value <-bws_tnkde_cv_likelihood_calc(bw_net_range = c(11,12),
                                            bw_net_step = 1,
                                            bw_time_range = c(6,7),
                                            bw_time_step = 1,
@@ -384,7 +384,7 @@ test_that("Testing the bw selection function with CV likelihood in multicore and
 
 
   #let us calculate the value with our function
-  obs_value <-bw_tnkde_cv_likelihood_calc(bw_net_range = c(11,12),
+  obs_value <-bws_tnkde_cv_likelihood_calc(bw_net_range = c(11,12),
                                            bw_net_step = 1,
                                            bw_time_range = c(6,7),
                                            bw_time_step = 1,
@@ -407,7 +407,7 @@ test_that("Testing the bw selection function with CV likelihood in multicore and
                                            check=FALSE)
 
   future::plan(future::multisession(workers=1))
-  obs_value2 <-bw_tnkde_cv_likelihood_calc.mc(bw_net_range = c(11,12),
+  obs_value2 <-bws_tnkde_cv_likelihood_calc.mc(bw_net_range = c(11,12),
                                            bw_net_step = 1,
                                            bw_time_range = c(6,7),
                                            bw_time_step = 1,

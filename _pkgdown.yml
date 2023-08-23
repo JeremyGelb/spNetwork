@@ -27,6 +27,7 @@ reference:
   - bws_tnkde_cv_likelihood_calc
   - bws_tnkde_cv_likelihood_calc.mc
   - tkde
+  - bw_cv_likelihood_calc_tkde
 - title: "Spatial weight matrices on networks"
   desc: >
     Functions to calculate spatial weight matrices on networks.
@@ -41,6 +42,8 @@ reference:
   - kfunctions.mc
   - cross_kfunctions
   - cross_kfunctions.mc
+  - k_nt_functions
+  - k_nt_functions.mc
 - title: "Knn functions on networks"
   desc: >
     Functions to calculate K nearest neighbours on networks.
@@ -74,8 +77,39 @@ reference:
   - lixelize_lines
   - lixelize_lines.mc
   - split_lines_at_vertex
+  - simple_lines
+  - st_bbox_by_feature
 - title: "Spatial data cleaning"
   desc: >
     Functions to clean data before spatial analysis
 - contents:
   - aggregate_points
+- title: "datasets"
+  desc: >
+    Datasets provided with the package
+- contents:
+  - main_network_mtl
+  - mtl_libraries
+  - mtl_network
+  - mtl_theatres
+  - small_mtl_network
+- title: "internal"
+- contents:
+  - nkde_get_loo_values
+  - spatial_index$new
+  - spatial_index$tree_request
+  - spatial_index
+  - spNetwork-package
+  - tnkde_get_loo_values
+  - tnkde_worker_bw_sel
+  - worker_adaptive_bw_tnkde
+  - adaptive_bw_tnkde_cpp
+  - bike_accidents
+  - cross_gfunc_cpp
+  - cross_kfunc_cpp
+  - esc_kernel_loo_nkde
+  - esc_kernel_loo_tnkde
+  - esd_kernel_loo_nkde
+  - esd_kernel_loo_tnkde
+  - gfunc_cpp
+  - kfunc_cpp

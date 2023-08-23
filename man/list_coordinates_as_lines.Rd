@@ -7,7 +7,9 @@
 list_coordinates_as_lines(coord_list, crs)
 }
 \arguments{
-\item{lines}{A list of matrices}
+\item{coord_list}{A list of matrices}
+
+\item{crs}{The CRS to use to create the lines}
 }
 \value{
 A sf object with linestring type geometries

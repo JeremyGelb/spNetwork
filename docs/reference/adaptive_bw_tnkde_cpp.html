@@ -92,69 +92,99 @@ interaction for TNKDE (INTERNAL)</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">adaptive_bw_tnkde_cpp</span><span class="op">(</span>
-  <span class="va">method</span>,
-  <span class="va">neighbour_list</span>,
-  <span class="va">sel_events</span>,
-  <span class="va">sel_events_wid</span>,
-  <span class="va">sel_events_time</span>,
-  <span class="va">events</span>,
-  <span class="va">events_wid</span>,
-  <span class="va">events_time</span>,
-  <span class="va">weights</span>,
-  <span class="va">bws_net</span>,
-  <span class="va">bws_time</span>,
-  <span class="va">kernel_name</span>,
-  <span class="va">line_list</span>,
-  <span class="va">max_depth</span>,
-  <span class="va">min_tol</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">adaptive_bw_tnkde_cpp</span><span class="op">(</span></span>
+<span>  <span class="va">method</span>,</span>
+<span>  <span class="va">neighbour_list</span>,</span>
+<span>  <span class="va">sel_events</span>,</span>
+<span>  <span class="va">sel_events_wid</span>,</span>
+<span>  <span class="va">sel_events_time</span>,</span>
+<span>  <span class="va">events</span>,</span>
+<span>  <span class="va">events_wid</span>,</span>
+<span>  <span class="va">events_time</span>,</span>
+<span>  <span class="va">weights</span>,</span>
+<span>  <span class="va">bws_net</span>,</span>
+<span>  <span class="va">bws_time</span>,</span>
+<span>  <span class="va">kernel_name</span>,</span>
+<span>  <span class="va">line_list</span>,</span>
+<span>  <span class="va">max_depth</span>,</span>
+<span>  <span class="va">min_tol</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>method</dt>
 <dd><p>a string, one of "simple", "continuous", "discontinuous"</p></dd>
+
+
 <dt>neighbour_list</dt>
 <dd><p>a List, giving for each node an IntegerVector with
 its neighbours</p></dd>
+
+
 <dt>sel_events</dt>
 <dd><p>a Numeric vector indicating the selected events (id of nodes)</p></dd>
+
+
 <dt>sel_events_wid</dt>
 <dd><p>a Numeric Vector indicating the unique if of the selected events</p></dd>
+
+
 <dt>sel_events_time</dt>
 <dd><p>a Numeric Vector indicating the time of the selected events</p></dd>
+
+
 <dt>events</dt>
 <dd><p>a NumericVector indicating the nodes in the graph being events</p></dd>
+
+
 <dt>events_wid</dt>
 <dd><p>a NumericVector indicating the unique id of all the events</p></dd>
+
+
 <dt>events_time</dt>
 <dd><p>a NumericVector indicating the timestamp of each event</p></dd>
+
+
 <dt>weights</dt>
 <dd><p>a cube with the weights associated with each event for each
 bws_net and bws_time.</p></dd>
+
+
 <dt>bws_net</dt>
 <dd><p>an arma::vec with the network bandwidths to consider</p></dd>
+
+
 <dt>bws_time</dt>
 <dd><p>an arma::vec with the time bandwidths to consider</p></dd>
+
+
 <dt>kernel_name</dt>
 <dd><p>a string with the name of the kernel to use</p></dd>
+
+
 <dt>line_list</dt>
 <dd><p>a DataFrame describing the lines</p></dd>
+
+
 <dt>max_depth</dt>
 <dd><p>the maximum recursion depth</p></dd>
+
+
 <dt>min_tol</dt>
 <dd><p>a double indicating by how much 0 in density values must be replaced</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>a vector witht the estimated density at each event location</p>
+    
+
+<p>a vector witht the estimated density at each event location</p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="co"># no example provided, this is an internal function</span>
-</code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># no example provided, this is an internal function</span></span></code></pre></div>
     </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -168,8 +198,7 @@ bws_net and bws_time.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

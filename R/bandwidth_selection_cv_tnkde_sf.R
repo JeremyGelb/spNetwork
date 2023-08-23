@@ -77,7 +77,6 @@ bw_checks <- function(check,lines,samples,events,
 #' @param lines A feature collection of linestrings representing the underlying lines of the network
 #' @param method The name of a NKDE method
 #' @param kernel_name The name of the kernel to use
-#' @param samples A feature collection of points representing the sample location
 #' @param events A feature collection of points representing the events
 #' @param kernel_name The name of the kernel to use
 #' @param method The name of the NKDE to use
@@ -177,7 +176,7 @@ bw_tnkde_corr_factor <- function(net_bws, time_bws, diggle_correction, study_are
 #' bike_accidents <- subset(bike_accidents, bike_accidents$Time>=89)
 #'
 #' # calculating the cross validation values
-#' cv_scores <- bw_tnkde_cv_likelihood_calc(
+#' cv_scores <- bws_tnkde_cv_likelihood_calc(
 #'   bw_net_range = c(100,1000),
 #'   bw_net_step = 100,
 #'   bw_time_range = c(10,60),
@@ -200,7 +199,7 @@ bw_tnkde_corr_factor <- function(net_bws, time_bws, diggle_correction, study_are
 #'   verbose = FALSE,
 #'   check = TRUE)
 #'}
-bw_tnkde_cv_likelihood_calc <- function(bw_net_range, bw_net_step,
+bws_tnkde_cv_likelihood_calc <- function(bw_net_range, bw_net_step,
                                          bw_time_range, bw_time_step,
                                          lines, events, time_field,
                                          w, kernel_name, method,
@@ -392,7 +391,7 @@ bw_tnkde_cv_likelihood_calc <- function(bw_net_range, bw_net_step,
 #' future::plan(future::multisession(workers=1))
 #'
 #' # calculating the cross validation values
-#' cv_scores <- bw_tnkde_cv_likelihood_calc.mc(
+#' cv_scores <- bws_tnkde_cv_likelihood_calc.mc(
 #'   bw_net_range = c(100,1000),
 #'   bw_net_step = 100,
 #'   bw_time_range = c(10,60),
@@ -418,7 +417,7 @@ bw_tnkde_cv_likelihood_calc <- function(bw_net_range, bw_net_step,
 #' ## make sure any open connections are closed afterward
 #' if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
 #'}
-bw_tnkde_cv_likelihood_calc.mc <- function(bw_net_range, bw_net_step,
+bws_tnkde_cv_likelihood_calc.mc <- function(bw_net_range, bw_net_step,
                                          bw_time_range, bw_time_step,
                                          lines, events, time_field,
                                          w, kernel_name, method,

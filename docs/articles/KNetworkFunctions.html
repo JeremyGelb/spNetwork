@@ -106,7 +106,7 @@
                         <h4 data-toc-skip class="author">Jeremy
 Gelb</h4>
             
-            <h4 data-toc-skip class="date">2023-04-10</h4>
+            <h4 data-toc-skip class="date">2023-08-22</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/JeremyGelb/spNetwork/blob/HEAD/vignettes/KNetworkFunctions.Rmd" class="external-link"><code>vignettes/KNetworkFunctions.Rmd</code></a></small>
       <div class="hidden name"><code>KNetworkFunctions.Rmd</code></div>
@@ -168,28 +168,28 @@ which the points are randomly located on the network.</p>
 <p>We present here a short example with the case of theatres and
 libraries in Montreal.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://jeremygelb.github.io/spNetwork/" class="external-link">spNetwork</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mtennekes/tmap" class="external-link">tmap</a></span><span class="op">)</span>
-
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">main_network_mtl</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">mtl_libraries</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">mtl_theatres</span><span class="op">)</span>
-
-<span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html" class="external-link">tm_shape</a></span><span class="op">(</span><span class="va">main_network_mtl</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_lines.html" class="external-link">tm_lines</a></span><span class="op">(</span><span class="st">"black"</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html" class="external-link">tm_shape</a></span><span class="op">(</span><span class="va">mtl_libraries</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_symbols.html" class="external-link">tm_dots</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"red"</span>, size <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html" class="external-link">tm_shape</a></span><span class="op">(</span><span class="va">mtl_theatres</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_symbols.html" class="external-link">tm_dots</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"blue"</span>, size <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://jeremygelb.github.io/spNetwork/" class="external-link">spNetwork</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-tmap/tmap" class="external-link">tmap</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">main_network_mtl</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">mtl_libraries</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">mtl_theatres</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html" class="external-link">tm_shape</a></span><span class="op">(</span><span class="va">main_network_mtl</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_lines.html" class="external-link">tm_lines</a></span><span class="op">(</span><span class="st">"black"</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html" class="external-link">tm_shape</a></span><span class="op">(</span><span class="va">mtl_libraries</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_symbols.html" class="external-link">tm_dots</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"red"</span>, size <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html" class="external-link">tm_shape</a></span><span class="op">(</span><span class="va">mtl_theatres</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_symbols.html" class="external-link">tm_dots</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"blue"</span>, size <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></span></code></pre></div>
 <p><img src="KNetworkFunctions_files/figure-html/unnamed-chunk-2-1.png" width="700" style="display: block; margin: auto;"></p>
 <p>As one can see, the theatres seems to be more clustered than the
 libraries.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">kfun_theatre</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/kfunctions.html">kfunctions</a></span><span class="op">(</span><span class="va">main_network_mtl</span>, <span class="va">mtl_theatres</span>,
-                           start <span class="op">=</span> <span class="fl">0</span>, end <span class="op">=</span> <span class="fl">5000</span>, step <span class="op">=</span> <span class="fl">50</span>, 
-                           width <span class="op">=</span> <span class="fl">1000</span>, nsim <span class="op">=</span> <span class="fl">50</span>, resolution <span class="op">=</span> <span class="fl">50</span>,
-                           verbose <span class="op">=</span> <span class="cn">FALSE</span>, conf_int <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span>
-<span class="va">kfun_theatre</span><span class="op">$</span><span class="va">plotk</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">kfun_theatre</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/kfunctions.html">kfunctions</a></span><span class="op">(</span><span class="va">main_network_mtl</span>, <span class="va">mtl_theatres</span>,</span>
+<span>                           start <span class="op">=</span> <span class="fl">0</span>, end <span class="op">=</span> <span class="fl">5000</span>, step <span class="op">=</span> <span class="fl">50</span>, </span>
+<span>                           width <span class="op">=</span> <span class="fl">1000</span>, nsim <span class="op">=</span> <span class="fl">50</span>, resolution <span class="op">=</span> <span class="fl">50</span>,</span>
+<span>                           verbose <span class="op">=</span> <span class="cn">FALSE</span>, conf_int <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span></span>
+<span><span class="va">kfun_theatre</span><span class="op">$</span><span class="va">plotk</span></span></code></pre></div>
 <p><img src="KNetworkFunctions_files/figure-html/unnamed-chunk-4-1.png" width="700" style="display: block; margin: auto;"></p>
 <p>The blue line is the empirical network K-function of the theatres in
 Montreal. The gray area represents the results of the 50 simulations in
@@ -198,7 +198,7 @@ area, we can conclude that the theatres are more clustered than what we
 can expect from a random distribution. (Note: usually, more simulations
 are required for inference).</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">kfun_theatre</span><span class="op">$</span><span class="va">plotg</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">kfun_theatre</span><span class="op">$</span><span class="va">plotg</span></span></code></pre></div>
 <p><img src="KNetworkFunctions_files/figure-html/unnamed-chunk-6-1.png" width="700" style="display: block; margin: auto;"></p>
 <p>The G-function is also indicating a clustering situation, which is
 maximum between two and three kilometres. This is consistent with the
@@ -206,18 +206,18 @@ fact that we have a high concentration of theatres in the central
 neighbourhoods and then more dispersed points. We can perform the same
 analysis for libraries.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">kfun_biblio</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/kfunctions.html">kfunctions</a></span><span class="op">(</span><span class="va">main_network_mtl</span>, <span class="va">mtl_libraries</span>,
-                          start <span class="op">=</span> <span class="fl">0</span>, end <span class="op">=</span> <span class="fl">5000</span>, step <span class="op">=</span> <span class="fl">50</span>,
-                          width <span class="op">=</span> <span class="fl">1000</span>, nsim <span class="op">=</span> <span class="fl">50</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
-
-<span class="va">kfun_biblio</span><span class="op">$</span><span class="va">plotk</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">kfun_biblio</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/kfunctions.html">kfunctions</a></span><span class="op">(</span><span class="va">main_network_mtl</span>, <span class="va">mtl_libraries</span>,</span>
+<span>                          start <span class="op">=</span> <span class="fl">0</span>, end <span class="op">=</span> <span class="fl">5000</span>, step <span class="op">=</span> <span class="fl">50</span>,</span>
+<span>                          width <span class="op">=</span> <span class="fl">1000</span>, nsim <span class="op">=</span> <span class="fl">50</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">kfun_biblio</span><span class="op">$</span><span class="va">plotk</span></span></code></pre></div>
 <p><img src="KNetworkFunctions_files/figure-html/unnamed-chunk-8-1.png" width="700" style="display: block; margin: auto;"></p>
 <p>For distances bellow two kilometres, the libraries are a bit
 dispersed. Above two kilometres, the libraries tend to be randomly
 located. The chart of the G-function confirms this observation, but with
 a lower limit (1.3 km) :</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">kfun_biblio</span><span class="op">$</span><span class="va">plotg</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">kfun_biblio</span><span class="op">$</span><span class="va">plotg</span></span></code></pre></div>
 <p><img src="KNetworkFunctions_files/figure-html/unnamed-chunk-10-1.png" width="700" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level2">
@@ -245,21 +245,21 @@ Simulations. The locations of the reference set of points are randomized
 to estimate if the current situation is more or less clustered that what
 we could expect at random.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">cross_biblio_theatre</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cross_kfunctions.html">cross_kfunctions</a></span><span class="op">(</span><span class="va">main_network_mtl</span>, <span class="va">mtl_libraries</span>,
-                        <span class="va">mtl_theatres</span>, start <span class="op">=</span> <span class="fl">0</span>, end <span class="op">=</span> <span class="fl">5000</span>, step <span class="op">=</span> <span class="fl">50</span>,
-                        width <span class="op">=</span> <span class="fl">1000</span>, nsim <span class="op">=</span> <span class="fl">50</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
-
-<span class="va">cross_biblio_theatre</span><span class="op">$</span><span class="va">plotk</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">cross_biblio_theatre</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cross_kfunctions.html">cross_kfunctions</a></span><span class="op">(</span><span class="va">main_network_mtl</span>, <span class="va">mtl_libraries</span>,</span>
+<span>                        <span class="va">mtl_theatres</span>, start <span class="op">=</span> <span class="fl">0</span>, end <span class="op">=</span> <span class="fl">5000</span>, step <span class="op">=</span> <span class="fl">50</span>,</span>
+<span>                        width <span class="op">=</span> <span class="fl">1000</span>, nsim <span class="op">=</span> <span class="fl">50</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">cross_biblio_theatre</span><span class="op">$</span><span class="va">plotk</span></span></code></pre></div>
 <p><img src="KNetworkFunctions_files/figure-html/unnamed-chunk-12-1.png" width="700" style="display: block; margin: auto;"></p>
 <p>One can conclude from the chart that the libraries are randomly
 located around the theatres and display nor clustering nor dispersion
 around theatres.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">cross_theatre_biblio</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cross_kfunctions.html">cross_kfunctions</a></span><span class="op">(</span><span class="va">main_network_mtl</span>, <span class="va">mtl_theatres</span>,
-                      <span class="va">mtl_libraries</span>, start <span class="op">=</span> <span class="fl">0</span>, end <span class="op">=</span> <span class="fl">5000</span>,
-                      step <span class="op">=</span> <span class="fl">50</span>, width <span class="op">=</span> <span class="fl">1000</span>, nsim <span class="op">=</span> <span class="fl">50</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
-
-<span class="va">cross_theatre_biblio</span><span class="op">$</span><span class="va">plotk</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">cross_theatre_biblio</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cross_kfunctions.html">cross_kfunctions</a></span><span class="op">(</span><span class="va">main_network_mtl</span>, <span class="va">mtl_theatres</span>,</span>
+<span>                      <span class="va">mtl_libraries</span>, start <span class="op">=</span> <span class="fl">0</span>, end <span class="op">=</span> <span class="fl">5000</span>,</span>
+<span>                      step <span class="op">=</span> <span class="fl">50</span>, width <span class="op">=</span> <span class="fl">1000</span>, nsim <span class="op">=</span> <span class="fl">50</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">cross_theatre_biblio</span><span class="op">$</span><span class="va">plotk</span></span></code></pre></div>
 <p><img src="KNetworkFunctions_files/figure-html/unnamed-chunk-14-1.png" width="700" style="display: block; margin: auto;"></p>
 <p>However, this second chart shows that the theatres tend to be
 clustered around libraries. This is coherent with the map above. A
@@ -297,8 +297,7 @@ Correlation Functions of Planar Cluster Processes.”</span>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>

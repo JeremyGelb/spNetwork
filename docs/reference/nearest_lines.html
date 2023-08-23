@@ -87,31 +87,37 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">nearest_lines</span><span class="op">(</span><span class="va">points</span>, <span class="va">lines</span>, snap_dist <span class="op">=</span> <span class="fl">300</span>, max_iter <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">nearest_lines</span><span class="op">(</span><span class="va">points</span>, <span class="va">lines</span>, snap_dist <span class="op">=</span> <span class="fl">300</span>, max_iter <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>points</dt>
 <dd><p>A feature collection of points</p></dd>
+
+
 <dt>lines</dt>
 <dd><p>A feature collection of linestrings</p></dd>
+
+
 <dt>snap_dist</dt>
 <dd><p>A distance (float) given to find for each point its
 nearest line in a spatial index. A too big value will produce
 unnecessary distance calculations and a too short value will lead to
 more iterations to find neighbours. In extrem cases, a too short value
 could lead to points not associated with lines (index = -1).</p></dd>
+
+
 <dt>max_iter</dt>
 <dd><p>An integer indicating how many iteration the search
 algorithm must perform in the spatial index to find lines close to a
 point. At each iteration, the snap_dist is doubled to find candidates.</p></dd>
+
 </dl></div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="co"># this is an internal function, no example provided</span>
-</code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># this is an internal function, no example provided</span></span></code></pre></div>
     </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -125,8 +131,7 @@ point. At each iteration, the snap_dist is doubled to find candidates.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

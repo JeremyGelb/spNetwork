@@ -553,7 +553,7 @@ k_nt_func_cpp2 <- function(dist_mat_net, dist_mat_time, start_net, end_net, step
 
 #' @title c++ g space-time function
 #' @name g_nt_func_cpp
-#' @param dist_mat A square matrix with the distances between points on the network
+#' @param dist_mat_net A square matrix with the distances between points on the network
 #' @param dist_mat_time A square matrix with the distances between points in time
 #' @param start_net A float, the start value for evaluating the g-function on the network
 #' @param end_net A float, the last value for evaluating the g-function on the network
