@@ -20,7 +20,7 @@ Diggle correction factor with a discontinuous method (sparse)"><!-- mathjax --><
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3.6.9000</span>
       </span>
     </div>
 
@@ -92,31 +92,42 @@ Diggle correction factor with a discontinuous method (sparse)</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">corrfactor_discontinuous_sparse</span><span class="op">(</span>
-  <span class="va">neighbour_list</span>,
-  <span class="va">events</span>,
-  <span class="va">line_list</span>,
-  <span class="va">bws</span>,
-  <span class="va">max_depth</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">corrfactor_discontinuous_sparse</span><span class="op">(</span></span>
+<span>  <span class="va">neighbour_list</span>,</span>
+<span>  <span class="va">events</span>,</span>
+<span>  <span class="va">line_list</span>,</span>
+<span>  <span class="va">bws</span>,</span>
+<span>  <span class="va">max_depth</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>neighbour_list</dt>
 <dd><p>a list of the neighbours of each node</p></dd>
+
+
 <dt>events</dt>
 <dd><p>a numeric vector of the node id of each event</p></dd>
+
+
 <dt>line_list</dt>
 <dd><p>a DataFrame representing the lines of the graph</p></dd>
+
+
 <dt>bws</dt>
 <dd><p>the kernel bandwidth for each event</p></dd>
+
+
 <dt>max_depth</dt>
 <dd><p>the maximum recursion depth (after which recursion is stopped)</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>a list of dataframes, used to calculate the Diggel correction factor</p>
+    
+
+<p>a list of dataframes, used to calculate the Diggel correction factor</p>
     </div>
 
   </div>
@@ -131,8 +142,7 @@ Diggle correction factor with a discontinuous method (sparse)</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

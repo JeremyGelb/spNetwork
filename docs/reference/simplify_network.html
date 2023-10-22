@@ -18,7 +18,7 @@ Removing mirror edges (experimental)."><!-- mathjax --><script src="https://cdnj
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3.6.9000</span>
       </span>
     </div>
 
@@ -89,35 +89,48 @@ Removing mirror edges (experimental).</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">simplify_network</span><span class="op">(</span>
-  <span class="va">lines</span>,
-  digits <span class="op">=</span> <span class="fl">3</span>,
-  heal <span class="op">=</span> <span class="cn">TRUE</span>,
-  mirror <span class="op">=</span> <span class="cn">TRUE</span>,
-  keep_shortest <span class="op">=</span> <span class="cn">TRUE</span>,
-  verbose <span class="op">=</span> <span class="cn">TRUE</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">simplify_network</span><span class="op">(</span></span>
+<span>  <span class="va">lines</span>,</span>
+<span>  digits <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  heal <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  mirror <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  keep_shortest <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>lines</dt>
 <dd><p>A feature collection of linestrings</p></dd>
+
+
 <dt>digits</dt>
 <dd><p>An integer indicating the number of digits to keep in coordinates</p></dd>
+
+
 <dt>heal</dt>
 <dd><p>A boolean indicating if the healing operation must be performed</p></dd>
+
+
 <dt>mirror</dt>
 <dd><p>A boolean indicating if the mirror edges must be removed</p></dd>
+
+
 <dt>keep_shortest</dt>
 <dd><p>A boolean, if TRUE, then the shortest line is kept from
 mirror edges. if FALSE, then the longest line is kept.</p></dd>
+
+
 <dt>verbose</dt>
 <dd><p>A boolean indicating if messages and a progress bar should be displayed</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A feature collection of linestrings</p>
+    
+
+<p>A feature collection of linestrings</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -133,11 +146,10 @@ NOTE: the edge healing does not consider lines directions currently!</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="co"># \donttest{</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span>
-<span class="va">edited_lines</span> <span class="op">&lt;-</span> <span class="fu">simplify_network</span><span class="op">(</span><span class="va">mtl_network</span>, digits <span class="op">=</span> <span class="fl">3</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
-<span class="co"># }</span>
-</code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># \donttest{</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span></span>
+<span><span class="va">edited_lines</span> <span class="op">&lt;-</span> <span class="fu">simplify_network</span><span class="op">(</span><span class="va">mtl_network</span>, digits <span class="op">=</span> <span class="fl">3</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="co"># }</span></span></code></pre></div>
     </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -151,8 +163,7 @@ NOTE: the edge healing does not consider lines directions currently!</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

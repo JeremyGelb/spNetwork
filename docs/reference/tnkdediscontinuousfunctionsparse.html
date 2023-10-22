@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3.6.9000</span>
       </span>
     </div>
 
@@ -87,56 +87,83 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">discontinuous_tnkde_cpp_arma_sparse</span><span class="op">(</span>
-  <span class="va">neighbour_list</span>,
-  <span class="va">events</span>,
-  <span class="va">weights</span>,
-  <span class="va">events_time</span>,
-  <span class="va">samples</span>,
-  <span class="va">samples_time</span>,
-  <span class="va">bws_net</span>,
-  <span class="va">bws_time</span>,
-  <span class="va">kernel_name</span>,
-  <span class="va">nodes</span>,
-  <span class="va">line_list</span>,
-  <span class="va">max_depth</span>,
-  <span class="va">verbose</span>,
-  div <span class="op">=</span> <span class="st">"bw"</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">discontinuous_tnkde_cpp_arma_sparse</span><span class="op">(</span></span>
+<span>  <span class="va">neighbour_list</span>,</span>
+<span>  <span class="va">events</span>,</span>
+<span>  <span class="va">weights</span>,</span>
+<span>  <span class="va">events_time</span>,</span>
+<span>  <span class="va">samples</span>,</span>
+<span>  <span class="va">samples_time</span>,</span>
+<span>  <span class="va">bws_net</span>,</span>
+<span>  <span class="va">bws_time</span>,</span>
+<span>  <span class="va">kernel_name</span>,</span>
+<span>  <span class="va">nodes</span>,</span>
+<span>  <span class="va">line_list</span>,</span>
+<span>  <span class="va">max_depth</span>,</span>
+<span>  <span class="va">verbose</span>,</span>
+<span>  div <span class="op">=</span> <span class="st">"bw"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>neighbour_list</dt>
 <dd><p>a list of the neighbours of each node</p></dd>
+
+
 <dt>events</dt>
 <dd><p>a numeric vector of the node id of each event</p></dd>
+
+
 <dt>weights</dt>
 <dd><p>a numeric vector of the weight of each event</p></dd>
+
+
 <dt>events_time</dt>
 <dd><p>a numeric vector with the time for the events</p></dd>
+
+
 <dt>samples</dt>
 <dd><p>a DataFrame of the samples (with spatial coordinates and belonging edge)</p></dd>
+
+
 <dt>samples_time</dt>
 <dd><p>a NumericVector indicating when to do the samples</p></dd>
+
+
 <dt>bws_net</dt>
 <dd><p>the network kernel bandwidths for each event</p></dd>
+
+
 <dt>kernel_name</dt>
 <dd><p>the name of the kernel function to use</p></dd>
+
+
 <dt>nodes</dt>
 <dd><p>a DataFrame representing the nodes of the graph (with spatial coordinates)</p></dd>
+
+
 <dt>line_list</dt>
 <dd><p>a DataFrame representing the lines of the graph</p></dd>
+
+
 <dt>max_depth</dt>
 <dd><p>the maximum recursion depth (after which recursion is stopped)</p></dd>
+
+
 <dt>verbose</dt>
 <dd><p>a boolean indicating if the function must print its progress</p></dd>
+
+
 <dt>div</dt>
 <dd><p>a string indicating how to standardize the kernel values</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>a List with two matrices: the kernel values (sum_k) and the number of events for each sample (n)</p>
+    
+
+<p>a List with two matrices: the kernel values (sum_k) and the number of events for each sample (n)</p>
     </div>
 
   </div>
@@ -151,8 +178,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

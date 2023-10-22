@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3.6.9000</span>
       </span>
     </div>
 
@@ -87,26 +87,35 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">graph_checking</span><span class="op">(</span><span class="va">lines</span>, <span class="va">digits</span>, max_search <span class="op">=</span> <span class="fl">5</span>, tol <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">graph_checking</span><span class="op">(</span><span class="va">lines</span>, <span class="va">digits</span>, max_search <span class="op">=</span> <span class="fl">5</span>, tol <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>lines</dt>
 <dd><p>A feature collection of linestrings representing the network</p></dd>
+
+
 <dt>digits</dt>
 <dd><p>An integer indicating the number of digits to retain for
 coordinates</p></dd>
+
+
 <dt>max_search</dt>
 <dd><p>The maximum number of nearest neighbour to search to find
 close_nodes</p></dd>
+
+
 <dt>tol</dt>
 <dd><p>The minimum distance expected between two nodes. If two nodes are
 closer, they are returned in the result of the function.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A list with three elements. The first is a feature collection of points
+    
+
+<p>A list with three elements. The first is a feature collection of points
   indicating for each node of the network to which component it belongs. The
   second is a feature collection of points with nodes that are too close one of
   each other. The third is a feature collection of points with the dangle nodes of
@@ -126,11 +135,10 @@ closer, they are returned in the result of the function.</p></dd>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="co"># \donttest{</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">mtl_netowrk</span><span class="op">)</span>
-<span class="va">topo_errors</span> <span class="op">&lt;-</span> <span class="fu">graph_checking</span><span class="op">(</span><span class="va">mtl_network</span>, <span class="fl">2</span><span class="op">)</span>
-<span class="co"># }</span>
-</code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># \donttest{</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">mtl_netowrk</span><span class="op">)</span></span>
+<span><span class="va">topo_errors</span> <span class="op">&lt;-</span> <span class="fu">graph_checking</span><span class="op">(</span><span class="va">mtl_network</span>, <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="co"># }</span></span></code></pre></div>
     </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -144,8 +152,7 @@ closer, they are returned in the result of the function.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

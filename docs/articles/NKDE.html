@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3.6.9000</span>
       </span>
     </div>
 
@@ -106,7 +106,7 @@
                         <h4 data-toc-skip class="author">Jeremy
 Gelb</h4>
             
-            <h4 data-toc-skip class="date">2022-11-09</h4>
+            <h4 data-toc-skip class="date">2023-10-21</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/JeremyGelb/spNetwork/blob/HEAD/vignettes/NKDE.Rmd" class="external-link"><code>vignettes/NKDE.Rmd</code></a></small>
       <div class="hidden name"><code>NKDE.Rmd</code></div>
@@ -224,29 +224,29 @@ package are:</p>
 <p>with <em>r</em> the bandwidth, and <span class="math inline">\(d_{il}\)</span> the distance between an event and
 the sampling point.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/hadley/reshape" class="external-link">reshape2</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://haozhu233.github.io/kableExtra/" class="external-link">kableExtra</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://jeremygelb.github.io/spNetwork/" class="external-link">spNetwork</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">RColorBrewer</span><span class="op">)</span>
-
-<span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="op">-</span><span class="fl">15.01</span>,<span class="fl">15.01</span>,by <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span>
-<span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>
-  x <span class="op">=</span> <span class="va">x</span>,
-  gaussian <span class="op">=</span> <span class="fu"><a href="../reference/gaussian_kernel.html">gaussian_kernel</a></span><span class="op">(</span><span class="va">x</span>,<span class="fl">15</span><span class="op">)</span>,
-  epanechnikov <span class="op">=</span> <span class="fu"><a href="../reference/epanechnikov_kernel.html">epanechnikov_kernel</a></span><span class="op">(</span><span class="va">x</span>,<span class="fl">15</span><span class="op">)</span>,
-  quartic <span class="op">=</span> <span class="fu"><a href="../reference/quartic_kernel.html">quartic_kernel</a></span><span class="op">(</span><span class="va">x</span>,<span class="fl">15</span><span class="op">)</span>,
-  triangle <span class="op">=</span> <span class="fu"><a href="../reference/triangle_kernel.html">triangle_kernel</a></span><span class="op">(</span><span class="va">x</span>,<span class="fl">15</span><span class="op">)</span>,
-  tricube <span class="op">=</span> <span class="fu"><a href="../reference/tricube_kernel.html">tricube_kernel</a></span><span class="op">(</span><span class="va">x</span>,<span class="fl">15</span><span class="op">)</span>,
-  triweight <span class="op">=</span> <span class="fu"><a href="../reference/triweight_kernel.html">triweight_kernel</a></span><span class="op">(</span><span class="va">x</span>,<span class="fl">15</span><span class="op">)</span>,
-  cosine <span class="op">=</span> <span class="fu"><a href="../reference/cosine_kernel.html">cosine_kernel</a></span><span class="op">(</span><span class="va">x</span>,<span class="fl">15</span><span class="op">)</span>,
-  uniform <span class="op">=</span> <span class="fu"><a href="../reference/uniform_kernel.html">uniform_kernel</a></span><span class="op">(</span><span class="va">x</span>,<span class="fl">15</span><span class="op">)</span><span class="op">)</span>
-
-<span class="va">df2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/reshape2/man/melt.html" class="external-link">melt</a></span><span class="op">(</span><span class="va">df</span>, id.vars <span class="op">=</span> <span class="st">"x"</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">df2</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>,<span class="st">"kernel"</span>,<span class="st">"y"</span><span class="op">)</span>
-
-<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">df2</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">x</span>,y<span class="op">=</span><span class="va">y</span>,color<span class="op">=</span><span class="va">kernel</span><span class="op">)</span>,size<span class="op">=</span><span class="fl">1</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/hadley/reshape" class="external-link">reshape2</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://haozhu233.github.io/kableExtra/" class="external-link">kableExtra</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://jeremygelb.github.io/spNetwork/" class="external-link">spNetwork</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">RColorBrewer</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="op">-</span><span class="fl">15.01</span>,<span class="fl">15.01</span>,by <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span></span>
+<span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  x <span class="op">=</span> <span class="va">x</span>,</span>
+<span>  gaussian <span class="op">=</span> <span class="fu"><a href="../reference/gaussian_kernel.html">gaussian_kernel</a></span><span class="op">(</span><span class="va">x</span>,<span class="fl">15</span><span class="op">)</span>,</span>
+<span>  epanechnikov <span class="op">=</span> <span class="fu"><a href="../reference/epanechnikov_kernel.html">epanechnikov_kernel</a></span><span class="op">(</span><span class="va">x</span>,<span class="fl">15</span><span class="op">)</span>,</span>
+<span>  quartic <span class="op">=</span> <span class="fu"><a href="../reference/quartic_kernel.html">quartic_kernel</a></span><span class="op">(</span><span class="va">x</span>,<span class="fl">15</span><span class="op">)</span>,</span>
+<span>  triangle <span class="op">=</span> <span class="fu"><a href="../reference/triangle_kernel.html">triangle_kernel</a></span><span class="op">(</span><span class="va">x</span>,<span class="fl">15</span><span class="op">)</span>,</span>
+<span>  tricube <span class="op">=</span> <span class="fu"><a href="../reference/tricube_kernel.html">tricube_kernel</a></span><span class="op">(</span><span class="va">x</span>,<span class="fl">15</span><span class="op">)</span>,</span>
+<span>  triweight <span class="op">=</span> <span class="fu"><a href="../reference/triweight_kernel.html">triweight_kernel</a></span><span class="op">(</span><span class="va">x</span>,<span class="fl">15</span><span class="op">)</span>,</span>
+<span>  cosine <span class="op">=</span> <span class="fu"><a href="../reference/cosine_kernel.html">cosine_kernel</a></span><span class="op">(</span><span class="va">x</span>,<span class="fl">15</span><span class="op">)</span>,</span>
+<span>  uniform <span class="op">=</span> <span class="fu"><a href="../reference/uniform_kernel.html">uniform_kernel</a></span><span class="op">(</span><span class="va">x</span>,<span class="fl">15</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">df2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/reshape2/man/melt.html" class="external-link">melt</a></span><span class="op">(</span><span class="va">df</span>, id.vars <span class="op">=</span> <span class="st">"x"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">df2</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>,<span class="st">"kernel"</span>,<span class="st">"y"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">df2</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">x</span>,y<span class="op">=</span><span class="va">y</span>,color<span class="op">=</span><span class="va">kernel</span><span class="op">)</span>,size<span class="op">=</span><span class="fl">1</span><span class="op">)</span></span></code></pre></div>
 <p><img src="NKDE_files/figure-html/unnamed-chunk-2-1.png" width="700"></p>
 <p>As one can see, most of the kernels look alike. It is worth
 mentioning that the gaussian kernel does not integrate to 1 within the
@@ -257,19 +257,19 @@ with the gaussian kernel. To limit this effect, one can use the scaled
 version of the gaussian kernel for which the bandwidth is divided by 3,
 limiting greatly the mass loss.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">Funs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">gaussian_kernel</span>, <span class="va">gaussian_kernel_scaled</span>,<span class="va">epanechnikov_kernel</span>,
-          <span class="va">quartic_kernel</span>,<span class="va">triangle_kernel</span>, <span class="va">uniform_kernel</span>,
-          <span class="va">tricube_kernel</span>,<span class="va">triweight_kernel</span>,
-          <span class="va">cosine_kernel</span><span class="op">)</span>
-<span class="va">Names</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gaussian"</span>, <span class="st">"scaled gaussian"</span>, <span class="st">"epanechnikov"</span>, <span class="st">"quartic"</span>,
-           <span class="st">"triangle"</span>,<span class="st">"uniform"</span>, <span class="st">"tricube"</span>, <span class="st">"triweight"</span>, <span class="st">"cosine"</span><span class="op">)</span>
-<span class="va">integrals</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">Funs</span>,<span class="kw">function</span><span class="op">(</span><span class="va">f</span><span class="op">)</span><span class="op">{</span>
-  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/integrate.html" class="external-link">integrate</a></span><span class="op">(</span><span class="va">f</span>,upper<span class="op">=</span><span class="fl">15</span>,lower<span class="op">=</span><span class="op">-</span><span class="fl">15</span>,bw<span class="op">=</span><span class="fl">15</span><span class="op">)</span><span class="op">$</span><span class="va">value</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span>
-         <span class="op">}</span><span class="op">)</span>
-<span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="st">"kernel"</span><span class="op">=</span><span class="va">Names</span>,
-                 <span class="st">"integrals"</span> <span class="op">=</span> <span class="va">integrals</span><span class="op">)</span>
-
-<span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">Funs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">gaussian_kernel</span>, <span class="va">gaussian_kernel_scaled</span>,<span class="va">epanechnikov_kernel</span>,</span>
+<span>          <span class="va">quartic_kernel</span>,<span class="va">triangle_kernel</span>, <span class="va">uniform_kernel</span>,</span>
+<span>          <span class="va">tricube_kernel</span>,<span class="va">triweight_kernel</span>,</span>
+<span>          <span class="va">cosine_kernel</span><span class="op">)</span></span>
+<span><span class="va">Names</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gaussian"</span>, <span class="st">"scaled gaussian"</span>, <span class="st">"epanechnikov"</span>, <span class="st">"quartic"</span>,</span>
+<span>           <span class="st">"triangle"</span>,<span class="st">"uniform"</span>, <span class="st">"tricube"</span>, <span class="st">"triweight"</span>, <span class="st">"cosine"</span><span class="op">)</span></span>
+<span><span class="va">integrals</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">Funs</span>,<span class="kw">function</span><span class="op">(</span><span class="va">f</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/integrate.html" class="external-link">integrate</a></span><span class="op">(</span><span class="va">f</span>,upper<span class="op">=</span><span class="fl">15</span>,lower<span class="op">=</span><span class="op">-</span><span class="fl">15</span>,bw<span class="op">=</span><span class="fl">15</span><span class="op">)</span><span class="op">$</span><span class="va">value</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
+<span>         <span class="op">}</span><span class="op">)</span></span>
+<span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="st">"kernel"</span><span class="op">=</span><span class="va">Names</span>,</span>
+<span>                 <span class="st">"integrals"</span> <span class="op">=</span> <span class="va">integrals</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <thead><tr>
 <th style="text-align:left;">
@@ -359,20 +359,20 @@ within the bandwidth can lead to negative values when using the
 continuous NKDE (presented latter). Thus, we recommend using the quartic
 kernel instead.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="op">-</span><span class="fl">15.01</span>,<span class="fl">15.01</span>,by <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span>
-<span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>
-  x <span class="op">=</span> <span class="va">x</span>,
-  gaussian <span class="op">=</span> <span class="fu"><a href="../reference/gaussian_kernel.html">gaussian_kernel</a></span><span class="op">(</span><span class="va">x</span>,<span class="fl">15</span><span class="op">)</span>,
-  gaussian_scaled <span class="op">=</span> <span class="fu"><a href="../reference/gaussian_kernel_scaled.html">gaussian_kernel_scaled</a></span><span class="op">(</span><span class="va">x</span>,<span class="fl">15</span><span class="op">)</span>,
-  epanechnikov <span class="op">=</span> <span class="fu"><a href="../reference/epanechnikov_kernel.html">epanechnikov_kernel</a></span><span class="op">(</span><span class="va">x</span>,<span class="fl">15</span><span class="op">)</span>,
-  quartic <span class="op">=</span> <span class="fu"><a href="../reference/quartic_kernel.html">quartic_kernel</a></span><span class="op">(</span><span class="va">x</span>,<span class="fl">15</span><span class="op">)</span>
-  <span class="op">)</span>
-
-<span class="va">df2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/reshape2/man/melt.html" class="external-link">melt</a></span><span class="op">(</span><span class="va">df</span>, id.vars <span class="op">=</span> <span class="st">"x"</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">df2</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>,<span class="st">"kernel"</span>,<span class="st">"y"</span><span class="op">)</span>
-
-<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">df2</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">x</span>,y<span class="op">=</span><span class="va">y</span>,color<span class="op">=</span><span class="va">kernel</span><span class="op">)</span>,size<span class="op">=</span><span class="fl">1</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="op">-</span><span class="fl">15.01</span>,<span class="fl">15.01</span>,by <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span></span>
+<span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  x <span class="op">=</span> <span class="va">x</span>,</span>
+<span>  gaussian <span class="op">=</span> <span class="fu"><a href="../reference/gaussian_kernel.html">gaussian_kernel</a></span><span class="op">(</span><span class="va">x</span>,<span class="fl">15</span><span class="op">)</span>,</span>
+<span>  gaussian_scaled <span class="op">=</span> <span class="fu"><a href="../reference/gaussian_kernel_scaled.html">gaussian_kernel_scaled</a></span><span class="op">(</span><span class="va">x</span>,<span class="fl">15</span><span class="op">)</span>,</span>
+<span>  epanechnikov <span class="op">=</span> <span class="fu"><a href="../reference/epanechnikov_kernel.html">epanechnikov_kernel</a></span><span class="op">(</span><span class="va">x</span>,<span class="fl">15</span><span class="op">)</span>,</span>
+<span>  quartic <span class="op">=</span> <span class="fu"><a href="../reference/quartic_kernel.html">quartic_kernel</a></span><span class="op">(</span><span class="va">x</span>,<span class="fl">15</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="va">df2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/reshape2/man/melt.html" class="external-link">melt</a></span><span class="op">(</span><span class="va">df</span>, id.vars <span class="op">=</span> <span class="st">"x"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">df2</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>,<span class="st">"kernel"</span>,<span class="st">"y"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">df2</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">x</span>,y<span class="op">=</span><span class="va">y</span>,color<span class="op">=</span><span class="va">kernel</span><span class="op">)</span>,size<span class="op">=</span><span class="fl">1</span><span class="op">)</span></span></code></pre></div>
 <p><img src="NKDE_files/figure-html/unnamed-chunk-4-1.png" width="700"></p>
 </div>
 <div class="section level2">
@@ -578,61 +578,61 @@ study area in four rectangles, one can use
 possible not to split the study area with
 <code>grid_shape = c(1,1)</code>.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># first load data and packages</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://jeremygelb.github.io/spNetwork/" class="external-link">spNetwork</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mtennekes/tmap" class="external-link">tmap</a></span><span class="op">)</span>
-
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span> 
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">)</span>
-
-<span class="co"># then plotting the data</span>
-<span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html" class="external-link">tm_shape</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_lines.html" class="external-link">tm_lines</a></span><span class="op">(</span><span class="st">"black"</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html" class="external-link">tm_shape</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_symbols.html" class="external-link">tm_dots</a></span><span class="op">(</span><span class="st">"red"</span>, size <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># first load data and packages</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://jeremygelb.github.io/spNetwork/" class="external-link">spNetwork</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-tmap/tmap" class="external-link">tmap</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span> </span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># then plotting the data</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html" class="external-link">tm_shape</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_lines.html" class="external-link">tm_lines</a></span><span class="op">(</span><span class="st">"black"</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html" class="external-link">tm_shape</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_symbols.html" class="external-link">tm_dots</a></span><span class="op">(</span><span class="st">"red"</span>, size <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></span></code></pre></div>
 <p><img src="NKDE_files/figure-html/unnamed-chunk-5-1.png" width="700"></p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R">
-<span class="co"># then calculating some lixels to use as sampling points</span>
-<span class="va">lixels</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/lixelize_lines.html">lixelize_lines</a></span><span class="op">(</span><span class="va">mtl_network</span>,<span class="fl">200</span>,mindist <span class="op">=</span> <span class="fl">50</span><span class="op">)</span>
-<span class="va">samples</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/lines_center.html">lines_center</a></span><span class="op">(</span><span class="va">lixels</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span></span>
+<span><span class="co"># then calculating some lixels to use as sampling points</span></span>
+<span><span class="va">lixels</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/lixelize_lines.html">lixelize_lines</a></span><span class="op">(</span><span class="va">mtl_network</span>,<span class="fl">200</span>,mindist <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></span>
+<span><span class="va">samples</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/lines_center.html">lines_center</a></span><span class="op">(</span><span class="va">lixels</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># then applying the NKDE</span>
-<span class="va">densities</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nkde.html">nkde</a></span><span class="op">(</span><span class="va">mtl_network</span>, 
-                  events <span class="op">=</span> <span class="va">bike_accidents</span>,
-                  w <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">)</span><span class="op">)</span>,
-                  samples <span class="op">=</span> <span class="va">samples</span>,
-                  kernel_name <span class="op">=</span> <span class="st">"quartic"</span>,
-                  bw <span class="op">=</span> <span class="fl">300</span>, div<span class="op">=</span> <span class="st">"bw"</span>, 
-                  method <span class="op">=</span> <span class="st">"discontinuous"</span>, digits <span class="op">=</span> <span class="fl">1</span>, tol <span class="op">=</span> <span class="fl">1</span>,
-                  grid_shape <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span>, max_depth <span class="op">=</span> <span class="fl">8</span>,
-                  agg <span class="op">=</span> <span class="fl">5</span>, <span class="co">#we aggregate events within a 5m radius (faster calculation)</span>
-                  sparse <span class="op">=</span> <span class="cn">TRUE</span>,
-                  verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># then applying the NKDE</span></span>
+<span><span class="va">densities</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nkde.html">nkde</a></span><span class="op">(</span><span class="va">mtl_network</span>, </span>
+<span>                  events <span class="op">=</span> <span class="va">bike_accidents</span>,</span>
+<span>                  w <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                  samples <span class="op">=</span> <span class="va">samples</span>,</span>
+<span>                  kernel_name <span class="op">=</span> <span class="st">"quartic"</span>,</span>
+<span>                  bw <span class="op">=</span> <span class="fl">300</span>, div<span class="op">=</span> <span class="st">"bw"</span>, </span>
+<span>                  method <span class="op">=</span> <span class="st">"discontinuous"</span>, digits <span class="op">=</span> <span class="fl">1</span>, tol <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>                  grid_shape <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span>, max_depth <span class="op">=</span> <span class="fl">8</span>,</span>
+<span>                  agg <span class="op">=</span> <span class="fl">5</span>, <span class="co">#we aggregate events within a 5m radius (faster calculation)</span></span>
+<span>                  sparse <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                  verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">samples</span><span class="op">$</span><span class="va">density</span> <span class="op">&lt;-</span> <span class="va">densities</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">samples</span><span class="op">$</span><span class="va">density</span> <span class="op">&lt;-</span> <span class="va">densities</span></span></code></pre></div>
 <p>We can now map the density values estimated for each lixel
 centre:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R">
-<span class="co"># rescaling to help the mapping</span>
-<span class="va">samples</span><span class="op">$</span><span class="va">density</span> <span class="op">&lt;-</span> <span class="va">samples</span><span class="op">$</span><span class="va">density</span><span class="op">*</span><span class="fl">1000</span>
-
-<span class="va">samples2</span> <span class="op">&lt;-</span> <span class="va">samples</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="va">samples</span><span class="op">$</span><span class="va">density</span><span class="op">)</span>,<span class="op">]</span>
-
-<span class="va">colorRamp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/RColorBrewer/man/ColorBrewer.html" class="external-link">brewer.pal</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">7</span>, name <span class="op">=</span> <span class="st">"Spectral"</span><span class="op">)</span>
-<span class="va">colorRamp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rev.html" class="external-link">rev</a></span><span class="op">(</span><span class="va">colorRamp</span><span class="op">)</span>
-
-<span class="va">title</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"bike accident density by kilometres in 2016,"</span>,
-                <span class="st">"\nwithin a radius of 300 metres"</span><span class="op">)</span>
-
-<span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html" class="external-link">tm_shape</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_lines.html" class="external-link">tm_lines</a></span><span class="op">(</span><span class="st">"black"</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html" class="external-link">tm_shape</a></span><span class="op">(</span><span class="va">samples2</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_symbols.html" class="external-link">tm_dots</a></span><span class="op">(</span><span class="st">"density"</span>, style <span class="op">=</span> <span class="st">"kmeans"</span>, palette <span class="op">=</span> <span class="va">colorRamp</span>, n <span class="op">=</span> <span class="fl">7</span>, size <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_layout.html" class="external-link">tm_layout</a></span><span class="op">(</span>legend.outside <span class="op">=</span> <span class="cn">TRUE</span>, 
-            main.title <span class="op">=</span> <span class="va">title</span> , main.title.size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span></span>
+<span><span class="co"># rescaling to help the mapping</span></span>
+<span><span class="va">samples</span><span class="op">$</span><span class="va">density</span> <span class="op">&lt;-</span> <span class="va">samples</span><span class="op">$</span><span class="va">density</span><span class="op">*</span><span class="fl">1000</span></span>
+<span></span>
+<span><span class="va">samples2</span> <span class="op">&lt;-</span> <span class="va">samples</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="va">samples</span><span class="op">$</span><span class="va">density</span><span class="op">)</span>,<span class="op">]</span></span>
+<span></span>
+<span><span class="va">colorRamp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/RColorBrewer/man/ColorBrewer.html" class="external-link">brewer.pal</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">7</span>, name <span class="op">=</span> <span class="st">"Spectral"</span><span class="op">)</span></span>
+<span><span class="va">colorRamp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rev.html" class="external-link">rev</a></span><span class="op">(</span><span class="va">colorRamp</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">title</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"bike accident density by kilometres in 2016,"</span>,</span>
+<span>                <span class="st">"\nwithin a radius of 300 metres"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html" class="external-link">tm_shape</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_lines.html" class="external-link">tm_lines</a></span><span class="op">(</span><span class="st">"black"</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html" class="external-link">tm_shape</a></span><span class="op">(</span><span class="va">samples2</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_symbols.html" class="external-link">tm_dots</a></span><span class="op">(</span><span class="st">"density"</span>, style <span class="op">=</span> <span class="st">"kmeans"</span>, palette <span class="op">=</span> <span class="va">colorRamp</span>, n <span class="op">=</span> <span class="fl">7</span>, size <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_layout.html" class="external-link">tm_layout</a></span><span class="op">(</span>legend.outside <span class="op">=</span> <span class="cn">TRUE</span>, </span>
+<span>            main.title <span class="op">=</span> <span class="va">title</span> , main.title.size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
 <p><img src="NKDE_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
 <p>As you can imagine it remains a costly process, especially for the
 continuous kernel. The package <strong>spNetwork</strong> uses three
@@ -654,30 +654,30 @@ compatibility on each os and computer. See the documentation of the
 <p>The following code will produce the same results as before but split
 the work between two cores.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># setting the multisession plan</span>
-<span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/multisession.html" class="external-link">multisession</a></span><span class="op">(</span>workers<span class="op">=</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span>
-
-<span class="co"># then applying the NKDE</span>
-<span class="va">densities_mc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nkde.mc.html">nkde.mc</a></span><span class="op">(</span><span class="va">mtl_network</span>, 
-                  events <span class="op">=</span> <span class="va">bike_accidents</span>,
-                  w <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">)</span><span class="op">)</span>,
-                  samples <span class="op">=</span> <span class="va">samples</span>,
-                  kernel_name <span class="op">=</span> <span class="st">"quartic"</span>,
-                  bw <span class="op">=</span> <span class="fl">300</span>, div<span class="op">=</span> <span class="st">"bw"</span>, 
-                  method <span class="op">=</span> <span class="st">"discontinuous"</span>, digits <span class="op">=</span> <span class="fl">1</span>, tol <span class="op">=</span> <span class="fl">1</span>,
-                  grid_shape <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span>, <span class="co"># splitting the study area in 4 rectangles</span>
-                  max_depth <span class="op">=</span> <span class="fl">8</span>,
-                  agg <span class="op">=</span> <span class="fl">5</span>, <span class="co">#we aggregate events within a 5m radius</span>
-                  sparse <span class="op">=</span> <span class="cn">TRUE</span>,
-                  verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
-
-<span class="co"># let's set back the classical sequential plan</span>
-<span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">inherits</a></span><span class="op">(</span><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"sequential"</span><span class="op">)</span><span class="op">)</span> <span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="fu">future</span><span class="fu">::</span><span class="va"><a href="https://future.futureverse.org/reference/sequential.html" class="external-link">sequential</a></span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># setting the multisession plan</span></span>
+<span><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/multisession.html" class="external-link">multisession</a></span><span class="op">(</span>workers<span class="op">=</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># then applying the NKDE</span></span>
+<span><span class="va">densities_mc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nkde.mc.html">nkde.mc</a></span><span class="op">(</span><span class="va">mtl_network</span>, </span>
+<span>                  events <span class="op">=</span> <span class="va">bike_accidents</span>,</span>
+<span>                  w <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                  samples <span class="op">=</span> <span class="va">samples</span>,</span>
+<span>                  kernel_name <span class="op">=</span> <span class="st">"quartic"</span>,</span>
+<span>                  bw <span class="op">=</span> <span class="fl">300</span>, div<span class="op">=</span> <span class="st">"bw"</span>, </span>
+<span>                  method <span class="op">=</span> <span class="st">"discontinuous"</span>, digits <span class="op">=</span> <span class="fl">1</span>, tol <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>                  grid_shape <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span>, <span class="co"># splitting the study area in 4 rectangles</span></span>
+<span>                  max_depth <span class="op">=</span> <span class="fl">8</span>,</span>
+<span>                  agg <span class="op">=</span> <span class="fl">5</span>, <span class="co">#we aggregate events within a 5m radius</span></span>
+<span>                  sparse <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                  verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># let's set back the classical sequential plan</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">inherits</a></span><span class="op">(</span><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"sequential"</span><span class="op">)</span><span class="op">)</span> <span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="fu">future</span><span class="fu">::</span><span class="va"><a href="https://future.futureverse.org/reference/sequential.html" class="external-link">sequential</a></span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># we can compare the previous result and the new one</span>
-<span class="va">diff</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">densities</span> <span class="op">-</span> <span class="va">densities_mc</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"overall difference between the regular and paralellized method : "</span>,<span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">diff</span>,<span class="fl">12</span><span class="op">)</span>,sep<span class="op">=</span><span class="st">""</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt; [1] "overall difference between the regular and paralellized method : 0"</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># we can compare the previous result and the new one</span></span>
+<span><span class="va">diff</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">densities</span> <span class="op">-</span> <span class="va">densities_mc</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"overall difference between the regular and paralellized method : "</span>,<span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">diff</span>,<span class="fl">12</span><span class="op">)</span>,sep<span class="op">=</span><span class="st">""</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "overall difference between the regular and paralellized method : 0"</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="an-example-with-adaptive-bandwidth">An example with adaptive bandwidth<a class="anchor" aria-label="anchor" href="#an-example-with-adaptive-bandwidth"></a>
@@ -724,36 +724,36 @@ impact on calculation time.</p>
 the calculated bandwidth for each event is returned too.</p>
 <p>Let us calculate a new NKDE, but with an adaptive bandwidth.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">adapt_densities</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nkde.html">nkde</a></span><span class="op">(</span><span class="va">mtl_network</span>, 
-                  events <span class="op">=</span> <span class="va">bike_accidents</span>,
-                  w <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">)</span><span class="op">)</span>,
-                  samples <span class="op">=</span> <span class="va">samples</span>,
-                  kernel_name <span class="op">=</span> <span class="st">"quartic"</span>,
-                  bw <span class="op">=</span> <span class="fl">300</span>, div<span class="op">=</span> <span class="st">"bw"</span>, 
-                  adaptive <span class="op">=</span> <span class="cn">TRUE</span>, <span class="co"># we use here an adaptive bandwidth</span>
-                  trim_bw <span class="op">=</span> <span class="fl">600</span>, <span class="co"># the maximum local values of bandwidth will be 600m</span>
-                  method <span class="op">=</span> <span class="st">"discontinuous"</span>, digits <span class="op">=</span> <span class="fl">1</span>, tol <span class="op">=</span> <span class="fl">1</span>,
-                  grid_shape <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span>, max_depth <span class="op">=</span> <span class="fl">16</span>,
-                  agg <span class="op">=</span> <span class="fl">5</span>, <span class="co">#we aggregate events within a 5m radius (faster calculation)</span>
-                  sparse <span class="op">=</span> <span class="cn">TRUE</span>,
-                  verbose<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span>
-
-<span class="va">samples</span><span class="op">$</span><span class="va">density</span> <span class="op">&lt;-</span> <span class="va">adapt_densities</span><span class="op">$</span><span class="va">k</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">adapt_densities</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nkde.html">nkde</a></span><span class="op">(</span><span class="va">mtl_network</span>, </span>
+<span>                  events <span class="op">=</span> <span class="va">bike_accidents</span>,</span>
+<span>                  w <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                  samples <span class="op">=</span> <span class="va">samples</span>,</span>
+<span>                  kernel_name <span class="op">=</span> <span class="st">"quartic"</span>,</span>
+<span>                  bw <span class="op">=</span> <span class="fl">300</span>, div<span class="op">=</span> <span class="st">"bw"</span>, </span>
+<span>                  adaptive <span class="op">=</span> <span class="cn">TRUE</span>, <span class="co"># we use here an adaptive bandwidth</span></span>
+<span>                  trim_bw <span class="op">=</span> <span class="fl">600</span>, <span class="co"># the maximum local values of bandwidth will be 600m</span></span>
+<span>                  method <span class="op">=</span> <span class="st">"discontinuous"</span>, digits <span class="op">=</span> <span class="fl">1</span>, tol <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>                  grid_shape <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span>, max_depth <span class="op">=</span> <span class="fl">16</span>,</span>
+<span>                  agg <span class="op">=</span> <span class="fl">5</span>, <span class="co">#we aggregate events within a 5m radius (faster calculation)</span></span>
+<span>                  sparse <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                  verbose<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">samples</span><span class="op">$</span><span class="va">density</span> <span class="op">&lt;-</span> <span class="va">adapt_densities</span><span class="op">$</span><span class="va">k</span></span></code></pre></div>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">samples</span><span class="op">$</span><span class="va">density</span> <span class="op">&lt;-</span> <span class="va">adapt_densities</span><span class="op">$</span><span class="va">k</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">samples</span><span class="op">$</span><span class="va">density</span> <span class="op">&lt;-</span> <span class="va">adapt_densities</span><span class="op">$</span><span class="va">k</span></span></code></pre></div>
 <p>We can now map some of the bandwidths</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">circles</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_unary.html" class="external-link">st_buffer</a></span><span class="op">(</span><span class="va">adapt_densities</span><span class="op">$</span><span class="va">events</span>,
-                     dist <span class="op">=</span> <span class="va">adapt_densities</span><span class="op">$</span><span class="va">events</span><span class="op">$</span><span class="va">bw</span><span class="op">)</span>
-
-<span class="va">ids</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">52</span>,<span class="fl">20</span>,<span class="fl">86</span>,<span class="fl">14</span>,<span class="fl">75</span>,<span class="fl">126</span>,<span class="fl">200</span>,<span class="fl">177</span><span class="op">)</span>
-
-<span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html" class="external-link">tm_shape</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_lines.html" class="external-link">tm_lines</a></span><span class="op">(</span><span class="st">"black"</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html" class="external-link">tm_shape</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_symbols.html" class="external-link">tm_dots</a></span><span class="op">(</span><span class="st">"red"</span>, size <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html" class="external-link">tm_shape</a></span><span class="op">(</span><span class="va">circles</span><span class="op">[</span><span class="va">ids</span>,<span class="op">]</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html" class="external-link">tm_borders</a></span><span class="op">(</span><span class="st">"blue"</span>, lwd <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">circles</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_unary.html" class="external-link">st_buffer</a></span><span class="op">(</span><span class="va">adapt_densities</span><span class="op">$</span><span class="va">events</span>,</span>
+<span>                     dist <span class="op">=</span> <span class="va">adapt_densities</span><span class="op">$</span><span class="va">events</span><span class="op">$</span><span class="va">bw</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">ids</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">52</span>,<span class="fl">20</span>,<span class="fl">86</span>,<span class="fl">14</span>,<span class="fl">75</span>,<span class="fl">126</span>,<span class="fl">200</span>,<span class="fl">177</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html" class="external-link">tm_shape</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_lines.html" class="external-link">tm_lines</a></span><span class="op">(</span><span class="st">"black"</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html" class="external-link">tm_shape</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_symbols.html" class="external-link">tm_dots</a></span><span class="op">(</span><span class="st">"red"</span>, size <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html" class="external-link">tm_shape</a></span><span class="op">(</span><span class="va">circles</span><span class="op">[</span><span class="va">ids</span>,<span class="op">]</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html" class="external-link">tm_borders</a></span><span class="op">(</span><span class="st">"blue"</span>, lwd <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <p><img src="NKDE_files/figure-html/unnamed-chunk-13-1.png" width="700"></p>
 <p>And map the new densities with the same code as before.</p>
 <p><img src="NKDE_files/figure-html/unnamed-chunk-14-1.png" width="700"></p>
@@ -776,45 +776,45 @@ the adaptive bandwidth too. Note that this correction is usable only if
 the network outside the study_area is available.</p>
 <p>Let us illustrate it here by using a sub part of the same data</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># selecting the events in a subset of the data</span>
-<span class="va">center_event</span> <span class="op">&lt;-</span> <span class="va">bike_accidents</span><span class="op">[</span><span class="fl">125</span>,<span class="op">]</span>
-<span class="va">study_area</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_unary.html" class="external-link">st_buffer</a></span><span class="op">(</span><span class="va">center_event</span>, dist <span class="op">=</span> <span class="fl">800</span><span class="op">)</span>
-<span class="va">events_sel</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html" class="external-link">as.vector</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_binary_pred.html" class="external-link">st_intersects</a></span><span class="op">(</span><span class="va">bike_accidents</span>, <span class="va">study_area</span>, sparse <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span>
-<span class="va">events</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">bike_accidents</span>,<span class="va">events_sel</span><span class="op">)</span>
-
-<span class="co"># generating the sampling points</span>
-<span class="va">lines_sel</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html" class="external-link">as.vector</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_binary_pred.html" class="external-link">st_intersects</a></span><span class="op">(</span><span class="va">mtl_network</span>, <span class="va">study_area</span>, sparse <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span>
-<span class="va">lines</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">mtl_network</span>,<span class="va">lines_sel</span><span class="op">)</span>
-
-<span class="va">lixels</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/lixelize_lines.html">lixelize_lines</a></span><span class="op">(</span><span class="va">lines</span>,<span class="fl">200</span>,mindist <span class="op">=</span> <span class="fl">50</span><span class="op">)</span>
-<span class="va">samples</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/lines_center.html">lines_center</a></span><span class="op">(</span><span class="va">lixels</span><span class="op">)</span>
-
-<span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html" class="external-link">tm_shape</a></span><span class="op">(</span><span class="va">study_area</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html" class="external-link">tm_borders</a></span><span class="op">(</span><span class="st">"black"</span>, lwd <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html" class="external-link">tm_shape</a></span><span class="op">(</span><span class="va">lines</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_lines.html" class="external-link">tm_lines</a></span><span class="op">(</span><span class="st">"black"</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html" class="external-link">tm_shape</a></span><span class="op">(</span><span class="va">events</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_symbols.html" class="external-link">tm_dots</a></span><span class="op">(</span><span class="st">"red"</span>, size <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># selecting the events in a subset of the data</span></span>
+<span><span class="va">center_event</span> <span class="op">&lt;-</span> <span class="va">bike_accidents</span><span class="op">[</span><span class="fl">125</span>,<span class="op">]</span></span>
+<span><span class="va">study_area</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_unary.html" class="external-link">st_buffer</a></span><span class="op">(</span><span class="va">center_event</span>, dist <span class="op">=</span> <span class="fl">800</span><span class="op">)</span></span>
+<span><span class="va">events_sel</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html" class="external-link">as.vector</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_binary_pred.html" class="external-link">st_intersects</a></span><span class="op">(</span><span class="va">bike_accidents</span>, <span class="va">study_area</span>, sparse <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">events</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">bike_accidents</span>,<span class="va">events_sel</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># generating the sampling points</span></span>
+<span><span class="va">lines_sel</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html" class="external-link">as.vector</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_binary_pred.html" class="external-link">st_intersects</a></span><span class="op">(</span><span class="va">mtl_network</span>, <span class="va">study_area</span>, sparse <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">lines</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">mtl_network</span>,<span class="va">lines_sel</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">lixels</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/lixelize_lines.html">lixelize_lines</a></span><span class="op">(</span><span class="va">lines</span>,<span class="fl">200</span>,mindist <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></span>
+<span><span class="va">samples</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/lines_center.html">lines_center</a></span><span class="op">(</span><span class="va">lixels</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html" class="external-link">tm_shape</a></span><span class="op">(</span><span class="va">study_area</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html" class="external-link">tm_borders</a></span><span class="op">(</span><span class="st">"black"</span>, lwd <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html" class="external-link">tm_shape</a></span><span class="op">(</span><span class="va">lines</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_lines.html" class="external-link">tm_lines</a></span><span class="op">(</span><span class="st">"black"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html" class="external-link">tm_shape</a></span><span class="op">(</span><span class="va">events</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_symbols.html" class="external-link">tm_dots</a></span><span class="op">(</span><span class="st">"red"</span>, size <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></span></code></pre></div>
 <p><img src="NKDE_files/figure-html/unnamed-chunk-15-1.png" width="700"></p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># calculating the NKDE values, adjusted</span>
-<span class="va">adjusted_densities</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nkde.html">nkde</a></span><span class="op">(</span>lines <span class="op">=</span> <span class="va">mtl_network</span>,
-                            events <span class="op">=</span> <span class="va">events</span>,
-                            w <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">events</span><span class="op">)</span><span class="op">)</span>,
-                            samples <span class="op">=</span> <span class="va">samples</span>,
-                            kernel_name <span class="op">=</span> <span class="st">"quartic"</span>,
-                            bw <span class="op">=</span> <span class="fl">150</span>,
-                            adaptive <span class="op">=</span> <span class="cn">FALSE</span>,
-                            method <span class="op">=</span> <span class="st">"discontinuous"</span>,
-                            div <span class="op">=</span> <span class="st">"bw"</span>,
-                            diggle_correction <span class="op">=</span> <span class="cn">TRUE</span>, study_area <span class="op">=</span> <span class="va">study_area</span>,
-                            max_depth <span class="op">=</span> <span class="fl">15</span>,
-                            digits <span class="op">=</span> <span class="fl">2</span>,tol <span class="op">=</span> <span class="fl">0.1</span>,agg <span class="op">=</span> <span class="fl">5</span>,sparse <span class="op">=</span> <span class="cn">TRUE</span>,
-                            grid_shape <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span>,verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
-
-<span class="va">samples</span><span class="op">$</span><span class="va">density</span> <span class="op">&lt;-</span> <span class="va">adjusted_densities</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># calculating the NKDE values, adjusted</span></span>
+<span><span class="va">adjusted_densities</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nkde.html">nkde</a></span><span class="op">(</span>lines <span class="op">=</span> <span class="va">mtl_network</span>,</span>
+<span>                            events <span class="op">=</span> <span class="va">events</span>,</span>
+<span>                            w <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">events</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                            samples <span class="op">=</span> <span class="va">samples</span>,</span>
+<span>                            kernel_name <span class="op">=</span> <span class="st">"quartic"</span>,</span>
+<span>                            bw <span class="op">=</span> <span class="fl">150</span>,</span>
+<span>                            adaptive <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>                            method <span class="op">=</span> <span class="st">"discontinuous"</span>,</span>
+<span>                            div <span class="op">=</span> <span class="st">"bw"</span>,</span>
+<span>                            diggle_correction <span class="op">=</span> <span class="cn">TRUE</span>, study_area <span class="op">=</span> <span class="va">study_area</span>,</span>
+<span>                            max_depth <span class="op">=</span> <span class="fl">15</span>,</span>
+<span>                            digits <span class="op">=</span> <span class="fl">2</span>,tol <span class="op">=</span> <span class="fl">0.1</span>,agg <span class="op">=</span> <span class="fl">5</span>,sparse <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                            grid_shape <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span>,verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">samples</span><span class="op">$</span><span class="va">density</span> <span class="op">&lt;-</span> <span class="va">adjusted_densities</span></span></code></pre></div>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">samples</span><span class="op">$</span><span class="va">density</span> <span class="op">&lt;-</span> <span class="va">adjusted_densities</span> <span class="op">*</span> <span class="fl">1000</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">samples</span><span class="op">$</span><span class="va">density</span> <span class="op">&lt;-</span> <span class="va">adjusted_densities</span> <span class="op">*</span> <span class="fl">1000</span></span></code></pre></div>
 <p>And again, we can map the results.</p>
 <p><img src="NKDE_files/figure-html/unnamed-chunk-18-1.png" width="700"></p>
 </div>
@@ -845,33 +845,50 @@ only use the relevant parts of the network.</li>
 up the calculation. It is also possible to run it on a subset of the
 dataset (based on the spatial grid) if running time is too long.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">bws_selection_cv</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bw_cv_likelihood_calc.html">bw_cv_likelihood_calc</a></span><span class="op">(</span>
-  bw_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">200</span>,<span class="fl">700</span><span class="op">)</span>,bw_step <span class="op">=</span> <span class="fl">50</span>,
-  lines <span class="op">=</span> <span class="va">mtl_network</span>, events <span class="op">=</span> <span class="va">bike_accidents</span>,
-  w <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">)</span><span class="op">)</span>,
-  kernel_name <span class="op">=</span> <span class="st">"quartic"</span>, method <span class="op">=</span> <span class="st">"discontinuous"</span>,
-  diggle_correction <span class="op">=</span> <span class="cn">FALSE</span>, study_area <span class="op">=</span> <span class="cn">NULL</span>,
-  max_depth <span class="op">=</span> <span class="fl">8</span>,
-  digits<span class="op">=</span><span class="fl">2</span>, tol<span class="op">=</span><span class="fl">0.1</span>, agg<span class="op">=</span><span class="fl">5</span>, 
-  sparse<span class="op">=</span><span class="cn">TRUE</span>, grid_shape<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span>,
-  verbose<span class="op">=</span><span class="cn">FALSE</span>, check<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span>
-
-<span class="va">bws_selection_cvl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bw_cvl_calc.html">bw_cvl_calc</a></span><span class="op">(</span>
-  bw_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">50</span>,<span class="fl">700</span><span class="op">)</span>,bw_step <span class="op">=</span> <span class="fl">50</span>,
-  lines <span class="op">=</span> <span class="va">mtl_network</span>, events <span class="op">=</span> <span class="va">bike_accidents</span>,
-  w <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">)</span><span class="op">)</span>,
-  kernel_name <span class="op">=</span> <span class="st">"quartic"</span>, method <span class="op">=</span> <span class="st">"discontinuous"</span>,
-  diggle_correction <span class="op">=</span> <span class="cn">FALSE</span>, study_area <span class="op">=</span> <span class="cn">NULL</span>,
-  max_depth <span class="op">=</span> <span class="fl">8</span>,
-  digits<span class="op">=</span><span class="fl">2</span>, tol<span class="op">=</span><span class="fl">0.1</span>, agg<span class="op">=</span><span class="fl">5</span>, 
-  sparse<span class="op">=</span><span class="cn">TRUE</span>, grid_shape<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span>,
-  verbose<span class="op">=</span><span class="cn">FALSE</span>, check<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span>
-
-<span class="va">cv_values</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>
-  <span class="st">"bw"</span> <span class="op">=</span> <span class="va">bws_selection_cv</span><span class="op">$</span><span class="va">bw</span>,
-  <span class="st">"cv_likelihood"</span> <span class="op">=</span> <span class="va">bws_selection_cv</span><span class="op">$</span><span class="va">cv_scores</span>,
-  <span class="st">"cvl_crit"</span> <span class="op">=</span> <span class="va">bws_selection_cvl</span><span class="op">$</span><span class="va">cvl_scores</span>
-<span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">bws_selection_cv</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bw_cv_likelihood_calc.html">bw_cv_likelihood_calc</a></span><span class="op">(</span></span>
+<span>  bws <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">200</span>,<span class="fl">700</span>,<span class="fl">50</span><span class="op">)</span>,</span>
+<span>  lines <span class="op">=</span> <span class="va">mtl_network</span>, events <span class="op">=</span> <span class="va">bike_accidents</span>,</span>
+<span>  w <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  kernel_name <span class="op">=</span> <span class="st">"quartic"</span>, method <span class="op">=</span> <span class="st">"discontinuous"</span>,</span>
+<span>  diggle_correction <span class="op">=</span> <span class="cn">FALSE</span>, study_area <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  max_depth <span class="op">=</span> <span class="fl">8</span>,</span>
+<span>  digits<span class="op">=</span><span class="fl">2</span>, tol<span class="op">=</span><span class="fl">0.1</span>, agg<span class="op">=</span><span class="fl">5</span>, </span>
+<span>  sparse<span class="op">=</span><span class="cn">TRUE</span>, grid_shape<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span>,</span>
+<span>  verbose<span class="op">=</span><span class="cn">FALSE</span>, check<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">bws_selection_cvl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bw_cvl_calc.html">bw_cvl_calc</a></span><span class="op">(</span></span>
+<span>  bws <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">50</span>,<span class="fl">700</span>, <span class="fl">50</span><span class="op">)</span>,</span>
+<span>  lines <span class="op">=</span> <span class="va">mtl_network</span>, events <span class="op">=</span> <span class="va">bike_accidents</span>,</span>
+<span>  w <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  kernel_name <span class="op">=</span> <span class="st">"quartic"</span>, method <span class="op">=</span> <span class="st">"discontinuous"</span>,</span>
+<span>  diggle_correction <span class="op">=</span> <span class="cn">FALSE</span>, study_area <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  max_depth <span class="op">=</span> <span class="fl">8</span>,</span>
+<span>  digits<span class="op">=</span><span class="fl">2</span>, tol<span class="op">=</span><span class="fl">0.1</span>, agg<span class="op">=</span><span class="fl">5</span>, </span>
+<span>  sparse<span class="op">=</span><span class="cn">TRUE</span>, grid_shape<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span>,</span>
+<span>  verbose<span class="op">=</span><span class="cn">FALSE</span>, check<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p>It is also possible to do bandwidth selection with adaptive
+bandwidth. In that context, we search for the optimal global bandwidth.
+It requires more computation because for each bandwidth, we need to
+estimate the density twice, one with the global bandwidth, and one with
+the local bandwidths obtained from the density estimation.</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">bws_selection_cv_adpt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bw_cv_likelihood_calc.html">bw_cv_likelihood_calc</a></span><span class="op">(</span></span>
+<span>  bws <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">200</span>,<span class="fl">700</span>,<span class="fl">50</span><span class="op">)</span>,</span>
+<span>  lines <span class="op">=</span> <span class="va">mtl_network</span>, events <span class="op">=</span> <span class="va">bike_accidents</span>,</span>
+<span>  w <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  adaptive <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  kernel_name <span class="op">=</span> <span class="st">"quartic"</span>, method <span class="op">=</span> <span class="st">"discontinuous"</span>,</span>
+<span>  diggle_correction <span class="op">=</span> <span class="cn">FALSE</span>, study_area <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  max_depth <span class="op">=</span> <span class="fl">8</span>,</span>
+<span>  digits<span class="op">=</span><span class="fl">2</span>, tol<span class="op">=</span><span class="fl">0.1</span>, agg<span class="op">=</span><span class="fl">5</span>, </span>
+<span>  sparse<span class="op">=</span><span class="cn">TRUE</span>, grid_shape<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span>,</span>
+<span>  verbose<span class="op">=</span><span class="cn">FALSE</span>, check<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">cv_values</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  <span class="st">"bw"</span> <span class="op">=</span> <span class="va">bws_selection_cv</span><span class="op">$</span><span class="va">bw</span>,</span>
+<span>  <span class="st">"cv_likelihood"</span> <span class="op">=</span> <span class="va">bws_selection_cv</span><span class="op">$</span><span class="va">cv_scores</span>,</span>
+<span>  <span class="st">"cvl_crit"</span> <span class="op">=</span> <span class="va">bws_selection_cvl</span><span class="op">$</span><span class="va">cvl_scores</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <thead><tr>
 <th style="text-align:right;">
@@ -882,6 +899,9 @@ cv_likelihood
 </th>
 <th style="text-align:right;">
 cvl_crit
+</th>
+<th style="text-align:right;">
+cv_likelihood_adpt
 </th>
 </tr></thead>
 <tbody>
@@ -895,6 +915,9 @@ cvl_crit
 <td style="text-align:right;">
 3.543131e+11
 </td>
+<td style="text-align:right;">
+-624.06
+</td>
 </tr>
 <tr>
 <td style="text-align:right;">
@@ -905,6 +928,9 @@ cvl_crit
 </td>
 <td style="text-align:right;">
 9.600025e+12
+</td>
+<td style="text-align:right;">
+-337.11
 </td>
 </tr>
 <tr>
@@ -917,6 +943,9 @@ cvl_crit
 <td style="text-align:right;">
 4.274366e+13
 </td>
+<td style="text-align:right;">
+-180.63
+</td>
 </tr>
 <tr>
 <td style="text-align:right;">
@@ -927,6 +956,9 @@ cvl_crit
 </td>
 <td style="text-align:right;">
 1.165463e+14
+</td>
+<td style="text-align:right;">
+-88.56
 </td>
 </tr>
 <tr>
@@ -939,6 +971,9 @@ cvl_crit
 <td style="text-align:right;">
 2.491374e+14
 </td>
+<td style="text-align:right;">
+-56.54
+</td>
 </tr>
 <tr>
 <td style="text-align:right;">
@@ -949,6 +984,9 @@ cvl_crit
 </td>
 <td style="text-align:right;">
 4.566083e+14
+</td>
+<td style="text-align:right;">
+-28.60
 </td>
 </tr>
 <tr>
@@ -961,6 +999,9 @@ cvl_crit
 <td style="text-align:right;">
 7.517414e+14
 </td>
+<td style="text-align:right;">
+-26.59
+</td>
 </tr>
 <tr>
 <td style="text-align:right;">
@@ -971,6 +1012,9 @@ cvl_crit
 </td>
 <td style="text-align:right;">
 1.147818e+15
+</td>
+<td style="text-align:right;">
+-20.65
 </td>
 </tr>
 <tr>
@@ -983,6 +1027,9 @@ cvl_crit
 <td style="text-align:right;">
 1.652851e+15
 </td>
+<td style="text-align:right;">
+-18.70
+</td>
 </tr>
 <tr>
 <td style="text-align:right;">
@@ -993,6 +1040,9 @@ cvl_crit
 </td>
 <td style="text-align:right;">
 2.274182e+15
+</td>
+<td style="text-align:right;">
+-16.75
 </td>
 </tr>
 <tr>
@@ -1005,6 +1055,9 @@ cvl_crit
 <td style="text-align:right;">
 3.020688e+15
 </td>
+<td style="text-align:right;">
+-16.78
+</td>
 </tr>
 <tr>
 <td style="text-align:right;">
@@ -1015,6 +1068,9 @@ cvl_crit
 </td>
 <td style="text-align:right;">
 3.898413e+15
+</td>
+<td style="text-align:right;">
+-14.86
 </td>
 </tr>
 <tr>
@@ -1027,6 +1083,9 @@ cvl_crit
 <td style="text-align:right;">
 4.912651e+15
 </td>
+<td style="text-align:right;">
+-14.90
+</td>
 </tr>
 <tr>
 <td style="text-align:right;">
@@ -1038,13 +1097,17 @@ cvl_crit
 <td style="text-align:right;">
 6.072565e+15
 </td>
+<td style="text-align:right;">
+-14.95
+</td>
 </tr>
 </tbody>
 </table>
 <p>As one can see here, the cross-validation approach suggests a value
-between 500 and 600 metres, while the Cronie and Van Lieshout’s
+between 550 and 600 metres, while the Cronie and Van Lieshout’s
 Criterion would suggest a bandwidth inferior to 50 metres and is
-probably not adapted for this dataset.</p>
+probably not adapted for this dataset. With an adaptive bandwidth, the
+best bandwidth would be around 500 and 550 metres.</p>
 </div>
 <div class="section level3">
 <h3 id="complementary-functions">Complementary functions<a class="anchor" aria-label="anchor" href="#complementary-functions"></a>
@@ -1116,8 +1179,7 @@ and Urban Systems</em> 32 (5): 396–406.
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>

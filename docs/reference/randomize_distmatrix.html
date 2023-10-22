@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3.6.9000</span>
       </span>
     </div>
 
@@ -87,30 +87,38 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">randomize_distmatrix</span><span class="op">(</span><span class="va">graph</span>, <span class="va">edge_df</span>, <span class="va">n</span>, start_vert <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">randomize_distmatrix</span><span class="op">(</span><span class="va">graph</span>, <span class="va">edge_df</span>, <span class="va">n</span>, start_vert <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>graph</dt>
 <dd><p>An graph object from igraph</p></dd>
+
+
 <dt>edge_df</dt>
 <dd><p>A DataFrame describing the edges</p></dd>
+
+
 <dt>n</dt>
 <dd><p>The number of point</p></dd>
+
+
 <dt>start_vert</dt>
 <dd><p>The vertices from which the distances will be calculated.
 if null, then the distances are calculated from the generated locations.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A numeric matrix with the distances between points</p>
+    
+
+<p>A numeric matrix with the distances between points</p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="co">#This is an internal function, no example provided</span>
-</code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co">#This is an internal function, no example provided</span></span></code></pre></div>
     </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -124,8 +132,7 @@ if null, then the distances are calculated from the generated locations.</p></dd
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

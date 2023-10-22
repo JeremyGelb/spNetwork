@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3.6.9000</span>
       </span>
     </div>
 
@@ -87,29 +87,40 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">build_graph_directed</span><span class="op">(</span><span class="va">lines</span>, <span class="va">digits</span>, <span class="va">line_weight</span>, <span class="va">direction</span>, attrs <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">build_graph_directed</span><span class="op">(</span><span class="va">lines</span>, <span class="va">digits</span>, <span class="va">line_weight</span>, <span class="va">direction</span>, attrs <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>lines</dt>
 <dd><p>A feature collection of linestrings</p></dd>
+
+
 <dt>digits</dt>
 <dd><p>The number of digits to keep from the coordinates</p></dd>
+
+
 <dt>line_weight</dt>
 <dd><p>The name of the column giving the weight of the lines</p></dd>
+
+
 <dt>direction</dt>
 <dd><p>A column name indicating authorized travelling direction on
 lines. if NULL, then all lines can be used in both directions. Must be the
 name of a column otherwise. The values of the column must be "FT" (From -
 To), "TF" (To - From) or "Both"</p></dd>
+
+
 <dt>attrs</dt>
 <dd><p>A boolean indicating if the original lines' attributes should be
 stored in the final object</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A list containing the following elements:</p><ul><li><p>graph: an igraph object;</p></li>
+    
+
+<p>A list containing the following elements:</p><ul><li><p>graph: an igraph object;</p></li>
 <li><p>linelist: the dataframe used to build the graph;</p></li>
 <li><p>lines: the original feature collection of lines;</p></li>
 <li><p>spvertices: a feature collection of points representing the vertices
@@ -128,19 +139,18 @@ stored in the final object</p></dd>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="co"># \donttest{</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span>
-<span class="va">mtl_network</span><span class="op">$</span><span class="va">length</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_measures.html" class="external-link">st_length</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span><span class="op">)</span>
-<span class="va">mtl_network</span><span class="op">$</span><span class="va">direction</span> <span class="op">&lt;-</span> <span class="st">"Both"</span>
-<span class="va">mtl_network</span><span class="op">[</span><span class="fl">6</span>, <span class="st">"direction"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">"TF"</span>
-<span class="va">mtl_network_directed</span> <span class="op">&lt;-</span> <span class="fu"><a href="lines_direction.html">lines_direction</a></span><span class="op">(</span><span class="va">mtl_network</span>, <span class="st">"direction"</span><span class="op">)</span>
-<span class="va">graph_result</span> <span class="op">&lt;-</span> <span class="fu">build_graph_directed</span><span class="op">(</span>lines <span class="op">=</span> <span class="va">mtl_network_directed</span>,
-        digits <span class="op">=</span> <span class="fl">2</span>,
-        line_weight <span class="op">=</span> <span class="st">"length"</span>,
-        direction <span class="op">=</span> <span class="st">"direction"</span>,
-        attrs <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="co"># }</span>
-</code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># \donttest{</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span></span>
+<span><span class="va">mtl_network</span><span class="op">$</span><span class="va">length</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_measures.html" class="external-link">st_length</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">mtl_network</span><span class="op">$</span><span class="va">direction</span> <span class="op">&lt;-</span> <span class="st">"Both"</span></span>
+<span><span class="va">mtl_network</span><span class="op">[</span><span class="fl">6</span>, <span class="st">"direction"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">"TF"</span></span>
+<span><span class="va">mtl_network_directed</span> <span class="op">&lt;-</span> <span class="fu"><a href="lines_direction.html">lines_direction</a></span><span class="op">(</span><span class="va">mtl_network</span>, <span class="st">"direction"</span><span class="op">)</span></span>
+<span><span class="va">graph_result</span> <span class="op">&lt;-</span> <span class="fu">build_graph_directed</span><span class="op">(</span>lines <span class="op">=</span> <span class="va">mtl_network_directed</span>,</span>
+<span>        digits <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>        line_weight <span class="op">=</span> <span class="st">"length"</span>,</span>
+<span>        direction <span class="op">=</span> <span class="st">"direction"</span>,</span>
+<span>        attrs <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co"># }</span></span></code></pre></div>
     </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -154,8 +164,7 @@ stored in the final object</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3.6.9000</span>
       </span>
     </div>
 
@@ -87,48 +87,64 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">split_by_grid.mc</span><span class="op">(</span>
-  <span class="va">grid</span>,
-  <span class="va">samples</span>,
-  <span class="va">events</span>,
-  <span class="va">lines</span>,
-  <span class="va">bw</span>,
-  <span class="va">tol</span>,
-  <span class="va">digits</span>,
-  split_all <span class="op">=</span> <span class="cn">TRUE</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">split_by_grid.mc</span><span class="op">(</span></span>
+<span>  <span class="va">grid</span>,</span>
+<span>  <span class="va">samples</span>,</span>
+<span>  <span class="va">events</span>,</span>
+<span>  <span class="va">lines</span>,</span>
+<span>  <span class="va">bw</span>,</span>
+<span>  <span class="va">tol</span>,</span>
+<span>  <span class="va">digits</span>,</span>
+<span>  split_all <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>grid</dt>
 <dd><p>A spatial grid to split the data within</p></dd>
+
+
 <dt>samples</dt>
 <dd><p>A feature collection of points representing the samples points</p></dd>
+
+
 <dt>events</dt>
 <dd><p>A feature collection of points representing the events points</p></dd>
+
+
 <dt>lines</dt>
 <dd><p>A feautre collection of linestrings representing the network</p></dd>
+
+
 <dt>bw</dt>
 <dd><p>The kernel bandwidth (used to avoid edge effect)</p></dd>
+
+
 <dt>tol</dt>
 <dd><p>A float indicating the spatial tolerance when snapping events on
 lines</p></dd>
+
+
 <dt>digits</dt>
 <dd><p>The number of digits to keep</p></dd>
+
+
 <dt>split_all</dt>
 <dd><p>A boolean indicating if we must split the lines at each vertex
 (TRUE) or only at event vertices (FALSE)</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A list with the split dataset</p>
+    
+
+<p>A list with the split dataset</p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="co">#This is an internal function, no example provided</span>
-</code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co">#This is an internal function, no example provided</span></span></code></pre></div>
     </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -142,8 +158,7 @@ lines</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

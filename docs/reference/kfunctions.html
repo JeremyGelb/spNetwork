@@ -18,7 +18,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3.6.9000</span>
       </span>
     </div>
 
@@ -89,22 +89,22 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">kfunctions</span><span class="op">(</span>
-  <span class="va">lines</span>,
-  <span class="va">points</span>,
-  <span class="va">start</span>,
-  <span class="va">end</span>,
-  <span class="va">step</span>,
-  <span class="va">width</span>,
-  <span class="va">nsim</span>,
-  conf_int <span class="op">=</span> <span class="fl">0.05</span>,
-  digits <span class="op">=</span> <span class="fl">2</span>,
-  tol <span class="op">=</span> <span class="fl">0.1</span>,
-  resolution <span class="op">=</span> <span class="cn">NULL</span>,
-  agg <span class="op">=</span> <span class="cn">NULL</span>,
-  verbose <span class="op">=</span> <span class="cn">TRUE</span>,
-  return_sims <span class="op">=</span> <span class="cn">FALSE</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">kfunctions</span><span class="op">(</span></span>
+<span>  <span class="va">lines</span>,</span>
+<span>  <span class="va">points</span>,</span>
+<span>  <span class="va">start</span>,</span>
+<span>  <span class="va">end</span>,</span>
+<span>  <span class="va">step</span>,</span>
+<span>  <span class="va">width</span>,</span>
+<span>  <span class="va">nsim</span>,</span>
+<span>  conf_int <span class="op">=</span> <span class="fl">0.05</span>,</span>
+<span>  digits <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  tol <span class="op">=</span> <span class="fl">0.1</span>,</span>
+<span>  resolution <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  agg <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  return_sims <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -113,50 +113,81 @@
 <dd><p>A feature collection of linestrings representing the underlying network. The
 geometries must be simple Linestrings (may crash if some geometries
  are invalid) without MultiLineSring</p></dd>
+
+
 <dt>points</dt>
 <dd><p>A feature collection of points representing the points on the
 network. These points will be snapped on their nearest line</p></dd>
+
+
 <dt>start</dt>
 <dd><p>A double, the lowest distance used to evaluate the k and g functions</p></dd>
+
+
 <dt>end</dt>
 <dd><p>A double, the highest distance used to evaluate  the k and g functions</p></dd>
+
+
 <dt>step</dt>
 <dd><p>A double, the step between two evaluations of the k and g
 function. start, end and step are used to create a vector of distances with the function seq</p></dd>
+
+
 <dt>width</dt>
 <dd><p>The width of each donut for the g-function. Half of the width is applied on
 both sides of the considered distance</p></dd>
+
+
 <dt>nsim</dt>
 <dd><p>An integer indicating the number of Monte Carlo simulations
 to perform for inference</p></dd>
+
+
 <dt>conf_int</dt>
 <dd><p>A double indicating the width confidence interval (default =
 0.05) calculated on the Monte Carlo simulations</p></dd>
+
+
 <dt>digits</dt>
 <dd><p>An integer indicating the number of digits to retain from the
 spatial coordinates</p></dd>
+
+
 <dt>tol</dt>
 <dd><p>When adding the points to the network, specify the minimum
 distance between these points and the lines' extremities. When points are
 closer, they are added at the extremity of the lines</p></dd>
+
+
 <dt>resolution</dt>
 <dd><p>When simulating random points on the network, selecting a
 resolution will reduce greatly the calculation time. When resolution is null
 the random points can occur everywhere on the graph. If a value is specified,
 the edges are split according to this value and the random points can only be
 vertices on the new network</p></dd>
+
+
 <dt>agg</dt>
 <dd><p>A double indicating if the events must be aggregated within a distance.
 If NULL, the events are aggregated only by rounding the coordinates</p></dd>
+
+
 <dt>verbose</dt>
 <dd><p>A Boolean indicating if progress messages should be displayed</p></dd>
+
+
 <dt>return_sims</dt>
 <dd><p>a boolean indicating if the simulated k and g values must also
 be returned as matrices</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A list with the following values : <br></p><ul><li><p>plotk A
+    
+
+<p>A list with the following values : <br></p>
+<p></p>
+<ul><li><p>plotk A
   ggplot2 object representing the values of the k-function</p></li>
 <li><p>plotg A
   ggplot2 object representing the values of the g-function</p></li>
@@ -184,16 +215,15 @@ be returned as matrices</p></dd>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="co"># \donttest{</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">main_network_mtl</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">mtl_libraries</span><span class="op">)</span>
-<span class="va">result</span> <span class="op">&lt;-</span> <span class="fu">kfunctions</span><span class="op">(</span><span class="va">main_network_mtl</span>, <span class="va">mtl_libraries</span>,
-     start <span class="op">=</span> <span class="fl">0</span>, end <span class="op">=</span> <span class="fl">2500</span>, step <span class="op">=</span> <span class="fl">10</span>,
-     width <span class="op">=</span> <span class="fl">200</span>, nsim <span class="op">=</span> <span class="fl">50</span>,
-     conf_int <span class="op">=</span> <span class="fl">0.05</span>, tol <span class="op">=</span> <span class="fl">0.1</span>, agg <span class="op">=</span> <span class="cn">NULL</span>,
-     verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
-<span class="co"># }</span>
-</code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># \donttest{</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">main_network_mtl</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">mtl_libraries</span><span class="op">)</span></span>
+<span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu">kfunctions</span><span class="op">(</span><span class="va">main_network_mtl</span>, <span class="va">mtl_libraries</span>,</span>
+<span>     start <span class="op">=</span> <span class="fl">0</span>, end <span class="op">=</span> <span class="fl">2500</span>, step <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>     width <span class="op">=</span> <span class="fl">200</span>, nsim <span class="op">=</span> <span class="fl">50</span>,</span>
+<span>     conf_int <span class="op">=</span> <span class="fl">0.05</span>, tol <span class="op">=</span> <span class="fl">0.1</span>, agg <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>     verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="co"># }</span></span></code></pre></div>
     </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -207,8 +237,7 @@ be returned as matrices</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

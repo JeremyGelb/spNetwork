@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3.6.9000</span>
       </span>
     </div>
 
@@ -87,16 +87,16 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">network_knn_worker</span><span class="op">(</span>
-  <span class="va">points</span>,
-  <span class="va">lines</span>,
-  <span class="va">k</span>,
-  direction <span class="op">=</span> <span class="cn">NULL</span>,
-  use_dest <span class="op">=</span> <span class="cn">FALSE</span>,
-  verbose <span class="op">=</span> <span class="va">verbose</span>,
-  digits <span class="op">=</span> <span class="va">digits</span>,
-  tol <span class="op">=</span> <span class="va">tol</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">network_knn_worker</span><span class="op">(</span></span>
+<span>  <span class="va">points</span>,</span>
+<span>  <span class="va">lines</span>,</span>
+<span>  <span class="va">k</span>,</span>
+<span>  direction <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  use_dest <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="va">verbose</span>,</span>
+<span>  digits <span class="op">=</span> <span class="va">digits</span>,</span>
+<span>  tol <span class="op">=</span> <span class="va">tol</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -104,38 +104,54 @@
     <dl><dt>points</dt>
 <dd><p>A feature collection of points, for each point, its k nearest
 neighbours will be found on the network.</p></dd>
+
+
 <dt>lines</dt>
 <dd><p>A feature collection of lines representing the network</p></dd>
+
+
 <dt>k</dt>
 <dd><p>An integer indicating the number of neighbours to find..</p></dd>
+
+
 <dt>direction</dt>
 <dd><p>Indicates a field providing information about authorized
 travelling direction on lines. if NULL, then all lines can be used in both
 directions. Must be the name of a column otherwise. The values of the
 column must be "FT" (From - To), "TF" (To - From) or "Both".</p></dd>
+
+
 <dt>use_dest</dt>
 <dd><p>A boolean indicating if the origins and separations are
 separated (TRUE), FALSE if only origins are used.</p></dd>
+
+
 <dt>verbose</dt>
 <dd><p>A Boolean indicating if the function should print its
 progress</p></dd>
+
+
 <dt>digits</dt>
 <dd><p>The number of digits to retain in the spatial coordinates (
 simplification used to reduce risk of topological error)</p></dd>
+
+
 <dt>tol</dt>
 <dd><p>A float indicating the spatial tolerance when points are
 added as vertices to lines.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A list with two matrices, one with the index of the neighbours and
+    
+
+<p>A list with two matrices, one with the index of the neighbours and
 one with the distances.</p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="co">#no example provided, this is an internal function</span>
-</code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co">#no example provided, this is an internal function</span></span></code></pre></div>
     </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -149,8 +165,7 @@ one with the distances.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

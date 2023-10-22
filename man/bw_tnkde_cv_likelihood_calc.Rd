@@ -141,8 +141,8 @@ bike_accidents <- subset(bike_accidents, bike_accidents$Time>=89)
 
 # calculating the cross validation values
 cv_scores <- bw_tnkde_cv_likelihood_calc(
-  bws_net_ = seq(100,1000,100)
-  bws_time = seq(10,60,5)
+  bws_net = seq(100,1000,100),
+  bws_time = seq(10,60,5),
   lines = mtl_network,
   events = bike_accidents,
   time_field = "Time",

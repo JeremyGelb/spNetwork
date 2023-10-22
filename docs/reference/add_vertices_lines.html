@@ -18,7 +18,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3.6.9000</span>
       </span>
     </div>
 
@@ -89,30 +89,38 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">add_vertices_lines</span><span class="op">(</span><span class="va">lines</span>, <span class="va">points</span>, <span class="va">nearest_lines_idx</span>, <span class="va">mindist</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">add_vertices_lines</span><span class="op">(</span><span class="va">lines</span>, <span class="va">points</span>, <span class="va">nearest_lines_idx</span>, <span class="va">mindist</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>lines</dt>
 <dd><p>The feature collection of linestrings to modify</p></dd>
+
+
 <dt>points</dt>
 <dd><p>The feature collection of points to add to as vertex to the lines</p></dd>
+
+
 <dt>nearest_lines_idx</dt>
 <dd><p>For each point, the index of the nearest line</p></dd>
+
+
 <dt>mindist</dt>
 <dd><p>The minimum distance between one point and the extremity of
 the line to add the point as a vertex.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A feature collection of linestrings</p>
+    
+
+<p>A feature collection of linestrings</p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="co">#This is an internal function, no example provided</span>
-</code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co">#This is an internal function, no example provided</span></span></code></pre></div>
     </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -126,8 +134,7 @@ the line to add the point as a vertex.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3.6.9000</span>
       </span>
     </div>
 
@@ -87,48 +87,63 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">calc_isochrones</span><span class="op">(</span>
-  <span class="va">lines</span>,
-  <span class="va">dists</span>,
-  <span class="va">start_points</span>,
-  donught <span class="op">=</span> <span class="cn">FALSE</span>,
-  mindist <span class="op">=</span> <span class="fl">1</span>,
-  weight <span class="op">=</span> <span class="cn">NULL</span>,
-  direction <span class="op">=</span> <span class="cn">NULL</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">calc_isochrones</span><span class="op">(</span></span>
+<span>  <span class="va">lines</span>,</span>
+<span>  <span class="va">dists</span>,</span>
+<span>  <span class="va">start_points</span>,</span>
+<span>  donught <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  mindist <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  weight <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  direction <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>lines</dt>
 <dd><p>A feature collection of lines representing the edges of the network</p></dd>
+
+
 <dt>dists</dt>
 <dd><p>A vector of the size of the desired isochrones</p></dd>
+
+
 <dt>start_points</dt>
 <dd><p>A feature collection of points representing the starting
 points if the isochrones</p></dd>
+
+
 <dt>donught</dt>
 <dd><p>A boolean indicating if the returned lines must overlap for
 each distance (FALSE, default) or if the lines must be cut between each
 distance step (TRUE).</p></dd>
+
+
 <dt>mindist</dt>
 <dd><p>The minimum distance between two points. When two points are
 too close, they might end up snapped at the same location on a line.
 Default is 1.</p></dd>
+
+
 <dt>weight</dt>
 <dd><p>The name of the column in lines to use an edge weight. If NULL,
 the geographical length is used. Note that if lines are split during the
 network creation, the weight column is recalculated proportionally to the new lines
 length.</p></dd>
+
+
 <dt>direction</dt>
 <dd><p>The name of the column indicating authorized
 travelling direction on lines. if NULL, then all lines can be used in both
 directions (undirected). The values of the column must be "FT" (From - To),
 "TF" (To - From) or "Both".</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A feature collection of lines representing the isochrones with the
+    
+
+<p>A feature collection of lines representing the isochrones with the
 following columns</p><ul><li><p>point_id: the index of the point at the centre of the isochrone;</p></li>
 <li><p>distance: the size of the isochrone</p></li>
 </ul></div>
@@ -145,42 +160,41 @@ how to create smooth polygons from the returned sets of lines.</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span>
-<span class="co"># creating a simple network</span>
-<span class="va">wkt_lines</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>
-  <span class="st">"LINESTRING (0.0 0.0, 5.0 0.0)"</span>,
-  <span class="st">"LINESTRING (0.0 -5.0, 5.0 -5.0)"</span>,
-  <span class="st">"LINESTRING (5.0 0.0, 5.0 5.0)"</span>,
-  <span class="st">"LINESTRING (5.0 -5.0, 5.0 -10.0)"</span>,
-  <span class="st">"LINESTRING (5.0 0.0, 5.0 -5.0)"</span>,
-  <span class="st">"LINESTRING (5.0 0.0, 10.0 0.0)"</span>,
-  <span class="st">"LINESTRING (5.0 -5.0, 10.0 -5.0)"</span>,
-  <span class="st">"LINESTRING (10.0 0, 10.0 -5.0)"</span>,
-  <span class="st">"LINESTRING (10.0 -10.0, 10.0 -5.0)"</span>,
-  <span class="st">"LINESTRING (15.0 -5.0, 10.0 -5.0)"</span>,
-  <span class="st">"LINESTRING (10.0 0.0, 15.0 0.0)"</span>,
-  <span class="st">"LINESTRING (10.0 0.0, 10.0 5.0)"</span><span class="op">)</span>
-
-<span class="va">linesdf</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>wkt <span class="op">=</span> <span class="va">wkt_lines</span>,
-                      id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"l"</span>,<span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">wkt_lines</span><span class="op">)</span>,sep<span class="op">=</span><span class="st">""</span><span class="op">)</span><span class="op">)</span>
-
-<span class="va">lines</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="va">linesdf</span>, wkt <span class="op">=</span> <span class="st">"wkt"</span><span class="op">)</span>
-
-<span class="co"># and the definition of the starting point</span>
-<span class="va">start_points</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>x<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span>,
-                           y<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2.5</span><span class="op">)</span><span class="op">)</span>
-<span class="va">start_points</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="va">start_points</span>, coords <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>,<span class="st">"y"</span><span class="op">)</span><span class="op">)</span>
-
-<span class="co"># setting the directions</span>
-
-<span class="va">lines</span><span class="op">$</span><span class="va">direction</span> <span class="op">&lt;-</span> <span class="st">"Both"</span>
-<span class="va">lines</span><span class="op">[</span><span class="fl">6</span>,<span class="st">"direction"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">"TF"</span>
-
-<span class="va">isochrones</span> <span class="op">&lt;-</span> <span class="fu">calc_isochrones</span><span class="op">(</span><span class="va">lines</span>,dists <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>,<span class="fl">12</span><span class="op">)</span>,
-                              donught <span class="op">=</span> <span class="cn">TRUE</span>,
-                              start_points <span class="op">=</span> <span class="va">start_points</span>,
-                              direction <span class="op">=</span> <span class="st">"direction"</span><span class="op">)</span>
-</code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span></span>
+<span><span class="co"># creating a simple network</span></span>
+<span><span class="va">wkt_lines</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>  <span class="st">"LINESTRING (0.0 0.0, 5.0 0.0)"</span>,</span>
+<span>  <span class="st">"LINESTRING (0.0 -5.0, 5.0 -5.0)"</span>,</span>
+<span>  <span class="st">"LINESTRING (5.0 0.0, 5.0 5.0)"</span>,</span>
+<span>  <span class="st">"LINESTRING (5.0 -5.0, 5.0 -10.0)"</span>,</span>
+<span>  <span class="st">"LINESTRING (5.0 0.0, 5.0 -5.0)"</span>,</span>
+<span>  <span class="st">"LINESTRING (5.0 0.0, 10.0 0.0)"</span>,</span>
+<span>  <span class="st">"LINESTRING (5.0 -5.0, 10.0 -5.0)"</span>,</span>
+<span>  <span class="st">"LINESTRING (10.0 0, 10.0 -5.0)"</span>,</span>
+<span>  <span class="st">"LINESTRING (10.0 -10.0, 10.0 -5.0)"</span>,</span>
+<span>  <span class="st">"LINESTRING (15.0 -5.0, 10.0 -5.0)"</span>,</span>
+<span>  <span class="st">"LINESTRING (10.0 0.0, 15.0 0.0)"</span>,</span>
+<span>  <span class="st">"LINESTRING (10.0 0.0, 10.0 5.0)"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">linesdf</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>wkt <span class="op">=</span> <span class="va">wkt_lines</span>,</span>
+<span>                      id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"l"</span>,<span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">wkt_lines</span><span class="op">)</span>,sep<span class="op">=</span><span class="st">""</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">lines</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="va">linesdf</span>, wkt <span class="op">=</span> <span class="st">"wkt"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># and the definition of the starting point</span></span>
+<span><span class="va">start_points</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>x<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span>,</span>
+<span>                           y<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2.5</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">start_points</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="va">start_points</span>, coords <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>,<span class="st">"y"</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># setting the directions</span></span>
+<span></span>
+<span><span class="va">lines</span><span class="op">$</span><span class="va">direction</span> <span class="op">&lt;-</span> <span class="st">"Both"</span></span>
+<span><span class="va">lines</span><span class="op">[</span><span class="fl">6</span>,<span class="st">"direction"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">"TF"</span></span>
+<span></span>
+<span><span class="va">isochrones</span> <span class="op">&lt;-</span> <span class="fu">calc_isochrones</span><span class="op">(</span><span class="va">lines</span>,dists <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>,<span class="fl">12</span><span class="op">)</span>,</span>
+<span>                              donught <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                              start_points <span class="op">=</span> <span class="va">start_points</span>,</span>
+<span>                              direction <span class="op">=</span> <span class="st">"direction"</span><span class="op">)</span></span></code></pre></div>
     </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -194,8 +208,7 @@ how to create smooth polygons from the returned sets of lines.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

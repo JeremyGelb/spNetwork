@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3.6.9000</span>
       </span>
     </div>
 
@@ -87,63 +87,83 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">simple_tnkde</span><span class="op">(</span>
-  <span class="va">graph</span>,
-  <span class="va">events</span>,
-  <span class="va">samples</span>,
-  <span class="va">samples_time</span>,
-  <span class="va">bws_net</span>,
-  <span class="va">bws_time</span>,
-  <span class="va">kernel_func</span>,
-  <span class="va">nodes</span>,
-  <span class="va">edges</span>,
-  <span class="va">div</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">simple_tnkde</span><span class="op">(</span></span>
+<span>  <span class="va">graph</span>,</span>
+<span>  <span class="va">events</span>,</span>
+<span>  <span class="va">samples</span>,</span>
+<span>  <span class="va">samples_time</span>,</span>
+<span>  <span class="va">bws_net</span>,</span>
+<span>  <span class="va">bws_time</span>,</span>
+<span>  <span class="va">kernel_func</span>,</span>
+<span>  <span class="va">nodes</span>,</span>
+<span>  <span class="va">edges</span>,</span>
+<span>  <span class="va">div</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>graph</dt>
 <dd><p>a graph object from igraph representing the network</p></dd>
+
+
 <dt>events</dt>
 <dd><p>a feature collection of points representing the events. It must be
 snapped on the network, and be nodes of the network. A column vertex_id
 must indicate for each event its corresponding node</p></dd>
+
+
 <dt>samples</dt>
 <dd><p>a feature collection of points representing the sampling points.
 The samples must be snapped on the network. A column edge_id must indicate
 for each sample on which edge it is snapped.</p></dd>
+
+
 <dt>samples_time</dt>
 <dd><p>a numeric vector indicating when the densities must be
 sampled</p></dd>
+
+
 <dt>bws_net</dt>
 <dd><p>a vector indicating the network kernel bandwidth (in meters) for each
 event</p></dd>
+
+
 <dt>bws_time</dt>
 <dd><p>a vector indicating the time kernel bandwidth for each
 event</p></dd>
+
+
 <dt>kernel_func</dt>
 <dd><p>a function obtained with the function select_kernel</p></dd>
+
+
 <dt>nodes</dt>
 <dd><p>a feature collection of points representing the nodes of the network</p></dd>
+
+
 <dt>edges</dt>
 <dd><p>a feature collection of linestrings representing the edges of the network</p></dd>
+
+
 <dt>div</dt>
 <dd><p>The divisor to use for the kernel. Must be "n" (the number of
 events within the radius around each sampling point), "bw" (the bandwidth)
 "none" (the simple sum).</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>a list of two matrices. The first one ins the matrix of the densities,
+    
+
+<p>a list of two matrices. The first one ins the matrix of the densities,
 the rows are the samples and the columns the time. The second has the same
 dimensions and contains the number of events influencing each sample</p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="co">#This is an internal function, no example provided</span>
-</code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co">#This is an internal function, no example provided</span></span></code></pre></div>
     </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -157,8 +177,7 @@ dimensions and contains the number of events influencing each sample</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

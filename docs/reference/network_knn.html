@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3.6.9000</span>
       </span>
     </div>
 
@@ -87,20 +87,20 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">network_knn</span><span class="op">(</span>
-  <span class="va">origins</span>,
-  <span class="va">lines</span>,
-  <span class="va">k</span>,
-  destinations <span class="op">=</span> <span class="cn">NULL</span>,
-  maxdistance <span class="op">=</span> <span class="fl">0</span>,
-  snap_dist <span class="op">=</span> <span class="cn">Inf</span>,
-  line_weight <span class="op">=</span> <span class="st">"length"</span>,
-  direction <span class="op">=</span> <span class="cn">NULL</span>,
-  grid_shape <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>,
-  verbose <span class="op">=</span> <span class="cn">FALSE</span>,
-  digits <span class="op">=</span> <span class="fl">3</span>,
-  tol <span class="op">=</span> <span class="fl">0.1</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">network_knn</span><span class="op">(</span></span>
+<span>  <span class="va">origins</span>,</span>
+<span>  <span class="va">lines</span>,</span>
+<span>  <span class="va">k</span>,</span>
+<span>  destinations <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  maxdistance <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  snap_dist <span class="op">=</span> <span class="cn">Inf</span>,</span>
+<span>  line_weight <span class="op">=</span> <span class="st">"length"</span>,</span>
+<span>  direction <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  grid_shape <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  digits <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  tol <span class="op">=</span> <span class="fl">0.1</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -108,50 +108,75 @@
     <dl><dt>origins</dt>
 <dd><p>A feature collection of points, for each point, its k nearest
 neighbours will be found on the network.</p></dd>
+
+
 <dt>lines</dt>
 <dd><p>A feature collection of linestrings representing the underlying network</p></dd>
+
+
 <dt>k</dt>
 <dd><p>An integer indicating the number of neighbours to find.</p></dd>
+
+
 <dt>destinations</dt>
 <dd><p>A feature collection of points, might be used if the neighbours
 must be found in a separate set of points NULL if the neighbours must be found in
 origins.</p></dd>
+
+
 <dt>maxdistance</dt>
 <dd><p>The maximum distance between two observations to
 consider them as neighbours. It is useful only if a grid is used, a
 lower value will reduce calculating time, but one must be sure that the
 k nearest neighbours are within this radius. Otherwise NAs will be present
 in the results.</p></dd>
+
+
 <dt>snap_dist</dt>
 <dd><p>The maximum distance to snap the start and end points on
 the network.</p></dd>
+
+
 <dt>line_weight</dt>
 <dd><p>The weighting to use for lines. Default is "length"
 (the geographical length), but can be the name of a column. The value is
 considered proportional to the geographical length of the lines.</p></dd>
+
+
 <dt>direction</dt>
 <dd><p>The name of a column indicating authorized
 travelling direction on lines. if NULL, then all lines can be used in both
 directions. Must be the name of a column otherwise. The values of the
 column must be "FT" (From - To), "TF" (To - From) or "Both".</p></dd>
+
+
 <dt>grid_shape</dt>
 <dd><p>A vector of length 2 indicating the shape of the grid to
 use for splitting the dataset. Default is c(1,1), so all the calculation is
 done in one go. It might be necessary to split it if the dataset is large.</p></dd>
+
+
 <dt>verbose</dt>
 <dd><p>A Boolean indicating if the function should print its
 progress</p></dd>
+
+
 <dt>digits</dt>
 <dd><p>The number of digits to retain from the spatial coordinates (
 simplification used to reduce risk of topological error)</p></dd>
+
+
 <dt>tol</dt>
 <dd><p>A float indicating the minimum distance between the points and the
 lines' extremities when adding the point to the network. When points are
 closer, they are added at the extremity of the lines.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A list with two matrices, one with the index of the neighbours and
+    
+
+<p>A list with two matrices, one with the index of the neighbours and
 one with the distances.</p>
     </div>
     <div id="details">
@@ -166,14 +191,13 @@ the function.</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="co"># \donttest{</span>
-    <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">main_network_mtl</span><span class="op">)</span>
-    <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">mtl_libraries</span><span class="op">)</span>
-    <span class="va">results</span> <span class="op">&lt;-</span> <span class="fu">network_knn</span><span class="op">(</span><span class="va">mtl_libraries</span>, <span class="va">main_network_mtl</span>,
-        k <span class="op">=</span> <span class="fl">3</span>, maxdistance <span class="op">=</span> <span class="fl">1000</span>, line_weight <span class="op">=</span> <span class="st">"length"</span>,
-        grid_shape<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
-<span class="co"># }</span>
-</code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># \donttest{</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">main_network_mtl</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">mtl_libraries</span><span class="op">)</span></span>
+<span>    <span class="va">results</span> <span class="op">&lt;-</span> <span class="fu">network_knn</span><span class="op">(</span><span class="va">mtl_libraries</span>, <span class="va">main_network_mtl</span>,</span>
+<span>        k <span class="op">=</span> <span class="fl">3</span>, maxdistance <span class="op">=</span> <span class="fl">1000</span>, line_weight <span class="op">=</span> <span class="st">"length"</span>,</span>
+<span>        grid_shape<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="co"># }</span></span></code></pre></div>
     </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -187,8 +211,7 @@ the function.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

@@ -18,7 +18,7 @@ This is a simple wrap-up of the dbscan::kNN function"><!-- mathjax --><script sr
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3.6.9000</span>
       </span>
     </div>
 
@@ -89,27 +89,31 @@ This is a simple wrap-up of the dbscan::kNN function</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">closest_points</span><span class="op">(</span><span class="va">origins</span>, <span class="va">targets</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">closest_points</span><span class="op">(</span><span class="va">origins</span>, <span class="va">targets</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>origins</dt>
 <dd><p>a feature collection of points</p></dd>
+
+
 <dt>targets</dt>
 <dd><p>a feature collection of points</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>for each origin point, the index of the nearest target point</p>
+    
+
+<p>for each origin point, the index of the nearest target point</p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">mtl_libraries</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">mtl_theatres</span><span class="op">)</span>
-<span class="va">close_libs</span> <span class="op">&lt;-</span> <span class="fu">closest_points</span><span class="op">(</span><span class="va">mtl_theatres</span>, <span class="va">mtl_libraries</span><span class="op">)</span>
-</code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">mtl_libraries</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">mtl_theatres</span><span class="op">)</span></span>
+<span><span class="va">close_libs</span> <span class="op">&lt;-</span> <span class="fu">closest_points</span><span class="op">(</span><span class="va">mtl_theatres</span>, <span class="va">mtl_libraries</span><span class="op">)</span></span></code></pre></div>
     </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -123,8 +127,7 @@ This is a simple wrap-up of the dbscan::kNN function</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>
