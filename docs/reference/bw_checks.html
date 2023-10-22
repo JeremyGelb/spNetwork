@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3.6.9000</span>
       </span>
     </div>
 
@@ -87,57 +87,72 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">bw_checks</span><span class="op">(</span>
-  <span class="va">check</span>,
-  <span class="va">lines</span>,
-  <span class="va">samples</span>,
-  <span class="va">events</span>,
-  <span class="va">kernel_name</span>,
-  <span class="va">method</span>,
-  bw_net_range <span class="op">=</span> <span class="cn">NULL</span>,
-  bw_time_range <span class="op">=</span> <span class="cn">NULL</span>,
-  bw_net_step <span class="op">=</span> <span class="cn">NULL</span>,
-  bw_time_step <span class="op">=</span> <span class="cn">NULL</span>,
-  diggle_correction <span class="op">=</span> <span class="cn">FALSE</span>,
-  study_area <span class="op">=</span> <span class="cn">NULL</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">bw_checks</span><span class="op">(</span></span>
+<span>  <span class="va">check</span>,</span>
+<span>  <span class="va">lines</span>,</span>
+<span>  <span class="va">samples</span>,</span>
+<span>  <span class="va">events</span>,</span>
+<span>  <span class="va">kernel_name</span>,</span>
+<span>  <span class="va">method</span>,</span>
+<span>  bws_net <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  bws_time <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  adaptive <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  trim_net_bws <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  trim_time_bws <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  diggle_correction <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  study_area <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>check</dt>
 <dd><p>A boolean indicating if the geometries must be checked</p></dd>
+
+
 <dt>lines</dt>
 <dd><p>A feature collection of linestrings representing the underlying network</p></dd>
+
+
 <dt>samples</dt>
 <dd><p>A feature collection of points representing the sample location</p></dd>
+
+
 <dt>events</dt>
 <dd><p>a feature collection of points representing the events</p></dd>
+
+
 <dt>kernel_name</dt>
 <dd><p>The name of the kernel to use</p></dd>
+
+
 <dt>method</dt>
 <dd><p>The name of the NKDE to use</p></dd>
-<dt>bw_net_range</dt>
-<dd><p>The range for the network bandwidth to consider, given as a numeric
-vector of two values: c(bandwidth_min, bandwidth_max)</p></dd>
-<dt>bw_time_range</dt>
-<dd><p>The range for the time bandwidth to consider, given as a numeric
-vector of two values: c(bandwidth_min, bandwidth_max)</p></dd>
-<dt>bw_net_step</dt>
-<dd><p>The step between each network bandwidth to calculate, given as a float</p></dd>
-<dt>bw_time_step</dt>
-<dd><p>The step between each time bandwidth to calculate, given as a float</p></dd>
+
+
+<dt>bws_net</dt>
+<dd><p>An ordered numeric vector with all the network bandwidths</p></dd>
+
+
+<dt>bws_time</dt>
+<dd><p>An ordered numeric vector with all the time bandwidths</p></dd>
+
+
 <dt>diggle_correction</dt>
 <dd><p>A Boolean indicating if the correction factor
 for edge effect must be used.</p></dd>
+
+
 <dt>study_area</dt>
 <dd><p>A feature collection of polygons 
 representing the limits of the study area.</p></dd>
+
 </dl></div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="co"># no example provided, this is an internal function</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># no example provided, this is an internal function</span></span></span>
+<span class="r-in"></span>
 </code></pre></div>
     </div>
   </div>
@@ -152,8 +167,7 @@ representing the limits of the study area.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

@@ -57,8 +57,12 @@ bit), but require much less memory.}
 
 \item{samples}{A feature collection of points representing the sample location}
 }
+\value{
+A list of two elements, first the network correction factors, then
+the time correction factors.
+}
 \description{
-Caclulating the border correction factor for both time and network bandwidths
+Calculating the border correction factor for both time and network bandwidths
 }
 \examples{
 # no example provided, this is an internal function

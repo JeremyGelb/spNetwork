@@ -4,7 +4,13 @@
 \alias{correction_factor_time}
 \title{Time extent correction for NKDE}
 \usage{
-correction_factor_time(events_time, samples_time, bws_time, kernel_name)
+correction_factor_time(
+  events_time,
+  samples_time,
+  bws_time,
+  kernel_name,
+  time_limits = NULL
+)
 }
 \arguments{
 \item{events_time}{A numeric vector representing when the events occurred}
@@ -15,6 +21,8 @@ be sampled}
 \item{bws_time}{A numeric vector with the temporal bandwidths}
 
 \item{kernel_name}{The name of the kernel to use}
+
+\item{time_limits}{A vector with the upper and lower limit of the time period studied}
 }
 \value{
 A numeric vector with the correction factor values for each event

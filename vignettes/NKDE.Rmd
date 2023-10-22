@@ -576,7 +576,7 @@ For both, one can use the multicore version of the functions to speed up the cal
 
 ```{r eval = FALSE}
 bws_selection_cv <- bw_cv_likelihood_calc(
-  bw_range = c(200,700),bw_step = 50,
+  bws = seq(200,700,50),
   lines = mtl_network, events = bike_accidents,
   w = rep(1,nrow(bike_accidents)),
   kernel_name = "quartic", method = "discontinuous",
@@ -587,9 +587,26 @@ bws_selection_cv <- bw_cv_likelihood_calc(
   verbose=FALSE, check=TRUE)
 
 bws_selection_cvl <- bw_cvl_calc(
-  bw_range = c(50,700),bw_step = 50,
+  bws = seq(50,700, 50),
   lines = mtl_network, events = bike_accidents,
   w = rep(1,nrow(bike_accidents)),
+  kernel_name = "quartic", method = "discontinuous",
+  diggle_correction = FALSE, study_area = NULL,
+  max_depth = 8,
+  digits=2, tol=0.1, agg=5, 
+  sparse=TRUE, grid_shape=c(1,1),
+  verbose=FALSE, check=TRUE)
+
+```
+
+It is also possible to do bandwidth selection with adaptive bandwidth. In that context, we search for the optimal global bandwidth. It requires more computation because for each bandwidth, we need to estimate the density twice, one with the global bandwidth, and one with the local bandwidths obtained from the density estimation.
+
+```{r eval = FALSE}
+bws_selection_cv_adpt <- bw_cv_likelihood_calc(
+  bws = seq(200,700,50),
+  lines = mtl_network, events = bike_accidents,
+  w = rep(1,nrow(bike_accidents)),
+  adaptive = TRUE,
   kernel_name = "quartic", method = "discontinuous",
   diggle_correction = FALSE, study_area = NULL,
   max_depth = 8,
@@ -603,12 +620,12 @@ cv_values <- data.frame(
   "cvl_crit" = bws_selection_cvl$cvl_scores
 )
 ```
+
 ```{r echo=FALSE}
 knitr::kable(cv_values, digits = 2,row.names = FALSE)
 ```
 
-As one can see here, the cross-validation approach suggests a value between 500 and 600 metres, while the Cronie and Van Lieshout's Criterion would suggest a bandwidth inferior to 50 metres and is probably not adapted for this dataset.
-
+As one can see here, the cross-validation approach suggests a value between 550 and 600 metres, while the Cronie and Van Lieshout's Criterion would suggest a bandwidth inferior to 50 metres and is probably not adapted for this dataset. With an adaptive bandwidth, the best bandwidth would be around 500 and 550 metres.
 
 ## Complementary functions
 

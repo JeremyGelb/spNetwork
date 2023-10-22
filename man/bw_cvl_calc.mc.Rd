@@ -5,8 +5,7 @@
 \title{Bandwidth selection by Cronie and Van Lieshout's Criterion (multicore version)}
 \usage{
 bw_cvl_calc.mc(
-  bw_range,
-  bw_step,
+  bws = NULL,
   lines,
   events,
   w,
@@ -14,6 +13,9 @@ bw_cvl_calc.mc(
   method,
   diggle_correction = FALSE,
   study_area = NULL,
+  adaptive = FALSE,
+  trim_bws = NULL,
+  mat_bws = NULL,
   max_depth = 15,
   digits = 5,
   tol = 0.1,
@@ -27,10 +29,7 @@ bw_cvl_calc.mc(
 )
 }
 \arguments{
-\item{bw_range}{The range of the bandwidths to consider, given as a numeric
-vector of two values: c(bandwidth_min, bandwidth_max)}
-
-\item{bw_step}{The step between each bandwidth to calculate given as a float}
+\item{bws}{An ordered numeric vector with the bandwidths}
 
 \item{lines}{A feature collection of linestrings representing the underlying network. The
 geometries must be simple Linestrings (may crash if some geometries
@@ -52,6 +51,17 @@ for edge effect must be used.}
 
 \item{study_area}{A feature collection of polygons 
 representing the limits of the study area.}
+
+\item{adaptive}{A boolean indicating if an adaptive bandwidth must be used.
+If adaptive = TRUE, the local bandwidth are derived from the global bandwidths
+calculated from bw_range and bw_step.}
+
+\item{trim_bws}{A vector indicating the maximum value an adaptive bandwidth can
+reach. Higher values will be trimmed. It must have the same length as
+seq(bw_range[[1]],bw_range[[2]], bw_step).}
+
+\item{mat_bws}{A matrix giving the bandwidths for each observation and for each global bandwidth.
+This is usefull when the user want to use a different method from Abramson's smoothing regimen.}
 
 \item{max_depth}{when using the continuous and discontinuous methods, the
 calculation time and memory use can go wild  if the network has many
@@ -120,7 +130,7 @@ For more details, see help(bw_cvl_calc)
 data(mtl_network)
 data(bike_accidents)
 future::plan(future::multisession(workers=2))
-cv_scores <- bw_cvl_calc.mc(c(200,400),50,
+cv_scores <- bw_cvl_calc.mc(seq(200,400,50),
                                mtl_network, bike_accidents,
                                rep(1,nrow(bike_accidents)),
                                "quartic", "discontinuous",

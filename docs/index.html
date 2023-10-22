@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3.6.9000</span>
       </span>
     </div>
 
@@ -107,19 +107,14 @@
       </header><div class="row">
   <div class="contents col-md-9">
 <div class="section level1">
-<div class="page-header"><h1 id="spnetwork-">spNetwork
-<img src="reference/figures/spNetwork_logo.png" align="right" style="height:138px;"><a class="anchor" aria-label="anchor" href="#spnetwork-"></a>
+<div class="page-header"><h1 id="spnetwork-">spNetwork <img src="reference/figures/spNetwork_logo.png" align="right" style="height:138px;"><a class="anchor" aria-label="anchor" href="#spnetwork-"></a>
 </h1></div>
 <div class="section level2">
 <h2 id="a-r-package-to-perform-spatial-analysis-on-networks">A R package to perform spatial analysis on networks.<a class="anchor" aria-label="anchor" href="#a-r-package-to-perform-spatial-analysis-on-networks"></a>
 </h2>
 <!-- badges: start -->
 
-<p><a href="https://jeremygelb.github.io/spNetwork/" class="external-link"><img src="https://img.shields.io/badge/devel%20version-0.4.3.6-green.svg"></a>
-<a href="https://cran.r-project.org/package=spNetwork" class="external-link"><img src="https://www.r-pkg.org/badges/version/spNetwork?color=blue"></a>
-<a href="https://cran.r-project.org/package=spNetwork" class="external-link"><img src="http://cranlogs.r-pkg.org/badges/grand-total/spNetwork?color=blue"></a>
-<a href="https://cran.r-project.org/package=spNetwork" class="external-link"><img src="http://cranlogs.r-pkg.org/badges/last-month/spNetwork?color=green"></a>
-<a href="https://app.codecov.io/gh/JeremyGelb/spNetwork?branch=master" class="external-link"><img src="https://codecov.io/gh/JeremyGelb/spNetwork/branch/master/graph/badge.svg" alt="Codecov test coverage"></a> <!-- badges: end --></p>
+<p><a href="https://jeremygelb.github.io/spNetwork/" class="external-link"><img src="https://img.shields.io/badge/devel%20version-0.4.3.6.9000-green.svg"></a> <a href="https://cran.r-project.org/package=spNetwork" class="external-link"><img src="https://www.r-pkg.org/badges/version/spNetwork?color=blue"></a> <a href="https://cran.r-project.org/package=spNetwork" class="external-link"><img src="http://cranlogs.r-pkg.org/badges/grand-total/spNetwork?color=blue"></a> <a href="https://cran.r-project.org/package=spNetwork" class="external-link"><img src="http://cranlogs.r-pkg.org/badges/last-month/spNetwork?color=green"></a> <a href="https://app.codecov.io/gh/JeremyGelb/spNetwork?branch=master" class="external-link"><img src="https://codecov.io/gh/JeremyGelb/spNetwork/branch/master/graph/badge.svg" alt="Codecov test coverage"></a> <!-- badges: end --></p>
 <p>The package’s website is available <a href="https://jeremygelb.github.io/spNetwork/" class="external-link">here</a></p>
 </div>
 <div class="section level2">
@@ -128,78 +123,43 @@
 <div class="section level3">
 <h3 id="moving-to-sf">Moving to sf<a class="anchor" aria-label="anchor" href="#moving-to-sf"></a>
 </h3>
-<p>Considering that <code>rgeos</code> and <code>maptools</code> will be
-deprecated soon, we are moving to sf! This requires some adjustment in
-the code and the documentation. The development version and the releases
-on CRAN are now using <code>sf</code>. Please, report any bug or error
-in the documentation.</p>
-<p>To install the previous version using <code>sp</code>,
-<code>rgeos</code> and <code>maptools</code>, you can run the following
-command:</p>
+<p>Considering that <code>rgeos</code> and <code>maptools</code> will be deprecated soon, we are moving to sf! This requires some adjustment in the code and the documentation. The development version and the releases on CRAN are now using <code>sf</code>. Please, report any bug or error in the documentation.</p>
+<p>To install the previous version using <code>sp</code>, <code>rgeos</code> and <code>maptools</code>, you can run the following command:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/remote-reexports.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"JeremyGelb/spNetwork"</span>, ref <span class="op">=</span> <span class="st">"a3bc982"</span><span class="op">)</span></code></pre></div>
-<p>Note that all the new developments will use <code>sf</code> and you
-should switch as soon as possible.</p>
+<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"JeremyGelb/spNetwork"</span>, ref <span class="op">=</span> <span class="st">"a3bc982"</span><span class="op">)</span></span></code></pre></div>
+<p>Note that all the new developments will use <code>sf</code> and you should switch as soon as possible.</p>
 </div>
 <div class="section level3">
 <h3 id="removing-gpkgs">Removing gpkgs<a class="anchor" aria-label="anchor" href="#removing-gpkgs"></a>
 </h3>
-<p>Because of a new CRAN policy, it is not possible anymore to read data
-in gpkg if they are stored in the user library. On Debian systems, this
-library is now mounted as read-only for checking. All the datasets
-provided by spNetwork are now stored as .rda file, and can be loaded
-with the function <code>data</code>.</p>
+<p>Because of a new CRAN policy, it is not possible anymore to read data in gpkg if they are stored in the user library. On Debian systems, this library is now mounted as read-only for checking. All the datasets provided by spNetwork are now stored as .rda file, and can be loaded with the function <code>data</code>.</p>
 </div>
 </div>
 <div class="section level2">
 <h2 id="what-is-this-package-">What is this package ?<a class="anchor" aria-label="anchor" href="#what-is-this-package-"></a>
 </h2>
-<p>This package can be used to perform several types of analysis on
-geographical networks. This type of network have spatial coordinates
-associated with their nodes. They can be directed or undirected. In the
-actual development version the implemented methods are:</p>
+<p>This package can be used to perform several types of analysis on geographical networks. This type of network have spatial coordinates associated with their nodes. They can be directed or undirected. In the actual development version the implemented methods are:</p>
 <ul>
-<li>Network Kernel Density Estimate, a method estimating density of a
-point pattern constrained on a network (see the vignettes <a href="https://jeremygelb.github.io/spNetwork/articles/NKDE.html" class="external-link">Network
-Kernel Density Estimate</a> and <a href="https://jeremygelb.github.io/spNetwork/articles/NKDEdetailed.html" class="external-link">Details
-about NKDE</a>).</li>
-<li>Temporal Network Kernel Density Estimate, a temporal extension of
-the previous methods <a href="https://jeremygelb.github.io/spNetwork/articles/TNKDE.html" class="external-link">Temporal
-Network Kernel Density Estimate</a>.</li>
-<li>Spatial weight matrices based on network distances, which can be
-used in a great number of traditional methods in spatial analysis (see
-the vignette <a href="https://jeremygelb.github.io/spNetwork/articles/SpatialWeightMatrices.html" class="external-link">Spatial
-Weight Matrices</a>).</li>
-<li>Network k Functions, used to investigate the spatial distribution of
-a set of points on a network at several scales (see the vignette <a href="https://jeremygelb.github.io/spNetwork/articles/KNetworkFunctions.html" class="external-link">Network
-k Functions</a>).</li>
-<li>K nearest neighbours, to calculate for each point on a network its K
-nearest neighbour (see the function <code>network_knn</code>).</li>
-<li>Graph analysis, using the functions of the package
-<strong>igraph</strong> (see the vignette <a href="https://jeremygelb.github.io/spNetwork/articles/NetworkBuilding.html" class="external-link">Building
-graphs</a>)</li>
-<li>Isochrones, to delineate accessible area around points localized on
-a network (see the vignette <a href="https://jeremygelb.github.io/spNetwork/articles/Isochrones.html" class="external-link">Calculating
-isochrones</a>)</li>
+<li>Network Kernel Density Estimate, a method estimating density of a point pattern constrained on a network (see the vignettes <a href="https://jeremygelb.github.io/spNetwork/articles/NKDE.html" class="external-link">Network Kernel Density Estimate</a> and <a href="https://jeremygelb.github.io/spNetwork/articles/NKDEdetailed.html" class="external-link">Details about NKDE</a>).</li>
+<li>Temporal Network Kernel Density Estimate, a temporal extension of the previous methods <a href="https://jeremygelb.github.io/spNetwork/articles/TNKDE.html" class="external-link">Temporal Network Kernel Density Estimate</a>.</li>
+<li>Spatial weight matrices based on network distances, which can be used in a great number of traditional methods in spatial analysis (see the vignette <a href="https://jeremygelb.github.io/spNetwork/articles/SpatialWeightMatrices.html" class="external-link">Spatial Weight Matrices</a>).</li>
+<li>Network k Functions, used to investigate the spatial distribution of a set of points on a network at several scales (see the vignette <a href="https://jeremygelb.github.io/spNetwork/articles/KNetworkFunctions.html" class="external-link">Network k Functions</a>).</li>
+<li>K nearest neighbours, to calculate for each point on a network its K nearest neighbour (see the function <code>network_knn</code>).</li>
+<li>Graph analysis, using the functions of the package <strong>igraph</strong> (see the vignette <a href="https://jeremygelb.github.io/spNetwork/articles/NetworkBuilding.html" class="external-link">Building graphs</a>)</li>
+<li>Isochrones, to delineate accessible area around points localized on a network (see the vignette <a href="https://jeremygelb.github.io/spNetwork/articles/Isochrones.html" class="external-link">Calculating isochrones</a>)</li>
 </ul>
-<p>Calculation on network can be long, efforts were made to reduce
-computation time by implementing several functions with
-<strong>Rcpp</strong> and <strong>RcppArmadillo</strong> and by using
-multiprocessing when possible.</p>
+<p>Calculation on network can be long, efforts were made to reduce computation time by implementing several functions with <strong>Rcpp</strong> and <strong>RcppArmadillo</strong> and by using multiprocessing when possible.</p>
 </div>
 <div class="section level2">
 <h2 id="installing">Installing<a class="anchor" aria-label="anchor" href="#installing"></a>
 </h2>
-<p>you can install the CRAN version of this package with the following
-code in R.</p>
+<p>you can install the CRAN version of this package with the following code in R.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"spNetwork"</span><span class="op">)</span></code></pre></div>
-<p>To use all the new features before they are available in the CRAN
-version, you can download the development version.</p>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"spNetwork"</span><span class="op">)</span></span></code></pre></div>
+<p>To use all the new features before they are available in the CRAN version, you can download the development version.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/remote-reexports.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"JeremyGelb/spNetwork"</span><span class="op">)</span></code></pre></div>
-<p>The packages uses mainly the following packages in its internal
-structure :</p>
+<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"JeremyGelb/spNetwork"</span><span class="op">)</span></span></code></pre></div>
+<p>The packages uses mainly the following packages in its internal structure :</p>
 <ul>
 <li>igraph</li>
 <li>sf</li>
@@ -214,132 +174,117 @@ structure :</p>
 <div class="section level2">
 <h2 id="some-examples">Some examples<a class="anchor" aria-label="anchor" href="#some-examples"></a>
 </h2>
-<p>We provide here some short examples of several features. Please,
-check the vignettes for more details.</p>
+<p>We provide here some short examples of several features. Please, check the vignettes for more details.</p>
 <ul>
 <li>realizing a kernel network density estimate</li>
 </ul>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://jeremygelb.github.io/spNetwork/" class="external-link">spNetwork</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mtennekes/tmap" class="external-link">tmap</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span>
-
-<span class="co"># loading the dataset</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">)</span>
-
-
-<span class="co"># generating sampling points at the middle of lixels</span>
-<span class="va">samples</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/lines_points_along.html">lines_points_along</a></span><span class="op">(</span><span class="va">mtl_network</span>, <span class="fl">50</span><span class="op">)</span>
-
-<span class="co"># calculating densities</span>
-<span class="va">densities</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/nkde.html">nkde</a></span><span class="op">(</span>lines <span class="op">=</span> <span class="va">mtl_network</span>,
-                 events <span class="op">=</span> <span class="va">bike_accidents</span>,
-                 w <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">)</span><span class="op">)</span>,
-                 samples <span class="op">=</span> <span class="va">samples</span>,
-                 kernel_name <span class="op">=</span> <span class="st">"quartic"</span>,
-                 bw <span class="op">=</span> <span class="fl">300</span>, div<span class="op">=</span> <span class="st">"bw"</span>,
-                 method <span class="op">=</span> <span class="st">"discontinuous"</span>,
-                 digits <span class="op">=</span> <span class="fl">2</span>, tol <span class="op">=</span>  <span class="fl">0.1</span>,
-                 grid_shape <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span>,
-                 max_depth <span class="op">=</span> <span class="fl">8</span>,
-                 agg <span class="op">=</span> <span class="fl">5</span>, sparse <span class="op">=</span> <span class="cn">TRUE</span>,
-                 verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
-
-<span class="va">densities</span> <span class="op">&lt;-</span> <span class="va">densities</span><span class="op">*</span><span class="fl">1000</span>
-<span class="va">samples</span><span class="op">$</span><span class="va">density</span> <span class="op">&lt;-</span> <span class="va">densities</span>
-
-<span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html" class="external-link">tm_shape</a></span><span class="op">(</span><span class="va">samples</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_symbols.html" class="external-link">tm_dots</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"density"</span>, size <span class="op">=</span> <span class="fl">0.05</span>, palette <span class="op">=</span> <span class="st">"viridis"</span>,
-          n <span class="op">=</span> <span class="fl">7</span>, style <span class="op">=</span> <span class="st">"kmeans"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://jeremygelb.github.io/spNetwork/" class="external-link">spNetwork</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-tmap/tmap" class="external-link">tmap</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># loading the dataset</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">)</span></span>
+<span></span>
+<span></span>
+<span><span class="co"># generating sampling points at the middle of lixels</span></span>
+<span><span class="va">samples</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/lines_points_along.html">lines_points_along</a></span><span class="op">(</span><span class="va">mtl_network</span>, <span class="fl">50</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># calculating densities</span></span>
+<span><span class="va">densities</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/nkde.html">nkde</a></span><span class="op">(</span>lines <span class="op">=</span> <span class="va">mtl_network</span>,</span>
+<span>                 events <span class="op">=</span> <span class="va">bike_accidents</span>,</span>
+<span>                 w <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                 samples <span class="op">=</span> <span class="va">samples</span>,</span>
+<span>                 kernel_name <span class="op">=</span> <span class="st">"quartic"</span>,</span>
+<span>                 bw <span class="op">=</span> <span class="fl">300</span>, div<span class="op">=</span> <span class="st">"bw"</span>,</span>
+<span>                 method <span class="op">=</span> <span class="st">"discontinuous"</span>,</span>
+<span>                 digits <span class="op">=</span> <span class="fl">2</span>, tol <span class="op">=</span>  <span class="fl">0.1</span>,</span>
+<span>                 grid_shape <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span>,</span>
+<span>                 max_depth <span class="op">=</span> <span class="fl">8</span>,</span>
+<span>                 agg <span class="op">=</span> <span class="fl">5</span>, sparse <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                 verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">densities</span> <span class="op">&lt;-</span> <span class="va">densities</span><span class="op">*</span><span class="fl">1000</span></span>
+<span><span class="va">samples</span><span class="op">$</span><span class="va">density</span> <span class="op">&lt;-</span> <span class="va">densities</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html" class="external-link">tm_shape</a></span><span class="op">(</span><span class="va">samples</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_symbols.html" class="external-link">tm_dots</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"density"</span>, size <span class="op">=</span> <span class="fl">0.05</span>, palette <span class="op">=</span> <span class="st">"viridis"</span>,</span>
+<span>          n <span class="op">=</span> <span class="fl">7</span>, style <span class="op">=</span> <span class="st">"kmeans"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/unnamed-chunk-5-1.png" width="100%"></p>
-<p>An extension for spatio-temporal dataset is also available <a href="https://jeremygelb.github.io/spNetwork/articles/TNKDE.html" class="external-link">Temporal
-Network Kernel Density Estimate</a></p>
+<p>An extension for spatio-temporal dataset is also available <a href="https://jeremygelb.github.io/spNetwork/articles/TNKDE.html" class="external-link">Temporal Network Kernel Density Estimate</a></p>
 <p><img src="articles/images/animated_map.gif" width="75%" style="display: block; margin: auto;"></p>
 <ul>
 <li>Building a spatial matrix based on network distance</li>
 </ul>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-spatial/spdep/" class="external-link">spdep</a></span><span class="op">)</span>
-
-<span class="co"># creating a spatial weight matrix for the accidents</span>
-<span class="va">listw</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/network_listw.html">network_listw</a></span><span class="op">(</span><span class="va">bike_accidents</span>,
-                       <span class="va">mtl_network</span>,
-                       mindist <span class="op">=</span> <span class="fl">10</span>,
-                       maxdistance <span class="op">=</span> <span class="fl">400</span>,
-                       dist_func <span class="op">=</span> <span class="st">"squared inverse"</span>,
-                       line_weight <span class="op">=</span> <span class="st">'length'</span>,
-                       matrice_type <span class="op">=</span> <span class="st">'W'</span>,
-                       grid_shape <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span>,
-                       verbose<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span>
-
-<span class="co"># using the matrix to find isolated accidents (more than 500m)</span>
-<span class="va">no_link</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">listw</span><span class="op">$</span><span class="va">neighbours</span>, <span class="kw">function</span><span class="op">(</span><span class="va">n</span><span class="op">)</span><span class="op">{</span>
-  <span class="kw">if</span><span class="op">(</span><span class="va">n</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span><span class="op">{</span>
-    <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="cn">TRUE</span><span class="op">)</span>
-  <span class="op">}</span><span class="kw">else</span><span class="op">{</span>
-    <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span>
-  <span class="op">}</span>
-<span class="op">}</span><span class="op">)</span>
-
-<span class="va">bike_accidents</span><span class="op">$</span><span class="va">isolated</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">no_link</span>,
-                                  <span class="st">"isolated"</span>,<span class="st">"not isolated"</span><span class="op">)</span><span class="op">)</span>
-
-<span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html" class="external-link">tm_shape</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_lines.html" class="external-link">tm_lines</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"black"</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html" class="external-link">tm_shape</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_symbols.html" class="external-link">tm_dots</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"isolated"</span>, size <span class="op">=</span> <span class="fl">0.1</span>,
-          palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"isolated"</span> <span class="op">=</span> <span class="st">"red"</span>,<span class="st">"not isolated"</span> <span class="op">=</span> <span class="st">"blue"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-spatial/spdep/" class="external-link">spdep</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># creating a spatial weight matrix for the accidents</span></span>
+<span><span class="va">listw</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/network_listw.html">network_listw</a></span><span class="op">(</span><span class="va">bike_accidents</span>,</span>
+<span>                       <span class="va">mtl_network</span>,</span>
+<span>                       mindist <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>                       maxdistance <span class="op">=</span> <span class="fl">400</span>,</span>
+<span>                       dist_func <span class="op">=</span> <span class="st">"squared inverse"</span>,</span>
+<span>                       line_weight <span class="op">=</span> <span class="st">'length'</span>,</span>
+<span>                       matrice_type <span class="op">=</span> <span class="st">'W'</span>,</span>
+<span>                       grid_shape <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span>,</span>
+<span>                       verbose<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># using the matrix to find isolated accidents (more than 500m)</span></span>
+<span><span class="va">no_link</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">listw</span><span class="op">$</span><span class="va">neighbours</span>, <span class="kw">function</span><span class="op">(</span><span class="va">n</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="kw">if</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span><span class="op">{</span></span>
+<span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span>  <span class="op">}</span><span class="kw">else</span><span class="op">{</span></span>
+<span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span><span class="op">}</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">bike_accidents</span><span class="op">$</span><span class="va">isolated</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">no_link</span>,</span>
+<span>                                  <span class="st">"isolated"</span>,<span class="st">"not isolated"</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html" class="external-link">tm_shape</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_lines.html" class="external-link">tm_lines</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"black"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html" class="external-link">tm_shape</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_symbols.html" class="external-link">tm_dots</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"isolated"</span>, size <span class="op">=</span> <span class="fl">0.1</span>,</span>
+<span>          palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"isolated"</span> <span class="op">=</span> <span class="st">"red"</span>,<span class="st">"not isolated"</span> <span class="op">=</span> <span class="st">"blue"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/unnamed-chunk-7-1.png" width="100%"></p>
-<p>Note that you can use this in every spatial analysis you would like
-to perform. With the converter function of spdep (like listw2mat), you
-can convert the listw object into regular matrix if needed</p>
+<p>Note that you can use this in every spatial analysis you would like to perform. With the converter function of spdep (like listw2mat), you can convert the listw object into regular matrix if needed</p>
 <ul>
 <li>Calculating k function</li>
 </ul>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># loading the data</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">main_network_mtl</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">mtl_theatres</span><span class="op">)</span>
-
-<span class="co"># calculating the k function</span>
-<span class="va">kfun_theatre</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/kfunctions.html">kfunctions</a></span><span class="op">(</span><span class="va">main_network_mtl</span>, <span class="va">mtl_theatres</span>,
-                           start <span class="op">=</span> <span class="fl">0</span>, end <span class="op">=</span> <span class="fl">5000</span>, step <span class="op">=</span> <span class="fl">50</span>, 
-                           width <span class="op">=</span> <span class="fl">1000</span>, nsim <span class="op">=</span> <span class="fl">50</span>, resolution <span class="op">=</span> <span class="fl">50</span>,
-                           verbose <span class="op">=</span> <span class="cn">FALSE</span>, conf_int <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span>
-<span class="va">kfun_theatre</span><span class="op">$</span><span class="va">plotg</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># loading the data</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">main_network_mtl</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">mtl_theatres</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># calculating the k function</span></span>
+<span><span class="va">kfun_theatre</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/kfunctions.html">kfunctions</a></span><span class="op">(</span><span class="va">main_network_mtl</span>, <span class="va">mtl_theatres</span>,</span>
+<span>                           start <span class="op">=</span> <span class="fl">0</span>, end <span class="op">=</span> <span class="fl">5000</span>, step <span class="op">=</span> <span class="fl">50</span>, </span>
+<span>                           width <span class="op">=</span> <span class="fl">1000</span>, nsim <span class="op">=</span> <span class="fl">50</span>, resolution <span class="op">=</span> <span class="fl">50</span>,</span>
+<span>                           verbose <span class="op">=</span> <span class="cn">FALSE</span>, conf_int <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span></span>
+<span><span class="va">kfun_theatre</span><span class="op">$</span><span class="va">plotg</span></span></code></pre></div>
 <p><img src="reference/figures/unnamed-chunk-8-1.png" width="100%"></p>
 <div class="section level3">
 <h3 id="work-in-progress">Work in progress<a class="anchor" aria-label="anchor" href="#work-in-progress"></a>
 </h3>
-<p>New methods will be probably added in the future, but we will focus
-on performance for the next release. Do no hesitate to open an issue <a href="https://github.com/JeremyGelb/spNetwork/issues" class="external-link">here</a> if you
-have suggestion or if you encounter a bug.</p>
+<p>New methods will be probably added in the future, but we will focus on performance for the next release. Do no hesitate to open an issue <a href="https://github.com/JeremyGelb/spNetwork/issues" class="external-link">here</a> if you have suggestion or if you encounter a bug.</p>
 <p>Features that will be added to the package in the future:</p>
 <ul>
-<li>temporal NKDE, a two dimensional kernel density estimation in
-network space and time</li>
-<li>rework for using <code>sf</code> objects rather than <code>sp</code>
-(<code>rgeos</code> and <code>maptools</code> will be deprecated in
-2023). This work is undergoing, please report any bug or error in the
-new documentation.</li>
+<li>temporal NKDE, a two dimensional kernel density estimation in network space and time</li>
+<li>rework for using <code>sf</code> objects rather than <code>sp</code> (<code>rgeos</code> and <code>maptools</code> will be deprecated in 2023). This work is undergoing, please report any bug or error in the new documentation.</li>
 </ul>
 </div>
 </div>
 <div class="section level2">
 <h2 id="reporting-a-bug">Reporting a bug<a class="anchor" aria-label="anchor" href="#reporting-a-bug"></a>
 </h2>
-<p>If you encounter a bug when using spNetwork, please open an
-<em>issue</em> <a href="https://github.com/JeremyGelb/spNetwork/issues" class="external-link">here</a>. To
-ensure that the problem is quickly identified, the issue should follow
-the following guidelines:</p>
+<p>If you encounter a bug when using spNetwork, please open an <em>issue</em> <a href="https://github.com/JeremyGelb/spNetwork/issues" class="external-link">here</a>. To ensure that the problem is quickly identified, the issue should follow the following guidelines:</p>
 <ol style="list-style-type: decimal">
-<li>Provide an informative title and do not copy-paste the error message
-as the title.</li>
+<li>Provide an informative title and do not copy-paste the error message as the title.</li>
 <li>Provide the ALL code which lead to the bug.</li>
 <li>Indicate the version of R and spNetwork.</li>
-<li>If possible, provide a sample of data and a reproductible
-example.</li>
+<li>If possible, provide a sample of data and a reproductible example.</li>
 </ol>
 </div>
 <div class="section level2">
@@ -355,35 +300,27 @@ example.</li>
 <h2 id="contribute">Contribute<a class="anchor" aria-label="anchor" href="#contribute"></a>
 </h2>
 <p>To contribute to <code>spNetwork</code>, please follow these <a href="https://github.com/JeremyGelb/spNetwork/blob/master/CONTRIBUTING.md" class="external-link">guidelines</a>.</p>
-<p>Please note that the <code>spNetwork</code> project is released with
-a <a href="https://github.com/JeremyGelb/spNetwork/blob/master/CONDUCT.md" class="external-link">Contributor
-Code of Conduct</a>. By contributing to this project, you agree to abide
-by its terms.</p>
+<p>Please note that the <code>spNetwork</code> project is released with a <a href="https://github.com/JeremyGelb/spNetwork/blob/master/CONDUCT.md" class="external-link">Contributor Code of Conduct</a>. By contributing to this project, you agree to abide by its terms.</p>
 </div>
 <div class="section level2">
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
-<p>An article presenting <code>spNetwork</code> and NKDE has been
-accepted in the RJournal!</p>
-<p>Gelb Jérémy (2021). spNetwork, a package for network kernel density
-estimation. The R Journal. <a href="https://journal.r-project.org/archive/2021/RJ-2021-102/index.html" class="external-link uri">https://journal.r-project.org/archive/2021/RJ-2021-102/index.html</a>.</p>
+<p>An article presenting <code>spNetwork</code> and NKDE has been accepted in the RJournal!</p>
+<p>Gelb Jérémy (2021). spNetwork, a package for network kernel density estimation. The R Journal. <a href="https://journal.r-project.org/archive/2021/RJ-2021-102/index.html" class="external-link uri">https://journal.r-project.org/archive/2021/RJ-2021-102/index.html</a>.</p>
 <p>You can also cite the package for other methods:</p>
 <p>Gelb Jérémy (2021). spNetwork: Spatial Analysis on Network. <a href="https://jeremygelb.github.io/spNetwork/" class="external-link uri">https://jeremygelb.github.io/spNetwork/</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
 </h2>
-<p><code>spNetwork</code> is licensed under <a href="https://github.com/JeremyGelb/spNetwork/blob/master/LICENSE.txt" class="external-link">GPL2
-License</a>.</p>
+<p><code>spNetwork</code> is licensed under <a href="https://github.com/JeremyGelb/spNetwork/blob/master/LICENSE.txt" class="external-link">GPL2 License</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="acknowledgments">Acknowledgments<a class="anchor" aria-label="anchor" href="#acknowledgments"></a>
 </h2>
 <ul>
-<li>Hat tip to Philippe Apparicio for his support during the
-development</li>
-<li>Hat tip to Hadley Wickham and his helpful book <em>R
-packages</em>
+<li>Hat tip to Philippe Apparicio for his support during the development</li>
+<li>Hat tip to Hadley Wickham and his helpful book <em>R packages</em>
 </li>
 </ul>
 </div>
@@ -447,8 +384,7 @@ packages</em>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>

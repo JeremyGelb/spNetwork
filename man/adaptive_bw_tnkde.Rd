@@ -30,13 +30,15 @@ adaptive_bw_tnkde(
 
 \item{lines}{A feature collection of linestrings representing the network}
 
-\item{bw_net}{The fixed kernel bandwidth for the network dimension}
+\item{bw_net}{The fixed kernel bandwidth for the network dimension. Can also be a vector
+if several bandwidth must be used.}
 
-\item{bw_time}{The fixed kernel bandwidth for the time dimension}
+\item{bw_time}{The fixed kernel bandwidth for the time dimension. Can also be a vector
+if several bandwidth must be used.}
 
-\item{trim_bw_net}{The maximum size of local bandiwidths for network dimension}
+\item{trim_bw_net}{The maximum size of local bandwidths for network dimension. Must be a vector if bw_net is a vector}
 
-\item{trim_bw_time}{The maximum size of local bandiwidths for time dimension}
+\item{trim_bw_time}{The maximum size of local bandwidths for time dimension. Must be a vector if bw_net is a vector}
 
 \item{method}{The method to use when calculating the NKDE}
 
@@ -56,7 +58,8 @@ lines}
 \item{verbose}{A Boolean indicating if update messages should be printed}
 }
 \value{
-A vector with the local bandwidths
+A vector with the local bandwidths, or an array if bw_time and bw_net are vectors.
+In that case, the array has the following dimensions : length(bw_net) X length(bw_time) X nrow(events)
 }
 \description{
 Function to calculate Adaptive bandwidths according to Abramson’s smoothing regimen

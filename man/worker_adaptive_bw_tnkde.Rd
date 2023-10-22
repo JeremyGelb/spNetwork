@@ -40,9 +40,11 @@ column}
 
 \item{kernel_name}{The name of the kernel to use (string)}
 
-\item{bw_net}{A float indicating the fixed network bandwidth}
+\item{bw_net}{The fixed kernel bandwidth for the network dimension. Can also be a vector
+if several bandwidth must be used.}
 
-\item{bw_time}{A float indicating the fixed time bandwidth}
+\item{bw_time}{The fixed kernel bandwidth for the time dimension. Can also be a vector
+if several bandwidth must be used.}
 
 \item{method}{The type of NKDE to use (string)}
 
@@ -71,7 +73,7 @@ discontinuous NKDE}
 about the process.}
 }
 \value{
-A vector with the local bandwidths
+A vector with the local bandwidths or an array if bw_net and bw_time are vectors
 }
 \description{
 The worker function to calculate Adaptive bandwidths according

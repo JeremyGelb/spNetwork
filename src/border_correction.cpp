@@ -7,6 +7,7 @@
 // #### Correction factor functions ####
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 // DISCONTINUOUS VERSION
 
 //' @title A function to calculate the necessary information to apply the

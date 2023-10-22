@@ -37,7 +37,7 @@ test_that("Testing the bw selection function with CV likelihood and simple kerne
 
 
   #let us calculate the value with our function
-  obs_value <- bw_cv_likelihood_calc(bw_range = c(8,10),1,
+  obs_value <- bw_cv_likelihood_calc(bws = seq(8,10,1),
                                      lines = all_lines,
                                      events = event, w = c(1,1,1),
                                      check = F,
@@ -86,7 +86,7 @@ test_that("Testing the bw selection function with CV likelihood and simple kerne
 
 
   #let us calculate the value with our function
-  obs_value <- bw_cv_likelihood_calc(bw_range = c(6,8),1,
+  obs_value <- bw_cv_likelihood_calc(bws = seq(6,8,1),
                                      lines = all_lines,
                                      events = event, w = c(1,1,1),
                                      check = F,
@@ -134,7 +134,7 @@ test_that("Testing the bw selection function with CV likelihood and discontinuou
 
 
   #let us calculate the value with our function
-  obs_value <- bw_cv_likelihood_calc(c(8,10),1,
+  obs_value <- bw_cv_likelihood_calc(seq(8,10,1),
                     lines = all_lines,
                     events = event, w = c(1,1,1),
                     check = F,
@@ -184,7 +184,7 @@ test_that("Testing the bw selection function with CV likelihood and continuous k
 
 
   #let us calculate the value with our function
-  obs_value <- bw_cv_likelihood_calc(c(8,10),1,
+  obs_value <- bw_cv_likelihood_calc(seq(8,10,1),
                                      lines = all_lines,
                                      events = event, w = c(1,1,1),
                                      check = F,
@@ -258,8 +258,7 @@ test_that("Testing the bw selection function with CV likelihood and continuous k
 
 
   #let us calculate the value with our function
-  obs_value <- bw_cv_likelihood_calc(bw_range = c(11,12),
-                                           bw_step = 1,
+  obs_value <- bw_cv_likelihood_calc(bws = seq(11,12,1),
                                            lines = all_lines,
                                            events = event,
                                            w = c(1,1,1),
@@ -318,8 +317,7 @@ test_that("Testing the bw selection function with Van Lieshout's Criterion and s
 
 
   #let us calculate the value with our function
-  obs_value <- bw_cvl_calc(bw_range = c(8,10),
-                            bw_step = 1,
+  obs_value <- bw_cvl_calc(bws = seq(8,10,1),
                             lines = all_lines,
                             events = event,
                             w = c(1,1,1),
@@ -368,7 +366,7 @@ test_that("Testing the bw selection function with Van Lieshout's Criterion and d
 
 
   #let us calculate the value with our function
-  obs_value <- bw_cvl_calc(c(8,10),1,
+  obs_value <- bw_cvl_calc(seq(8,10,1),
                            lines = all_lines,
                            events = event, w = c(1,1,1),
                            check = F,
@@ -460,7 +458,7 @@ test_that("Testing the bw selection function with Van Lieshout's Criterion and c
 
 
   #let us calculate the value with our function
-  obs_value <- bw_cvl_calc(c(8,11),1,
+  obs_value <- bw_cvl_calc(seq(8,11,1),
                             lines = all_lines,
                             events = event, w = c(1,1,1),
                             check = F,
@@ -500,17 +498,29 @@ test_that("Testing that bw selection by cv-likelihood gives the same score in si
   ## multicore cv score
   future::plan(future::multisession(workers=2))
 
-  cv_scores.mc <- bw_cv_likelihood_calc.mc(c(200,400),100,
-                                 lines, events,
-                                 rep(1,nrow(events)),
-                                 "scaled gaussian", "discontinuous",
-                                 diggle_correction = FALSE, study_area = NULL,
-                                 max_depth = 8,
-                                 digits=2, tol=0.1, agg=5,
-                                 sparse=TRUE, grid_shape=c(2,2),
-                                 sub_sample = 1, verbose=FALSE, check=TRUE)
+  ## NOTE : THE MULTICORE VERSION IS NOT WORKING' BUT THE SIMGLE CORE VERSION IS WORKING
+  cv_scores.mc <- bw_cv_likelihood_calc.mc(
+    bws = seq(200,400,100),
+    trim_bws = seq(200,400,100) * 2,
+    lines = lines,
+    events = events,
+    w = rep(1,nrow(events)),
+    kernel_name = "scaled gaussian",
+    method = "discontinuous",
+    diggle_correction = FALSE,
+    study_area = NULL,
+    max_depth = 8,
+    digits=2,
+    tol=0.1,
+    agg=5,
+    sparse=TRUE,
+    grid_shape=c(2,2),
+    sub_sample = 1,
+    verbose=FALSE,
+    adaptive = FALSE,
+    check=TRUE)
 
-  cv_scores.mc2 <- bw_cv_likelihood_calc.mc(c(200,400),100,
+  cv_scores.mc2 <- bw_cv_likelihood_calc.mc(seq(200,400,100),
                                            lines, events,
                                            rep(1,nrow(events)),
                                            "scaled gaussian", "discontinuous",
@@ -521,8 +531,7 @@ test_that("Testing that bw selection by cv-likelihood gives the same score in si
                                            sub_sample = 1, verbose=TRUE, check=TRUE)
 
   ## single core cv score
-  cv_scores <- bw_cv_likelihood_calc(bw_range = c(200,400),
-                                     bw_step = 100,
+  cv_scores <- bw_cv_likelihood_calc(bws = seq(200,400,100),
                                      lines = lines,
                                      events = events,
                                      w = rep(1,nrow(events)),
@@ -563,7 +572,7 @@ test_that("Testing that bw selection with Van Lieshout's Criterion gives the sam
 
   ## multicore cv score
   future::plan(future::multisession(workers=1))
-  cv_scores.mc <- bw_cvl_calc.mc(c(200,400),100,
+  cv_scores.mc <- bw_cvl_calc.mc(seq(200,400,100),
                                            lines, events,
                                            rep(1,nrow(events)),
                                            "gaussian", "discontinuous",
@@ -573,7 +582,7 @@ test_that("Testing that bw selection with Van Lieshout's Criterion gives the sam
                                            sparse=TRUE, grid_shape=c(2,2),
                                            sub_sample = 1, verbose=FALSE, check=TRUE)
 
-  cv_scores.mc2 <- bw_cvl_calc.mc(c(200,400),100,
+  cv_scores.mc2 <- bw_cvl_calc.mc(seq(200,400,100),
                                  lines, events,
                                  rep(1,nrow(events)),
                                  "gaussian", "discontinuous",
@@ -584,7 +593,7 @@ test_that("Testing that bw selection with Van Lieshout's Criterion gives the sam
                                  sub_sample = 1, verbose=FALSE, check=TRUE)
 
   ## single core cv score
-  cv_scores <- bw_cvl_calc(c(200,400),100,
+  cv_scores <- bw_cvl_calc(seq(200,400,100),
                                      lines, events,
                                      rep(1,nrow(events)),
                                      "gaussian", "discontinuous",
@@ -646,13 +655,13 @@ test_that("Testing the bw selection function with CV likelihood and discontinuou
 
   # for point 1
   dens1 <- (quartic_kernel(0,bw) + # self density
-    1/3 * quartic_kernel(4,bw) + # first point on the left
-    1/3 * quartic_kernel(6,bw)) * (1/bw) # second point
+    1/3 * quartic_kernel(4,bw) + # second point
+    1/3 * quartic_kernel(6,bw)) * (1/bw) # third point
 
   # for point 2
   dens2 <- (quartic_kernel(0,bw) + # self density
               1/3 * quartic_kernel(4,bw) + # first point on top
-              1/3 * quartic_kernel(4,bw)) * (1/bw) # second point below
+              1/3 * quartic_kernel(4,bw)) * (1/bw) # third point
 
   # for point 3
   dens3 <- dens1
@@ -663,8 +672,9 @@ test_that("Testing the bw selection function with CV likelihood and discontinuou
   bws <- bw * (k**(-1/2) * delta**(-1))
 
   # we can now calculate the loo of each point
-  loo1 <- ((1/3) * quartic_kernel(4,bws[[2]]) * (1/bws[[2]]) +
-    (1/3) * quartic_kernel(6,bws[[3]]) * (1/bws[[3]]))
+  # for point 1
+  loo1 <- (((1/3) * quartic_kernel(4,bws[[2]]))  * (1/bws[[2]]))  + # density from point 2
+    (((1/3) * quartic_kernel(6,bws[[3]]))  * (1/bws[[3]])) # density from point 3
 
   loo2 <- ((1/3) * quartic_kernel(4,bws[[1]]) * (1/bws[[1]]) +
              (1/3) * quartic_kernel(4,bws[[3]]) * (1/bws[[3]]))
@@ -678,7 +688,7 @@ test_that("Testing the bw selection function with CV likelihood and discontinuou
 
 
   #let us calculate the value with our function
-  obs_value <- bw_cv_likelihood_calc(c(8,10),1,
+  obs_value <- bw_cv_likelihood_calc(seq(8,10,1),
                                      lines = all_lines,
                                      events = event, w = c(1,1,1),
                                      check = F,
@@ -687,7 +697,10 @@ test_that("Testing the bw selection function with CV likelihood and discontinuou
                                      adaptive = TRUE,
                                      trim_bws = c(50,50,50),
                                      digits = 1,
-                                     agg = NULL, verbose = F,tol = 0.00001
+                                     agg = NULL,
+                                     verbose = T,
+                                     grid_shape = c(3,3),
+                                     tol = 0.00001
   )
   expect_equal(obs_value[3,2], total)
 })
@@ -761,7 +774,7 @@ test_that("Testing the bw selection function with CV likelihood and discontinuou
 
 
   #let us calculate the value with our function
-  obs_value <- bw_cv_likelihood_calc(c(8,10),1,
+  obs_value <- bw_cv_likelihood_calc(seq(8,10,1),
                                      lines = all_lines,
                                      events = event, w = event$w,
                                      check = F,

@@ -209,7 +209,6 @@ test_that("Testing the correction_factor function for a continuous NKDE", {
 #### TEST FOR CORRECTION FACTOR WITH SIMPLE TNKDE AND ADAPTIVE BW ####
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-## PAS TERMINE
 
 test_that("Testing the correction_factor function for a simple TNKDE and adaptive BWS", {
 

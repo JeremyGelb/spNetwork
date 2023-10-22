@@ -4,7 +4,7 @@
 \alias{aggregate_points}
 \title{Events aggregation}
 \usage{
-aggregate_points(points, maxdist, weight = "weight")
+aggregate_points(points, maxdist, weight = "weight", return_ids = FALSE)
 }
 \arguments{
 \item{points}{The feature collection of points to contract (must have a weight column)}
@@ -14,6 +14,10 @@ aggregate_points(points, maxdist, weight = "weight")
 \item{weight}{The name of the column to use as weight (default is "weight").
 The values of the aggregated points for this column will be summed. For all
 the other columns, only the max value is retained.}
+
+\item{return_ids}{A boolean (default is FALSE), if TRUE, then an index indicating
+for each point the group it belongs to is returned. If FALSE, then a spatial
+point features is returned with the points already aggregated.}
 }
 \value{
 A new feature collection of points

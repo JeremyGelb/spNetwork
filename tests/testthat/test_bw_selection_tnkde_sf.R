@@ -55,10 +55,8 @@ test_that("Testing the bw selection function with CV likelihood and simple kerne
 
 
   #let us calculate the value with our function
-  obs_value <- bw_tnkde_cv_likelihood_calc(bw_net_range = c(10,15),
-                                           bw_net_step = 5,
-                                           bw_time_range = c(6,7),
-                                           bw_time_step = 1,
+  obs_value <- bw_tnkde_cv_likelihood_calc(bws_net = seq(10,15,5),
+                                           bws_time = seq(6,7,1),
                                            lines = all_lines,
                                            events = event,
                                            time_field = "Time",
@@ -124,10 +122,8 @@ test_that("Testing the bw selection function with CV likelihood and simple kerne
 
 
   #let us calculate the value with our function
-  obs_value <- bw_tnkde_cv_likelihood_calc(bw_net_range = c(7,15),
-                                           bw_net_step = 5,
-                                           bw_time_range = c(6,7),
-                                           bw_time_step = 1,
+  obs_value <- bw_tnkde_cv_likelihood_calc(bws_net = seq(7,15,5),
+                                           bws_time = seq(6,7,1),
                                            lines = all_lines,
                                            events = event,
                                            time_field = "Time",
@@ -200,10 +196,8 @@ test_that("Testing the bw selection function with CV likelihood and discontinuou
 
 
   #let us calculate the value with our function
-  obs_value <-bw_tnkde_cv_likelihood_calc(bw_net_range = c(10,15),
-                                           bw_net_step = 5,
-                                           bw_time_range = c(6,7),
-                                           bw_time_step = 1,
+  obs_value <-bw_tnkde_cv_likelihood_calc(bws_net = seq(10,15,5),
+                                           bws_time = seq(6,7,1),
                                            lines = all_lines,
                                            events = event,
                                            time_field = "Time",
@@ -292,10 +286,8 @@ test_that("Testing the bw selection function with CV likelihood and continuous k
 
 
   #let us calculate the value with our function
-  obs_value <-bw_tnkde_cv_likelihood_calc(bw_net_range = c(11,12),
-                                           bw_net_step = 1,
-                                           bw_time_range = c(6,7),
-                                           bw_time_step = 1,
+  obs_value <-bw_tnkde_cv_likelihood_calc(bws_net = seq(11,12,1),
+                                           bws_time = seq(6,7,1),
                                            lines = all_lines,
                                            events = event,
                                            time_field = "Time",
@@ -385,10 +377,8 @@ test_that("Testing the bw selection function with CV likelihood in multicore and
 
 
   #let us calculate the value with our function
-  obs_value <-bw_tnkde_cv_likelihood_calc(bw_net_range = c(11,12),
-                                           bw_net_step = 1,
-                                           bw_time_range = c(6,7),
-                                           bw_time_step = 1,
+  obs_value <- bw_tnkde_cv_likelihood_calc(bws_net = seq(11,12,1),
+                                           bws_time = seq(6,7,1),
                                            lines = all_lines,
                                            events = event,
                                            time_field = "Time",
@@ -408,10 +398,8 @@ test_that("Testing the bw selection function with CV likelihood in multicore and
                                            check=FALSE)
 
   future::plan(future::multisession(workers=2))
-  obs_value2 <-bw_tnkde_cv_likelihood_calc.mc(bw_net_range = c(11,12),
-                                           bw_net_step = 1,
-                                           bw_time_range = c(6,7),
-                                           bw_time_step = 1,
+  obs_value2 <-bw_tnkde_cv_likelihood_calc.mc(bws_net = seq(11,12,1),
+                                           bws_time = seq(6,7,1),
                                            lines = all_lines,
                                            events = event,
                                            time_field = "Time",
@@ -503,19 +491,17 @@ test_that("Testing the bw selection function with CV likelihood and simple kerne
 
   # second, I can use the local densities to calculate the loo values
   loo_values <- sapply(1:n, function(i){
-    bw_net <- abws_net[[i]]
-    bw_time <- abws_time[[i]]
     ids <- setdiff(c(1:n),i)
-    sum(quartic_kernel(net_dist_mat[i,ids],abws_net[[i]]) *
-          quartic_kernel(time_dist_mat[i,ids],abws_time[[i]])) * (1/(abws_net[[i]]*abws_time[[i]]))
+    sum( ((quartic_kernel(net_dist_mat[i,ids],abws_net[ids])) *
+            quartic_kernel(time_dist_mat[i,ids],abws_time[ids])) * (1/(abws_net[ids]*abws_time[ids]))
+
+    )
   })
   loo_value <- sum(log(loo_values)) / n
 
   #let us calculate the value with our function
-  obs_value <- bw_tnkde_cv_likelihood_calc(bw_net_range = c(10,20),
-                                          bw_net_step = 5,
-                                          bw_time_range = c(6,7),
-                                          bw_time_step = 1,
+  obs_value <- bw_tnkde_cv_likelihood_calc(bws_net = seq(10,20,5),
+                                          bws_time = seq(6,7,1),
                                           lines = all_lines,
                                           events = event,
                                           time_field = "Time",
@@ -605,20 +591,19 @@ test_that("Testing the bw selection function with CV likelihood and discontinuou
   abws_time <- bw_time * (1/sqrt(hf0)) * (1/gamma_val)
 
   # second, I can use the local densities to calculate the loo values
+
   loo_values <- sapply(1:n, function(i){
-    bw_net <- abws_net[[i]]
-    bw_time <- abws_time[[i]]
     ids <- setdiff(c(1:n),i)
-    sum( (quartic_kernel(net_dist_mat[i,ids],abws_net[[i]]) /  alpha_mat[i,ids])*
-          quartic_kernel(time_dist_mat[i,ids],abws_time[[i]])) * (1/(abws_net[[i]]*abws_time[[i]]))
+    sum( ((quartic_kernel(net_dist_mat[i,ids],abws_net[ids]) /  alpha_mat[i,ids]) *
+          quartic_kernel(time_dist_mat[i,ids],abws_time[ids])) * (1/(abws_net[ids]*abws_time[ids]))
+
+         )
   })
   loo_value <- sum(log(loo_values)) / n
 
   #let us calculate the value with our function
-  obs_value <- bw_tnkde_cv_likelihood_calc(bw_net_range = c(10,20),
-                                           bw_net_step = 5,
-                                           bw_time_range = c(6,7),
-                                           bw_time_step = 1,
+  obs_value <- bw_tnkde_cv_likelihood_calc(bws_net = seq(10,20,5),
+                                           bws_time = seq(6,7,1),
                                            lines = all_lines,
                                            events = event,
                                            time_field = "Time",
@@ -750,45 +735,45 @@ test_that("Testing the bw selection function with CV likelihood and continuous k
 
   # second, I can use the local bandwidths to calculate the loo values
   # for the first event
-  dd2 <- quartic_kernel(5, abws_net[[1]]) * (2/4) # effect of event 2
-  dd3 <- quartic_kernel(6, abws_net[[1]]) * (2/4) # effect of event 3
-  dd4 <- quartic_kernel(5, abws_net[[1]]) * (2/4) # effect of event 4
+  dd2 <- quartic_kernel(5, abws_net[[2]]) * (2/4) # effect of event 2
+  dd3 <- quartic_kernel(6, abws_net[[3]]) * (2/4) # effect of event 3
+  dd4 <- quartic_kernel(5, abws_net[[4]]) * (2/4) # effect of event 4
   dens1_net <- c(dd2, dd3, dd4)
 
-  dens1_time <- c(quartic_kernel(time_dist_mat[1,c(2,3,4)], abws_time[[1]]))
-  dens1 <- sum((dens1_net * dens1_time)) * (1/(abws_net[[1]]*abws_time[[1]]))
+  dens1_time <- c(quartic_kernel(time_dist_mat[1,c(2,3,4)], abws_time[c(2,3,4)]))
+  dens1 <- sum((dens1_net * dens1_time) * (1/(abws_net[c(2,3,4)]*abws_time[c(2,3,4)])))
 
   # for the second event
   dens2_net <- c(
-    (quartic_kernel(5, abws_net[[2]]) * (2/4)),  # effect from event 1
-    (quartic_kernel(5, abws_net[[2]]) * (2/4)),  # effect from event 3
-    quartic_kernel(0, abws_net[[2]]) + # effect from event 4 (same location)
+    (quartic_kernel(5, abws_net[[1]]) * (2/4)),  # effect from event 1
+    (quartic_kernel(5, abws_net[[3]]) * (2/4)),  # effect from event 3
+    quartic_kernel(0, abws_net[[4]]) + # effect from event 4 (same location)
       ( (-2/4) * (quartic_kernel(4, abws_net[[2]]))) #backfire from center
   )
 
-  dens2_time <- c(quartic_kernel(time_dist_mat[2,c(1,3,4)], abws_time[[2]]))
-  dens2 <- sum((dens2_net * dens2_time)) * (1/(abws_net[[2]]*abws_time[[2]]))
+  dens2_time <- c(quartic_kernel(time_dist_mat[2,c(1,3,4)], abws_time[c(1,3,4)]))
+  dens2 <- sum((dens2_net * dens2_time) * (1/(abws_net[c(1,3,4)]*abws_time[c(1,3,4)])))
 
   # for the third event
   dens3_net <- c(
-    (quartic_kernel(6, abws_net[[3]]) * (2/4)),  # effect from event 1
-    (quartic_kernel(5, abws_net[[3]]) * (2/4)),  # effect from event 2
-    (quartic_kernel(5, abws_net[[3]]) * (2/4))  # effect from event 4
+    (quartic_kernel(6, abws_net[[1]]) * (2/4)),  # effect from event 1
+    (quartic_kernel(5, abws_net[[2]]) * (2/4)),  # effect from event 2
+    (quartic_kernel(5, abws_net[[4]]) * (2/4))  # effect from event 4
   )
 
-  dens3_time <- c(quartic_kernel(time_dist_mat[3,c(1,2,4)], abws_time[[3]]))
-  dens3 <- sum((dens3_net * dens3_time)) * (1/(abws_time[[3]]*abws_net[[3]]))
+  dens3_time <- c(quartic_kernel(time_dist_mat[3,c(1,2,4)], abws_time[c(1,2,4)]))
+  dens3 <- sum((dens3_net * dens3_time) * (1/(abws_time[c(1,2,4)]*abws_net[c(1,2,4)])))
 
   # for the fourth event
   dens4_net <- c(
-    (quartic_kernel(5, abws_net[[4]]) * (2/4)),  # effect from event 1
-    (quartic_kernel(0, abws_net[[4]]) + # effect from event 2 (same location)
+    (quartic_kernel(5, abws_net[[1]]) * (2/4)),  # effect from event 1
+    (quartic_kernel(0, abws_net[[2]]) + # effect from event 2 (same location)
        ( (-2/4) * (quartic_kernel(4, abws_net[[4]])))), #backfire from center
-    (quartic_kernel(5, abws_net[[4]]) * (2/4))  # effect from event 3
+    (quartic_kernel(5, abws_net[[3]]) * (2/4))  # effect from event 3
   )
 
-  dens4_time <- c(quartic_kernel(time_dist_mat[4,c(1,2,3)], abws_time[[4]]))
-  dens4 <- sum((dens4_net * dens4_time)) *  (1/(abws_time[[4]]*abws_net[[4]]))
+  dens4_time <- c(quartic_kernel(time_dist_mat[4,c(1,2,3)], abws_time[c(1,2,3)]))
+  dens4 <- sum((dens4_net * dens4_time) *  (1/(abws_time[c(1,2,3)]*abws_net[c(1,2,3)])))
 
 
 
@@ -797,10 +782,8 @@ test_that("Testing the bw selection function with CV likelihood and continuous k
 
   #let us calculate the value with our function
   # TODO : MAKE THE TEST WORK WITH A GRID !
-  obs_value <- bw_tnkde_cv_likelihood_calc(bw_net_range = c(10,20),
-                                           bw_net_step = 5,
-                                           bw_time_range = c(6,7),
-                                           bw_time_step = 1,
+  obs_value <- bw_tnkde_cv_likelihood_calc(bws_net = seq(10,20,5),
+                                           bws_time = seq(6,7,1),
                                            lines = all_lines,
                                            events = event,
                                            time_field = "Time",

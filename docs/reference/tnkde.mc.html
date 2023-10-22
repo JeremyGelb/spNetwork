@@ -18,7 +18,7 @@ sampling points in space and times, and events in space and time with multicore 
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3.6.9000</span>
       </span>
     </div>
 
@@ -89,33 +89,33 @@ sampling points in space and times, and events in space and time with multicore 
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">tnkde.mc</span><span class="op">(</span>
-  <span class="va">lines</span>,
-  <span class="va">events</span>,
-  <span class="va">time_field</span>,
-  <span class="va">w</span>,
-  <span class="va">samples_loc</span>,
-  <span class="va">samples_time</span>,
-  <span class="va">kernel_name</span>,
-  <span class="va">bw_net</span>,
-  <span class="va">bw_time</span>,
-  adaptive <span class="op">=</span> <span class="cn">FALSE</span>,
-  adaptive_separate <span class="op">=</span> <span class="cn">TRUE</span>,
-  trim_bw_net <span class="op">=</span> <span class="cn">NULL</span>,
-  trim_bw_time <span class="op">=</span> <span class="cn">NULL</span>,
-  <span class="va">method</span>,
-  div <span class="op">=</span> <span class="st">"bw"</span>,
-  diggle_correction <span class="op">=</span> <span class="cn">FALSE</span>,
-  study_area <span class="op">=</span> <span class="cn">NULL</span>,
-  max_depth <span class="op">=</span> <span class="fl">15</span>,
-  digits <span class="op">=</span> <span class="fl">5</span>,
-  tol <span class="op">=</span> <span class="fl">0.1</span>,
-  agg <span class="op">=</span> <span class="cn">NULL</span>,
-  sparse <span class="op">=</span> <span class="cn">TRUE</span>,
-  grid_shape <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>,
-  verbose <span class="op">=</span> <span class="cn">TRUE</span>,
-  check <span class="op">=</span> <span class="cn">TRUE</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">tnkde.mc</span><span class="op">(</span></span>
+<span>  <span class="va">lines</span>,</span>
+<span>  <span class="va">events</span>,</span>
+<span>  <span class="va">time_field</span>,</span>
+<span>  <span class="va">w</span>,</span>
+<span>  <span class="va">samples_loc</span>,</span>
+<span>  <span class="va">samples_time</span>,</span>
+<span>  <span class="va">kernel_name</span>,</span>
+<span>  <span class="va">bw_net</span>,</span>
+<span>  <span class="va">bw_time</span>,</span>
+<span>  adaptive <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  adaptive_separate <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  trim_bw_net <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  trim_bw_time <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">method</span>,</span>
+<span>  div <span class="op">=</span> <span class="st">"bw"</span>,</span>
+<span>  diggle_correction <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  study_area <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  max_depth <span class="op">=</span> <span class="fl">15</span>,</span>
+<span>  digits <span class="op">=</span> <span class="fl">5</span>,</span>
+<span>  tol <span class="op">=</span> <span class="fl">0.1</span>,</span>
+<span>  agg <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  sparse <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  grid_shape <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  check <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -124,55 +124,89 @@ sampling points in space and times, and events in space and time with multicore 
 <dd><p>A feature collection of linestrings representing the underlying network. The
 geometries must be simple Linestrings (may crash if some geometries
  are invalid) without MultiLineSring.</p></dd>
+
+
 <dt>events</dt>
 <dd><p>events A feature collection of points representing the events on the
 network. The points will be snapped on the network to their closest line.</p></dd>
+
+
 <dt>time_field</dt>
 <dd><p>The name of the field in events indicating when the events
 occurred. It must be a numeric field</p></dd>
+
+
 <dt>w</dt>
 <dd><p>A vector representing the weight of each event</p></dd>
+
+
 <dt>samples_loc</dt>
 <dd><p>A feature collection of points representing the locations for
 which the densities will be estimated.</p></dd>
+
+
 <dt>samples_time</dt>
 <dd><p>A numeric vector indicating when the densities will be sampled</p></dd>
+
+
 <dt>kernel_name</dt>
 <dd><p>The name of the kernel to use. Must be one of triangle,
 gaussian, tricube, cosine, triweight, quartic, epanechnikov or uniform.</p></dd>
+
+
 <dt>bw_net</dt>
 <dd><p>The network kernel bandwidth (using the scale of the lines),
 can be a single float or a numeric vector if a different bandwidth must be
 used for each event.</p></dd>
+
+
 <dt>bw_time</dt>
 <dd><p>The time kernel bandwidth, can be a single float or a numeric
 vector if a different bandwidth must be used for each event.</p></dd>
+
+
 <dt>adaptive</dt>
 <dd><p>A Boolean, indicating if an adaptive bandwidth must be used.
 Both spatial and temporal bandwidths are adapted but separately.</p></dd>
+
+
 <dt>adaptive_separate</dt>
 <dd><p>A boolean indicating if the adaptive bandwidths for
 the time and the network dimensions must be calculated separately (TRUE) or
 in interaction (FALSE)</p></dd>
+
+
 <dt>trim_bw_net</dt>
 <dd><p>A float, indicating the maximum value for the adaptive
 network bandwidth</p></dd>
+
+
 <dt>trim_bw_time</dt>
 <dd><p>A float, indicating the maximum value for the adaptive
 time bandwidth</p></dd>
+
+
 <dt>method</dt>
 <dd><p>The method to use when calculating the NKDE, must be one of
 simple / discontinuous / continuous (see nkde details for more information)</p></dd>
+
+
 <dt>div</dt>
 <dd><p>The divisor to use for the kernel. Must be "n" (the number of
 events within the radius around each sampling point), "bw" (the bandwith)
 "none" (the simple sum).</p></dd>
+
+
 <dt>diggle_correction</dt>
 <dd><p>A Boolean indicating if the correction factor
 for edge effect must be used.</p></dd>
+
+
 <dt>study_area</dt>
 <dd><p>A feature collection of polygons 
 representing the limits of the study area.</p></dd>
+
+
 <dt>max_depth</dt>
 <dd><p>when using the continuous and discontinuous methods, the
 calculation time and memory use can go wild  if the network has many
@@ -182,40 +216,57 @@ kernel is divided at intersections, a value of 10 should yield good
 estimates in most cases. A larger value can be used without a problem for the
 discontinuous method. For the continuous method, a larger value will
 strongly impact calculation speed.</p></dd>
+
+
 <dt>digits</dt>
 <dd><p>The number of digits to retain from the spatial coordinates. It
 ensures that topology is good when building the network. Default is 3. Too high a
 precision (high number of digits) might break some connections</p></dd>
+
+
 <dt>tol</dt>
 <dd><p>A float indicating the minimum distance between the events and the
 lines' extremities when adding the point to the network. When points are
 closer, they are added at the extremity of the lines.</p></dd>
+
+
 <dt>agg</dt>
 <dd><p>A double indicating if the events must be aggregated within a
 distance. If NULL, the events are aggregated only by rounding the
 coordinates.</p></dd>
+
+
 <dt>sparse</dt>
 <dd><p>A Boolean indicating if sparse or regular matrices should be
 used by the Rcpp functions. These matrices are used to store edge indices
 between two nodes in a graph. Regular matrices are faster, but require more
 memory, in particular with multiprocessing. Sparse matrices are slower (a
 bit), but require much less memory.</p></dd>
+
+
 <dt>grid_shape</dt>
 <dd><p>A vector of two values indicating how the study area
 must be split when performing the calculus. Default is c(1,1) (no split). A finer grid could
 reduce memory usage and increase speed when a large dataset is used. When using
 multiprocessing, the work in each grid is dispatched between the workers.</p></dd>
+
+
 <dt>verbose</dt>
 <dd><p>A Boolean, indicating if the function should print messages
 about the process.</p></dd>
+
+
 <dt>check</dt>
 <dd><p>A Boolean indicating if the geometry checks must be run before
 the operation. This might take some times, but it will ensure that the CRS
 of the provided objects are valid and identical, and that geometries are valid.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A matrix with the estimated density for each sample point (rows) at
+    
+
+<p>A matrix with the estimated density for each sample point (rows) at
   each timestamp (columns). If adaptive = TRUE, the function returns a list
   with two slots: k (the matrix with the density values) and events (a
   feature collection of points with the local bandwidths).</p>
@@ -227,43 +278,46 @@ of the provided objects are valid and identical, and that geometries are valid.<
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="co"># \donttest{</span>
-<span class="co"># loading the data</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">)</span>
-
-<span class="co"># converting the Date field to a numeric field (counting days)</span>
-<span class="va">bike_accidents</span><span class="op">$</span><span class="va">Time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html" class="external-link">as.POSIXct</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">$</span><span class="va">Date</span>, format <span class="op">=</span> <span class="st">"%Y/%m/%d"</span><span class="op">)</span>
-<span class="va">start</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html" class="external-link">as.POSIXct</a></span><span class="op">(</span><span class="st">"2016/01/01"</span>, format <span class="op">=</span> <span class="st">"%Y/%m/%d"</span><span class="op">)</span>
-<span class="va">bike_accidents</span><span class="op">$</span><span class="va">Time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/difftime.html" class="external-link">difftime</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">$</span><span class="va">Time</span>, <span class="va">start</span>, units <span class="op">=</span> <span class="st">"days"</span><span class="op">)</span>
-<span class="va">bike_accidents</span><span class="op">$</span><span class="va">Time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">$</span><span class="va">Time</span><span class="op">)</span>
-
-<span class="co"># creating sample points</span>
-<span class="va">lixels</span> <span class="op">&lt;-</span> <span class="fu"><a href="lixelize_lines.html">lixelize_lines</a></span><span class="op">(</span><span class="va">mtl_network</span>, <span class="fl">50</span><span class="op">)</span>
-<span class="va">sample_points</span> <span class="op">&lt;-</span> <span class="fu"><a href="lines_center.html">lines_center</a></span><span class="op">(</span><span class="va">lixels</span><span class="op">)</span>
-
-<span class="co"># choosing sample in times (every 10 days)</span>
-<span class="va">sample_time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">$</span><span class="va">Time</span><span class="op">)</span>, <span class="fl">10</span><span class="op">)</span>
-
-<span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/multisession.html" class="external-link">multisession</a></span><span class="op">(</span>workers<span class="op">=</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span>
-
-<span class="co"># calculating the densities</span>
-<span class="va">tnkde_densities</span> <span class="op">&lt;-</span> <span class="fu">tnkde.mc</span><span class="op">(</span>lines <span class="op">=</span> <span class="va">mtl_network</span>,
-    events <span class="op">=</span> <span class="va">bike_accidents</span>, time_field <span class="op">=</span> <span class="st">"Time"</span>,
-    w <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">)</span><span class="op">)</span>,
-    samples_loc <span class="op">=</span> <span class="va">sample_points</span>,
-    samples_time <span class="op">=</span> <span class="va">sample_time</span>,
-    kernel_name <span class="op">=</span> <span class="st">"quartic"</span>,
-    bw_net <span class="op">=</span> <span class="fl">700</span>, bw_time <span class="op">=</span> <span class="fl">60</span>, adaptive <span class="op">=</span> <span class="cn">TRUE</span>,
-    trim_bw_net <span class="op">=</span> <span class="fl">900</span>, trim_bw_time <span class="op">=</span> <span class="fl">80</span>,
-    method <span class="op">=</span> <span class="st">"discontinuous"</span>, div <span class="op">=</span> <span class="st">"bw"</span>,
-    max_depth <span class="op">=</span> <span class="fl">10</span>, digits <span class="op">=</span> <span class="fl">2</span>, tol <span class="op">=</span> <span class="fl">0.01</span>,
-    agg <span class="op">=</span> <span class="fl">15</span>, grid_shape <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span>,
-    verbose  <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
-
-<span class="co">## make sure any open connections are closed afterward</span>
-<span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">inherits</a></span><span class="op">(</span><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"sequential"</span><span class="op">)</span><span class="op">)</span> <span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="fu">future</span><span class="fu">::</span><span class="va"><a href="https://future.futureverse.org/reference/sequential.html" class="external-link">sequential</a></span><span class="op">)</span>
-<span class="co"># }</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># \donttest{</span></span></span>
+<span class="r-in"><span><span class="co"># loading the data</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># converting the Date field to a numeric field (counting days)</span></span></span>
+<span class="r-in"><span><span class="va">bike_accidents</span><span class="op">$</span><span class="va">Time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html" class="external-link">as.POSIXct</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">$</span><span class="va">Date</span>, format <span class="op">=</span> <span class="st">"%Y/%m/%d"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">start</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html" class="external-link">as.POSIXct</a></span><span class="op">(</span><span class="st">"2016/01/01"</span>, format <span class="op">=</span> <span class="st">"%Y/%m/%d"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">bike_accidents</span><span class="op">$</span><span class="va">Time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/difftime.html" class="external-link">difftime</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">$</span><span class="va">Time</span>, <span class="va">start</span>, units <span class="op">=</span> <span class="st">"days"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">bike_accidents</span><span class="op">$</span><span class="va">Time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">$</span><span class="va">Time</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># creating sample points</span></span></span>
+<span class="r-in"><span><span class="va">lixels</span> <span class="op">&lt;-</span> <span class="fu"><a href="lixelize_lines.html">lixelize_lines</a></span><span class="op">(</span><span class="va">mtl_network</span>, <span class="fl">50</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">sample_points</span> <span class="op">&lt;-</span> <span class="fu"><a href="lines_center.html">lines_center</a></span><span class="op">(</span><span class="va">lixels</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># choosing sample in times (every 10 days)</span></span></span>
+<span class="r-in"><span><span class="va">sample_time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">$</span><span class="va">Time</span><span class="op">)</span>, <span class="fl">10</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/multisession.html" class="external-link">multisession</a></span><span class="op">(</span>workers<span class="op">=</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># calculating the densities</span></span></span>
+<span class="r-in"><span><span class="va">tnkde_densities</span> <span class="op">&lt;-</span> <span class="fu">tnkde.mc</span><span class="op">(</span>lines <span class="op">=</span> <span class="va">mtl_network</span>,</span></span>
+<span class="r-in"><span>    events <span class="op">=</span> <span class="va">bike_accidents</span>, time_field <span class="op">=</span> <span class="st">"Time"</span>,</span></span>
+<span class="r-in"><span>    w <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    samples_loc <span class="op">=</span> <span class="va">sample_points</span>,</span></span>
+<span class="r-in"><span>    samples_time <span class="op">=</span> <span class="va">sample_time</span>,</span></span>
+<span class="r-in"><span>    kernel_name <span class="op">=</span> <span class="st">"quartic"</span>,</span></span>
+<span class="r-in"><span>    bw_net <span class="op">=</span> <span class="fl">700</span>, bw_time <span class="op">=</span> <span class="fl">60</span>, adaptive <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>    trim_bw_net <span class="op">=</span> <span class="fl">900</span>, trim_bw_time <span class="op">=</span> <span class="fl">80</span>,</span></span>
+<span class="r-in"><span>    method <span class="op">=</span> <span class="st">"discontinuous"</span>, div <span class="op">=</span> <span class="st">"bw"</span>,</span></span>
+<span class="r-in"><span>    max_depth <span class="op">=</span> <span class="fl">10</span>, digits <span class="op">=</span> <span class="fl">2</span>, tol <span class="op">=</span> <span class="fl">0.01</span>,</span></span>
+<span class="r-in"><span>    agg <span class="op">=</span> <span class="fl">15</span>, grid_shape <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    verbose  <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>UNRELIABLE VALUE: One of the ‘future.apply’ iterations (‘future_lapply-1’) unexpectedly generated random numbers without declaring so. There is a risk that those random numbers are not statistically sound and the overall results might be invalid. To fix this, specify 'future.seed=TRUE'. This ensures that proper, parallel-safe random numbers are produced via the L'Ecuyer-CMRG method. To disable this check, use 'future.seed = NULL', or set option 'future.rng.onMisuse' to "ignore".</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>UNRELIABLE VALUE: One of the ‘future.apply’ iterations (‘future_lapply-1’) unexpectedly generated random numbers without declaring so. There is a risk that those random numbers are not statistically sound and the overall results might be invalid. To fix this, specify 'future.seed=TRUE'. This ensures that proper, parallel-safe random numbers are produced via the L'Ecuyer-CMRG method. To disable this check, use 'future.seed = NULL', or set option 'future.rng.onMisuse' to "ignore".</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>UNRELIABLE VALUE: One of the ‘future.apply’ iterations (‘future_lapply-1’) unexpectedly generated random numbers without declaring so. There is a risk that those random numbers are not statistically sound and the overall results might be invalid. To fix this, specify 'future.seed=TRUE'. This ensures that proper, parallel-safe random numbers are produced via the L'Ecuyer-CMRG method. To disable this check, use 'future.seed = NULL', or set option 'future.rng.onMisuse' to "ignore".</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## make sure any open connections are closed afterward</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">inherits</a></span><span class="op">(</span><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"sequential"</span><span class="op">)</span><span class="op">)</span> <span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="fu">future</span><span class="fu">::</span><span class="va"><a href="https://future.futureverse.org/reference/sequential.html" class="external-link">sequential</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -278,8 +332,7 @@ of the provided objects are valid and identical, and that geometries are valid.<
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

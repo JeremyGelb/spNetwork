@@ -278,7 +278,7 @@ adaptive_bw_tnkde.mc <- function(grid, events_loc, events, lines,
                               tol, digits, sparse, verbose){
 
   ## step 1 split the data !
-  selections <- split_by_grid_abw(grid, events_loc, lines, trim_bw_net, tol, digits)
+  selections <- split_by_grid_abw(grid, events_loc, lines, max(trim_bw_net), tol, digits)
 
   ## step 2 calculating the temp NKDE values
   if(verbose){
@@ -306,7 +306,8 @@ adaptive_bw_tnkde.mc <- function(grid, events_loc, events, lines,
       # NOTE : the first column store the goid !
       #mat_result <- cbind(sel$samples$goid, as.vector(values))
       mat_result <- cbind(sel_events$goid, as.vector(values))
-      return(mat_result)
+      #return(mat_result)
+      return(list(values, sel_events$wid))
 
     }, future.packages = c("spNetwork"))
   }else {
@@ -329,28 +330,75 @@ adaptive_bw_tnkde.mc <- function(grid, events_loc, events, lines,
         # values will be a simple numeric vector
 
         # NOTE : the first column store the goid !
-        mat_result <- cbind(sel_events$goid, as.vector(values))
+        #mat_result <- cbind(sel_events$goid, as.vector(values))
         p(sprintf("i=%g", sel$index))
-        return(mat_result)
+        #return(mat_result)
+        return(list(values, sel_events$wid))
 
       }, future.packages = c("spNetwork"))
     })
   }
 
 
+  # ## step 3  combining the results
+  # tot_df <- do.call(rbind,dfs)
+  # tot_df <- data.frame(tot_df[order(tot_df[,1]),])
+  # names(tot_df) <- c("goid", "k")
+  #
+  # ## step 4 calculating the new bandwidth !
+  # delta <- calc_gamma(tot_df$k)
+  # new_net_bw <- bw_net * (tot_df$k**(-1/2) * delta**(-1))
+  # new_net_bw <- ifelse(new_net_bw<trim_bw_net, new_net_bw, trim_bw_net)
+  #
+  # new_time_bw <- bw_time * (tot_df$k**(-1/2) * delta**(-1))
+  # new_time_bw <- ifelse(new_time_bw<trim_bw_time, new_time_bw, trim_bw_time)
+  # return(list("bws_net" = new_net_bw,
+  #             "bws_time" = new_time_bw))
+
   ## step 3  combining the results
-  tot_df <- do.call(rbind,dfs)
-  tot_df <- data.frame(tot_df[order(tot_df[,1]),])
-  names(tot_df) <- c("goid", "k")
+  tot_arr <- do.call(abind::abind, lapply(dfs, function(x){x[[1]]}))
+  all_wids <- do.call(c, lapply(dfs, function(x){x[[2]]}))
+
+  # tot_df <- do.call(rbind,dfs)
+  # tot_df <- data.frame(tot_df[order(tot_df[,1]),])
+  # names(tot_df) <- c("goid", "k")
 
   ## step 4 calculating the new bandwidth !
-  delta <- calc_gamma(tot_df$k)
-  new_net_bw <- bw_net * (tot_df$k**(-1/2) * delta**(-1))
-  new_net_bw <- ifelse(new_net_bw<trim_bw_net, new_net_bw, trim_bw_net)
+  final_bws_net <- array(0,dim = dim(tot_arr))
+  final_bws_time <- array(0,dim = dim(tot_arr))
 
-  new_time_bw <- bw_time * (tot_df$k**(-1/2) * delta**(-1))
-  new_time_bw <- ifelse(new_time_bw<trim_bw_time, new_time_bw, trim_bw_time)
-  return(list("bws_net" = new_net_bw,
-              "bws_time" = new_time_bw))
+  print("here are the estimated densities before calculating local bws")
+  print(tot_arr)
+  for(i in 1:length(bw_net)){
+    for(j in 1:length(bw_time)){
+      k <- tot_arr[i,j,]
+      k <- k[order(all_wids)]
+      delta <- calc_gamma(k)
+      new_net_bw <- bw_net[[i]] * (k**(-1/2) * delta**(-1))
+      new_net_bw <- ifelse(new_net_bw<trim_bw_net[[i]], new_net_bw, trim_bw_net[[i]])
+      final_bws_net[i,j,] <- new_net_bw
+
+      new_time_bw <- bw_time[[j]] * (k**(-1/2) * delta**(-1))
+      new_time_bw <- ifelse(new_time_bw<trim_bw_time[[j]], new_time_bw, trim_bw_time[[j]])
+      final_bws_time[i,j,] <- new_time_bw
+    }
+  }
+
+  # delta <- calc_gamma(tot_df$k)
+  # new_net_bw <- bw_net * (tot_df$k**(-1/2) * delta**(-1))
+  # new_net_bw <- ifelse(new_net_bw<trim_bw_net, new_net_bw, trim_bw_net)
+  #
+  # new_time_bw <- bw_time * (tot_df$k**(-1/2) * delta**(-1))
+  # new_time_bw <- ifelse(new_time_bw<trim_bw_time, new_time_bw, trim_bw_time)
+
+  # let me add a small conversion here to avoid modifying all my code everywhere
+  if((length(bw_net) + length(bw_time)) == 2){
+    final_bws_net <- c(final_bws_net)
+    final_bws_time <- c(final_bws_time)
+  }
+
+  return(list("bws_net" = final_bws_net,
+              "bws_time" = final_bws_time))
+
 }
 

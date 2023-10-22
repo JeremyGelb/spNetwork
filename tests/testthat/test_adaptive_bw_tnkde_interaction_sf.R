@@ -19,6 +19,7 @@ test_that("Testing the adaptive_bw_tnkde function", {
   # definition of three events
   event <- data.frame(x=c(0,3,1),
                       y=c(3,0,0),
+                      w = c(1,1,2),
                       id = 1:3,
                       times = c(0,0,2))
 
@@ -40,9 +41,9 @@ test_that("Testing the adaptive_bw_tnkde function", {
   n1 <- quartic_kernel(0,3) * quartic_kernel(0,3) #(spatial alone * temporal alone)
 
   n2 <- (quartic_kernel(0,3) * quartic_kernel(0,3)) +
-    (quartic_kernel(2,3) * quartic_kernel(2,3))
+    (quartic_kernel(2,3) * quartic_kernel(2,3) * 2)
 
-  n3 <- (quartic_kernel(0,3) * quartic_kernel(0,3)) +
+  n3 <- (quartic_kernel(0,3) * quartic_kernel(0,3) * 2) +
     (quartic_kernel(2,3) * quartic_kernel(2,3))
 
   hf0 <- c(n1,n2,n3)*(1/9)
@@ -55,7 +56,7 @@ test_that("Testing the adaptive_bw_tnkde function", {
   observed <- tnkde(
     events = event,
     time_field = "times",
-    w = rep(1,nrow(event)),
+    w = event$w,
     samples_loc = sp_points,
     samples_time = c(1,2,3),
     lines = all_lines,
@@ -71,7 +72,8 @@ test_that("Testing the adaptive_bw_tnkde function", {
     digits = 2,
     sparse = TRUE,
     verbose = TRUE,
-    check = FALSE
+    check = FALSE,
+    grid_shape = c(3,3)
   )
   diff1 <- sum(abs(abws_net - observed$events$bw_net))
   diff2 <- sum(abs(abws_time - observed$events$bw_time))
@@ -156,8 +158,11 @@ test_that("Testing the adaptive_bw_tnkde.mc function", {
     digits = 2,
     sparse = TRUE,
     verbose = TRUE,
-    check = FALSE
+    check = FALSE,
+    grid_shape = c(3,3)
   )
+
+
   diff1 <- sum(abs(abws_net - observed$events$bw_net))
   diff2 <- sum(abs(abws_time - observed$events$bw_time))
 

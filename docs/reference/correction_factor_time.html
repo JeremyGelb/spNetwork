@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3.6.9000</span>
       </span>
     </div>
 
@@ -87,29 +87,49 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">correction_factor_time</span><span class="op">(</span><span class="va">events_time</span>, <span class="va">samples_time</span>, <span class="va">bws_time</span>, <span class="va">kernel_name</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">correction_factor_time</span><span class="op">(</span></span>
+<span>  <span class="va">events_time</span>,</span>
+<span>  <span class="va">samples_time</span>,</span>
+<span>  <span class="va">bws_time</span>,</span>
+<span>  <span class="va">kernel_name</span>,</span>
+<span>  time_limits <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>events_time</dt>
 <dd><p>A numeric vector representing when the events occurred</p></dd>
+
+
 <dt>samples_time</dt>
 <dd><p>A numeric vector representing when the densities will
 be sampled</p></dd>
+
+
 <dt>bws_time</dt>
 <dd><p>A numeric vector with the temporal bandwidths</p></dd>
+
+
 <dt>kernel_name</dt>
 <dd><p>The name of the kernel to use</p></dd>
+
+
+<dt>time_limits</dt>
+<dd><p>A vector with the upper and lower limit of the time period studied</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A numeric vector with the correction factor values for each event</p>
+    
+
+<p>A numeric vector with the correction factor values for each event</p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="co">#no example provided, this is an internal function</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co">#no example provided, this is an internal function</span></span></span>
+<span class="r-in"></span>
 </code></pre></div>
     </div>
   </div>
@@ -124,8 +144,7 @@ be sampled</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

@@ -37,7 +37,7 @@ the same location. They are linked by the goid column}
 
 \item{kernel_name}{The name of the kernel to use (string)}
 
-\item{bws_net}{A numeric vector with the network bandwidths}
+\item{bws_net}{A numeric matrix with the network bandwidths for each event}
 
 \item{method}{The type of NKDE to use (string)}
 

@@ -203,27 +203,28 @@ We can now estimate the kernel density in both space and time. Note that increas
 
 ```{r message=FALSE, warning=FALSE, eval = FALSE}
 cv_scores <- bw_tnkde_cv_likelihood_calc(
-  bw_net_range = c(100,1000),
+  bw_net_range = c(200,1100),
   bw_net_step = 100,
-  bw_time_range = c(10,60),
+  bw_time_range = c(10,70),
   bw_time_step = 10,
   lines = mtl_network,
   events = bike_accidents,
   time_field = "Time",
-  w = rep(1, length(bike_accidents)),
+  w = rep(1, nrow(bike_accidents)),
   kernel_name = "quartic",
-  method = "discontinuous", 
+  method = "discontinuous",
   diggle_correction = FALSE,
   study_area = NULL,
   max_depth = 10,
   digits = 2,
   tol = 0.1,
-  agg = 15,
+  agg = 10,
   sparse=TRUE,
   grid_shape=c(1,1),
   sub_sample=1,
   verbose = FALSE,
   check = TRUE)
+
 ```
 ```{r message=FALSE, warning=FALSE}
 knitr::kable(cv_scores)
@@ -287,6 +288,41 @@ The locations of the hot spots are changing during the year. This information wa
 
 One can decide to use adaptive bandwidth for the TNKDE. They are calculated using the Abramson’s smoothing regimen. Two approaches are available: separated and simultaneous. In the first case, the network and temporal density at each event location are calculated separately and used to calculate the local bandwidth. Isolated events on the network will obtain larger network bandwidth and isolated events in time will obtain larger time bandwidth. The second method calculates the temporal-network density at each event location and uses it to adjust both bandwidths simultaneously. This method will always lead to stronger variation in the local bandwidths.
 
+We can also select the global bandwidth by cross validation with the function `bw_tnkde_cv_likelihood_calc`.
+
+```{r message=FALSE, warning=FALSE, eval = FALSE}
+cv_scores_adpt <- bw_tnkde_cv_likelihood_calc(
+  bw_net_range = c(200,1100),
+  bw_net_step = 100,
+  bw_time_range = c(10,70),
+  bw_time_step = 10,
+  lines = mtl_network,
+  events = bike_accidents,
+  time_field = "Time",
+  adaptive = TRUE,
+  trim_net_bws = seq(200,1100,100),
+  trim_time_bws = seq(10,70,10),
+  w = rep(1, nrow(bike_accidents)),
+  kernel_name = "quartic",
+  method = "discontinuous",
+  diggle_correction = FALSE,
+  study_area = NULL,
+  max_depth = 10,
+  digits = 2,
+  tol = 0.1,
+  agg = 15,
+  sparse=TRUE,
+  grid_shape=c(1,1),
+  sub_sample=1,
+  verbose = FALSE,
+  check = TRUE)
+```
+```{r message=FALSE, warning=FALSE}
+knitr::kable(cv_scores_adpt)
+```
+
+The best score is reached with a network and temporal bandwidths of 800m and 60 days.
+
 ```{r message=FALSE, warning=FALSE, eval = FALSE}
 tnkde_densities <- tnkde(lines = mtl_network,
                    events = bike_accidents,
@@ -295,10 +331,10 @@ tnkde_densities <- tnkde(lines = mtl_network,
                    samples_loc = sample_points,
                    samples_time = sample_time, 
                    kernel_name = "quartic",
-                   bw_net = 700, bw_time = 60,
+                   bw_net = 800, bw_time = 60,
                    adaptive = TRUE,
                    adaptive_separate = FALSE,
-                   trim_bw_net = 900,
+                   trim_bw_net = 1000,
                    trim_bw_time = 80,
                    method = "discontinuous",
                    div = "bw", max_depth = 10,

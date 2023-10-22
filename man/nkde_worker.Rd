@@ -35,7 +35,9 @@ which the densities will be estimated.}
 
 \item{bw}{The global kernel bandwidth}
 
-\item{bws}{The kernel bandwidth (in meters) for each event}
+\item{bws}{The kernel bandwidth (in meters) for each event. Is usually a vector
+but could also be a matrix if several global bandwidths were used. In this
+case, the output value is also a matrix.}
 
 \item{method}{The method to use when calculating the NKDE, must be one of
 simple / discontinuous / continuous (see details for more information)}

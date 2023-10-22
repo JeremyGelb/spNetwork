@@ -268,7 +268,7 @@
 #' \donttest{
 #' data(mtl_network)
 #' data(bike_accidents)
-#' cv_scores <- bw_cv_likelihood_calc(c(200,800),50,
+#' cv_scores <- bw_cv_likelihood_calc(seq(200,800,50),
 #'                                mtl_network, bike_accidents,
 #'                                rep(1,nrow(bike_accidents)),
 #'                                "quartic", "simple",
@@ -278,7 +278,8 @@
 #'                                sparse=TRUE, grid_shape=c(1,1),
 #'                                sub_sample = 1, verbose=TRUE, check=TRUE)
 #' }
-bw_cv_likelihood_calc <- function(bw_range,bw_step,lines, events, w, kernel_name, method,
+bw_cv_likelihood_calc <- function(bws = NULL,
+                                  lines, events, w, kernel_name, method,
                                   diggle_correction = FALSE, study_area = NULL,
                                   adaptive = FALSE, trim_bws = NULL, mat_bws = NULL,
                                   max_depth = 15, digits=5, tol=0.1, agg=NULL,
@@ -297,8 +298,7 @@ bw_cv_likelihood_calc <- function(bw_range,bw_step,lines, events, w, kernel_name
   }
 
   passed <- bw_checks(check,lines,samples,events,
-           kernel_name, method, bw_net_range = bw_range, bw_time_range = NULL,
-           bw_net_step = bw_step, bw_time_step = NULL,
+           kernel_name, method, bws_net = bws,
            adaptive = adaptive, trim_net_bws = trim_bws,
            diggle_correction = diggle_correction, study_area = study_area)
 
@@ -325,7 +325,8 @@ bw_cv_likelihood_calc <- function(bw_range,bw_step,lines, events, w, kernel_name
 
   ## calculating the correction factor for each bw
   ## they must be calculated for the location of the events and then stored in a matrix
-  all_bws <- seq(min(bw_range),max(bw_range),bw_step)
+  # all_bws <- seq(min(bw_range),max(bw_range),bw_step)
+  all_bws <- bws
 
   if(verbose){
     print("Calculating the correction factor if required")
@@ -342,6 +343,7 @@ bw_cv_likelihood_calc <- function(bw_range,bw_step,lines, events, w, kernel_name
     if(is.null(mat_bws)){
       mat_bws <- adaptive_bw(grid, events, lines, all_bws, trim_bws, method,
                              kernel_name, max_depth, tol, digits, sparse, verbose)
+      dim(mat_bws) <- c(nrow(events),length(all_bws))
     }else{
 
       # in the case where all the bandwidths were provided by the user
@@ -488,7 +490,7 @@ bw_cv_likelihood_calc <- function(bw_range,bw_step,lines, events, w, kernel_name
 #' data(mtl_network)
 #' data(bike_accidents)
 #' future::plan(future::multisession(workers=2))
-#' cv_scores <- bw_cv_likelihood_calc.mc(c(200,800),50,
+#' cv_scores <- bw_cv_likelihood_calc.mc(seq(200,800,50),
 #'                                mtl_network, bike_accidents,
 #'                                rep(1,nrow(bike_accidents)),
 #'                                "quartic", "simple",
@@ -500,9 +502,9 @@ bw_cv_likelihood_calc <- function(bw_range,bw_step,lines, events, w, kernel_name
 #' ## make sure any open connections are closed afterward
 #' if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
 #' }
-bw_cv_likelihood_calc.mc <- function(bw_range,bw_step,lines, events, w, kernel_name, method,
+bw_cv_likelihood_calc.mc <- function(bws, lines, events, w, kernel_name, method,
                                      diggle_correction = FALSE, study_area = NULL,
-                                     adaptive = FALSE, trim_bws = NULL, bws_mat = NULL,
+                                     adaptive = FALSE, trim_bws = NULL, mat_bws = NULL,
                                      max_depth = 15, digits=5, tol=0.1, agg=NULL,
                                      sparse=TRUE, grid_shape=c(1,1), sub_sample=1,
                                      zero_strat = "min_double",
@@ -519,8 +521,7 @@ bw_cv_likelihood_calc.mc <- function(bw_range,bw_step,lines, events, w, kernel_n
   }
 
   passed <- bw_checks(check,lines,samples,events,
-                      kernel_name, method, bw_net_range = bw_range, bw_time_range = NULL,
-                      bw_net_step = bw_step, bw_time_step = NULL,
+                      kernel_name, method, bws_net = bws, bws_time = NULL,
                       adaptive = adaptive, trim_net_bws = trim_bws,
                       diggle_correction = diggle_correction, study_area = study_area)
 
@@ -546,7 +547,8 @@ bw_cv_likelihood_calc.mc <- function(bw_range,bw_step,lines, events, w, kernel_n
 
   ## calculating the correction factor for each bw
   ## they must be calculate for the location of the events and then stored in a matrix
-  all_bws <- seq(min(bw_range),max(bw_range),bw_step)
+  # all_bws <- seq(min(bw_range),max(bw_range),bw_step)
+  all_bws <- bws
 
   if(verbose){
     print("Calculating the correction factor if required")
@@ -563,6 +565,8 @@ bw_cv_likelihood_calc.mc <- function(bw_range,bw_step,lines, events, w, kernel_n
     if(is.null(mat_bws)){
       mat_bws <- adaptive_bw.mc(grid, events, lines, all_bws, trim_bws, method,
                              kernel_name, max_depth, tol, digits, sparse, verbose)
+      # mat_bws2 <- adaptive_bw(grid, events, lines, all_bws, trim_bws, method,
+      #                           kernel_name, max_depth, tol, digits, sparse, verbose)
     }else{
 
       # in the case where all the bandwidths were provided by the user

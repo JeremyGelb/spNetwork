@@ -231,7 +231,7 @@
 #' \donttest{
 #' data(mtl_network)
 #' data(bike_accidents)
-#' cv_scores <- bw_cvl_calc(c(200,400),50,
+#' cv_scores <- bw_cvl_calc(seq(200,400,50),
 #'                                mtl_network, bike_accidents,
 #'                                rep(1,nrow(bike_accidents)),
 #'                                "quartic", "discontinuous",
@@ -241,7 +241,8 @@
 #'                                sparse=TRUE, grid_shape=c(1,1),
 #'                                sub_sample = 1, verbose=TRUE, check=TRUE)
 #'}
-bw_cvl_calc <- function(bw_range, bw_step,lines, events, w, kernel_name, method,
+bw_cvl_calc <- function(bws = NULL,
+                        lines, events, w, kernel_name, method,
                         diggle_correction = FALSE, study_area = NULL,
                         adaptive = FALSE, trim_bws = NULL, mat_bws = NULL,
                         max_depth = 15,
@@ -262,8 +263,7 @@ bw_cvl_calc <- function(bw_range, bw_step,lines, events, w, kernel_name, method,
   }
 
   passed <- bw_checks(check,lines,samples,events,
-                      kernel_name, method, bw_net_range = bw_range, bw_time_range = NULL,
-                      bw_net_step = bw_step, bw_time_step = NULL,
+                      kernel_name, method, bws_net = bws, bws_time = NULL,
                       adaptive = adaptive, trim_net_bws = trim_bws,
                       diggle_correction = diggle_correction, study_area = study_area)
 
@@ -289,7 +289,8 @@ bw_cvl_calc <- function(bw_range, bw_step,lines, events, w, kernel_name, method,
 
   ## calculating the correction factor for each bw
   ## they must be calculate for the location of the events and then stored in a matrix
-  all_bws <- seq(min(bw_range),max(bw_range),bw_step)
+  # all_bws <- seq(min(bw_range),max(bw_range),bw_step)
+  all_bws <- bws
 
   if(verbose){
     print("Calculating the correction factor if required")
@@ -450,7 +451,7 @@ bw_cvl_calc <- function(bw_range, bw_step,lines, events, w, kernel_name, method,
 #' data(mtl_network)
 #' data(bike_accidents)
 #' future::plan(future::multisession(workers=2))
-#' cv_scores <- bw_cvl_calc.mc(c(200,400),50,
+#' cv_scores <- bw_cvl_calc.mc(seq(200,400,50),
 #'                                mtl_network, bike_accidents,
 #'                                rep(1,nrow(bike_accidents)),
 #'                                "quartic", "discontinuous",
@@ -462,7 +463,7 @@ bw_cvl_calc <- function(bw_range, bw_step,lines, events, w, kernel_name, method,
 #' ## make sure any open connections are closed afterward
 #' if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
 #' }
-bw_cvl_calc.mc <- function(bw_range,bw_step,lines, events, w, kernel_name, method,
+bw_cvl_calc.mc <- function(bws = NULL, lines, events, w, kernel_name, method,
                            diggle_correction = FALSE, study_area = NULL,
                            adaptive = FALSE, trim_bws = NULL, mat_bws = NULL,
                            max_depth = 15,
@@ -483,8 +484,7 @@ bw_cvl_calc.mc <- function(bw_range,bw_step,lines, events, w, kernel_name, metho
   }
 
   passed <- bw_checks(check,lines,samples,events,
-                      kernel_name, method, bw_net_range = bw_range, bw_time_range = NULL,
-                      bw_net_step = bw_step, bw_time_step = NULL,
+                      kernel_name, method, bws = bws, bws_time = NULL,
                       adaptive = adaptive, trim_net_bws = trim_bws,
                       diggle_correction = diggle_correction, study_area = study_area)
 
@@ -507,7 +507,8 @@ bw_cvl_calc.mc <- function(bw_range,bw_step,lines, events, w, kernel_name, metho
 
   ## calculating the correction factor for each bw
   ## they must be calculate for the location of the events and then stored in a matrix
-  all_bws <- seq(min(bw_range),max(bw_range),bw_step)
+  # all_bws <- seq(min(bw_range),max(bw_range),bw_step)
+  all_bws <- bws
 
   if(verbose){
     print("Calculating the correction factor if required")

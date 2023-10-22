@@ -46,7 +46,7 @@ Suggests:
     covr (>= 3.5.1),
     knitr,
     rmarkdown
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.3
 VignetteBuilder: 
     knitr
 URL: https://jeremygelb.github.io/spNetwork/

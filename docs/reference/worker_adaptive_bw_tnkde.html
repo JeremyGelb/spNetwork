@@ -18,7 +18,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3.6.9000</span>
       </span>
     </div>
 
@@ -89,23 +89,23 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">worker_adaptive_bw_tnkde</span><span class="op">(</span>
-  <span class="va">lines</span>,
-  <span class="va">quad_events</span>,
-  <span class="va">events_loc</span>,
-  <span class="va">events</span>,
-  <span class="va">w</span>,
-  <span class="va">kernel_name</span>,
-  <span class="va">bw_net</span>,
-  <span class="va">bw_time</span>,
-  <span class="va">method</span>,
-  <span class="va">div</span>,
-  <span class="va">digits</span>,
-  <span class="va">tol</span>,
-  <span class="va">sparse</span>,
-  <span class="va">max_depth</span>,
-  verbose <span class="op">=</span> <span class="cn">FALSE</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">worker_adaptive_bw_tnkde</span><span class="op">(</span></span>
+<span>  <span class="va">lines</span>,</span>
+<span>  <span class="va">quad_events</span>,</span>
+<span>  <span class="va">events_loc</span>,</span>
+<span>  <span class="va">events</span>,</span>
+<span>  <span class="va">w</span>,</span>
+<span>  <span class="va">kernel_name</span>,</span>
+<span>  <span class="va">bw_net</span>,</span>
+<span>  <span class="va">bw_time</span>,</span>
+<span>  <span class="va">method</span>,</span>
+<span>  <span class="va">div</span>,</span>
+<span>  <span class="va">digits</span>,</span>
+<span>  <span class="va">tol</span>,</span>
+<span>  <span class="va">sparse</span>,</span>
+<span>  <span class="va">max_depth</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -113,59 +113,93 @@
     <dl><dt>lines</dt>
 <dd><p>A feature collection of linestrings representing the underlying
 network</p></dd>
+
+
 <dt>quad_events</dt>
 <dd><p>a feature collection of points indicating for which events
 the densities must be calculated</p></dd>
+
+
 <dt>events_loc</dt>
 <dd><p>A feature collection of points representing the location of
 the events</p></dd>
+
+
 <dt>events</dt>
 <dd><p>A feature collection of points representing the events.
 Multiple events can share the same location. They are linked by the goid
 column</p></dd>
+
+
 <dt>w</dt>
 <dd><p>A numeric vector with the weight of the events</p></dd>
+
+
 <dt>kernel_name</dt>
 <dd><p>The name of the kernel to use (string)</p></dd>
+
+
 <dt>bw_net</dt>
-<dd><p>A float indicating the fixed network bandwidth</p></dd>
+<dd><p>The fixed kernel bandwidth for the network dimension. Can also be a vector
+if several bandwidth must be used.</p></dd>
+
+
 <dt>bw_time</dt>
-<dd><p>A float indicating the fixed time bandwidth</p></dd>
+<dd><p>The fixed kernel bandwidth for the time dimension. Can also be a vector
+if several bandwidth must be used.</p></dd>
+
+
 <dt>method</dt>
 <dd><p>The type of NKDE to use (string)</p></dd>
+
+
 <dt>div</dt>
 <dd><p>The divisor to use for the kernel. Must be "n" (the number of
 events within the radius around each sampling point), "bw" (the bandwidth)
 "none" (the simple sum).</p></dd>
+
+
 <dt>digits</dt>
 <dd><p>The number of digits to retain from the spatial coordinates. It
 ensures that topology is good when building the network. Default is 3. Too
 high a precision (high number of digits) might break some connections</p></dd>
+
+
 <dt>tol</dt>
 <dd><p>A float indicating the minimum distance between the events and the
 lines' extremities when adding the point to the network. When points are
 closer, they are added at the extremity of the lines.</p></dd>
+
+
 <dt>sparse</dt>
 <dd><p>A Boolean indicating if sparse or regular matrices should be
 used by the Rcpp functions. These matrices are used to store edge indices
 between two nodes in a graph. Regular matrices are faster, but require more
 memory, in particular with multiprocessing. Sparse matrices are slower (a
 bit), but require much less memory.</p></dd>
+
+
 <dt>max_depth</dt>
 <dd><p>An integer, the maximum depth to reach for continuous and
 discontinuous NKDE</p></dd>
+
+
 <dt>verbose</dt>
 <dd><p>A Boolean, indicating if the function should print messages
 about the process.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A vector with the local bandwidths</p>
+    
+
+<p>A vector with the local bandwidths or an array if bw_net and bw_time are vectors</p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="co">#This is an internal function, no example provided</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co">#This is an internal function, no example provided</span></span></span>
+<span class="r-in"></span>
 </code></pre></div>
     </div>
   </div>
@@ -180,8 +214,7 @@ about the process.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

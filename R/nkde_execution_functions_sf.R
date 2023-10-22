@@ -102,6 +102,7 @@ utils::globalVariables(c("spid", "weight", ".", "bws")) # nocov end
 #' @examples
 #' #This is an internal function, no example provided
 clean_events <- function(events,digits=5,agg=NULL){
+  base_crs <- st_crs(events)
   if(is.null(agg)){
     events$spid <- sp_char_index(st_coordinates(events),digits)
 
@@ -146,19 +147,23 @@ clean_events <- function(events,digits=5,agg=NULL){
         part1 <- subset(events, events$gp == 0)
         part2 <- setDT(subset(events, events$gp != 0))
         mean_coords <- part2[,.(m_X = mean(X),
-                              m_Y = mean(Y)
+                              m_Y = mean(Y),
+                              m_wid = data.table::first(wid)
                               ), by = "gp"]
         events2 <- setDT(merge(part2, mean_coords, by = "gp", all.x = TRUE))
         events2$m_X <- ifelse(is.na(events2$m_X), events2$X,events2$m_X)
         events2$m_Y <- ifelse(is.na(events2$m_Y), events2$X,events2$m_Y)
         new_events <- events2[, .(X = data.table::first(m_X),
                                Y = data.table::first(m_Y),
+                               wid = data.table::first(wid),
                                weight = sum(weight)
         ), by = c("gp","time")]
         new_events <- rbind(new_events, part1[names(new_events)])
         new_events$gp <- NULL
+        new_events <- st_as_sf(new_events, coords = c('X','Y'), crs = base_crs)
 
       }
+
 
 
     }else{
@@ -202,6 +207,8 @@ aggregate_points <- function(points, maxdist, weight = "weight", return_ids = FA
   num_cols <- unlist(lapply(points, is.numeric))
   num_names <- names(points)[num_cols]
 
+  points <- points[num_names]
+
   ## reimplementation avec dbscan
   coords <- st_coordinates(points)
   points$X <- coords[,1]
@@ -217,15 +224,19 @@ aggregate_points <- function(points, maxdist, weight = "weight", return_ids = FA
     all_pts <- points
   }else{
     old_pts <- pt_list[[1]]
-    mat1 <- cbind(st_coordinates(old_pts), st_drop_geometry(old_pts))
+    #mat1 <- cbind(st_coordinates(old_pts), st_drop_geometry(old_pts))
+    mat1 <- st_drop_geometry(old_pts)
     new_pts <- data.frame(t(sapply(2:length(pt_list), function(i){
       pts <- pt_list[[i]]
       if(nrow(pts) == 1 ){
-        return(c(st_coordinates(pts), st_drop_geometry(pts)))
+        return(c(st_drop_geometry(pts)))
       }else{
         coords <- colMeans(st_coordinates(pts))
-        feat_max <- apply(st_drop_geometry(pts), 2, max)
+        feat_max <- sapply(num_names, function(name){max(pts[[name]])})
         feat_max[names(feat_max) == weight] <- sum(pts[[weight]])
+        #feat_max <- apply(st_drop_geometry(pts), 2, max)
+        #feat_max[names(feat_max) == weight] <- sum(pts[[weight]])
+        #feat_max <- feat_max[names(feat_max) %in% num_names]
         return(c(coords, feat_max))
       }
     })))
@@ -768,14 +779,18 @@ adaptive_bw <- function(grid,events,lines,bw,trim_bw,method,kernel_name,max_dept
     }
     # df <- data.frame("goid"=sel$samples$goid,
     #                  "k" = values)
-    df <- cbind(sel$samples$goid, values)
-
+    if(nrow(sel$samples) == 1){
+      df <- c(sel$samples$goid, values)
+    }else{
+      df <- cbind(sel$samples$goid, values)
+    }
     return(df)
   })
 
    ## step 3  combining the results
   tot_df <- do.call(rbind,dfs)
-  tot_df <- tot_df[order(tot_df[,1]),]
+  #tot_df <- tot_df[order(tot_df[,1]),]
+  tot_df <- tot_df[match(tot_df[,1], events$goid),]
   ## step 4 calculating the new bandwidth !
   if(ncol(tot_df) == 2){
     k <- tot_df[,2]
@@ -859,8 +874,9 @@ adaptive_bw.mc <- function(grid,events,lines,bw,trim_bw,method,kernel_name,max_d
 
                                  ))
 
-        df <- data.frame("goid"=sel$samples$goid,
-                         "k" = values)
+        # df <- data.frame("goid"=sel$samples$goid,
+        #                  "k" = values)
+        df <- cbind(sel$samples$goid, values)
         p(sprintf("i=%g", sel$index))
         return(df)
       }, future.packages = c("spNetwork"))
@@ -892,24 +908,26 @@ adaptive_bw.mc <- function(grid,events,lines,bw,trim_bw,method,kernel_name,max_d
                             max_depth = max_depth,
                             verbose = verbose)
 
-      df <- data.frame("goid"=sel$samples$goid,
-                       "k" = values)
+      # df <- data.frame("goid"=sel$samples$goid,
+      #                  "k" = values)
+      if(nrow(sel$samples) == 1){
+        df <- c(sel$samples$goid, values)
+      }else{
+        df <- cbind(sel$samples$goid, values)
+      }
       return(df)
     }, future.packages = c("spNetwork"))
   }
 
   ## step 3  combining the results
   tot_df <- do.call(rbind,dfs)
-  tot_df <- tot_df[order(tot_df$goid),]
-
-  if(any(tot_df$k == 0)){
-    stop("This is embarassing, we should not get 0 values here (bug code 0001). Please report the bug at https://github.com/JeremyGelb/spNetwork/issues and provide the dataset used.")
-  }
-
+  #tot_df <- tot_df[order(tot_df[,1]),]
+  tot_df <- tot_df[match(tot_df[,1], events$goid),]
   ## step 4 calculating the new bandwidth !
   if(ncol(tot_df) == 2){
-    delta <- calc_gamma(tot_df$k)
-    new_bw <- bw * (tot_df$k**(-1/2) * delta**(-1))
+    k <- tot_df[,2]
+    delta <- calc_gamma(k)
+    new_bw <- bw * (k**(-1/2) * delta**(-1))
     new_bw <- ifelse(new_bw<trim_bw,new_bw,trim_bw)
   }else{
     new_bw <- sapply(2:ncol(tot_df), function(i){

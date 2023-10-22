@@ -36,7 +36,7 @@ its neighbours}
 \item{weights}{a matrix with the weights associated with each event (row) for each
 bws_net (cols).}
 
-\item{bws_net}{an arma::vec with the network bandwidths to consider}
+\item{bws_net}{an arma::mat with the network bandwidths to consider for each event}
 
 \item{kernel_name}{a string with the name of the kernel to use}
 

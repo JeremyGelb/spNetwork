@@ -53,12 +53,12 @@ bike_accidents$weight <- 1
 bike_accidents_agg <- aggregate_points(bike_accidents, 15, weight = "weight")
 ```
 
-We can now calculate for each event its distance to its 20th neighbour.
+We can now calculate for each event its distance to its 30th neighbour.
 
 ```{r message=FALSE, warning=FALSE, out.width = "60%", fig.align= "center"}
 knn_dists <- network_knn(origins = bike_accidents_agg, 
                          lines = mtl_network, 
-                         k = 20,
+                         k = 30,
                          maxdistance = 5000,
                          line_weight = "length",
                          digits = 2, tol = 0.1)
@@ -124,7 +124,7 @@ It is easy to calculate the density for several distances and comparing the resu
 ```{r message=FALSE, warning=FALSE, fig.align= "center", fig.width = 10, fig.height = 20}
 
 # calculating all the densities
-all_densities <- lapply(c(3,7,12,15,17,20), function(i){
+all_densities <- lapply(c(5,10,15,20,25,30), function(i){
   bws <- knn_dists$distances[,i]
   upper_trim <- quantile(bws, probs = 0.95)
   trimed_bws <- ifelse(bws > upper_trim, upper_trim, bws)
@@ -183,6 +183,40 @@ knitr::include_graphics("images/animated_densities.gif")
 ```
 With no suprise, the larger the bandwidth, the smoother the results
 
+## Finding the optimal bandwidth
+
+To complete the visual inspection we did above, we could select an optimal set of local bandwidths by using the likelihood cross validation criterion.
+To do so, we can use the function `bw_cv_likelihood_calc` and we must create a matrix of bandwidths that will be evaluated.
+
+We will compare below the scores obtained for the local bandwidths based on the 5th to 25th nearest neighbours.
+```{r message=FALSE, warning=FALSE}
+
+nearest_nb_mat <- knn_dists$distances[,5:25]
+colnames(nearest_nb_mat) <- 5:25
+
+bw_scores <- bw_cv_likelihood_calc(lines = mtl_network,
+                                   events = bike_accidents_agg,
+                                   w = bike_accidents_agg$weight,
+                                   kernel_name = 'quartic',
+                                   method = 'discontinuous',
+                                   adaptive = TRUE,
+                                   mat_bws = nearest_nb_mat,
+                                   digits = 1,
+                                   tol = 0.01, 
+                                   max_depth = 10, agg = NULL, sparse = TRUE)
+
+df <- data.frame(
+  k = 5:25,
+  score = bw_scores[,2]
+)
+ggplot(df) + 
+  geom_line(aes(x = k, y = score)) + 
+  geom_point(aes(x = k, y = score), color = 'red') + 
+  theme_bw()
+
+```
+
+Based on these results, we decide to use the 8th nearest neighbour as an optimal bandwidth. It clearly minimizes the likelihood cross validation criterion.
 
 # K nearest neighbours adaptive bandwidth for TNKDE
 
@@ -220,6 +254,7 @@ medians <- sapply(temporal_mat,median)
 ggplot() + 
   geom_histogram(aes(x = medians), bins = 30, color = "white")
 ```
+
 Once again, we could trim the obtained bandwidths and setting a limit at 120 days (4 months).
 
 ```{r message=FALSE, warning=FALSE, out.width = "60%", fig.align= "center"}
@@ -292,3 +327,77 @@ tmap_animation(all_maps, filename = "images/animated_map_tnkdeknn.gif",
 ```{r message=FALSE, warning=FALSE, out.width = "75%", fig.align='center'}
 knitr::include_graphics("images/animated_map_tnkdeknn.gif")
 ```
+
+## Finding the optimal bandwidth
+
+To find the optimal bandwidth, we can use again the likelihood cross validation criterion. We need to create an array of bandwidths.
+
+The goal here is to find the number of neihgbours *k* which optimizes the likelihood cross validation criterion. So we will have several nework bandwidths, but only one time bandwidth.
+
+The dimensions of this array must be as follow : c(network,temporal,events)
+
+```{r message=FALSE, warning=FALSE}
+
+network_bws <- array(1, dim = c(length(5:25),1,nrow(bike_accidents_table)))
+time_bws <- array(1, dim = c(length(5:25),1,nrow(bike_accidents_table)))
+
+# we complete the array with the network bandwidths
+for(i in 1:nrow(bike_accidents_table)){
+  id <- bike_accidents_table$locID[[i]]
+  # we get the local network bandwidths
+  net_bws <- knn_dists$distance[id,5:25]
+  network_bws[,1,i] <- net_bws
+}
+
+# we complete the array with the time bandwidths
+ii <- 1
+for(j in 5:25){
+  temporal_mat <- sapply(1:nrow(bike_accidents_table), function(i){
+    loc_ids <- ids_mat[bike_accidents_table[i,"locID"],1:j]
+    events <- subset(bike_accidents_table, bike_accidents_table$locID %in% loc_ids)
+    dists <- abs(as.numeric(difftime(bike_accidents_table[i,"time"], events$time, units = "days")))
+    return(dists)
+  })
+  medians <- sapply(temporal_mat,median)
+  time_bws[ii,1,] <- medians
+  ii <- ii + 1
+}
+
+
+values <- bw_tnkde_cv_likelihood_calc(lines = mtl_network,
+                                      events = bike_accidents,
+                                      time_field = "int_time",
+                                      w = rep(1,nrow(bike_accidents)),
+                                      kernel_name = 'quartic',
+                                      method = 'discontinuous',
+                                      arr_bws_net = network_bws,
+                                      arr_bws_time = time_bws,
+                                      diggle_correction = FALSE,
+                                      study_area = NULL,
+                                      adaptive = TRUE,
+                                      trim_net_bws = NULL,
+                                      trim_time_bws = NULL,
+                                      max_depth = 10,
+                                      digits=5,
+                                      tol=0.1,
+                                      agg=NULL,
+                                      sparse=TRUE,
+                                      zero_strat = "min_double",
+                                      grid_shape=c(1,1),
+                                      sub_sample=1,
+                                      verbose=FALSE,
+                                      check=TRUE)
+
+df <- data.frame(
+  k = 5:25,
+  score = values[,1]
+)
+ggplot(df) + 
+  geom_line(aes(x = k, y = score)) + 
+  geom_point(aes(x = k, y = score), color = 'red') + 
+  theme_bw()
+```
+
+By checking the table above, we decide to select the 10th nearest neighbour because it clearly corresponds to the major elbow in the above figure. Also, the 21th neighbour gives the highest score.
+
+

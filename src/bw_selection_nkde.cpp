@@ -451,11 +451,11 @@ arma::mat nkde_get_loo_values(std::string method, List neighbour_list,
     // and we must now add the weight of the event
     // this weight can change according to the bw
 
-    Rcout << "Here are the weights in c++ : \n" <<  weights << "\n";
+    // Rcout << "Here are the weights in c++ : \n" <<  weights << "\n";
 
     for(int ii = 0; ii < k.n_cols; ii++){
       k.col(ii) = k.col(ii) * weights(i,ii);
-      Rcout << "applying weight : " << weights(i,ii) << "\n";
+      // Rcout << "applying weight : " << weights(i,ii) << "\n";
     }
 
     // if y was a selected event, its own weight must be set to 0 (if cvl == FALSE)

@@ -150,8 +150,8 @@ arma::cube ess_kernel_loo_tnkde(fptros kernel_func, arma::sp_mat& edge_mat,
  //' its neighbours
  //' @param v the actual node to consider (int)
  //' @param v_time the time of v (double)
- //' @param bws_net an arma::cube with the network bandwidths to consider
- //' @param bws_time an arma::cube with the time bandwidths to consider
+ //' @param bws_net an arma::mat with the network bandwidths to consider
+ //' @param bws_time an arma::mat with the time bandwidths to consider
  //' @param line_weights a vector with the length of the edges
  //' @param depth the actual recursion depth
  //' @param max_depth the maximum recursion depth
@@ -164,11 +164,11 @@ arma::cube ess_kernel_loo_tnkde(fptros kernel_func, arma::sp_mat& edge_mat,
                                  NumericVector& time_events,
                                  List& neighbour_list,
                                  int v, int wid, double v_time,
-                                 arma::cube bws_net, arma::cube bws_time,
+                                 arma::mat bws_net, arma::mat bws_time,
                                  NumericVector& line_weights, int max_depth){
 
    //step0 : generate the queue
-   Rcout << "starting the new function !\n";
+   // Rcout << "starting the new function !\n";
    int depth = 0;
    std::queue <List> data_holder;
    arma::cube kvalues(bws_net.n_rows, bws_net.n_cols, events.size());
@@ -192,17 +192,17 @@ arma::cube ess_kernel_loo_tnkde(fptros kernel_func, arma::sp_mat& edge_mat,
    // si c'est le cas, nous devons leur assigner la valeur de densite correspondante
    std::vector<int> index = get_all_indeces(events,v);
    if(index.size() > 1){
-     Rcout << "See me ! I must add some density at the origin ! \n";
+     // Rcout << "See me ! I must add some density at the origin ! \n";
      for (int zz : index){
        if(time_events[zz] != v_time){
-         arma::mat slice_bw_net = bws_net.slice(zz);
-         arma::mat slice_bw_time = bws_time.slice(zz);
+         // arma::mat slice_bw_net = bws_net.slice(zz);
+         // arma::mat slice_bw_time = bws_time.slice(zz);
          //Rcout << "step8\n";
-         for(int j = 0 ; j < slice_bw_net.n_rows; j ++){
-           for(int jj = 0 ; jj < slice_bw_time.n_cols; jj ++){
+         for(int j = 0 ; j < bws_net.n_rows; j ++){
+           for(int jj = 0 ; jj < bws_time.n_cols; jj ++){
              // NOTE : we are doing the bw scaling here
-             double bw_net = bws_net(j,jj,zz);
-             double bw_time = bws_time(j,jj,zz);
+             double bw_net = bws_net(j,jj);
+             double bw_time = bws_time(j,jj);
              double kernel_net =  kernel_func(0.0, bw_net);
              double kernel_time = kernel_func(std::abs(v_time-time_events[zz]), bw_time);
              kvalues(j,jj,zz) = kvalues(j,jj,zz) + ((kernel_net * kernel_time) * (1.0/(bw_net*bw_time)));
@@ -253,14 +253,14 @@ arma::cube ess_kernel_loo_tnkde(fptros kernel_func, arma::sp_mat& edge_mat,
              // il semble que v2 soit un noeud pour lequel au moins un evenement est present
              // NB : nrow pour les BW network et ncol pour le bw temporelles
              for (int zz : index){
-               arma::mat slice_bw_net = bws_net.slice(zz);
-               arma::mat slice_bw_time = bws_time.slice(zz);
+               //arma::mat slice_bw_net = bws_net.slice(zz);
+               //arma::mat slice_bw_time = bws_time.slice(zz);
                //Rcout << "step8\n";
-               for(int j = 0 ; j < slice_bw_net.n_rows; j ++){
-                 for(int jj = 0 ; jj < slice_bw_time.n_cols; jj ++){
+               for(int j = 0 ; j < bws_net.n_rows; j ++){
+                 for(int jj = 0 ; jj < bws_time.n_cols; jj ++){
                    // NOTE : we are doing the bw scaling here
-                   double bw_net = bws_net(j,jj,zz);
-                   double bw_time = bws_time(j,jj,zz);
+                   double bw_net = bws_net(j,jj);
+                   double bw_time = bws_time(j,jj);
                    double kernel_net =  kernel_func(d2, bw_net);
                    double kernel_time = kernel_func(std::abs(v_time-time_events[zz]), bw_time);
                    //Rcout << "step9\n";
@@ -283,7 +283,7 @@ arma::cube ess_kernel_loo_tnkde(fptros kernel_func, arma::sp_mat& edge_mat,
        }
      }
    }
-   Rcout << "OUT OF FUNCTION\n";
+   // Rcout << "OUT OF FUNCTION\n";
    return kvalues;
  }
 
@@ -451,8 +451,8 @@ arma::cube esd_kernel_loo_tnkde(fptros kernel_func, arma::sp_mat& edge_mat,
  //' its neighbours
  //' @param v the actual node to consider (int)
  //' @param v_time the time of v (double)
- //' @param bws_net an arma::cube with the network bandwidths to consider
- //' @param bws_time an arma::cube with the time bandwidths to consider
+ //' @param bws_net an arma::mat with the network bandwidths to consider
+ //' @param bws_time an arma::mat with the time bandwidths to consider
  //' @param line_weights a vector with the length of the edges
  //' @param depth the actual recursion depth
  //' @param max_depth the maximum recursion depth
@@ -464,8 +464,8 @@ arma::cube esd_kernel_loo_tnkde(fptros kernel_func, arma::sp_mat& edge_mat,
                                  NumericVector& time_events,
                                  List& neighbour_list,
                                  int v, int wid, double v_time,
-                                 arma::cube bws_net,
-                                 arma::cube bws_time,
+                                 arma::mat bws_net,
+                                 arma::mat bws_time,
                                  NumericVector& line_weights, int max_depth){
 
    //step0 : generate the queue
@@ -490,17 +490,17 @@ arma::cube esd_kernel_loo_tnkde(fptros kernel_func, arma::sp_mat& edge_mat,
    // si c'est le cas, nous devons leur assigner la valeur de densite correspondante
    std::vector<int> index = get_all_indeces(events,v);
    if(index.size() > 1){
-     Rcout << "See me ! I must add some density at the origin ! \n";
+     // Rcout << "See me ! I must add some density at the origin ! \n";
      for (int zz : index){
        if(time_events[zz] != v_time){
-         arma::mat slice_bw_net = bws_net.slice(zz);
-         arma::mat slice_bw_time = bws_time.slice(zz);
+         //arma::mat slice_bw_net = bws_net.slice(zz);
+         //arma::mat slice_bw_time = bws_time.slice(zz);
          //Rcout << "step8\n";
-         for(int j = 0 ; j < slice_bw_net.n_rows; j ++){
-           for(int jj = 0 ; jj < slice_bw_time.n_cols; jj ++){
+         for(int j = 0 ; j < bws_net.n_rows; j ++){
+           for(int jj = 0 ; jj < bws_time.n_cols; jj ++){
              // NOTE : we are doing the bw scaling here
-             double bw_net = bws_net(j,jj,zz);
-             double bw_time = bws_time(j,jj,zz);
+             double bw_net = bws_net(j,jj);
+             double bw_time = bws_time(j,jj);
              double kernel_net =  kernel_func(0.0, bw_net);
              double kernel_time = kernel_func(std::abs(v_time-time_events[zz]), bw_time);
              kvalues(j,jj,zz) = kvalues(j,jj,zz) + ((kernel_net * kernel_time) * (1.0/(bw_net*bw_time)));
@@ -561,13 +561,13 @@ arma::cube esd_kernel_loo_tnkde(fptros kernel_func, arma::sp_mat& edge_mat,
            std::vector<int> index = get_all_indeces(events,v2);
            if(index.size() >0 ){
              for (int zz : index){
-               arma::mat slice_bw_net = bws_net.slice(zz);
-               arma::mat slice_bw_time = bws_time.slice(zz);
-               for(int j = 0 ; j < slice_bw_net.n_rows; j ++){
-                 for(int jj = 0 ; jj < slice_bw_time.n_cols; jj ++){
+               //arma::mat slice_bw_net = bws_net.slice(zz);
+               //arma::mat slice_bw_time = bws_time.slice(zz);
+               for(int j = 0 ; j < bws_net.n_rows; j ++){
+                 for(int jj = 0 ; jj < bws_time.n_cols; jj ++){
                    // NOTE : we are doing the bw scaling here
-                   double bw_net = bws_net(j,jj,zz);
-                   double bw_time = bws_time(j,jj,zz);
+                   double bw_net = bws_net(j,jj);
+                   double bw_time = bws_time(j,jj);
                    double kernel_net =  kernel_func(d2,bw_net) * new_alpha;
                    double kernel_time = kernel_func(std::abs(v_time-time_events[zz]), bw_time);
                    kvalues(j,jj,zz) = kvalues(j,jj,zz) + ((kernel_net * kernel_time) * (1.0/(bw_net*bw_time)));
@@ -823,8 +823,8 @@ arma::cube esc_kernel_loo_tnkde(fptros kernel_func, arma::sp_mat& edge_mat,
  //' its neighbours
  //' @param v the actual node to consider (int)
  //' @param v_time the time of v (double)
- //' @param bws_net an arma::cube with the network bandwidths to consider
- //' @param bws_time an arma::cube with the time bandwidths to consider
+ //' @param bws_net an arma::mat with the network bandwidths to consider
+ //' @param bws_time an arma::mat with the time bandwidths to consider
  //' @param line_weights a vector with the length of the edges
  //' @param depth the actual recursion depth
  //' @param max_depth the maximum recursion depth
@@ -836,8 +836,8 @@ arma::cube esc_kernel_loo_tnkde(fptros kernel_func, arma::sp_mat& edge_mat,
                                  NumericVector& time_events,
                                  List& neighbour_list,
                                  int v, int wid, double v_time,
-                                 arma::cube bws_net,
-                                 arma::cube bws_time,
+                                 arma::mat bws_net,
+                                 arma::mat bws_time,
                                  NumericVector& line_weights, int max_depth){
    //step0 : generate the queue
    int depth = 0;
@@ -877,17 +877,17 @@ arma::cube esc_kernel_loo_tnkde(fptros kernel_func, arma::sp_mat& edge_mat,
    // si c'est le cas, nous devons leur assigner la valeur de densite correspondante
    std::vector<int> index = get_all_indeces(events,v);
    if(index.size() > 1){
-     Rcout << "See me ! I must add some density at the origin ! \n";
+     // Rcout << "See me ! I must add some density at the origin ! \n";
      for (int zz : index){
        if(time_events[zz] != v_time){
-         arma::mat slice_bw_net = bws_net.slice(zz);
-         arma::mat slice_bw_time = bws_time.slice(zz);
+         //arma::mat slice_bw_net = bws_net.slice(zz);
+         //arma::mat slice_bw_time = bws_time.slice(zz);
          //Rcout << "step8\n";
-         for(int j = 0 ; j < slice_bw_net.n_rows; j ++){
-           for(int jj = 0 ; jj < slice_bw_time.n_cols; jj ++){
+         for(int j = 0 ; j < bws_net.n_rows; j ++){
+           for(int jj = 0 ; jj < bws_time.n_cols; jj ++){
              // NOTE : we are NOT doing the bw scaling here
-             double bw_net = bws_net(j,jj,zz);
-             double bw_time = bws_time(j,jj,zz);
+             double bw_net = bws_net(j,jj);
+             double bw_time = bws_time(j,jj);
              double kernel_net =  kernel_func(0.0, bw_net);
              double kernel_time = kernel_func(std::abs(v_time-time_events[zz]), bw_time);
              kvalues(j,jj,zz) = kvalues(j,jj,zz) + ((kernel_net * kernel_time));
@@ -910,11 +910,11 @@ arma::cube esc_kernel_loo_tnkde(fptros kernel_func, arma::sp_mat& edge_mat,
      double d = cas.d;
      double alpha = cas.alpha;
 
-     Rcout << "v_old is : "<< prev_node <<"\n";
-     Rcout << "v is : "<< v <<"\n";
-     Rcout << "d is : "<< d<<"\n";
-     Rcout << "alpha is : "<< alpha <<"\n";
-     Rcout << "\n\n";
+     // Rcout << "v_old is : "<< prev_node <<"\n";
+     // Rcout << "v is : "<< v <<"\n";
+     // Rcout << "d is : "<< d<<"\n";
+     // Rcout << "alpha is : "<< alpha <<"\n";
+     // Rcout << "\n\n";
 
      // we will update the densities on v
      // but only if v is a vertex on wich I can find an event
@@ -926,9 +926,9 @@ arma::cube esc_kernel_loo_tnkde(fptros kernel_func, arma::sp_mat& edge_mat,
      if(index.size() >0 ){
        for(int j = 0; j < bws_net.n_rows ; j++){
          for(int jj = 0 ; jj < bws_time.n_cols ; jj ++){
+           bw_net = bws_net(j,jj);
            // NOTE : we are not doing the bw scaling here but later
            for (int zz : index){
-             bw_net = bws_net(j,jj,zz);
              double kernel_net =  kernel_func(d,bw_net) * alpha;
              net_k_values(j,jj,zz) = net_k_values(j,jj,zz) + kernel_net;
            }
@@ -980,48 +980,51 @@ arma::cube esc_kernel_loo_tnkde(fptros kernel_func, arma::sp_mat& edge_mat,
      }
    }
 
-   Rcout << "HERE ARE THE CALCULATED NETWORK DENSITIES\n";
-   Rcout << net_k_values <<"\n\n";
+   // Rcout << "HERE ARE THE CALCULATED NETWORK DENSITIES\n";
+   // Rcout << net_k_values <<"\n\n";
 
-   Rcout << "HERE IS THE MATRIX OF TIME BANDWIDTHS\n";
-   Rcout << bws_time;
-   Rcout << "\n\n";
+   // Rcout << "HERE IS THE MATRIX OF TIME BANDWIDTHS\n";
+   // Rcout << bws_time;
+   // Rcout << "\n\n";
 
-   Rcout << "HERE IS THE MATRIX OF NETWORK BANDWIDTHS\n";
-   Rcout << bws_net;
-   Rcout << "\n\n";
+   // Rcout << "HERE IS THE MATRIX OF NETWORK BANDWIDTHS\n";
+   // Rcout << bws_net;
+   // Rcout << "\n\n";
 
    int n_net = bws_net.n_rows;
-   Rcout << "here is bws_net.n_rows "<<bws_net.n_rows << "\n";
+   // Rcout << "here is bws_net.n_rows "<<bws_net.n_rows << "\n";
    // LET US CALCULATE THE TEMPORAL DENSITIES
    for(int e = 0; e < events.length() ; e++){
-     Rcout << "this is e : "<< e <<"\n";
+     // Rcout << "this is e : "<< e <<"\n";
      double d = std::abs(v_time - time_events(e));
      for(int n = 0 ; n < bws_net.n_rows ; n++){
-       Rcout << "this is n : "<< n <<"\n";
+       // Rcout << "this is n : "<< n <<"\n";
        for(int t = 0; t < bws_time.n_cols ; t++){
-         Rcout << "this is t : "<< t <<"\n";
-         double bw_time = bws_time(n,t,e);
-         Rcout << "here is bw_time" << bw_time << "\n";
-         Rcout << "here is old time_keval" << time_k_values(n,t,e) << "\n";
+         // Rcout << "this is t : "<< t <<"\n";
+         double bw_time = bws_time(n,t);
+         // Rcout << "here is bw_time" << bw_time << "\n";
+         // Rcout << "here is old time_keval" << time_k_values(n,t,e) << "\n";
          time_k_values(n,t,e) = kernel_func(d,bw_time);
        }
      }
    }
-   Rcout << "HERE ARE THE CALCULATED TIME DENSITIES\n";
-   Rcout << time_k_values <<"\n\n";
+   // Rcout << "HERE ARE THE CALCULATED TIME DENSITIES\n";
+   // Rcout << time_k_values <<"\n\n";
 
 
    // BEFORE THE SCALING HERE, I MUST APPLY THE TEMPORAL DENSITIES TOO
 
    kvalues = time_k_values % net_k_values;
 
-   Rcout << "HERE ARE THE UNSCALED DENSITIES\n";
-   Rcout << kvalues <<"\n\n";
+   // Rcout << "HERE ARE THE UNSCALED DENSITIES\n";
+   // Rcout << kvalues <<"\n\n";
 
    // and now we can apply the scaling
-   arma::cube scale_mat = arma::pow((bws_net % bws_time),-1);
-   kvalues = kvalues % scale_mat;
+   arma::mat scale_mat = arma::pow((bws_net % bws_time),-1);
+   for(int i = 0; i < events.length(); i ++){
+     kvalues.slice(i) = kvalues.slice(i) % scale_mat;
+   }
+
 
    return kvalues;
  }
@@ -1186,16 +1189,16 @@ arma::cube tnkde_get_loo_values(std::string method, List neighbour_list,
    //IntegerMatrix edge_mat = make_matrix(line_list,neighbour_list);
    arma::sp_mat edge_mat = make_matrix_sparse(line_list,neighbour_list);
    arma::cube k;
-   Rcout << "Here is the neighbours wids : \n";
-   Rcout << events_wid << "\n\n";
-   Rcout << "Here is the neighbours time : \n";
-   Rcout << events_time << "\n\n";
+   // Rcout << "Here is the neighbours wids : \n";
+   // Rcout << events_wid << "\n\n";
+   // Rcout << "Here is the neighbours time : \n";
+   // Rcout << events_time << "\n\n";
 
-   Rcout << "iterating to calculate the densities from each event \n";
+   // Rcout << "iterating to calculate the densities from each event \n";
    //step2 : iterer sur chaque event de la zone d'etude
    int cnt_e = events.length()-1;
    for(int i=0; i <= cnt_e; ++i){
-     Rcout << "    "<< i<<"\n";
+     // Rcout << "    "<< i<<"\n";
      //preparer les differentes valeurs de departs pour l'event y
      int y = events[i];
      int wid = events_wid[i];
@@ -1207,15 +1210,16 @@ arma::cube tnkde_get_loo_values(std::string method, List neighbour_list,
        k = ess_kernel_loo_tnkde_adpt(kernel_func, edge_mat, sel_events,sel_events_wid,
                                 sel_events_time, neighbour_list,
                                 y, wid, v_time,
-                                bws_net,
-                                bws_time,
+                                bws_net.slice(i), bws_time.slice(i),
                                 line_weights, max_depth);
 
      }else if (method == "discontinuous"){
+       // NOTE TO MYSELF HERE : If we are considering the densities caused by
+       // the event y, then we only need the bandwidths of the event y
        k = esd_kernel_loo_tnkde_adpt(kernel_func, edge_mat, sel_events,sel_events_wid,
                                 sel_events_time, neighbour_list,
                                 y, wid, v_time,
-                                bws_net, bws_time,
+                                bws_net.slice(i), bws_time.slice(i),
                                 line_weights, max_depth);
      }else{
        // NOTE TO MYSELF HERE : I MUST IMPLEMENT A VERSION OF THIS FUNCTION
@@ -1224,13 +1228,12 @@ arma::cube tnkde_get_loo_values(std::string method, List neighbour_list,
        k = esc_kernel_loo_tnkde_adpt(kernel_func, edge_mat, sel_events,sel_events_wid,
                                 sel_events_time, neighbour_list,
                                 y, wid, v_time,
-                                bws_net, bws_time,
+                                bws_net.slice(i), bws_time.slice(i),
                                 line_weights, max_depth);
      }
      // NOTE : the scaling by bws is applied above
-
-
      arma::mat w = weights.slice(i);
+
      for(int ii = 0; ii < sel_events.length(); ii++){
        k.slice(ii) = k.slice(ii) % w;
      }
@@ -1399,26 +1402,26 @@ arma::rowvec adaptive_bw_tnkde_cpp(std::string method,
                                     DataFrame line_list,
                                     int max_depth,
                                     double min_tol){
-   Rcout << "step0\n";
+   // Rcout << "step0\n";
    //selecting the kernel function
    fptros kernel_func = select_kernelos(kernel_name);
-   Rcout << "step1\n";
+   // Rcout << "step1\n";
    //step0 extract the columns of the dataframe
    NumericVector line_weights = line_list["weight"];
-   Rcout << "step2\n";
+   // Rcout << "step2\n";
    //step 1 : mettre toutes les valeurs a 0 (bw_net 0 et bw_time 0)
    // NOTE WE calculate the values only for the events in sel_events
    arma::cube base_k(bws_net.n_elem, bws_time.n_elem, sel_events.length());
-   Rcout << "step3\n";
+   // Rcout << "step3\n";
    //calculer la matrice des lignes
    //IntegerMatrix edge_mat = make_matrix(line_list,neighbour_list);
    arma::sp_mat edge_mat = make_matrix_sparse(line_list,neighbour_list);
    arma::cube k;
-   Rcout << "step3\n";
+   // Rcout << "step3\n";
    //step2 : iterer sur chaque event de la zone d'etude
    int cnt_e = events.length()-1;
    for(int i=0; i <= cnt_e; ++i){
-     Rcout << "Iterating on " <<  i<<"\n";
+     // Rcout << "Iterating on " <<  i<<"\n";
      //preparer les differentes valeurs de departs pour l'event y
      int y = events[i];
      int wid = events_wid[i];
@@ -1445,19 +1448,19 @@ arma::rowvec adaptive_bw_tnkde_cpp(std::string method,
                                 bws_net, bws_time,
                                 line_weights, max_depth);
      }
-     Rcout << "Here is k : \n";
-     Rcout << k <<"\n\n";
+     // Rcout << "Here is k : \n";
+     // Rcout << k <<"\n\n";
      // NOTE : the scaling by bws is applied above
      float w = weights(i);
      for(int ii = 0; ii < sel_events.length(); ii++){
        k.slice(ii) = k.slice(ii) * w;
      }
-     Rcout << "weight applied !\n";
+     // Rcout << "weight applied !\n";
      // and summing the values at each iteration (% is the element wise product)
      base_k += k;
    };
    // and calculate the final values
-   Rcout << "end of iterations !\n";
+   // Rcout << "end of iterations !\n";
    arma::uvec neg_elems = arma::find(base_k <= 0);
    base_k.elem(neg_elems).fill(min_tol);
 

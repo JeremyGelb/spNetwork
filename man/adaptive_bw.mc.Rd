@@ -26,9 +26,9 @@ adaptive_bw.mc(
 
 \item{lines}{A feature collection of linestrings representing the network}
 
-\item{bw}{The fixed kernel bandwidth}
+\item{bw}{The fixed kernel bandwidth (can also be a vector, the value returned will be a matrix in that case)}
 
-\item{trim_bw}{The maximum size of local bandwidths}
+\item{trim_bw}{The maximum size of local bandwidths (can also be a vector, must match bw)}
 
 \item{method}{The method to use when calculating the NKDE}
 

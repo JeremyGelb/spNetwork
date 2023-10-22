@@ -11,10 +11,11 @@ bw_checks(
   events,
   kernel_name,
   method,
-  bw_net_range = NULL,
-  bw_time_range = NULL,
-  bw_net_step = NULL,
-  bw_time_step = NULL,
+  bws_net = NULL,
+  bws_time = NULL,
+  adaptive = FALSE,
+  trim_net_bws = NULL,
+  trim_time_bws = NULL,
   diggle_correction = FALSE,
   study_area = NULL
 )
@@ -32,15 +33,9 @@ bw_checks(
 
 \item{method}{The name of the NKDE to use}
 
-\item{bw_net_range}{The range for the network bandwidth to consider, given as a numeric
-vector of two values: c(bandwidth_min, bandwidth_max)}
+\item{bws_net}{An ordered numeric vector with all the network bandwidths}
 
-\item{bw_time_range}{The range for the time bandwidth to consider, given as a numeric
-vector of two values: c(bandwidth_min, bandwidth_max)}
-
-\item{bw_net_step}{The step between each network bandwidth to calculate, given as a float}
-
-\item{bw_time_step}{The step between each time bandwidth to calculate, given as a float}
+\item{bws_time}{An ordered numeric vector with all the time bandwidths}
 
 \item{diggle_correction}{A Boolean indicating if the correction factor
 for edge effect must be used.}

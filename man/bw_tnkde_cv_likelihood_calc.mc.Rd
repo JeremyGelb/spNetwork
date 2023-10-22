@@ -5,18 +5,21 @@
 \title{Bandwidth selection by likelihood cross validation for temporal NKDE (multicore)}
 \usage{
 bw_tnkde_cv_likelihood_calc.mc(
-  bw_net_range,
-  bw_net_step,
-  bw_time_range,
-  bw_time_step,
+  bws_net = NULL,
+  bws_time = NULL,
   lines,
   events,
   time_field,
   w,
   kernel_name,
   method,
+  arr_bws_net = NULL,
+  arr_bws_time = NULL,
   diggle_correction = FALSE,
   study_area = NULL,
+  adaptive = FALSE,
+  trim_net_bws = NULL,
+  trim_time_bws = NULL,
   max_depth = 15,
   digits = 5,
   tol = 0.1,
@@ -30,15 +33,9 @@ bw_tnkde_cv_likelihood_calc.mc(
 )
 }
 \arguments{
-\item{bw_net_range}{The range for the network bandwidth to consider, given as a numeric
-vector of two values: c(bandwidth_min, bandwidth_max)}
+\item{bws_net}{An ordered numeric vector with all the network bandwidths}
 
-\item{bw_net_step}{The step between each network bandwidth to calculate, given as a float}
-
-\item{bw_time_range}{The range for the time bandwidth to consider, given as a numeric
-vector of two values: c(bandwidth_min, bandwidth_max)}
-
-\item{bw_time_step}{The step between each time bandwidth to calculate, given as a float}
+\item{bws_time}{An ordered numeric vector with all the time bandwidths}
 
 \item{lines}{A feature collection of linestrings representing the underlying network. The
 geometries must be simple Linestrings (may crash if some geometries
@@ -138,10 +135,8 @@ future::plan(future::multisession(workers=2))
 
 # calculating the cross validation values
 cv_scores <- bw_tnkde_cv_likelihood_calc.mc(
-  bw_net_range = c(100,1000),
-  bw_net_step = 100,
-  bw_time_range = c(10,60),
-  bw_time_step = 5,
+  bws_net = seq(100,1000,100),
+  bws_time = seq(10,60,5),
   lines = mtl_network,
   events = bike_accidents,
   time_field = "Time",
