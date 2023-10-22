@@ -62,10 +62,6 @@ score. The first approach penalizes more strongly the small bandwidths.}
 \item{verbose}{A boolean}
 
 \item{cvl}{A boolean indicating if the cvl method (TRUE) or the loo (FALSE) method must be used}
-
-\item{agg}{A double indicating if the events must be aggregated within a
-distance. If NULL, the events are aggregated only by rounding the
-coordinates.}
 }
 \description{
 worker function for calculating for multiple bandwidth the cross validation likelihood to

@@ -27,6 +27,7 @@ reference:
   - bw_tnkde_cv_likelihood_calc
   - bw_tnkde_cv_likelihood_calc.mc
   - tkde
+  - bw_cv_likelihood_calc_tkde
 - title: "Spatial weight matrices on networks"
   desc: >
     Functions to calculate spatial weight matrices on networks.
@@ -76,6 +77,8 @@ reference:
   - lixelize_lines
   - lixelize_lines.mc
   - split_lines_at_vertex
+  - simple_lines
+  - st_bbox_by_feature
 - title: "Spatial data cleaning"
   desc: >
     Functions to clean data before spatial analysis
@@ -103,7 +106,7 @@ reference:
   - spNetwork-package
 - title: "internal"
   desc: >
-    Some internal functions that must be exposter for multiprocessing
+    Some internal functions that must be exposed for multiprocessing
 - contents:
   - adaptive_bw_tnkde_cpp
   - cross_gfunc_cpp
@@ -119,4 +122,3 @@ reference:
   - tnkde_worker_bw_sel
   - worker_adaptive_bw_tnkde
   - bw_cv_likelihood_calc_tkde
-

@@ -330,5 +330,3 @@ test_that("Testing the correction_factor function for a simple TNKDE and adaptiv
 
 })
 
-
-

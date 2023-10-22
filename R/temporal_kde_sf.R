@@ -4,7 +4,6 @@
 #'
 #' @param events A numeric vector representing the moments of occurrence of events
 #' @param w The weight of the events
-#' @param samples A numeric vector representing the moments to sample
 #' @param bw A float, the bandiwdth to use
 #' @param kernel_name The name of the kernel to use
 #' @keywords internal

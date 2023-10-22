@@ -56,6 +56,5 @@ LinkingTo:
     RcppProgress,
     RcppArmadillo,
     BH
-SystemRequirements: C++14
 RdMacros: Rdpack
 Language: en-CA

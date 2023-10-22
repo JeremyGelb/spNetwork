@@ -22,6 +22,8 @@ g_nt_func_cpp(
 )
 }
 \arguments{
+\item{dist_mat_net}{A square matrix with the distances between points on the network}
+
 \item{dist_mat_time}{A square matrix with the distances between points in time}
 
 \item{start_net}{A float, the start value for evaluating the g-function on the network}
@@ -45,8 +47,6 @@ g_nt_func_cpp(
 \item{n}{The number of points}
 
 \item{w}{The weight of the points (coincident points)}
-
-\item{dist_mat}{A square matrix with the distances between points on the network}
 }
 \description{
 c++ g space-time function

@@ -1388,7 +1388,7 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, tri
 #' \donttest{
 #' data(mtl_network)
 #' data(bike_accidents)
-#' future::plan(future::multisession(workers=2))
+#' future::plan(future::multisession(workers=1))
 #' lixels <- lixelize_lines(mtl_network,200,mindist = 50)
 #' samples <- lines_center(lixels)
 #' densities <- nkde.mc(mtl_network,

@@ -196,7 +196,7 @@ test_that("Testing the bw selection function with CV likelihood and discontinuou
 
 
   #let us calculate the value with our function
-  obs_value <-bw_tnkde_cv_likelihood_calc(bws_net = seq(10,15,5),
+  obs_value <- bw_tnkde_cv_likelihood_calc(bws_net = seq(10,15,5),
                                            bws_time = seq(6,7,1),
                                            lines = all_lines,
                                            events = event,
@@ -396,8 +396,7 @@ test_that("Testing the bw selection function with CV likelihood in multicore and
                                            sub_sample=1,
                                            verbose=TRUE,
                                            check=FALSE)
-
-  future::plan(future::multisession(workers=2))
+  future::plan(future::multisession(workers=1))
   obs_value2 <-bw_tnkde_cv_likelihood_calc.mc(bws_net = seq(11,12,1),
                                            bws_time = seq(6,7,1),
                                            lines = all_lines,

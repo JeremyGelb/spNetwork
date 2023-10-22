@@ -498,7 +498,7 @@ kfunctions <- function(lines, points,
 #' \donttest{
 #' data(main_network_mtl)
 #' data(mtl_libraries)
-#' future::plan(future::multisession(workers=2))
+#' future::plan(future::multisession(workers=1))
 #' result <- kfunctions.mc(main_network_mtl, mtl_libraries,
 #'      start = 0, end = 2500, step = 10,
 #'      width = 200, nsim = 50,
@@ -960,7 +960,7 @@ cross_kfunctions <- function(lines, pointsA, pointsB,
 #' data(main_network_mtl)
 #' data(mtl_libraries)
 #' data(mtl_theatres)
-#' future::plan(future::multisession(workers=2))
+#' future::plan(future::multisession(workers=1))
 #' result <- cross_kfunctions.mc(main_network_mtl, mtl_libraries, mtl_theatres,
 #'                            start = 0, end = 2500, step = 10, width = 250,
 #'                            nsim = 50, conf_int = 0.05, digits = 2,

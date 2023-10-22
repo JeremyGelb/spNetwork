@@ -489,7 +489,7 @@ bw_cv_likelihood_calc <- function(bws = NULL,
 #' \donttest{
 #' data(mtl_network)
 #' data(bike_accidents)
-#' future::plan(future::multisession(workers=2))
+#' future::plan(future::multisession(workers=1))
 #' cv_scores <- bw_cv_likelihood_calc.mc(seq(200,800,50),
 #'                                mtl_network, bike_accidents,
 #'                                rep(1,nrow(bike_accidents)),
@@ -733,7 +733,12 @@ bw_cv_likelihood_calc.mc <- function(bws, lines, events, w, kernel_name, method,
 #' @param zero_strat A string indicating what to do when density is 0 when calculating LOO density estimate for an isolated event.
 #' "min_double" (default) replace the 0 value by the minimum double possible on the machine. "remove" will remove them from the final
 #' score. The first approach penalizes more strongly the small bandwidths.
-#' @template nkde_geoms-args
+#' @param digits The number of digits to retain from the spatial coordinates. It
+#'   ensures that topology is good when building the network. Default is 3. Too high a
+#'   precision (high number of digits) might break some connections
+#' @param tol A float indicating the minimum distance between the events and the
+#'   lines' extremities when adding the point to the network. When points are
+#'   closer, they are added at the extremity of the lines.
 #' @template sparse-arg
 #' @param verbose A boolean
 #' @param cvl A boolean indicating if the cvl method (TRUE) or the loo (FALSE) method must be used

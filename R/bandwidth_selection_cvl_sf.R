@@ -450,7 +450,7 @@ bw_cvl_calc <- function(bws = NULL,
 #' \donttest{
 #' data(mtl_network)
 #' data(bike_accidents)
-#' future::plan(future::multisession(workers=2))
+#' future::plan(future::multisession(workers=1))
 #' cv_scores <- bw_cvl_calc.mc(seq(200,400,50),
 #'                                mtl_network, bike_accidents,
 #'                                rep(1,nrow(bike_accidents)),

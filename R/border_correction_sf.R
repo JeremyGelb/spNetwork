@@ -347,4 +347,7 @@ correction_factor_time <- function(events_time, samples_time, bws_time, kernel_n
   in_density <- 1 - (out_upper + out_lower)
   return(1/in_density)
 
+  #outer_part <- out_lower + out_upper
+  #return(outer_part)
+
 }
