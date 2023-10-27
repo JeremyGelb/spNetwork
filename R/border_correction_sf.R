@@ -3,72 +3,62 @@
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-#' @title Simple NKDE border correction
-#'
-#' @description A function to calculate the Diggle correction factor with the
-#' simple NKDE.
-#' @param graph The graph (igraph) used to calculate distances between nodes
-#' @param events A feature collection of points representing the events
-#' @param edges A feature collection of lines representing the edges of the graph
-#' @param bws A vector of the bandwidths for each event
-#' @keywords internal
-#' @importFrom igraph ends
-#' @return A numeric vector with the correction factor values
-corrfactor_simple <- function(graph,events,edges,bws){
-  tree_edges <- build_quadtree(edges)
-  buffers <- st_buffer(events, dist = bws)
-  #iterons sur chacun des evenements
-  dfs <- lapply(1:nrow(events),function(i){
-    e <- events[i,]
-    y <- e$vertex_id
-    bw <- bws[[i]]
-    ## step1 selecting the edges inside of the radius
-    #buff <- gBuffer(e,width=bw)
-    buff <- buffers[,i]
-    ok_edges <- spatial_request(buff,tree_edges,edges)
-    ## Step3 for each edge, find its two vertices
-    vertices <- ends(graph,ok_edges$edge_id,names = FALSE)
-    ## step4 calculate the the distance between the start node and each edge
-    ## vertex
-    un_vertices <- unique(c(vertices[,1],vertices[,2]))
-    dist1 <- as.numeric(distances(graph,y,to=un_vertices,mode="out"))
-
-    dist_table <- data.frame("vertex"=un_vertices,
-                             "distance" = dist1)
-    ## step5 aggregate all the data
-    df_edges <- data.frame("edge_id" = ok_edges$edge_id,
-                           "weight" = ok_edges$weight,
-                           "node1" = vertices[,1],
-                           "node2" = vertices[,2]
-    )
-    A <- data.table(df_edges)
-    B <- data.table(dist_table)
-    df_edges$d1 <- A[B, on = c("node1" = "vertex"),
-                     names(B) := mget(paste0("i.", names(B)))]$distance
-    df_edges$d2 <- A[B, on = c("node2" = "vertex"),
-                     names(B) := mget(paste0("i.", names(B)))]$distance
-
-    df_edges <- subset(df_edges,df_edges$d1<bw & df_edges$d2<bw)
-
-    df_edges$ecart <- abs(df_edges$d1 - df_edges$d2)
-    df_edges$lower <- with(df_edges, pmin(d1, d2))
-    df_edges$upper <- with(df_edges, pmax(d1, d2))
-    ## creation de la partie 1
-    part1 <- df_edges[c("lower","weight","edge_id")]
-    part1$distances <- part1$lower
-    part1$edge_size <- df_edges$weight - df_edges$ecart
-    part1$lower <- NULL
-    ## creation de la partie 2
-    part2 <- df_edges[c("upper","weight","edge_id")]
-    part2$distances <- part2$upper
-    part2$edge_size <- df_edges$ecart
-    part2$upper <- NULL
-    totdf <- rbind(part1,part2)
-    totdf$alpha <- 1
-    return(subset(totdf,totdf$edge_size>0))
-  })
-  return(dfs)
-}
+# this function is not usefull anymore. We keep it only for debuging purpose
+# corrfactor_simple <- function(graph,events,edges,bws){
+#   tree_edges <- build_quadtree(edges)
+#   buffers <- st_buffer(events, dist = bws)
+#   #iterons sur chacun des evenements
+#   dfs <- lapply(1:nrow(events),function(i){
+#     e <- events[i,]
+#     y <- e$vertex_id
+#     bw <- bws[[i]]
+#     ## step1 selecting the edges inside of the radius
+#     #buff <- gBuffer(e,width=bw)
+#     buff <- buffers[,i]
+#     ok_edges <- spatial_request(buff,tree_edges,edges)
+#     ## Step3 for each edge, find its two vertices
+#     vertices <- ends(graph,ok_edges$edge_id,names = FALSE)
+#     ## step4 calculate the the distance between the start node and each edge
+#     ## vertex
+#     un_vertices <- unique(c(vertices[,1],vertices[,2]))
+#     dist1 <- as.numeric(distances(graph,y,to=un_vertices,mode="out"))
+#
+#     dist_table <- data.frame("vertex"=un_vertices,
+#                              "distance" = dist1)
+#     ## step5 aggregate all the data
+#     df_edges <- data.frame("edge_id" = ok_edges$edge_id,
+#                            "weight" = ok_edges$weight,
+#                            "node1" = vertices[,1],
+#                            "node2" = vertices[,2]
+#     )
+#     A <- data.table(df_edges)
+#     B <- data.table(dist_table)
+#     df_edges$d1 <- A[B, on = c("node1" = "vertex"),
+#                      names(B) := mget(paste0("i.", names(B)))]$distance
+#     df_edges$d2 <- A[B, on = c("node2" = "vertex"),
+#                      names(B) := mget(paste0("i.", names(B)))]$distance
+#
+#     df_edges <- subset(df_edges,df_edges$d1<bw & df_edges$d2<bw)
+#
+#     df_edges$ecart <- abs(df_edges$d1 - df_edges$d2)
+#     df_edges$lower <- with(df_edges, pmin(d1, d2))
+#     df_edges$upper <- with(df_edges, pmax(d1, d2))
+#     ## creation de la partie 1
+#     part1 <- df_edges[c("lower","weight","edge_id")]
+#     part1$distances <- part1$lower
+#     part1$edge_size <- df_edges$weight - df_edges$ecart
+#     part1$lower <- NULL
+#     ## creation de la partie 2
+#     part2 <- df_edges[c("upper","weight","edge_id")]
+#     part2$distances <- part2$upper
+#     part2$edge_size <- df_edges$ecart
+#     part2$upper <- NULL
+#     totdf <- rbind(part1,part2)
+#     totdf$alpha <- 1
+#     return(subset(totdf,totdf$edge_size>0))
+#   })
+#   return(dfs)
+# }
 
 
 

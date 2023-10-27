@@ -476,6 +476,63 @@ test_that("Testing the bw selection function with Van Lieshout's Criterion and c
 
 
 
+test_that("Testing the bw selection function with Van Lieshout's Criterion and simple kernel and adaptive", {
+
+  ## creating the simple situation
+  # start with de definition of some lines
+  wkt_lines <- c(
+    "LINESTRING (0 5, 0 0)",
+    "LINESTRING (-5 0, 0 0)",
+    "LINESTRING (0 -5, 0 0)",
+    "LINESTRING (5 0, 0 0)")
+
+  linesdf <- data.frame(wkt = wkt_lines,
+                        id = paste("l",1:length(wkt_lines),sep=""))
+
+  all_lines <- st_as_sf(linesdf, wkt = "wkt")
+
+  # definition of three events
+  event <- data.frame(x=c(0,3,0),
+                      y=c(3,0,-3),
+                      id = c(1,2,3))
+  event <- st_as_sf(event, coords = c("x","y"))
+
+
+  # we can admit a bw of 10 here
+  # the network distance between two points is 6
+  # so the density at one event is
+  s1 <- (quartic_kernel(6,10) + quartic_kernel(6,10) + quartic_kernel(0,10)) *(1/10)
+
+  hf0 <- c(s1, s1, s1)
+
+  h0 <- 10
+  gamma_val <- exp(sum(log(1/sqrt(hf0)))/3)
+  abws <- h0 * (1/sqrt(hf0)) * (1/gamma_val)
+
+  #so the score value is
+  Wl <- sum(as.numeric(st_length(all_lines)))
+  score <- ((1/s1+1/s1+1/s1) - Wl)**2
+
+
+  #let us calculate the value with our function
+  obs_value <- bw_cvl_calc(bws = seq(8,10,1),
+                           trim_bws = seq(8,10,1) * 2,
+                           lines = all_lines,
+                           events = event,
+                           w = c(1,1,1),
+                           check = F,
+                           kernel_name = "quartic",
+                           adaptive = TRUE,
+                           method = "simple",
+                           digits = 1,
+                           agg = NULL,
+                           verbose = F,
+                           tol = 0.00001
+  )
+  expect_equal(obs_value[3,2], score)
+})
+
+
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #### Comparing multicore and single core ####
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -588,7 +645,7 @@ test_that("Testing that bw selection with Van Lieshout's Criterion gives the sam
                                  max_depth = 8,
                                  digits=2, tol=0.1, agg=5,
                                  sparse=TRUE, grid_shape=c(2,2),
-                                 sub_sample = 1, verbose=FALSE, check=TRUE)
+                                 sub_sample = 1, verbose=TRUE, check=TRUE)
 
   ## single core cv score
   cv_scores <- bw_cvl_calc(seq(200,400,100),
