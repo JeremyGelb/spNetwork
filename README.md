@@ -22,6 +22,15 @@ The package’s website is available
 
 ## Breaking news
 
+### Changes in bandwidths selection functions
+
+The latest version (0.4.4) has modifications in the arguments of the
+functions `bw_cvl_calc`, `bw_cvl_calc.mc`, `bw_cv_likelihood_calc`,
+`bw_cv_likelihood_calc`,`bw_tnkde_cv_likelihood_calc.mc`. The parameters
+about bandwidths range and step were replaced by a unique parameter
+requiring and **ordered** vector of bandwidths. Code from previous
+version need to be modified accordingly.
+
 ### Moving to sf
 
 Considering that `rgeos` and `maptools` will be deprecated soon, we are

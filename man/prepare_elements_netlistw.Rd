@@ -24,7 +24,7 @@ A list of two elements : selected points and selected lines
 }
 \description{
 Function to prepare selected points and selected lines during
-  the process.
+the process.
 }
 \examples{
 #no example provided, this is an internal function

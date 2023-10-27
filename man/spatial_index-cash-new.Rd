@@ -4,7 +4,9 @@
 \alias{spatial_index$new}
 \title{Constructor method for a spatial_index object}
 \arguments{
-\item{x}{- A numeric matrix with 4 columns (minX, minY, maxX, maxY)}
+\item{x}{\itemize{
+\item A numeric matrix with 4 columns (minX, minY, maxX, maxY)
+}}
 }
 \value{
 a new instance of the spatial_index class (c++ pointer)

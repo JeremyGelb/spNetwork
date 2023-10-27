@@ -1,3 +1,15 @@
+# spNetwork 0.4.4
+
+This is an important release!
+
+## New Features
+
+* It is now possible to do bandwidth selection with adaptive bandwidths
+* One can also set local bandwidths manually for bandwidth selection
+
+## Changes in function
+* for all the function where the parameters *bw_range* and *bw_step* were used, they were replaced by a single argument *bws*. It gives more flexibility to the user. 
+
 # spNetwork 0.4.3.7
 
 This is only a maintenance release. A bug in CRAN caused by multiprocessing in example caused the rejection of hte package.

@@ -498,10 +498,8 @@ test_that("Testing that bw selection by cv-likelihood gives the same score in si
   ## multicore cv score
   future::plan(future::multisession(workers=1))
 
-  ## NOTE : THE MULTICORE VERSION IS NOT WORKING' BUT THE SIMGLE CORE VERSION IS WORKING
   cv_scores.mc <- bw_cv_likelihood_calc.mc(
     bws = seq(200,400,100),
-    trim_bws = seq(200,400,100) * 2,
     lines = lines,
     events = events,
     w = rep(1,nrow(events)),

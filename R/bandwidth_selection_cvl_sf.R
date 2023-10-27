@@ -415,7 +415,7 @@ bw_cvl_calc <- function(bws = NULL,
 #' select an appropriate bandwidth in a data-driven approach. A plan from the package future can be used
 #' to split the work across several cores. The different cells generated in accordance with the
 #' argument grid_shape are used for the parallelization. So if only one cell is
-#' generated (grid_shape = c(1,1)), the function will use only one core. The progress bar
+#' generated (`grid_shape = c(1,1)`), the function will use only one core. The progress bar
 #' displays the progression for the cells.
 #'
 #'
@@ -432,8 +432,7 @@ bw_cvl_calc <- function(bws = NULL,
 #' If adaptive = TRUE, the local bandwidth are derived from the global bandwidths
 #' calculated from bw_range and bw_step.
 #' @param trim_bws A vector indicating the maximum value an adaptive bandwidth can
-#' reach. Higher values will be trimmed. It must have the same length as
-#' seq(bw_range[[1]],bw_range[[2]], bw_step).
+#' reach. Higher values will be trimmed. It must have the same length as `bws`.
 #' @param sub_sample A float between 0 and 1 indicating the percentage of quadra
 #' to keep in the calculus. For large datasets, it may be useful to limit the
 #' bandwidth evaluation and thus reduce calculation time.
@@ -484,7 +483,7 @@ bw_cvl_calc.mc <- function(bws = NULL, lines, events, w, kernel_name, method,
   }
 
   passed <- bw_checks(check,lines,samples,events,
-                      kernel_name, method, bws = bws, bws_time = NULL,
+                      kernel_name, method, bws_net = bws, bws_time = NULL,
                       adaptive = adaptive, trim_net_bws = trim_bws,
                       diggle_correction = diggle_correction, study_area = study_area)
 

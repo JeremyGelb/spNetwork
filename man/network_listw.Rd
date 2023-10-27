@@ -78,8 +78,8 @@ added as vertices to lines.}
 }
 \value{
 A listw object (spdep like) if matrice_type is "B" or "W". If
-  matrice_type is I, then a list with a nblist object and a list of weights
-  is returned.
+matrice_type is I, then a list with a nblist object and a list of weights
+is returned.
 }
 \description{
 Generate listw object (spdep like) based on network distances.

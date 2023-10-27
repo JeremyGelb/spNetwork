@@ -28,7 +28,7 @@ k_nt_functions.mc(
 \arguments{
 \item{lines}{A feature collection of linestrings representing the underlying network. The
 geometries must be simple Linestrings (may crash if some geometries
- are invalid) without MultiLineSring}
+are invalid) without MultiLineSring}
 
 \item{points}{A feature collection of points representing the points on the
 network. These points will be snapped on their nearest line}
@@ -80,36 +80,36 @@ If NULL, the events are aggregated only by rounding the coordinates}
 \item{verbose}{A Boolean indicating if progress messages should be displayed}
 }
 \value{
-A list with the following values : \cr
- \itemize{
-      \item{obs_k}{ A matrix with the observed k-values}
-      \item{lower_k}{ A matrix with the lower bounds of the simulated k-values}
-      \item{upper_k}{ A matrix with the upper bounds of the simulated k-values}
-      \item{obs_g}{ A matrix with the observed g-values}
-      \item{lower_g}{ A matrix with the lower bounds of the simulated g-values}
-      \item{upper_g}{ A matrix with the upper bounds of the simulated g-values}
-      \item{distances_net}{ A vector with the used network distances}
-      \item{distances_time}{ A vector with the used time distances}
-      }
+A list with the following values :
+\itemize{
+\item obs_k: A matrix with the observed k-values
+\item lower_k: A matrix with the lower bounds of the simulated k-values
+\item upper_k: A matrix with the upper bounds of the simulated k-values
+\item obs_g: A matrix with the observed g-values
+\item lower_g: A matrix with the lower bounds of the simulated g-values
+\item upper_g: A matrix with the upper bounds of the simulated g-values
+\item distances_net: A vector with the used network distances
+\item distances_time: A vector with the used time distances
+}
 }
 \description{
 Calculate the k and g functions for a set of points on a
-  network and in time (multicore, experimental, NOT READY FOR USE).
+network and in time (multicore, experimental, NOT READY FOR USE).
 }
 \details{
 The k-function is a method to characterize the dispersion of a set
-  of points. For each point, the numbers of other points in subsequent radii
-  are calculated. This empirical k-function can be more or less clustered
-  than a k-function obtained if the points were randomly located in space. In
-  a network, the network distance is used instead of the Euclidean distance.
-  This function uses Monte Carlo simulations to assess if the points are
-  clustered or dispersed, and gives the results as a line plot. If the line
-  of the observed k-function is higher than the shaded area representing the
-  values of the simulations, then the points are more clustered than what we
-  can expect from randomness and vice-versa. The function also calculates the
-  g-function, a modified version of the k-function using rings instead of
-  disks. The width of the ring must be chosen. The main interest is to avoid
-  the cumulative effect of the classical k-function. This function is maturing,
-  it works as expected (unit tests) but will probably be modified in the
-  future releases (gain speed, advanced features, etc.).
+of points. For each point, the numbers of other points in subsequent radii
+are calculated. This empirical k-function can be more or less clustered
+than a k-function obtained if the points were randomly located in space. In
+a network, the network distance is used instead of the Euclidean distance.
+This function uses Monte Carlo simulations to assess if the points are
+clustered or dispersed, and gives the results as a line plot. If the line
+of the observed k-function is higher than the shaded area representing the
+values of the simulations, then the points are more clustered than what we
+can expect from randomness and vice-versa. The function also calculates the
+g-function, a modified version of the k-function using rings instead of
+disks. The width of the ring must be chosen. The main interest is to avoid
+the cumulative effect of the classical k-function. This function is maturing,
+it works as expected (unit tests) but will probably be modified in the
+future releases (gain speed, advanced features, etc.).
 }

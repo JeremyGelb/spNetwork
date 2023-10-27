@@ -21,7 +21,7 @@ An sf object with linestring geometry type
 }
 \description{
 Cut the lines of a feature collection of linestrings into lixels with a specified minimal
-  distance may fail if the line geometries are self intersecting.
+distance may fail if the line geometries are self intersecting.
 }
 \examples{
 \donttest{

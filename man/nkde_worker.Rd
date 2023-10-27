@@ -23,7 +23,7 @@ nkde_worker(
 \arguments{
 \item{lines}{A feature collection of linestrings representing the network. The
 geometries must be simple lines (may crash if some geometries
- are invalid)}
+are invalid)}
 
 \item{events}{A feature collection of points representing the events on the
 network. The points will be snapped on the network.}

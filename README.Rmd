@@ -39,6 +39,10 @@ The package's website is available [here](https://jeremygelb.github.io/spNetwork
 
 ## Breaking news
 
+### Changes in bandwidths selection functions
+
+The latest version (0.4.4) has modifications in the arguments of the functions `bw_cvl_calc`, `bw_cvl_calc.mc`, `bw_cv_likelihood_calc`, `bw_cv_likelihood_calc`,`bw_tnkde_cv_likelihood_calc.mc`. The parameters about bandwidths range and step were replaced by a unique parameter requiring and **ordered** vector of bandwidths. Code from previous version need to be modified accordingly.
+
 ### Moving to sf
 
 Considering that `rgeos` and `maptools` will be deprecated soon, we are moving to sf! This requires some adjustment in the code and the documentation. The development version and the releases on CRAN are now using `sf`. Please, report any bug or error in the documentation.

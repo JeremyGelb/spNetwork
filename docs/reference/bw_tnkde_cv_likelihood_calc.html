@@ -18,7 +18,7 @@ select an appropriate bandwidth in a data-driven approach"><!-- mathjax --><scri
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3.6.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.4</span>
       </span>
     </div>
 
@@ -131,7 +131,7 @@ select an appropriate bandwidth in a data-driven approach</p>
 <dt>lines</dt>
 <dd><p>A feature collection of linestrings representing the underlying network. The
 geometries must be simple Linestrings (may crash if some geometries
- are invalid) without MultiLineSring.</p></dd>
+are invalid) without MultiLineSring.</p></dd>
 
 
 <dt>events</dt>
@@ -157,14 +157,34 @@ gaussian, tricube, cosine, triweight, quartic, epanechnikov or uniform.</p></dd>
 simple / discontinuous / continuous (see nkde details for more information)</p></dd>
 
 
+<dt>arr_bws_net</dt>
+<dd><p>An array with all the local netowrk bandwidths precalculated (for each event, and at each possible combinaison of network and temporal bandwidths). The dimensions must be c(length(net_bws), length(time_bws), nrow(events)))</p></dd>
+
+
+<dt>arr_bws_time</dt>
+<dd><p>An array with all the local time bandwidths precalculated (for each event, and at each possible combinaison of network and temporal bandwidths). The dimensions must be c(length(net_bws), length(time_bws), nrow(events)))</p></dd>
+
+
 <dt>diggle_correction</dt>
 <dd><p>A Boolean indicating if the correction factor
 for edge effect must be used.</p></dd>
 
 
 <dt>study_area</dt>
-<dd><p>A feature collection of polygons 
+<dd><p>A feature collection of polygons
 representing the limits of the study area.</p></dd>
+
+
+<dt>adaptive</dt>
+<dd><p>A boolean indicating if local bandwidths must be calculated</p></dd>
+
+
+<dt>trim_net_bws</dt>
+<dd><p>A numeric vector with the maximum local network bandwidth. If local bandwidths have higher values, they will be replaced by the corresponding value in this vector.</p></dd>
+
+
+<dt>trim_time_bws</dt>
+<dd><p>A numeric vector with the maximum local time bandwidth. If local bandwidths have higher values, they will be replaced by the corresponding value in this vector.</p></dd>
 
 
 <dt>max_depth</dt>
@@ -249,9 +269,9 @@ bandwidths that would produce the most similar results if one event is removed f
 the dataset (leave one out cross validation). We use here the shortcut formula as
 described by the package spatstat (Baddeley et al. 2021)
 .</p>
-<p>LCV(h) = sum[i] log(lambda[-i](x[i]))</p>
-<p>Where the sum is taken for all events x[i] and where lambda[-i](x[i]) is the leave-one-out kernel
-estimate at x[i] for a bandwidth h. A lower value indicates a better bandwidth.</p>
+<p>LCV(h) = sumi log(lambda<a href="x%5Bi%5D">-i</a>)</p>
+<p>Where the sum is taken for all events xi and where lambda<a href="x%5Bi%5D">-i</a> is the leave-one-out kernel
+estimate at xi for a bandwidth h. A lower value indicates a better bandwidth.</p>
     </div>
     <div id="references">
     <h2>References</h2>
@@ -262,7 +282,39 @@ R package version 2.1-0, <a href="https://CRAN.R-project.org/package=spatstat" c
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># \donttest{</span></span>
+<span><span class="co"># loading the data</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># converting the Date field to a numeric field (counting days)</span></span>
+<span><span class="va">bike_accidents</span><span class="op">$</span><span class="va">Time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html" class="external-link">as.POSIXct</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">$</span><span class="va">Date</span>, format <span class="op">=</span> <span class="st">"%Y/%m/%d"</span><span class="op">)</span></span>
+<span><span class="va">bike_accidents</span><span class="op">$</span><span class="va">Time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/difftime.html" class="external-link">difftime</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">$</span><span class="va">Time</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">$</span><span class="va">Time</span><span class="op">)</span>, units <span class="op">=</span> <span class="st">"days"</span><span class="op">)</span></span>
+<span><span class="va">bike_accidents</span><span class="op">$</span><span class="va">Time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">$</span><span class="va">Time</span><span class="op">)</span></span>
+<span><span class="va">bike_accidents</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">bike_accidents</span>, <span class="va">bike_accidents</span><span class="op">$</span><span class="va">Time</span><span class="op">&gt;=</span><span class="fl">89</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># calculating the cross validation values</span></span>
+<span><span class="va">cv_scores</span> <span class="op">&lt;-</span> <span class="fu">bw_tnkde_cv_likelihood_calc</span><span class="op">(</span></span>
+<span>  bws_net <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">100</span>,<span class="fl">1000</span>,<span class="fl">100</span><span class="op">)</span>,</span>
+<span>  bws_time <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">10</span>,<span class="fl">60</span>,<span class="fl">5</span><span class="op">)</span>,</span>
+<span>  lines <span class="op">=</span> <span class="va">mtl_network</span>,</span>
+<span>  events <span class="op">=</span> <span class="va">bike_accidents</span>,</span>
+<span>  time_field <span class="op">=</span> <span class="st">"Time"</span>,</span>
+<span>  w <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  kernel_name <span class="op">=</span> <span class="st">"quartic"</span>,</span>
+<span>  method <span class="op">=</span> <span class="st">"discontinuous"</span>,</span>
+<span>  diggle_correction <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  study_area <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  max_depth <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  digits <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  tol <span class="op">=</span> <span class="fl">0.1</span>,</span>
+<span>  agg <span class="op">=</span> <span class="fl">15</span>,</span>
+<span>  sparse<span class="op">=</span><span class="cn">TRUE</span>,</span>
+<span>  grid_shape<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span>,</span>
+<span>  sub_sample<span class="op">=</span><span class="fl">1</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  check <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co"># }</span></span></code></pre></div>
     </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

@@ -14,7 +14,7 @@ A feature collection of points
 }
 \description{
 Generate a feature collection of points with the first and last vertex
-  of each line in a feature collection of linestrings.
+of each line in a feature collection of linestrings.
 }
 \examples{
 #This is an internal function, no example provided

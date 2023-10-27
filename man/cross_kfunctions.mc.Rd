@@ -25,7 +25,7 @@ cross_kfunctions.mc(
 \arguments{
 \item{lines}{A feature collection of linestrings representing the underlying network. The
 geometries must be simple Linestrings (may crash if some geometries
- are invalid) without MultiLineSring}
+are invalid) without MultiLineSring}
 
 \item{pointsA}{A feature collection of points representing the points to which the
 distances are calculated.}
@@ -71,15 +71,15 @@ If NULL, the events are aggregated only by rounding the coordinates}
 be returned as matrices}
 }
 \value{
-A list with the following values : \cr \itemize{ \item{plotk}{ A
-  ggplot2 object representing the values of the cross k-function}
-  \item{plotg}{ A ggplot2 object representing the values of the cross
-  g-function} \item{values}{ A DataFrame with the values used to build the
-  plots} }
+A list with the following values : \cr \item{plotk}{ A
+ggplot2 object representing the values of the cross k-function}
+\item{plotg}{ A ggplot2 object representing the values of the cross
+g-function} \item{values}{ A DataFrame with the values used to build the
+plots}
 }
 \description{
 Calculate the cross k and g functions for a set of points on a
-  network with multicore support. (maturing)
+network with multicore support. (maturing)
 }
 \examples{
 \donttest{

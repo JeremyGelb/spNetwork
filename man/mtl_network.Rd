@@ -7,12 +7,12 @@
 \format{
 A sf object with 2945 rows and 2 variables
 \describe{
-  \item{ClsRte}{the category of the road}
-  \item{geom}{the geometry (linestrings)}
+\item{ClsRte}{the category of the road}
+\item{geom}{the geometry (linestrings)}
 }
 }
 \source{
-<https://donnees.montreal.ca/ville-de-montreal/geobase>
+\url{https://donnees.montreal.ca/dataset/geobase}
 }
 \usage{
 mtl_network

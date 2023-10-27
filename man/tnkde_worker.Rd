@@ -27,7 +27,7 @@ tnkde_worker(
 \arguments{
 \item{lines}{A feature collection of linestrings with the sampling points. The
 geometries must be simple Linestrings (may crash if some geometries
- are invalid)}
+are invalid)}
 
 \item{events_loc}{A feature collection of points representing the aggergated events on the
 network. The points will be snapped on the network.}

@@ -7,14 +7,14 @@
 \format{
 A sf object with 347 rows and 4 variables
 \describe{
-  \item{NB_VICTIME}{the number of victims}
-  \item{AN}{the year of the accident}
-  \item{Date}{the date of the accident (yyyy/mm/dd)}
-  \item{geom}{the geometry (points)}
+\item{NB_VICTIME}{the number of victims}
+\item{AN}{the year of the accident}
+\item{Date}{the date of the accident (yyyy/mm/dd)}
+\item{geom}{the geometry (points)}
 }
 }
 \source{
-<https://donnees.montreal.ca/ville-de-montreal/collisions-routieres>
+\url{https://donnees.montreal.ca/dataset/collisions-routieres}
 }
 \usage{
 bike_accidents

@@ -18,7 +18,7 @@ select an appropriate bandwidth in a data-driven approach with multicore support
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3.6.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.4</span>
       </span>
     </div>
 
@@ -131,7 +131,7 @@ select an appropriate bandwidth in a data-driven approach with multicore support
 <dt>lines</dt>
 <dd><p>A feature collection of linestrings representing the underlying network. The
 geometries must be simple Linestrings (may crash if some geometries
- are invalid) without MultiLineSring.</p></dd>
+are invalid) without MultiLineSring.</p></dd>
 
 
 <dt>events</dt>
@@ -157,14 +157,34 @@ gaussian, tricube, cosine, triweight, quartic, epanechnikov or uniform.</p></dd>
 simple / discontinuous / continuous (see nkde details for more information)</p></dd>
 
 
+<dt>arr_bws_net</dt>
+<dd><p>An array with all the local netowrk bandwidths precalculated (for each event, and at each possible combinaison of network and temporal bandwidths). The dimensions must be c(length(net_bws), length(time_bws), nrow(events)))</p></dd>
+
+
+<dt>arr_bws_time</dt>
+<dd><p>An array with all the local time bandwidths precalculated (for each event, and at each possible combinaison of network and temporal bandwidths). The dimensions must be c(length(net_bws), length(time_bws), nrow(events)))</p></dd>
+
+
 <dt>diggle_correction</dt>
 <dd><p>A Boolean indicating if the correction factor
 for edge effect must be used.</p></dd>
 
 
 <dt>study_area</dt>
-<dd><p>A feature collection of polygons 
+<dd><p>A feature collection of polygons
 representing the limits of the study area.</p></dd>
+
+
+<dt>adaptive</dt>
+<dd><p>A boolean indicating if local bandwidths must be calculated</p></dd>
+
+
+<dt>trim_net_bws</dt>
+<dd><p>A numeric vector with the maximum local network bandwidth. If local bandwidths have higher values, they will be replaced by the corresponding value in this vector.</p></dd>
+
+
+<dt>trim_time_bws</dt>
+<dd><p>A numeric vector with the maximum local time bandwidth. If local bandwidths have higher values, they will be replaced by the corresponding value in this vector.</p></dd>
 
 
 <dt>max_depth</dt>
@@ -260,7 +280,7 @@ according to the grid_shape argument. If the grid_shape is c(1,1) then only one 
 <span><span class="va">bike_accidents</span><span class="op">$</span><span class="va">Time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">$</span><span class="va">Time</span><span class="op">)</span></span>
 <span><span class="va">bike_accidents</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">bike_accidents</span>, <span class="va">bike_accidents</span><span class="op">$</span><span class="va">Time</span><span class="op">&gt;=</span><span class="fl">89</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/multisession.html" class="external-link">multisession</a></span><span class="op">(</span>workers<span class="op">=</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/multisession.html" class="external-link">multisession</a></span><span class="op">(</span>workers<span class="op">=</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># calculating the cross validation values</span></span>
 <span><span class="va">cv_scores</span> <span class="op">&lt;-</span> <span class="fu">bw_tnkde_cv_likelihood_calc.mc</span><span class="op">(</span></span>

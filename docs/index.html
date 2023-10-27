@@ -121,6 +121,11 @@
 <h2 id="breaking-news">Breaking news<a class="anchor" aria-label="anchor" href="#breaking-news"></a>
 </h2>
 <div class="section level3">
+<h3 id="changes-in-bandwidths-selection-functions">Changes in bandwidths selection functions<a class="anchor" aria-label="anchor" href="#changes-in-bandwidths-selection-functions"></a>
+</h3>
+<p>The latest version (0.4.4) has modifications in the arguments of the functions <code>bw_cvl_calc</code>, <code>bw_cvl_calc.mc</code>, <code>bw_cv_likelihood_calc</code>, <code>bw_cv_likelihood_calc</code>,<code>bw_tnkde_cv_likelihood_calc.mc</code>. The parameters about bandwidths range and step were replaced by a unique parameter requiring and <strong>ordered</strong> vector of bandwidths. Code from previous version need to be modified accordingly.</p>
+</div>
+<div class="section level3">
 <h3 id="moving-to-sf">Moving to sf<a class="anchor" aria-label="anchor" href="#moving-to-sf"></a>
 </h3>
 <p>Considering that <code>rgeos</code> and <code>maptools</code> will be deprecated soon, we are moving to sf! This requires some adjustment in the code and the documentation. The development version and the releases on CRAN are now using <code>sf</code>. Please, report any bug or error in the documentation.</p>

@@ -236,10 +236,10 @@
 #' the dataset (leave one out cross validation). We use here the shortcut formula as
 #' described by the package spatstat \insertCite{spatstatpkg}{spNetwork}.
 #'
-#' LCV(h) = sum[i] log(lambda[-i](x[i]))
+#'  \eqn{LCV(h) = \sum_i \log\hat\lambda_{-i}(x_i)}
 #'
-#' Where the sum is taken for all events x[i] and where lambda[-i](x[i]) is the leave-one-out kernel
-#' estimate at x[i] for a bandwidth h. A higher value indicates a better bandwidth.
+#' Where the sum is taken for all events \eqn{x_i} and where \eqn{\hat\lambda_{-i}(x_i)} is the leave-one-out kernel
+#' estimate at \eqn{x_i} for a bandwidth h. A higher value indicates a better bandwidth.
 #'
 #' @references{
 #'     \insertAllCited{}
@@ -299,7 +299,7 @@ bw_cv_likelihood_calc <- function(bws = NULL,
 
   passed <- bw_checks(check,lines,samples,events,
            kernel_name, method, bws_net = bws,
-           adaptive = adaptive, trim_net_bws = trim_bws,
+           adaptive = adaptive, trim_net_bws = trim_bws, arr_bws_net = mat_bws,
            diggle_correction = diggle_correction, study_area = study_area)
 
   if(zero_strat %in% c("min_double", "remove") == FALSE){
@@ -464,7 +464,7 @@ bw_cv_likelihood_calc <- function(bws = NULL,
 #' select an appropriate bandwidth in a data-driven approach
 #'
 #' @details  See the function bw_cv_likelihood_calc for more details. The calculation is split
-#' according to the parameter grid_shape. If grid_shape = c(1,1), then parallel processing cannot be used.
+#' according to the parameter grid_shape. If `grid_shape = c(1,1)`, then parallel processing cannot be used.
 #'
 #' @template bw_selection-args
 #' @template diggle_corr-arg
@@ -522,7 +522,7 @@ bw_cv_likelihood_calc.mc <- function(bws, lines, events, w, kernel_name, method,
 
   passed <- bw_checks(check,lines,samples,events,
                       kernel_name, method, bws_net = bws, bws_time = NULL,
-                      adaptive = adaptive, trim_net_bws = trim_bws,
+                      adaptive = adaptive, trim_net_bws = trim_bws, arr_bws_net = mat_bws,
                       diggle_correction = diggle_correction, study_area = study_area)
 
   if(zero_strat %in% c("min_double", "remove") == FALSE){

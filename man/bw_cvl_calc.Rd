@@ -33,7 +33,7 @@ bw_cvl_calc(
 
 \item{lines}{A feature collection of linestrings representing the underlying network. The
 geometries must be simple Linestrings (may crash if some geometries
- are invalid) without MultiLineSring.}
+are invalid) without MultiLineSring.}
 
 \item{events}{events A feature collection of points representing the events on the
 network. The points will be snapped on the network to their closest line.}
@@ -49,7 +49,7 @@ simple / discontinuous / continuous (see nkde details for more information)}
 \item{diggle_correction}{A Boolean indicating if the correction factor
 for edge effect must be used.}
 
-\item{study_area}{A feature collection of polygons 
+\item{study_area}{A feature collection of polygons
 representing the limits of the study area.}
 
 \item{adaptive}{A boolean indicating if an adaptive bandwidth must be used.
@@ -141,6 +141,6 @@ cv_scores <- bw_cvl_calc(seq(200,400,50),
 }
 \references{
 {
-    \insertAllCited{}
+\insertAllCited{}
 }
 }

@@ -24,12 +24,12 @@ stored in the final object}
 \value{
 A list containing the following elements:
 \itemize{
-        \item graph: an igraph object;
-        \item linelist: the dataframe used to build the graph;
-        \item lines: the original feature collection of lines;
-        \item spvertices: a feature collection of points representing the vertices
-        of the graph;
-        \item digits : the number of digits kept for the coordinates.
+\item graph: an igraph object;
+\item linelist: the dataframe used to build the graph;
+\item lines: the original feature collection of lines;
+\item spvertices: a feature collection of points representing the vertices
+of the graph;
+\item digits : the number of digits kept for the coordinates.
 }
 }
 \description{
@@ -37,11 +37,11 @@ Generate a directed igraph object from a feature collection of linestrings
 }
 \details{
 This function can be used to generate a directed graph object (igraph
-  object). It uses the coordinates of the linestrings extremities to create
-  the nodes of the graph. This is why the number of digits in the coordinates
-  is important. Too high precision (high number of digits) might break some
-  connections. The column used to indicate directions can only have the
-  following values: "FT" (From-To), "TF" (To-From) and "Both".
+object). It uses the coordinates of the linestrings extremities to create
+the nodes of the graph. This is why the number of digits in the coordinates
+is important. Too high precision (high number of digits) might break some
+connections. The column used to indicate directions can only have the
+following values: "FT" (From-To), "TF" (To-From) and "Both".
 }
 \examples{
 \donttest{

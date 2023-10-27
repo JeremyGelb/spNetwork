@@ -14,7 +14,7 @@ the gamma parameter in Abramson’s smoothing regimen
 }
 \description{
 Function to calculate the gamma parameter in Abramson’s
-  smoothing regimen.
+smoothing regimen.
 }
 \examples{
 #This is an internal function, no example provided

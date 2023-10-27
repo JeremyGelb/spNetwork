@@ -35,7 +35,7 @@ tnkde(
 \arguments{
 \item{lines}{A feature collection of linestrings representing the underlying network. The
 geometries must be simple Linestrings (may crash if some geometries
- are invalid) without MultiLineSring.}
+are invalid) without MultiLineSring.}
 
 \item{events}{events A feature collection of points representing the events on the
 network. The points will be snapped on the network to their closest line.}
@@ -83,7 +83,7 @@ events within the radius around each sampling point), "bw" (the bandwith)
 \item{diggle_correction}{A Boolean indicating if the correction factor
 for edge effect must be used.}
 
-\item{study_area}{A feature collection of polygons 
+\item{study_area}{A feature collection of polygons
 representing the limits of the study area.}
 
 \item{max_depth}{when using the continuous and discontinuous methods, the
@@ -127,21 +127,21 @@ of the provided objects are valid and identical, and that geometries are valid.}
 }
 \value{
 A matrix with the estimated density for each sample point (rows) at
-  each timestamp (columns). If adaptive = TRUE, the function returns a list
-  with two slots: k (the matrix with the density values) and events (a
-  feature collection of points with the local bandwidths).
+each timestamp (columns). If adaptive = TRUE, the function returns a list
+with two slots: k (the matrix with the density values) and events (a
+feature collection of points with the local bandwidths).
 }
 \description{
 Calculate the Temporal Network Kernel Density Estimate based on a network of lines,
 sampling points in space and times, and events in space and time.
 }
 \details{
-**Temporal Network Kernel Density Estimate**\cr
+\strong{Temporal Network Kernel Density Estimate}\cr
 The TNKDE is an extension of the NKDE considering both the location of events on the network and
 in time. Thus, density estimation (density sampling) can be done along lines of the network and
 at different time. It can be used with the three NKDE (simple, discontinuous and continuous).
 \cr\cr
-**density in time and space**\cr
+\strong{density in time and space}\cr
 Two bandwidths must be provided, one for the network distance and one for the
 time distance. They are both used to calculate the contribution of each event
 to each sampling point. Let us consider one event E and a sample S. dnet(E,S)
@@ -152,7 +152,7 @@ density is 0 because the sampling point is out of the covered area by the
 event in time or in the network space.
 \cr\cr
 
-**adaptive bandwidth**\cr
+\strong{adaptive bandwidth}\cr
 It is possible to use an adaptive bandwidth both on the network and in time.
 Adaptive bandwidths are calculated using the Abramson’s smoothing regimen
 \insertCite{abramson1982bandwidth}{spNetwork}. To do so, the original fixed
@@ -161,7 +161,7 @@ The maximum size of the two local bandwidths can be limited with
 the parameters trim_bw_net and trim_bw_time.
 \cr\cr
 
-**Diggle correction factor**\cr
+\strong{Diggle correction factor}\cr
 A set of events can be limited in both space (limits of the study
 area) and time ( beginning and ending of the data collection period). These
 limits induce lower densities at the border of the set of events, because
@@ -170,7 +170,7 @@ correction factor \insertCite{diggle1985kernel}{spNetwork} in both the
 network and time spaces to minimize this effect.
 \cr\cr
 
-**Separated or simultaneous adaptive bandwidth**\cr
+\strong{Separated or simultaneous adaptive bandwidth}\cr
 When the parameter adaptive is TRUE, one can choose between using separated
 calculation of network and temporal bandwidths, and calculating them
 simultaneously. In the first case (default), the network bandwidths are

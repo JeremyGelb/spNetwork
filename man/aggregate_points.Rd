@@ -27,8 +27,8 @@ Function to aggregate points within a radius.
 }
 \details{
 This function can be used to aggregate points within a radius. This
-  is done by using the dbscan algorithm. This process is
-  repeated until no more modification is applied.
+is done by using the dbscan algorithm. This process is
+repeated until no more modification is applied.
 }
 \examples{
 data(bike_accidents)

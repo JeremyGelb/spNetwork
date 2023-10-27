@@ -20,23 +20,23 @@ closer, they are returned in the result of the function.}
 }
 \value{
 A list with three elements. The first is a feature collection of points
-  indicating for each node of the network to which component it belongs. The
-  second is a feature collection of points with nodes that are too close one of
-  each other. The third is a feature collection of points with the dangle nodes of
-  the network.
+indicating for each node of the network to which component it belongs. The
+second is a feature collection of points with nodes that are too close one of
+each other. The third is a feature collection of points with the dangle nodes of
+the network.
 }
 \description{
 A utility function to find topological errors in a network.
 }
 \details{
 This function can be used to check for three common problems in
-  networks: disconnected components, dangle nodes and close nodes. When a
-  network has disconnected components, this means that several unconnected
-  graphs are composing the overall network. This can be caused by topological
-  errors in the dataset. Dangle nodes are nodes connected to only one other
-  node. This type of node can be normal at the border of a network, but can
-  also be caused by topological errors. Close nodes are nodes that are not
-  coincident, but so close that they probably should be coincident.
+networks: disconnected components, dangle nodes and close nodes. When a
+network has disconnected components, this means that several unconnected
+graphs are composing the overall network. This can be caused by topological
+errors in the dataset. Dangle nodes are nodes connected to only one other
+node. This type of node can be normal at the border of a network, but can
+also be caused by topological errors. Close nodes are nodes that are not
+coincident, but so close that they probably should be coincident.
 }
 \examples{
 \donttest{

@@ -92,6 +92,8 @@ test_that("Testing the adaptive_bw.mc function", {
                       w = c(1,1,2))
   event <- st_as_sf(event, coords = c("x","y"))
 
+  event$sp_id <- sp_char_index(st_coordinates(event),1)
+
   # the bandwidth will be adapte arround the events
   # based on the density at the event, so we must first
   # calculate that density. we have here a case of
@@ -111,19 +113,30 @@ test_that("Testing the adaptive_bw.mc function", {
 
 
   future::plan(future::multisession(workers=1))
+
+  print(paste0("precalculated bws : ", paste0(abws, collapse = ';')))
   observed <- nkde.mc(
     events = event,
     w = event$w,
     samples = event,
     lines = all_lines,
     adaptive = TRUE,
-    bw = 3, trim_bw = 5, method = "discontinuous",
-    kernel_name = "quartic", max_depth = 8,
-    tol = 0.1, digits = 2, sparse = TRUE, verbose = TRUE, grid_shape = c(3,3),
+    bw = 3,
+    trim_bw = 5,
+    method = "discontinuous",
+    kernel_name = "quartic",
+    max_depth = 8,
+    tol = 0.1,
+    digits = 2,
+    sparse = TRUE,
+    verbose = TRUE,
+    grid_shape = c(3,3),
     check = FALSE
   )
 
-  diff <- sum(round(abs(abws - observed$events$bw),6))
+  abws_2 <- observed$events$bw[match(event$sp_id, observed$events$spid)]
+
+  diff <- sum(round(abs(abws - abws_2),6))
   expect_equal(diff, 0)
 })
 

@@ -13,6 +13,8 @@ bw_checks(
   method,
   bws_net = NULL,
   bws_time = NULL,
+  arr_bws_net = NULL,
+  arr_bws_time = NULL,
   adaptive = FALSE,
   trim_net_bws = NULL,
   trim_time_bws = NULL,
@@ -37,10 +39,20 @@ bw_checks(
 
 \item{bws_time}{An ordered numeric vector with all the time bandwidths}
 
+\item{arr_bws_net}{An array with all the local netowrk bandwidths precalculated (for each event, and at each possible combinaison of network and temporal bandwidths). The dimensions must be c(length(net_bws), length(time_bws), nrow(events)))}
+
+\item{arr_bws_time}{An array with all the local time bandwidths precalculated (for each event, and at each possible combinaison of network and temporal bandwidths). The dimensions must be c(length(net_bws), length(time_bws), nrow(events)))}
+
+\item{adaptive}{A boolean indicating if local bandwidths must be calculated}
+
+\item{trim_net_bws}{A numeric vector with the maximum local network bandwidth. If local bandwidths have higher values, they will be replaced by the corresponding value in this vector.}
+
+\item{trim_time_bws}{A numeric vector with the maximum local time bandwidth. If local bandwidths have higher values, they will be replaced by the corresponding value in this vector.}
+
 \item{diggle_correction}{A Boolean indicating if the correction factor
 for edge effect must be used.}
 
-\item{study_area}{A feature collection of polygons 
+\item{study_area}{A feature collection of polygons
 representing the limits of the study area.}
 }
 \description{

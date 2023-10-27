@@ -28,7 +28,7 @@ bw_tnkde_corr_factor(
 \item{diggle_correction}{A Boolean indicating if the correction factor
 for edge effect must be used.}
 
-\item{study_area}{A feature collection of polygons 
+\item{study_area}{A feature collection of polygons
 representing the limits of the study area.}
 
 \item{events}{A feature collection of points representing the events}

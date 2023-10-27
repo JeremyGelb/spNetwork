@@ -21,7 +21,7 @@ A feature collection of linestrings
 }
 \description{
 Add vertices (feature collection of points) to their nearest lines
-  (feature collection of linestrings), may fail if the line geometries are self intersecting.
+(feature collection of linestrings), may fail if the line geometries are self intersecting.
 }
 \examples{
 #This is an internal function, no example provided

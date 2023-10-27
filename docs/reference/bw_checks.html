@@ -96,6 +96,8 @@
 <span>  <span class="va">method</span>,</span>
 <span>  bws_net <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  bws_time <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  arr_bws_net <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  arr_bws_time <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  adaptive <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  trim_net_bws <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  trim_time_bws <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -138,13 +140,33 @@
 <dd><p>An ordered numeric vector with all the time bandwidths</p></dd>
 
 
+<dt>arr_bws_net</dt>
+<dd><p>An array with all the local netowrk bandwidths precalculated (for each event, and at each possible combinaison of network and temporal bandwidths). The dimensions must be c(length(net_bws), length(time_bws), nrow(events)))</p></dd>
+
+
+<dt>arr_bws_time</dt>
+<dd><p>An array with all the local time bandwidths precalculated (for each event, and at each possible combinaison of network and temporal bandwidths). The dimensions must be c(length(net_bws), length(time_bws), nrow(events)))</p></dd>
+
+
+<dt>adaptive</dt>
+<dd><p>A boolean indicating if local bandwidths must be calculated</p></dd>
+
+
+<dt>trim_net_bws</dt>
+<dd><p>A numeric vector with the maximum local network bandwidth. If local bandwidths have higher values, they will be replaced by the corresponding value in this vector.</p></dd>
+
+
+<dt>trim_time_bws</dt>
+<dd><p>A numeric vector with the maximum local time bandwidth. If local bandwidths have higher values, they will be replaced by the corresponding value in this vector.</p></dd>
+
+
 <dt>diggle_correction</dt>
 <dd><p>A Boolean indicating if the correction factor
 for edge effect must be used.</p></dd>
 
 
 <dt>study_area</dt>
-<dd><p>A feature collection of polygons 
+<dd><p>A feature collection of polygons
 representing the limits of the study area.</p></dd>
 
 </dl></div>

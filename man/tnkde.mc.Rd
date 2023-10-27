@@ -35,7 +35,7 @@ tnkde.mc(
 \arguments{
 \item{lines}{A feature collection of linestrings representing the underlying network. The
 geometries must be simple Linestrings (may crash if some geometries
- are invalid) without MultiLineSring.}
+are invalid) without MultiLineSring.}
 
 \item{events}{events A feature collection of points representing the events on the
 network. The points will be snapped on the network to their closest line.}
@@ -83,7 +83,7 @@ events within the radius around each sampling point), "bw" (the bandwith)
 \item{diggle_correction}{A Boolean indicating if the correction factor
 for edge effect must be used.}
 
-\item{study_area}{A feature collection of polygons 
+\item{study_area}{A feature collection of polygons
 representing the limits of the study area.}
 
 \item{max_depth}{when using the continuous and discontinuous methods, the
@@ -127,9 +127,9 @@ of the provided objects are valid and identical, and that geometries are valid.}
 }
 \value{
 A matrix with the estimated density for each sample point (rows) at
-  each timestamp (columns). If adaptive = TRUE, the function returns a list
-  with two slots: k (the matrix with the density values) and events (a
-  feature collection of points with the local bandwidths).
+each timestamp (columns). If adaptive = TRUE, the function returns a list
+with two slots: k (the matrix with the density values) and events (a
+feature collection of points with the local bandwidths).
 }
 \description{
 Calculate the Temporal Network Kernel Density Estimate based on a network of lines,

@@ -69,11 +69,8 @@ worker_adaptive_bw_tnkde <- function(lines,
   setDT(quad_events2)[events_loc2, on = "goid", vertex_id := i.vertex_id]
 
   ## step3 starting the calculations !
-  print(graph)
   neighbour_list <- adjacent_vertices(graph,nodes$id,mode="out")
   neighbour_list <- lapply(neighbour_list,function(x){return (as.numeric(x))})
-  print("here is the neighbour list : ")
-  print(neighbour_list)
 
   kernel_values <- adaptive_bw_tnkde_cpp2(method = method,
                                          neighbour_list = neighbour_list,
@@ -164,7 +161,7 @@ adaptive_bw_tnkde <- function(grid, events_loc, events, lines,
   n_quadra <- length(selections)
 
   dfs <- lapply(1:n_quadra,function(i){
-    print(i)
+
     sel <- selections[[i]]
 
     # sel_events gives us the events inside the quadra considered
@@ -211,8 +208,6 @@ adaptive_bw_tnkde <- function(grid, events_loc, events, lines,
   final_bws_net <- array(0,dim = dim(tot_arr))
   final_bws_time <- array(0,dim = dim(tot_arr))
 
-  print("here are the estimated densities before calculating local bws")
-  print(tot_arr)
   for(i in 1:length(bw_net)){
     for(j in 1:length(bw_time)){
       k <- tot_arr[i,j,]
@@ -367,8 +362,6 @@ adaptive_bw_tnkde.mc <- function(grid, events_loc, events, lines,
   final_bws_net <- array(0,dim = dim(tot_arr))
   final_bws_time <- array(0,dim = dim(tot_arr))
 
-  print("here are the estimated densities before calculating local bws")
-  print(tot_arr)
   for(i in 1:length(bw_net)){
     for(j in 1:length(bw_time)){
       k <- tot_arr[i,j,]

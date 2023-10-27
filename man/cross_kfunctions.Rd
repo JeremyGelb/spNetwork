@@ -25,7 +25,7 @@ cross_kfunctions(
 \arguments{
 \item{lines}{A feature collection of linestrings representing the underlying network. The
 geometries must be simple Linestrings (may crash if some geometries
- are invalid) without MultiLineSring}
+are invalid) without MultiLineSring}
 
 \item{pointsA}{A feature collection of points representing the points to which the
 distances are calculated.}
@@ -71,36 +71,36 @@ If NULL, the events are aggregated only by rounding the coordinates}
 be returned as matrices}
 }
 \value{
-A list with the following values : \cr \itemize{ \item{plotk}{ A
-  ggplot2 object representing the values of the cross k-function}
-  \item{plotg}{ A ggplot2 object representing the values of the cross
-  g-function} \item{values}{ A DataFrame with the values used to build the
-  plots} }
+A list with the following values : \cr \item{plotk}{ A
+ggplot2 object representing the values of the cross k-function}
+\item{plotg}{ A ggplot2 object representing the values of the cross
+g-function} \item{values}{ A DataFrame with the values used to build the
+plots}
 }
 \description{
 Calculate the cross k and g functions for a set of points on a
-  network. (maturing)
+network. (maturing)
 }
 \details{
 The cross k-function is a method to characterize the dispersion of a
-  set of points (A) around a second set of points (B). For each point in B,
-  the numbers of other points in A in subsequent radii are calculated. This
-  empirical cross k-function can be more or less clustered than a cross
-  k-function obtained if the points in A were randomly located around points
-  in B. In a network, the network distance is used instead of the Euclidean
-  distance. This function uses Monte Carlo simulations to assess if the
-  points are clustered or dispersed and gives the results as a line plot. If
-  the line of the observed cross k-function is higher than the shaded area
-  representing the values of the simulations, then the points in A are more
-  clustered around points in B than what we can expect from randomness and
-  vice-versa. The function also calculates the cross g-function, a modified
-  version of the cross k-function using rings instead of disks. The width of
-  the ring must be chosen. The main interest is to avoid the cumulative
-  effect of the classical k-function. Note that the cross k-function of
-  points A around B is not necessarily the same as the cross k-function of
-  points B around A. This function is maturing, it works as expected (unit
-  tests) but will probably be modified in the future releases (gain speed,
-  advanced features, etc.).
+set of points (A) around a second set of points (B). For each point in B,
+the numbers of other points in A in subsequent radii are calculated. This
+empirical cross k-function can be more or less clustered than a cross
+k-function obtained if the points in A were randomly located around points
+in B. In a network, the network distance is used instead of the Euclidean
+distance. This function uses Monte Carlo simulations to assess if the
+points are clustered or dispersed and gives the results as a line plot. If
+the line of the observed cross k-function is higher than the shaded area
+representing the values of the simulations, then the points in A are more
+clustered around points in B than what we can expect from randomness and
+vice-versa. The function also calculates the cross g-function, a modified
+version of the cross k-function using rings instead of disks. The width of
+the ring must be chosen. The main interest is to avoid the cumulative
+effect of the classical k-function. Note that the cross k-function of
+points A around B is not necessarily the same as the cross k-function of
+points B around A. This function is maturing, it works as expected (unit
+tests) but will probably be modified in the future releases (gain speed,
+advanced features, etc.).
 }
 \examples{
 \donttest{

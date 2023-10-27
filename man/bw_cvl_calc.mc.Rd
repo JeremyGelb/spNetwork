@@ -33,7 +33,7 @@ bw_cvl_calc.mc(
 
 \item{lines}{A feature collection of linestrings representing the underlying network. The
 geometries must be simple Linestrings (may crash if some geometries
- are invalid) without MultiLineSring.}
+are invalid) without MultiLineSring.}
 
 \item{events}{events A feature collection of points representing the events on the
 network. The points will be snapped on the network to their closest line.}
@@ -49,7 +49,7 @@ simple / discontinuous / continuous (see nkde details for more information)}
 \item{diggle_correction}{A Boolean indicating if the correction factor
 for edge effect must be used.}
 
-\item{study_area}{A feature collection of polygons 
+\item{study_area}{A feature collection of polygons
 representing the limits of the study area.}
 
 \item{adaptive}{A boolean indicating if an adaptive bandwidth must be used.
@@ -58,7 +58,7 @@ calculated from bw_range and bw_step.}
 
 \item{trim_bws}{A vector indicating the maximum value an adaptive bandwidth can
 reach. Higher values will be trimmed. It must have the same length as
-seq(bw_range[[1]],bw_range[[2]], bw_step).}
+seq(bw_range[\link{1}],bw_range[\link{2}], bw_step).}
 
 \item{mat_bws}{A matrix giving the bandwidths for each observation and for each global bandwidth.
 This is usefull when the user want to use a different method from Abramson's smoothing regimen.}
@@ -119,7 +119,7 @@ Calculate for multiple bandwidths the Cronie and Van Lieshout's Criterion to
 select an appropriate bandwidth in a data-driven approach. A plan from the package future can be used
 to split the work across several cores. The different cells generated in accordance with the
 argument grid_shape are used for the parallelization. So if only one cell is
-generated (grid_shape = c(1,1)), the function will use only one core. The progress bar
+generated (\code{grid_shape = c(1,1)}), the function will use only one core. The progress bar
 displays the progression for the cells.
 }
 \details{

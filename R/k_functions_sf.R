@@ -270,13 +270,16 @@ randomize_distmatrix <- function(graph, edge_df, n, start_vert = NULL){
 #' @param return_sims a boolean indicating if the simulated k and g values must also
 #' be returned as matrices
 #'
-#' @return A list with the following values : \cr \itemize{ \item{plotk}{ A
-#'   ggplot2 object representing the values of the k-function} \item{plotg}{ A
-#'   ggplot2 object representing the values of the g-function} \item{values}{ A
-#'   DataFrame with the values used to build the plots} }
+#' @return A list with the following values : 
+#' 
+#' * plotk: A ggplot2 object representing the values of the k-function
+#' * plotg: A ggplot2 object representing the values of the g-function
+#' * values: A DataFrame with the values used to build the plots
+#'
 #' @importFrom stats quantile
 #' @importFrom ggplot2 ggplot geom_ribbon geom_path aes_string labs
 #' @export
+#' @md
 #' @examples
 #' \donttest{
 #' data(main_network_mtl)
@@ -484,14 +487,16 @@ kfunctions <- function(lines, points,
 #' @param return_sims a boolean indicating if the simulated k and g values must also
 #' be returned as matrices
 #'
-#' @return A list with the following values : \cr \itemize{ \item{plotk}{ A
-#'   ggplot2 object representing the values of the k-function} \item{plotg}{ A
-#'   ggplot2 object representing the values of the g-function} \item{values}{ A
-#'   DataFrame with the values used to build the plots} }
+#' @return A list with the following values : 
+#' 
+#' * plotk: A ggplot2 object representing the values of the k-function
+#' * plotg: A ggplot2 object representing the values of the g-function
+#' * values: A DataFrame with the values used to build the plots
 #'
 #' @importFrom stats quantile
 #' @importFrom ggplot2 ggplot aes geom_ribbon geom_path labs aes_string
 #' @importFrom igraph E
+#' @md
 #'
 #' @export
 #' @examples
@@ -727,11 +732,11 @@ kfunctions.mc <- function(lines, points, start, end, step, width, nsim, conf_int
 #' be returned as matrices
 #'
 #'
-#' @return A list with the following values : \cr \itemize{ \item{plotk}{ A
+#' @return A list with the following values : \cr \item{plotk}{ A
 #'   ggplot2 object representing the values of the cross k-function}
 #'   \item{plotg}{ A ggplot2 object representing the values of the cross
 #'   g-function} \item{values}{ A DataFrame with the values used to build the
-#'   plots} }
+#'   plots}
 #' @importFrom stats quantile
 #' @importFrom ggplot2 ggplot geom_ribbon geom_path aes_string labs
 #' @importFrom grDevices rgb
@@ -946,11 +951,11 @@ cross_kfunctions <- function(lines, pointsA, pointsB,
 #' @param return_sims a boolean indicating if the simulated k and g values must also
 #' be returned as matrices
 #'
-#' @return A list with the following values : \cr \itemize{ \item{plotk}{ A
+#' @return A list with the following values : \cr \item{plotk}{ A
 #'   ggplot2 object representing the values of the cross k-function}
 #'   \item{plotg}{ A ggplot2 object representing the values of the cross
 #'   g-function} \item{values}{ A DataFrame with the values used to build the
-#'   plots} }
+#'   plots}
 #' @importFrom stats quantile
 #' @importFrom ggplot2 ggplot geom_ribbon geom_path aes_string labs
 #' @importFrom grDevices rgb

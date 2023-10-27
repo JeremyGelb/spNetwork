@@ -24,7 +24,7 @@ kfunctions.mc(
 \arguments{
 \item{lines}{A feature collection of linestrings representing the underlying network. The
 geometries must be simple Linestrings (may crash if some geometries
- are invalid) without MultiLineSring}
+are invalid) without MultiLineSring}
 
 \item{points}{A feature collection of points representing the points on the
 network. These points will be snapped on their nearest line}
@@ -67,15 +67,17 @@ If NULL, the events are aggregated only by rounding the coordinates}
 be returned as matrices}
 }
 \value{
-A list with the following values : \cr \itemize{ \item{plotk}{ A
-  ggplot2 object representing the values of the k-function} \item{plotg}{ A
-  ggplot2 object representing the values of the g-function} \item{values}{ A
-  DataFrame with the values used to build the plots} }
+A list with the following values :
+\itemize{
+\item plotk: A ggplot2 object representing the values of the k-function
+\item plotg: A ggplot2 object representing the values of the g-function
+\item values: A DataFrame with the values used to build the plots
+}
 }
 \description{
 Calculate the k and g functions for a set of points on a network
-  with multicore support. For details, please see the function kfunctions.
-  (maturing)
+with multicore support. For details, please see the function kfunctions.
+(maturing)
 }
 \details{
 For details, please look at the function kfunctions.

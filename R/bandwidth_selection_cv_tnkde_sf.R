@@ -20,8 +20,31 @@
 #' # no example provided, this is an internal function
 bw_checks <- function(check,lines,samples,events,
                       kernel_name, method, bws_net = NULL, bws_time = NULL,
+                      arr_bws_net = NULL, arr_bws_time = NULL,
                       adaptive = FALSE, trim_net_bws = NULL, trim_time_bws = NULL,
                       diggle_correction = FALSE, study_area = NULL){
+
+  t1 <- is.null(bws_net)
+  t2 <- is.null(bws_time)
+  t3 <- is.null(arr_bws_net)
+  t4 <- is.null(arr_bws_time)
+
+  if(t1 & t3){
+    stop('you need to set bws_net (bws) or arr_bws_net')
+  }
+  if( !t3 & !t1){
+    warning('when both arr_bws_net and bws_net are defined, the second one will be ignored')
+  }
+  if( !t4 & !t2){
+    warning('when both arr_bws_time and bws_time are defined, the second one will be ignored')
+  }
+  if( (!t3 & t4) | (t3 & !t4)){
+    warning('when arr_bws_net is defined, arr_bws_time must be defined and vice-versa')
+  }
+
+  if((is.null(trim_net_bws) == FALSE | is.null(trim_time_bws) == FALSE) & adaptive == FALSE){
+    stop('trim_net_bws and trim_time_bws must both be NULL if adaptive = FALSE')
+  }
 
   if((kernel_name %in% c("triangle", "gaussian", "scaled gaussian", "tricube", "cosine" ,"triweight", "quartic", 'epanechnikov','uniform'))==FALSE){
     stop('the name of the kernel function must be one of c("triangle", "gaussian", "scaled gaussian", "tricube", "cosine" ,"triweight", "quartic", "epanechnikov" ,"uniform")')
@@ -71,6 +94,28 @@ bw_checks <- function(check,lines,samples,events,
       }
     }
   }
+
+  if(is.null(arr_bws_net) == FALSE & adaptive){
+    d1 <- dim(arr_bws_net)
+    d2 <- dim(arr_bws_time)
+    if(is.null(trim_net_bws) == FALSE){
+      if(d1[[1]] != length(trim_net_bws)){
+        stop("the length of trim_net_bws is not matching the first dimension of arr_bws_net")
+      }
+      if(d1[[2]] != length(trim_time_bws)){
+        stop("the length of trim_time_bws is not matching the second dimension of arr_bws_net")
+      }
+    }
+    if(is.null(trim_time_bws) == FALSE){
+      if(d2[[1]] != length(trim_time_bws)){
+        stop("the length of trim_time_bws is not matching the first dimension of arr_bws_time")
+      }
+      if(d2[[2]] != length(trim_time_bws)){
+        stop("the length of trim_time_bws is not matching the second dimension of arr_bws_time")
+      }
+    }
+  }
+
 }
 
 
@@ -146,7 +191,6 @@ bw_tnkde_corr_factor <- function(net_bws,time_bws, diggle_correction, study_area
 #' @param lines A feature collection of linestrings representing the underlying lines of the network
 #' @param method The name of a NKDE method
 #' @param kernel_name The name of the kernel to use
-#' @param samples A feature collection of points representing the sample location
 #' @param kernel_name The name of the kernel to use
 #' @param method The name of the NKDE to use
 #' @param tol  float indicating the minimum distance between the events and the
@@ -224,10 +268,10 @@ bw_tnkde_corr_factor_arr <- function(net_bws,time_bws, diggle_correction, study_
 #' the dataset (leave one out cross validation). We use here the shortcut formula as
 #' described by the package spatstat \insertCite{spatstatpkg}{spNetwork}.
 #'
-#' LCV(h) = sum[i] log(lambda[-i](x[i]))
+#'  \eqn{LCV(h) = \sum_i \log\hat\lambda_{-i}(x_i)}
 #'
-#' Where the sum is taken for all events x[i] and where lambda[-i](x[i]) is the leave-one-out kernel
-#' estimate at x[i] for a bandwidth h. A lower value indicates a better bandwidth.
+#' Where the sum is taken for all events \eqn{x_i} and where \eqn{\hat\lambda_{-i}(x_i)} is the leave-one-out kernel
+#' estimate at \eqn{x_i} for a bandwidth h. A higher value indicates a better bandwidth.
 #'
 #' @references{
 #'     \insertAllCited{}
@@ -307,16 +351,12 @@ bw_tnkde_cv_likelihood_calc <- function(bws_net = NULL,
   div <- "bw"
   events$wid <- 1:nrow(events)
 
-  t1 <- is.null(bws_net) == FALSE & is.null(bws_time) == FALSE
-  t2 <- is.null(arr_bws_net) == FALSE & is.null(arr_bws_time) == FALSE
-  if( (t1 | t2) == FALSE){
-    stop('you need to set both bws_net and bws_time or both arr_bws_net and arr_bws_time')
-  }
 
   ## checking inputs
   bw_checks(check, lines, samples, events,
                   kernel_name, method, bws_net = bws_net, bws_time = bws_time,
                   trim_net_bws = trim_net_bws,
+                  arr_bws_net = arr_bws_net, arr_bws_time = arr_bws_time,
                   trim_time_bws = trim_time_bws, adaptive = adaptive,
                   diggle_correction = diggle_correction, study_area = study_area)
 
@@ -546,7 +586,7 @@ bw_tnkde_cv_likelihood_calc <- function(bws_net = NULL,
 #' select an appropriate bandwidth in a data-driven approach with multicore support
 #'
 #' @details See the function bws_tnkde_cv_likelihood_calc for more details. Note that the calculation is split
-#' according to the grid_shape argument. If the grid_shape is c(1,1) then only one process can be used.
+#' according to the grid_shape argument. If the grid_shape is `c(1,1)` then only one process can be used.
 #'
 #' @template bw_tnkde_selection-args
 #' @template nkde_params-arg
@@ -627,15 +667,10 @@ bw_tnkde_cv_likelihood_calc.mc <- function(bws_net = NULL,
   div <- "bw"
   events$wid <- 1:nrow(events)
 
-  t1 <- is.null(bws_net) == FALSE & is.null(bws_time) == FALSE
-  t2 <- is.null(arr_bws_net) == FALSE & is.null(arr_bws_time) == FALSE
-  if( (t1 | t2) == FALSE){
-    stop('you need to set both bws_net and bws_time or both arr_bws_net and arr_bws_time')
-  }
-
   ## checking inputs
   bw_checks(check, lines, samples, events,
             kernel_name, method, bws_net = bws_net, bws_time = bws_time,
+            arr_bws_net = arr_bws_net, arr_bws_time = arr_bws_time,
             trim_net_bws = trim_net_bws,
             trim_time_bws = trim_time_bws, adaptive = adaptive,
             diggle_correction = diggle_correction, study_area = study_area)

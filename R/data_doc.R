@@ -12,7 +12,7 @@
 #'   \item{Date}{the date of the accident (yyyy/mm/dd)}
 #'   \item{geom}{the geometry (points)}
 #' }
-#' @source <https://donnees.montreal.ca/ville-de-montreal/collisions-routieres>
+#' @source <https://donnees.montreal.ca/dataset/collisions-routieres>
 "bike_accidents"
 
 #' Road network of Montreal
@@ -26,7 +26,7 @@
 #'   \item{ClsRte}{the category of the road}
 #'   \item{geom}{the geometry (linestrings)}
 #' }
-#' @source <https://donnees.montreal.ca/ville-de-montreal/geobase>
+#' @source <https://donnees.montreal.ca/dataset/geobase>
 "mtl_network"
 
 #' Primary road network of Montreal
@@ -39,7 +39,7 @@
 #'   \item{TYPE}{the type of road}
 #'   \item{geom}{the geometry (linestrings)}
 #' }
-#' @source <https://donnees.montreal.ca/ville-de-montreal/geobase>
+#' @source <https://donnees.montreal.ca/dataset/geobase>
 "main_network_mtl"
 
 #' Smaller subset road network of Montreal
@@ -53,7 +53,7 @@
 #'   \item{TYPE}{the type of road}
 #'   \item{geom}{the geometry (linestrings)}
 #' }
-#' @source <https://donnees.montreal.ca/ville-de-montreal/geobase>
+#' @source <https://donnees.montreal.ca/dataset/geobase>
 "small_mtl_network"
 
 
@@ -68,7 +68,7 @@
 #'   \item{NAME}{the name of the library}
 #'   \item{geom}{the geometry (points)}
 #' }
-#' @source <https://donnees.montreal.ca/ville-de-montreal/lieux-culturels>
+#' @source <https://donnees.montreal.ca/dataset/lieux-culturels>
 "mtl_libraries"
 
 #' Theatres of Montreal
@@ -82,6 +82,6 @@
 #'   \item{NAME}{the name of the theatre}
 #'   \item{geom}{the geometry (points)}
 #' }
-#' @source <https://donnees.montreal.ca/ville-de-montreal/lieux-culturels>
+#' @source <https://donnees.montreal.ca/dataset/lieux-culturels>
 "mtl_theatres"
 

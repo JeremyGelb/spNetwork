@@ -84,7 +84,7 @@ check_geometries <- function(lines,samples,events, study_area){ # nocov start
 }
 
 #defining some global variables (weird felx but ok)
-utils::globalVariables(c("spid", "weight", ".", "bws")) # nocov end
+utils::globalVariables(c("spid", "weight", ".", "bws",'X','Y','wid','m_X','m_Y')) # nocov end
 
 
 #' @title Clean events geometries
@@ -790,7 +790,8 @@ adaptive_bw <- function(grid,events,lines,bw,trim_bw,method,kernel_name,max_dept
    ## step 3  combining the results
   tot_df <- do.call(rbind,dfs)
   #tot_df <- tot_df[order(tot_df[,1]),]
-  tot_df <- tot_df[match(tot_df[,1], events$goid),]
+  #tot_df <- tot_df[match(tot_df[,1], events$goid),]
+  tot_df <- tot_df[match(events$goid,tot_df[,1]),]
   ## step 4 calculating the new bandwidth !
   if(ncol(tot_df) == 2){
     k <- tot_df[,2]
@@ -857,7 +858,6 @@ adaptive_bw.mc <- function(grid,events,lines,bw,trim_bw,method,kernel_name,max_d
             rep(x, nrow(sel$events))
           })
         }
-
         invisible(capture.output(values <- nkde_worker(lines =  sel$lines,
                                                        events = sel$events,
                                                        samples = sel$samples,
@@ -922,7 +922,7 @@ adaptive_bw.mc <- function(grid,events,lines,bw,trim_bw,method,kernel_name,max_d
   ## step 3  combining the results
   tot_df <- do.call(rbind,dfs)
   #tot_df <- tot_df[order(tot_df[,1]),]
-  tot_df <- tot_df[match(tot_df[,1], events$goid),]
+  tot_df <- tot_df[match(events$goid,tot_df[,1]),]
   ## step 4 calculating the new bandwidth !
   if(ncol(tot_df) == 2){
     k <- tot_df[,2]
@@ -1132,7 +1132,7 @@ calc_density <- function(method, kernel_name, graph_result, graph, events, sampl
 #'
 #' @description Calculate the Network Kernel Density Estimate based on a network of lines,
 #' sampling points, and events
-#'
+#' @md
 #' @details
 #' **The three NKDE methods**\cr
 #' Estimating the density of a point process is commonly done by using an
@@ -1140,24 +1140,26 @@ calc_density <- function(method, kernel_name, graph_result, graph, events, sampl
 #' cases for which the events do not occur in a two-dimensional space but on a
 #' network (like car crashes, outdoor crimes, leaks in pipelines, etc.). New
 #' methods were developed to adapt the methodology to networks, three of them
-#' are available in this package. \itemize{ \item{method="simple"}{This first
-#' method was presented by \insertCite{xie2008kernel}{spNetwork} and proposes an
+#' are available in this package.
+#'
+#' * The simple method: This first method was presented by \insertCite{xie2008kernel}{spNetwork} and proposes an
 #' intuitive solution. The distances between events and sampling points are
 #' replaced by network distances, and the formula of the kernel is adapted to
-#' calculate the density over a linear unit instead of an areal unit.}
-#' \item{method="discontinuous"}{The previous method has been criticized by
+#' calculate the density over a linear unit instead of an areal unit.
+#' * The discontinuous method: The previous method has been criticized by
 #' \insertCite{okabe2009kernel}{spNetwork}, arguing that the estimator proposed
 #' is biased, leading to an overestimation of density in events hot-spots. More
 #' specifically, the simple method does not conserve mass and the induced kernel
 #' is not a probability density along the network. They thus proposed a
 #' discontinuous version of the kernel function on network, which equally
-#' "divides" the mass density of an event at intersections}
-#' \item{method="continuous"}{If the discontinuous method is unbiased, it leads
+#' "divides" the mass density of an event at intersections.
+#' * The continuous method: If the discontinuous method is unbiased, it leads
 #' to a discontinuous kernel function which is a bit counter-intuitive.
 #' \insertCite{okabe2009kernel;textual}{spNetwork} proposed another version of
 #' the kernel, which divides the mass of the density at intersections but adjusts
-#' the density before the intersection to make the function continuous.} } The
-#' three methods are available because, even though that the simple method is
+#' the density before the intersection to make the function continuous.
+#'
+#' The three methods are available because, even though that the simple method is
 #' less precise statistically speaking, it might be more intuitive. From a
 #' purely geographical view, it might be seen as a sort of distance decay
 #' function as used in Geographically Weighted Regression.\cr \cr\cr **adaptive bandwidth**\cr
@@ -1478,7 +1480,7 @@ nkde.mc <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, 
   max_bw <- max(bws)
 
   ## step3 splitting the dataset with each rectangle
-  selections <- split_by_grid.mc(grid,samples,events,lines,max_bw, digits,tol)
+  selections <- split_by_grid(grid,samples,events,lines,max_bw, digits,tol)
 
   ## step4 calculating the values
 
@@ -1520,6 +1522,7 @@ nkde.mc <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, 
   ## step5 combining the results
   tot_df <- do.call(rbind,dfs)
   tot_df <- tot_df[order(tot_df$goid),]
+  events$bws <- NULL
   if(adaptive){
     return(list("events" = events,
                 "k" = tot_df$k))

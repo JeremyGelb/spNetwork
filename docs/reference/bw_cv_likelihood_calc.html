@@ -123,7 +123,7 @@ select an appropriate bandwidth in a data-driven approach</p>
 <dt>lines</dt>
 <dd><p>A feature collection of linestrings representing the underlying network. The
 geometries must be simple Linestrings (may crash if some geometries
- are invalid) without MultiLineSring.</p></dd>
+are invalid) without MultiLineSring.</p></dd>
 
 
 <dt>events</dt>
@@ -151,7 +151,7 @@ for edge effect must be used.</p></dd>
 
 
 <dt>study_area</dt>
-<dd><p>A feature collection of polygons 
+<dd><p>A feature collection of polygons
 representing the limits of the study area.</p></dd>
 
 
@@ -252,9 +252,9 @@ bandwidth that would produce the most similar results if one event was removed f
 the dataset (leave one out cross validation). We use here the shortcut formula as
 described by the package spatstat (Baddeley et al. 2021)
 .</p>
-<p>LCV(h) = sum[i] log(lambda[-i](x[i]))</p>
-<p>Where the sum is taken for all events x[i] and where lambda[-i](x[i]) is the leave-one-out kernel
-estimate at x[i] for a bandwidth h. A higher value indicates a better bandwidth.</p>
+<p>LCV(h) = sumi log(lambda<a href="x%5Bi%5D">-i</a>)</p>
+<p>Where the sum is taken for all events xi and where lambda<a href="x%5Bi%5D">-i</a> is the leave-one-out kernel
+estimate at xi for a bandwidth h. A higher value indicates a better bandwidth.</p>
     </div>
     <div id="references">
     <h2>References</h2>

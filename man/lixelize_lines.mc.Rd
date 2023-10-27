@@ -31,8 +31,8 @@ A feature collection of linestrings
 }
 \description{
 Cut the lines of a feature collection of linestrings into lixels with a specified minimal
- distance may fail if the line geometries are self intersecting with
- multicore support.
+distance may fail if the line geometries are self intersecting with
+multicore support.
 }
 \examples{
 \donttest{

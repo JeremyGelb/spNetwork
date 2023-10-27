@@ -7,13 +7,13 @@
 \format{
 A sf object with 54 rows and 3 variables.
 \describe{
-  \item{CP}{the postal code}
-  \item{NAME}{the name of the theatre}
-  \item{geom}{the geometry (points)}
+\item{CP}{the postal code}
+\item{NAME}{the name of the theatre}
+\item{geom}{the geometry (points)}
 }
 }
 \source{
-<https://donnees.montreal.ca/ville-de-montreal/lieux-culturels>
+\url{https://donnees.montreal.ca/dataset/lieux-culturels}
 }
 \usage{
 mtl_theatres

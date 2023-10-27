@@ -14,8 +14,8 @@ A feature collection of points
 }
 \description{
 Generate a feature collection of points at the centre of the
-  lines of a feature collection of linestrings. The length of the lines is
-  used to determine their centres.
+lines of a feature collection of linestrings. The length of the lines is
+used to determine their centres.
 }
 \examples{
 \donttest{

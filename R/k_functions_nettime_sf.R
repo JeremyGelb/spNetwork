@@ -24,19 +24,20 @@
 #' @template common_kfunctions_nt-arg
 #' @param points_time A numeric vector indicating when the point occured
 #'
-#' @return A list with the following values : \cr
-#'  \itemize{
-#'       \item{obs_k}{ A matrix with the observed k-values}
-#'       \item{lower_k}{ A matrix with the lower bounds of the simulated k-values}
-#'       \item{upper_k}{ A matrix with the upper bounds of the simulated k-values}
-#'       \item{obs_g}{ A matrix with the observed g-values}
-#'       \item{lower_g}{ A matrix with the lower bounds of the simulated g-values}
-#'       \item{upper_g}{ A matrix with the upper bounds of the simulated g-values}
-#'       \item{distances_net}{ A vector with the used network distances}
-#'       \item{distances_time}{ A vector with the used time distances}
-#'       }
+#' @return A list with the following values :
+#' 
+#' * obs_k: A matrix with the observed k-values
+#' * lower_k: A matrix with the lower bounds of the simulated k-values
+#' * upper_k: A matrix with the upper bounds of the simulated k-values
+#' * obs_g: A matrix with the observed g-values
+#' * lower_g: A matrix with the lower bounds of the simulated g-values
+#' * upper_g: A matrix with the upper bounds of the simulated g-values
+#' * distances_net: A vector with the used network distances
+#' * distances_time: A vector with the used time distances
+#' 
 #' @importFrom stats quantile
 #' @export
+#' @md
 #' @examples
 #' \donttest{
 #' data(mtl_network)
@@ -316,18 +317,20 @@ k_nt_functions <- function(lines, points, points_time,
 #' @template common_kfunctions_nt-arg
 #' @param points_time A numeric vector indicating when the point occured
 #'
-#' @return A list with the following values : \cr
-#'  \itemize{
-#'       \item{obs_k}{ A matrix with the observed k-values}
-#'       \item{lower_k}{ A matrix with the lower bounds of the simulated k-values}
-#'       \item{upper_k}{ A matrix with the upper bounds of the simulated k-values}
-#'       \item{obs_g}{ A matrix with the observed g-values}
-#'       \item{lower_g}{ A matrix with the lower bounds of the simulated g-values}
-#'       \item{upper_g}{ A matrix with the upper bounds of the simulated g-values}
-#'       \item{distances_net}{ A vector with the used network distances}
-#'       \item{distances_time}{ A vector with the used time distances}
-#'       }
+#' @return A list with the following values :
+#' 
+#' * obs_k: A matrix with the observed k-values
+#' * lower_k: A matrix with the lower bounds of the simulated k-values
+#' * upper_k: A matrix with the upper bounds of the simulated k-values
+#' * obs_g: A matrix with the observed g-values
+#' * lower_g: A matrix with the lower bounds of the simulated g-values
+#' * upper_g: A matrix with the upper bounds of the simulated g-values
+#' * distances_net: A vector with the used network distances
+#' * distances_time: A vector with the used time distances
+#'
+#'
 #' @importFrom stats quantile
+#' @md
 #' @export
 k_nt_functions.mc <- function(lines, points, points_time,
                            start_net, end_net, step_net, width_net,
@@ -410,7 +413,6 @@ k_nt_functions.mc <- function(lines, points, points_time,
   ## step 5.5 I must now deal with the dupplicated ids
   ## minus 1 because c++ indexing starts at 0
   dist_mat_net <- extend_matrix_by_ids(dist_mat, points$goid, points$locid-1)
-  print(round(dist_mat_net))
 
   ## and generate a matrix with the time distances !
   dist_mat_time <- as.matrix(stats::dist(points_time))

@@ -4,7 +4,9 @@
 \alias{spatial_index$tree_request}
 \title{spatial request on rtree index (internal)}
 \arguments{
-\item{reqBbox}{- A numeric vector with 4 values (minX, minY, maxX, maxY)}
+\item{reqBbox}{\itemize{
+\item A numeric vector with 4 values (minX, minY, maxX, maxY)
+}}
 }
 \value{
 an IntegerVector with the indices of the intersected boxes

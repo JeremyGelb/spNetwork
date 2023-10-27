@@ -30,7 +30,7 @@ nkde(
 \arguments{
 \item{lines}{A feature collection of linestrings representing the underlying network. The
 geometries must be simple Linestrings (may crash if some geometries
- are invalid) without MultiLineSring.}
+are invalid) without MultiLineSring.}
 
 \item{events}{events A feature collection of points representing the events on the
 network. The points will be snapped on the network to their closest line.}
@@ -63,7 +63,7 @@ events within the radius around each sampling point), "bw" (the bandwidth)
 \item{diggle_correction}{A Boolean indicating if the correction factor
 for edge effect must be used.}
 
-\item{study_area}{A feature collection of polygons 
+\item{study_area}{A feature collection of polygons
 representing the limits of the study area.}
 
 \item{max_depth}{when using the continuous and discontinuous methods, the
@@ -113,33 +113,36 @@ Calculate the Network Kernel Density Estimate based on a network of lines,
 sampling points, and events
 }
 \details{
-**The three NKDE methods**\cr
+\strong{The three NKDE methods}\cr
 Estimating the density of a point process is commonly done by using an
 ordinary two-dimensional kernel density function. However, there are numerous
 cases for which the events do not occur in a two-dimensional space but on a
 network (like car crashes, outdoor crimes, leaks in pipelines, etc.). New
 methods were developed to adapt the methodology to networks, three of them
-are available in this package. \itemize{ \item{method="simple"}{This first
-method was presented by \insertCite{xie2008kernel}{spNetwork} and proposes an
+are available in this package.
+\itemize{
+\item The simple method: This first method was presented by \insertCite{xie2008kernel}{spNetwork} and proposes an
 intuitive solution. The distances between events and sampling points are
 replaced by network distances, and the formula of the kernel is adapted to
-calculate the density over a linear unit instead of an areal unit.}
-\item{method="discontinuous"}{The previous method has been criticized by
+calculate the density over a linear unit instead of an areal unit.
+\item The discontinuous method: The previous method has been criticized by
 \insertCite{okabe2009kernel}{spNetwork}, arguing that the estimator proposed
 is biased, leading to an overestimation of density in events hot-spots. More
 specifically, the simple method does not conserve mass and the induced kernel
 is not a probability density along the network. They thus proposed a
 discontinuous version of the kernel function on network, which equally
-"divides" the mass density of an event at intersections}
-\item{method="continuous"}{If the discontinuous method is unbiased, it leads
+"divides" the mass density of an event at intersections.
+\item The continuous method: If the discontinuous method is unbiased, it leads
 to a discontinuous kernel function which is a bit counter-intuitive.
 \insertCite{okabe2009kernel;textual}{spNetwork} proposed another version of
 the kernel, which divides the mass of the density at intersections but adjusts
-the density before the intersection to make the function continuous.} } The
-three methods are available because, even though that the simple method is
+the density before the intersection to make the function continuous.
+}
+
+The three methods are available because, even though that the simple method is
 less precise statistically speaking, it might be more intuitive. From a
 purely geographical view, it might be seen as a sort of distance decay
-function as used in Geographically Weighted Regression.\cr \cr\cr **adaptive bandwidth**\cr
+function as used in Geographically Weighted Regression.\cr \cr\cr \strong{adaptive bandwidth}\cr
 It is possible to use adaptive bandwidth instead of fixed
 bandwidth. Adaptive bandwidths are calculated using the Abramson’s smoothing
 regimen \insertCite{abramson1982bandwidth}{spNetwork}. To do so, an original
@@ -147,7 +150,7 @@ fixed bandwidth must be specified (bw parameter), and is used to estimate the
 priory densitiy at event locations. These densities are then used to
 calculate local bandwidth. The maximum size of the local bandwidth can be
 limited with the parameter trim_bw. For more details, see the vignettes.
-\cr\cr **Optimization parameters**\cr The grid_shape parameter allows to
+\cr\cr \strong{Optimization parameters}\cr The grid_shape parameter allows to
 split the calculus of the NKDE according to a grid dividing the study area.
 It might be necessary for big dataset to reduce the memory used. If the
 grid_shape is c(1,1), then a full network is built for the area. If the

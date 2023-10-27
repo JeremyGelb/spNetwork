@@ -39,7 +39,7 @@ bw_tnkde_cv_likelihood_calc(
 
 \item{lines}{A feature collection of linestrings representing the underlying network. The
 geometries must be simple Linestrings (may crash if some geometries
- are invalid) without MultiLineSring.}
+are invalid) without MultiLineSring.}
 
 \item{events}{events A feature collection of points representing the events on the
 network. The points will be snapped on the network to their closest line.}
@@ -54,11 +54,21 @@ gaussian, tricube, cosine, triweight, quartic, epanechnikov or uniform.}
 \item{method}{The method to use when calculating the NKDE, must be one of
 simple / discontinuous / continuous (see nkde details for more information)}
 
+\item{arr_bws_net}{An array with all the local netowrk bandwidths precalculated (for each event, and at each possible combinaison of network and temporal bandwidths). The dimensions must be c(length(net_bws), length(time_bws), nrow(events)))}
+
+\item{arr_bws_time}{An array with all the local time bandwidths precalculated (for each event, and at each possible combinaison of network and temporal bandwidths). The dimensions must be c(length(net_bws), length(time_bws), nrow(events)))}
+
 \item{diggle_correction}{A Boolean indicating if the correction factor
 for edge effect must be used.}
 
-\item{study_area}{A feature collection of polygons 
+\item{study_area}{A feature collection of polygons
 representing the limits of the study area.}
+
+\item{adaptive}{A boolean indicating if local bandwidths must be calculated}
+
+\item{trim_net_bws}{A numeric vector with the maximum local network bandwidth. If local bandwidths have higher values, they will be replaced by the corresponding value in this vector.}
+
+\item{trim_time_bws}{A numeric vector with the maximum local time bandwidth. If local bandwidths have higher values, they will be replaced by the corresponding value in this vector.}
 
 \item{max_depth}{when using the continuous and discontinuous methods, the
 calculation time and memory use can go wild  if the network has many
@@ -122,10 +132,10 @@ bandwidths that would produce the most similar results if one event is removed f
 the dataset (leave one out cross validation). We use here the shortcut formula as
 described by the package spatstat \insertCite{spatstatpkg}{spNetwork}.
 
-LCV(h) = sum[i] log(lambda[-i](x[i]))
+\eqn{LCV(h) = \sum_i \log\hat\lambda_{-i}(x_i)}
 
-Where the sum is taken for all events x[i] and where lambda[-i](x[i]) is the leave-one-out kernel
-estimate at x[i] for a bandwidth h. A lower value indicates a better bandwidth.
+Where the sum is taken for all events \eqn{x_i} and where \eqn{\hat\lambda_{-i}(x_i)} is the leave-one-out kernel
+estimate at \eqn{x_i} for a bandwidth h. A higher value indicates a better bandwidth.
 }
 \examples{
 \donttest{
@@ -164,6 +174,6 @@ cv_scores <- bw_tnkde_cv_likelihood_calc(
 }
 \references{
 {
-    \insertAllCited{}
+\insertAllCited{}
 }
 }
