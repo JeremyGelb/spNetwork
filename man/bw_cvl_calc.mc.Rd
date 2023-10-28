@@ -57,8 +57,7 @@ If adaptive = TRUE, the local bandwidth are derived from the global bandwidths
 calculated from bw_range and bw_step.}
 
 \item{trim_bws}{A vector indicating the maximum value an adaptive bandwidth can
-reach. Higher values will be trimmed. It must have the same length as
-seq(bw_range[\link{1}],bw_range[\link{2}], bw_step).}
+reach. Higher values will be trimmed. It must have the same length as \code{bws}.}
 
 \item{mat_bws}{A matrix giving the bandwidths for each observation and for each global bandwidth.
 This is usefull when the user want to use a different method from Abramson's smoothing regimen.}
