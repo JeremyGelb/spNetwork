@@ -90,9 +90,13 @@
 <li>One can also set local bandwidths manually for bandwidth selection</li>
 </ul></div>
 <div class="section level3">
-<h3 id="changes-in-function-0-4-4">Changes in function<a class="anchor" aria-label="anchor" href="#changes-in-function-0-4-4"></a></h3>
+<h3 id="changes-in-functions-0-4-4">Changes in functions<a class="anchor" aria-label="anchor" href="#changes-in-functions-0-4-4"></a></h3>
 <ul><li>for all the function where the parameters <em>bw_range</em> and <em>bw_step</em> were used, they were replaced by a single argument <em>bws</em>. It gives more flexibility to the user.</li>
 </ul></div>
+<div class="section level3">
+<h3 id="corrected-bugs-0-4-4">corrected bugs<a class="anchor" aria-label="anchor" href="#corrected-bugs-0-4-4"></a></h3>
+<p>When using ESC-NKDE with bandwidths selection, negative density values could be obtained (with a small parameter of depth). It led to NAN values in LOO score. They are now treated like zeros.</p>
+</div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.4.3.7" id="spnetwork-0437">spNetwork 0.4.3.7<small>2023-04-11</small><a class="anchor" aria-label="anchor" href="#spnetwork-0437"></a></h2>

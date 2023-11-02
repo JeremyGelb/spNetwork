@@ -7,8 +7,13 @@ This is an important release!
 * It is now possible to do bandwidth selection with adaptive bandwidths
 * One can also set local bandwidths manually for bandwidth selection
 
-## Changes in function
+## Changes in functions
+
 * for all the function where the parameters *bw_range* and *bw_step* were used, they were replaced by a single argument *bws*. It gives more flexibility to the user. 
+
+## corrected bugs
+
+When using ESC-NKDE with bandwidths selection, negative density values could be obtained (with a small parameter of depth). It led to NAN values in LOO score. They are now treated like zeros.
 
 # spNetwork 0.4.3.7
 

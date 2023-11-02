@@ -435,10 +435,10 @@ bw_cv_likelihood_calc <- function(bws = NULL,
 
   # and we can calculate now the scores
   if(zero_strat == "min_double"){
-    all_loo_scores <- ifelse(all_loo_scores == 0, .Machine$double.xmin, all_loo_scores)
+    all_loo_scores <- ifelse(all_loo_scores <= 0, .Machine$double.xmin, all_loo_scores)
     cv_scores <- colSums(log(all_loo_scores)) / nrow(all_loo_scores)
   }else{
-    binary_mat <- all_loo_scores == 0
+    binary_mat <- all_loo_scores <= 0
     all_loo_scores <- ifelse(binary_mat, 1, all_loo_scores)
     cv_scores <- colSums(log(all_loo_scores)) / colSums(binary_mat == FALSE)
   }
@@ -692,10 +692,10 @@ bw_cv_likelihood_calc.mc <- function(bws, lines, events, w, kernel_name, method,
 
   # and we can calculate now the scores
   if(zero_strat == "min_double"){
-    all_loo_scores <- ifelse(all_loo_scores == 0, .Machine$double.xmin, all_loo_scores)
+    all_loo_scores <- ifelse(all_loo_scores <= 0, .Machine$double.xmin, all_loo_scores)
     cv_scores <- colSums(log(all_loo_scores)) / nrow(all_loo_scores)
   }else{
-    binary_mat <- all_loo_scores == 0
+    binary_mat <- all_loo_scores <= 0
     all_loo_scores <- ifelse(binary_mat, 1, all_loo_scores)
     cv_scores <- colSums(log(all_loo_scores)) / colSums(binary_mat == FALSE)
   }

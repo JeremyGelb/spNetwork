@@ -557,11 +557,11 @@ bw_tnkde_cv_likelihood_calc <- function(bws_net = NULL,
   final_array <- do.call(abind::abind, dfs)
 
   if(zero_strat == "min_double"){
-    bin_arr <- final_array == 0
+    bin_arr <- final_array <= 0
     final_array[bin_arr] <- .Machine$double.xmin
     final_mat <- rowSums(log(final_array), dims = 2) / dim(final_array)[[3]]
   }else{
-    bin_arr <- final_array == 0
+    bin_arr <- final_array <= 0
     final_array[bin_arr] <- 1
     final_mat <- rowSums(log(final_array), dims = 2) / rowSums(!bin_arr, dims = 2)
   }
@@ -906,11 +906,11 @@ bw_tnkde_cv_likelihood_calc.mc <- function(bws_net = NULL,
   final_array <- do.call(abind::abind, dfs)
 
   if(zero_strat == "min_double"){
-    bin_arr <- final_array == 0
+    bin_arr <- final_array <= 0
     final_array[bin_arr] <- .Machine$double.xmin
     final_mat <- rowSums(log(final_array), dims = 2) / dim(final_array)[[3]]
   }else{
-    bin_arr <- final_array == 0
+    bin_arr <- final_array <= 0
     final_array[bin_arr] <- 1
     final_mat <- rowSums(log(final_array), dims = 2) / rowSums(!bin_arr, dims = 2)
   }
