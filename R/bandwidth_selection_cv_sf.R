@@ -397,7 +397,7 @@ bw_cv_likelihood_calc <- function(bws = NULL,
     pb <- txtProgressBar(min = 0, max = n_quadra, style = 3)
   }
   dfs <- lapply(1:n_quadra,function(i){
-
+    print(i)
     sel <- selections[[i]]
 
     # the events_loc must cover the quadra and the bw
@@ -408,10 +408,10 @@ bw_cv_likelihood_calc <- function(bws = NULL,
 
     # but I also need to know on which events I must calculate the densities (in the quadra)
     quad_events <- sel$samples
-    sel_weights <- events_weight[sel_events$wid,]
+    sel_weights <- events_weight[sel_events$wid,,drop=FALSE]
 
     # I extract here the bws required
-    sel_bws <- mat_bws[sel_events$wid,]
+    sel_bws <- mat_bws[sel_events$wid,,drop=FALSE]
 
     values <- nkde_worker_bw_sel(sel$lines, quad_events, sel_events_loc, sel_events, sel_weights,
                                   kernel_name, sel_bws,
@@ -563,10 +563,13 @@ bw_cv_likelihood_calc.mc <- function(bws, lines, events, w, kernel_name, method,
     })
   }else{
     if(is.null(mat_bws)){
-      mat_bws <- adaptive_bw.mc(grid, events, lines, all_bws, trim_bws, method,
+      mat_bws <- adaptive_bw.mc(grid = grid,
+                                events = events,
+                                lines = lines,
+                                bw = all_bws,
+                                trim_bw = trim_bws,
+                                method = method,
                              kernel_name, max_depth, tol, digits, sparse, verbose)
-      # mat_bws2 <- adaptive_bw(grid, events, lines, all_bws, trim_bws, method,
-      #                           kernel_name, max_depth, tol, digits, sparse, verbose)
     }else{
 
       # in the case where all the bandwidths were provided by the user
@@ -629,10 +632,10 @@ bw_cv_likelihood_calc.mc <- function(bws, lines, events, w, kernel_name, method,
 
         # but I also need to know on which events I must calculate the densities (in the quadra)
         quad_events <- sel$samples
-        sel_weights <- events_weight[sel_events$wid,]
+        sel_weights <- events_weight[sel_events$wid,,drop=FALSE]
 
         # I extract here the bws required
-        sel_bws <- mat_bws[sel_events$wid,]
+        sel_bws <- mat_bws[sel_events$wid,,drop=FALSE]
 
         values <- nkde_worker_bw_sel(sel$lines, quad_events, sel_events_loc, sel_events, sel_weights,
                                      kernel_name, sel_bws,
@@ -656,10 +659,10 @@ bw_cv_likelihood_calc.mc <- function(bws, lines, events, w, kernel_name, method,
 
       # but I also need to know on which events I must calculate the densities (in the quadra)
       quad_events <- sel$samples
-      sel_weights <- events_weight[sel_events$wid,]
+      sel_weights <- events_weight[sel_events$wid,,drop=FALSE]
 
       # I extract here the bws required
-      sel_bws <- mat_bws[sel_events$wid,]
+      sel_bws <- mat_bws[sel_events$wid,,drop=FALSE]
 
       values <- nkde_worker_bw_sel(sel$lines, quad_events, sel_events_loc, sel_events, sel_weights,
                                    kernel_name, sel_bws,

@@ -876,7 +876,13 @@ adaptive_bw.mc <- function(grid,events,lines,bw,trim_bw,method,kernel_name,max_d
 
         # df <- data.frame("goid"=sel$samples$goid,
         #                  "k" = values)
-        df <- cbind(sel$samples$goid, values)
+
+        if(nrow(sel$samples) == 1){
+          df <- c(sel$samples$goid, values)
+        }else{
+          df <- cbind(sel$samples$goid, values)
+        }
+
         p(sprintf("i=%g", sel$index))
         return(df)
       }, future.packages = c("spNetwork"))
