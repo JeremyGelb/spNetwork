@@ -131,7 +131,11 @@ test_that("Testing the knn function with a simple case and a directed network", 
   )
 
   ## calculating the realvalues
-  mats <- network_knn(origins = event, lines = all_lines, k = 3, maxdistance = 100, direction = "dir")
+  mats <- network_knn(origins = event,
+                      lines = all_lines,
+                      k = 2,
+                      maxdistance = 100,
+                      direction = "dir")
   test1 <- sum(mats[[1]] != exp_dist)
   test2 <- sum(mats[[2]] != exp_oid)
   expect_true(test1 == 0 & test2 == 0)
