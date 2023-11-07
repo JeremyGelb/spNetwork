@@ -15,6 +15,8 @@ This is an important release!
 
 When using ESC-NKDE with bandwidths selection, negative density values could be obtained (with a small parameter of depth). It led to NAN values in LOO score. They are now treated like zeros.
 
+A small bug has been corrected in the functions *network_knn* and *network_knn.mc* caused with grids with very few number of points.
+
 # spNetwork 0.4.3.7
 
 This is only a maintenance release. A bug in CRAN caused by multiprocessing in example caused the rejection of hte package.

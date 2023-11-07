@@ -98,15 +98,21 @@ network_knn_worker <- function(points, lines, k, direction = NULL, use_dest = FA
     fids <- fids[order(distsf)]
     distsf <- distsf[order(distsf)]
     n <- length(fids)
-    if(n < k){
-      fids <- c(fids, rep(NA,(k-n-1)))
-      distsf <- c(distsf, rep(NA,(k-n-1)))
+    if(n == 0){
+      fids <- rep(NA,(k))
+      distsf <- rep(NA,(k))
+    }else{
+      if(n < k){
+        fids <- c(fids, rep(NA,(k-length(fids))))
+        distsf <- c(distsf, rep(NA,(k-length(distsf))))
+      }
+      if(n>k){
+        raiseWarning <<- TRUE
+        fids <- fids[1:k]
+        distsf <- distsf[1:k]
+      }
     }
-    if(n>k){
-      raiseWarning <<- TRUE
-      fids <- fids[1:k]
-      distsf <- distsf[1:k]
-    }
+
 
     return(list(fids, distsf))
   })
@@ -215,7 +221,7 @@ network_knn <- function(origins, lines, k, destinations = NULL, maxdistance = 0,
   listvalues <- lapply(1:nrow(grid),function(i){
     quadra <- grid[i,]
     if(verbose){
-      print(paste("working on quadra : ",i,"/",length(grid),sep=""))
+      print(paste("working on quadra : ",i,"/",nrow(grid),sep=""))
     }
     elements <- list_elements[[i]]
     if(length(elements)==0){
@@ -224,12 +230,13 @@ network_knn <- function(origins, lines, k, destinations = NULL, maxdistance = 0,
       all_pts <- elements[[1]]
       selected_lines <- elements[[2]]
       #calculating the elements
-      values <- network_knn_worker(all_pts, selected_lines, k, direction=direction,
+      values <- network_knn_worker(points = all_pts, lines = selected_lines, k = k, direction=direction,
                                     use_dest = use_dest,
                                     verbose = verbose, digits = digits, tol=tol)
       return(values)
     }
   })
+
 
   ## step8 combining the results in two global matrices
   okvalues <- listvalues[lengths(listvalues) != 0]
