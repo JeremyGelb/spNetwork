@@ -291,17 +291,15 @@ One can decide to use adaptive bandwidth for the TNKDE. They are calculated usin
 We can also select the global bandwidth by cross validation with the function `bw_tnkde_cv_likelihood_calc`.
 
 ```{r message=FALSE, warning=FALSE, eval = FALSE}
-cv_scores_adpt <- bw_tnkde_cv_likelihood_calc(
-  bw_net_range = c(200,1100),
-  bw_net_step = 100,
-  bw_time_range = c(10,70),
-  bw_time_step = 10,
+cv_scores_adpt_dis <- bw_tnkde_cv_likelihood_calc(
+  bws_net = seq(200,1100,100),
+  bws_time = seq(10,70,10),
   lines = mtl_network,
   events = bike_accidents,
   time_field = "Time",
   adaptive = TRUE,
-  trim_net_bws = seq(200,1100,100),
-  trim_time_bws = seq(10,70,10),
+  trim_net_bws = seq(200,1100,100)*2,
+  trim_time_bws = seq(10,70,10)*2,
   w = rep(1, nrow(bike_accidents)),
   kernel_name = "quartic",
   method = "discontinuous",
@@ -316,12 +314,36 @@ cv_scores_adpt <- bw_tnkde_cv_likelihood_calc(
   sub_sample=1,
   verbose = FALSE,
   check = TRUE)
+
+cv_scores_adpt_cont <- bw_tnkde_cv_likelihood_calc.mc(
+  bws_net = seq(200,1100,100),
+  bws_time = seq(10,70,10),
+  lines = mtl_network,
+  events = bike_accidents,
+  time_field = "Time",
+  adaptive = TRUE,
+  trim_net_bws = seq(200,1100,100)*2,
+  trim_time_bws = seq(10,70,10)*2,
+  w = rep(1, nrow(bike_accidents)),
+  kernel_name = "quartic",
+  method = "continuous",
+  diggle_correction = FALSE,
+  study_area = NULL,
+  max_depth = 10,
+  digits = 2,
+  tol = 0.1,
+  agg = 15,
+  sparse=TRUE,
+  grid_shape=c(2,2),
+  sub_sample=1,
+  verbose = FALSE,
+  check = TRUE)
 ```
 ```{r message=FALSE, warning=FALSE}
-knitr::kable(cv_scores_adpt)
+knitr::kable(cv_scores_adpt_cont)
 ```
 
-The best score is reached with a network and temporal bandwidths of 800m and 60 days.
+For a discontinuous NKDE The best score is reached with a network and temporal bandwidths of 800m and 60 days.
 
 ```{r message=FALSE, warning=FALSE, eval = FALSE}
 tnkde_densities <- tnkde(lines = mtl_network,

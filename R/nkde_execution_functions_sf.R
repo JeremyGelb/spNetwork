@@ -858,7 +858,7 @@ adaptive_bw.mc <- function(grid,events,lines,bw,trim_bw,method,kernel_name,max_d
             rep(x, nrow(sel$events))
           })
         }
-        invisible(capture.output(values <- nkde_worker(lines =  sel$lines,
+        invisible(capture.output(values <- spNetwork::nkde_worker(lines =  sel$lines,
                                                        events = sel$events,
                                                        samples = sel$samples,
                                                        kernel_name = kernel_name,
@@ -900,7 +900,7 @@ adaptive_bw.mc <- function(grid,events,lines,bw,trim_bw,method,kernel_name,max_d
         })
       }
 
-      values <- nkde_worker(lines =  sel$lines,
+      values <- spNetwork::nkde_worker(lines =  sel$lines,
                             events = sel$events,
                             samples = sel$samples,
                             kernel_name = kernel_name,
@@ -996,6 +996,7 @@ adaptive_bw.mc <- function(grid,events,lines,bw,trim_bw,method,kernel_name,max_d
 #' @importFrom igraph adjacent_vertices get.edge.ids
 #' @return A numeric vector with the nkde values
 #' @keywords internal
+#' @export
 #' @examples
 #' #This is an internal function, no example provided
 nkde_worker <- function(lines, events, samples, kernel_name, bw, bws, method, div, digits, tol, sparse, max_depth, verbose = FALSE){

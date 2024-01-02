@@ -152,7 +152,7 @@ adaptive_bw_tnkde <- function(grid, events_loc, events, lines,
                               tol, digits, sparse, verbose){
 
   ##step 1 split the datas !
-  selections <- split_by_grid_abw(grid, events_loc, lines, max(trim_bw_net), tol, digits)
+  selections <- split_by_grid_abw.mc(grid, events_loc, lines, max(trim_bw_net), tol, digits)
 
   ## step 2 calculating the temp NKDE values
   if(verbose){
@@ -199,6 +199,11 @@ adaptive_bw_tnkde <- function(grid, events_loc, events, lines,
   ## step 3  combining the results
   tot_arr <- do.call(abind::abind, lapply(dfs, function(x){x[[1]]}))
   all_wids <- do.call(c, lapply(dfs, function(x){x[[2]]}))
+
+  ## petite galipette pour eviter des valeurs incroyablement basses !
+  tot_arr <- ifelse(tot_arr < 2.225074e-200, 0, tot_arr)
+  above_0 <- min(c(tot_arr)[c(tot_arr) > 0])
+  tot_arr <- ifelse(tot_arr == 0, above_0, tot_arr)
 
   # tot_df <- do.call(rbind,dfs)
   # tot_df <- data.frame(tot_df[order(tot_df[,1]),])
@@ -353,6 +358,11 @@ adaptive_bw_tnkde.mc <- function(grid, events_loc, events, lines,
   ## step 3  combining the results
   tot_arr <- do.call(abind::abind, lapply(dfs, function(x){x[[1]]}))
   all_wids <- do.call(c, lapply(dfs, function(x){x[[2]]}))
+
+  ## petite galipette pour eviter des valeurs incroyablement basses !
+  tot_arr <- ifelse(tot_arr < 2.225074e-200, 0, tot_arr)
+  above_0 <- min(c(tot_arr)[c(tot_arr) > 0])
+  tot_arr <- ifelse(tot_arr == 0, above_0, tot_arr)
 
   # tot_df <- do.call(rbind,dfs)
   # tot_df <- data.frame(tot_df[order(tot_df[,1]),])

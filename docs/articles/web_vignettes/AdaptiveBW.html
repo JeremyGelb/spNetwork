@@ -106,7 +106,7 @@
                         <h4 data-toc-skip class="author">Jeremy
 Gelb</h4>
             
-            <h4 data-toc-skip class="date">2023-11-01</h4>
+            <h4 data-toc-skip class="date">2024-01-01</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/JeremyGelb/spNetwork/blob/HEAD/vignettes/web_vignettes/AdaptiveBW.Rmd" class="external-link"><code>vignettes/web_vignettes/AdaptiveBW.Rmd</code></a></small>
       <div class="hidden name"><code>AdaptiveBW.Rmd</code></div>
@@ -283,8 +283,9 @@ comparing the results with maps.</p>
 <span><span class="co">#&gt; Animation saved to E:\R\Packages\spNetwork\vignettes\web_vignettes\images\animated_densities.gif</span></span></code></pre></div>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/include_graphics.html" class="external-link">include_graphics</a></span><span class="op">(</span><span class="st">"images/animated_densities.gif"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="images/animated_densities.gif" width="100%" style="display: block; margin: auto;">
-With no suprise, the larger the bandwidth, the smoother the results</p>
+<p><img src="images/animated_densities.gif" width="100%" style="display: block; margin: auto;"></p>
+<p>With no suprise, the larger the bandwidth, the smoother the
+results</p>
 <div class="section level3">
 <h3 id="finding-the-optimal-bandwidth">Finding the optimal bandwidth<a class="anchor" aria-label="anchor" href="#finding-the-optimal-bandwidth"></a>
 </h3>
@@ -299,7 +300,7 @@ based on the 5th to 25th nearest neighbours.</p>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>nearest_nb_mat <span class="ot">&lt;-</span> knn_dists<span class="sc">$</span>distances[,<span class="dv">5</span><span class="sc">:</span><span class="dv">25</span>]</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(nearest_nb_mat) <span class="ot">&lt;-</span> <span class="dv">5</span><span class="sc">:</span><span class="dv">25</span></span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>bw_scores <span class="ot">&lt;-</span> <span class="fu">bw_cv_likelihood_calc</span>(<span class="at">lines =</span> mtl_network,</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>bw_scores_dis <span class="ot">&lt;-</span> <span class="fu">bw_cv_likelihood_calc</span>(<span class="at">lines =</span> mtl_network,</span>
 <span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">events =</span> bike_accidents_agg,</span>
 <span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">w =</span> bike_accidents_agg<span class="sc">$</span>weight,</span>
 <span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">kernel_name =</span> <span class="st">'quartic'</span>,</span>
@@ -307,31 +308,82 @@ based on the 5th to 25th nearest neighbours.</p>
 <span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">adaptive =</span> <span class="cn">TRUE</span>,</span>
 <span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">mat_bws =</span> nearest_nb_mat,</span>
 <span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">digits =</span> <span class="dv">1</span>,</span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">tol =</span> <span class="fl">0.01</span>, </span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">max_depth =</span> <span class="dv">10</span>, <span class="at">agg =</span> <span class="cn">NULL</span>, <span class="at">sparse =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] "checking inputs ..."</span></span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] "prior data preparation ..."</span></span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] "Calculating the correction factor if required"</span></span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] "Splittig the dataset within the grid ..."</span></span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] "start calculating the CV values ..."</span></span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>  <span class="sc">|</span>                                                                            </span>
-<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>  <span class="er">|</span>                                                                      <span class="er">|</span>   <span class="dv">0</span>%</span>
-<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>  <span class="sc">|</span>                                                                            </span>
-<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>  <span class="er">|======================================================================|</span> <span class="dv">100</span>%</span>
-<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>  <span class="at">k =</span> <span class="dv">5</span><span class="sc">:</span><span class="dv">25</span>,</span>
-<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>  <span class="at">score =</span> bw_scores[,<span class="dv">2</span>]</span>
-<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df) <span class="sc">+</span> </span>
-<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> k, <span class="at">y =</span> score)) <span class="sc">+</span> </span>
-<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> k, <span class="at">y =</span> score), <span class="at">color =</span> <span class="st">'red'</span>) <span class="sc">+</span> </span>
-<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code></pre></div>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">tol =</span> <span class="fl">0.01</span>,</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">grid_shape =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>),</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">max_depth =</span> <span class="dv">8</span>, <span class="at">agg =</span> <span class="cn">NULL</span>, <span class="at">sparse =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] "checking inputs ..."</span></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] "prior data preparation ..."</span></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] "Calculating the correction factor if required"</span></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] "Splittig the dataset within the grid ..."</span></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] "start calculating the CV values ..."</span></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>  <span class="sc">|</span>                                                                            </span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>  <span class="er">|</span>                                                                      <span class="er">|</span>   <span class="dv">0</span>%[<span class="dv">1</span>] <span class="dv">1</span></span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>  <span class="sc">|</span>                                                                            </span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>  <span class="er">|==================</span>                                                    <span class="er">|</span>  <span class="dv">25</span>%[<span class="dv">1</span>] <span class="dv">2</span></span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>  <span class="sc">|</span>                                                                            </span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>  <span class="er">|===================================</span>                                   <span class="er">|</span>  <span class="dv">50</span>%[<span class="dv">1</span>] <span class="dv">3</span></span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>  <span class="sc">|</span>                                                                            </span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>  <span class="er">|====================================================</span>                  <span class="er">|</span>  <span class="dv">75</span>%[<span class="dv">1</span>] <span class="dv">4</span></span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a>  <span class="sc">|</span>                                                                            </span>
+<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a>  <span class="er">|======================================================================|</span> <span class="dv">100</span>%</span>
+<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a>bw_scores_cont <span class="ot">&lt;-</span> <span class="fu">bw_cv_likelihood_calc</span>(<span class="at">lines =</span> mtl_network,</span>
+<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">events =</span> bike_accidents_agg,</span>
+<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">w =</span> bike_accidents_agg<span class="sc">$</span>weight,</span>
+<span id="cb8-40"><a href="#cb8-40" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">kernel_name =</span> <span class="st">'quartic'</span>,</span>
+<span id="cb8-41"><a href="#cb8-41" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">method =</span> <span class="st">'continuous'</span>,</span>
+<span id="cb8-42"><a href="#cb8-42" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">adaptive =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb8-43"><a href="#cb8-43" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">mat_bws =</span> nearest_nb_mat,</span>
+<span id="cb8-44"><a href="#cb8-44" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">digits =</span> <span class="dv">1</span>,</span>
+<span id="cb8-45"><a href="#cb8-45" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">tol =</span> <span class="fl">0.01</span>,</span>
+<span id="cb8-46"><a href="#cb8-46" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">grid_shape =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>),</span>
+<span id="cb8-47"><a href="#cb8-47" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">max_depth =</span> <span class="dv">8</span>, <span class="at">agg =</span> <span class="cn">NULL</span>, <span class="at">sparse =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb8-48"><a href="#cb8-48" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] "checking inputs ..."</span></span>
+<span id="cb8-49"><a href="#cb8-49" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] "prior data preparation ..."</span></span>
+<span id="cb8-50"><a href="#cb8-50" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] "Calculating the correction factor if required"</span></span>
+<span id="cb8-51"><a href="#cb8-51" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] "Splittig the dataset within the grid ..."</span></span>
+<span id="cb8-52"><a href="#cb8-52" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] "start calculating the CV values ..."</span></span>
+<span id="cb8-53"><a href="#cb8-53" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-54"><a href="#cb8-54" aria-hidden="true" tabindex="-1"></a>  <span class="sc">|</span>                                                                            </span>
+<span id="cb8-55"><a href="#cb8-55" aria-hidden="true" tabindex="-1"></a>  <span class="er">|</span>                                                                      <span class="er">|</span>   <span class="dv">0</span>%[<span class="dv">1</span>] <span class="dv">1</span></span>
+<span id="cb8-56"><a href="#cb8-56" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-57"><a href="#cb8-57" aria-hidden="true" tabindex="-1"></a>  <span class="sc">|</span>                                                                            </span>
+<span id="cb8-58"><a href="#cb8-58" aria-hidden="true" tabindex="-1"></a>  <span class="er">|==================</span>                                                    <span class="er">|</span>  <span class="dv">25</span>%[<span class="dv">1</span>] <span class="dv">2</span></span>
+<span id="cb8-59"><a href="#cb8-59" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-60"><a href="#cb8-60" aria-hidden="true" tabindex="-1"></a>  <span class="sc">|</span>                                                                            </span>
+<span id="cb8-61"><a href="#cb8-61" aria-hidden="true" tabindex="-1"></a>  <span class="er">|===================================</span>                                   <span class="er">|</span>  <span class="dv">50</span>%[<span class="dv">1</span>] <span class="dv">3</span></span>
+<span id="cb8-62"><a href="#cb8-62" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-63"><a href="#cb8-63" aria-hidden="true" tabindex="-1"></a>  <span class="sc">|</span>                                                                            </span>
+<span id="cb8-64"><a href="#cb8-64" aria-hidden="true" tabindex="-1"></a>  <span class="er">|====================================================</span>                  <span class="er">|</span>  <span class="dv">75</span>%[<span class="dv">1</span>] <span class="dv">4</span></span>
+<span id="cb8-65"><a href="#cb8-65" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-66"><a href="#cb8-66" aria-hidden="true" tabindex="-1"></a>  <span class="sc">|</span>                                                                            </span>
+<span id="cb8-67"><a href="#cb8-67" aria-hidden="true" tabindex="-1"></a>  <span class="er">|======================================================================|</span> <span class="dv">100</span>%</span>
+<span id="cb8-68"><a href="#cb8-68" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-69"><a href="#cb8-69" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb8-70"><a href="#cb8-70" aria-hidden="true" tabindex="-1"></a>  <span class="at">k =</span> <span class="dv">5</span><span class="sc">:</span><span class="dv">25</span>,</span>
+<span id="cb8-71"><a href="#cb8-71" aria-hidden="true" tabindex="-1"></a>  <span class="at">score_dis =</span> bw_scores_dis[,<span class="dv">2</span>],</span>
+<span id="cb8-72"><a href="#cb8-72" aria-hidden="true" tabindex="-1"></a>  <span class="at">score_cont =</span> bw_scores_cont[,<span class="dv">2</span>]</span>
+<span id="cb8-73"><a href="#cb8-73" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb8-74"><a href="#cb8-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-75"><a href="#cb8-75" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df) <span class="sc">+</span> </span>
+<span id="cb8-76"><a href="#cb8-76" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> k, <span class="at">y =</span> score_dis)) <span class="sc">+</span> </span>
+<span id="cb8-77"><a href="#cb8-77" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> k, <span class="at">y =</span> score_dis, <span class="at">color =</span> <span class="st">'discontinuous'</span>)) <span class="sc">+</span> </span>
+<span id="cb8-78"><a href="#cb8-78" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> k, <span class="at">y =</span> score_cont)) <span class="sc">+</span> </span>
+<span id="cb8-79"><a href="#cb8-79" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> k, <span class="at">y =</span> score_cont, <span class="at">color =</span> <span class="st">'continuous'</span>)) <span class="sc">+</span> </span>
+<span id="cb8-80"><a href="#cb8-80" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"discontinuous"</span> <span class="ot">=</span> <span class="st">"red"</span>,</span>
+<span id="cb8-81"><a href="#cb8-81" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"continuous"</span> <span class="ot">=</span> <span class="st">"blue"</span>)) <span class="sc">+</span></span>
+<span id="cb8-82"><a href="#cb8-82" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">color =</span> <span class="st">''</span>) <span class="sc">+</span></span>
+<span id="cb8-83"><a href="#cb8-83" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code></pre></div>
 <p><img src="AdaptiveBW_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
 <p>Based on these results, we decide to use the 8th nearest neighbour as
-an optimal bandwidth. It clearly minimizes the likelihood cross
-validation criterion.</p>
+an optimal bandwidth. It clearly maximizes the likelihood cross
+validation criterion for both the continuous and the discontinuous
+NKDE.</p>
 </div>
 </div>
 <div class="section level2">
@@ -481,7 +533,7 @@ c(network,temporal,events)</p>
 <span><span class="op">}</span></span>
 <span></span>
 <span></span>
-<span><span class="va">values</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/bw_tnkde_cv_likelihood_calc.html">bw_tnkde_cv_likelihood_calc</a></span><span class="op">(</span>lines <span class="op">=</span> <span class="va">mtl_network</span>,</span>
+<span><span class="va">scores_dis</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/bw_tnkde_cv_likelihood_calc.html">bw_tnkde_cv_likelihood_calc</a></span><span class="op">(</span>lines <span class="op">=</span> <span class="va">mtl_network</span>,</span>
 <span>                                      events <span class="op">=</span> <span class="va">bike_accidents</span>,</span>
 <span>                                      time_field <span class="op">=</span> <span class="st">"int_time"</span>,</span>
 <span>                                      w <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">)</span><span class="op">)</span>,</span>
@@ -505,18 +557,49 @@ c(network,temporal,events)</p>
 <span>                                      verbose<span class="op">=</span><span class="cn">FALSE</span>,</span>
 <span>                                      check<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
+<span><span class="va">scores_cont</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/bw_tnkde_cv_likelihood_calc.html">bw_tnkde_cv_likelihood_calc</a></span><span class="op">(</span>lines <span class="op">=</span> <span class="va">mtl_network</span>,</span>
+<span>                                      events <span class="op">=</span> <span class="va">bike_accidents</span>,</span>
+<span>                                      time_field <span class="op">=</span> <span class="st">"int_time"</span>,</span>
+<span>                                      w <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                                      kernel_name <span class="op">=</span> <span class="st">'quartic'</span>,</span>
+<span>                                      method <span class="op">=</span> <span class="st">'continuous'</span>,</span>
+<span>                                      arr_bws_net <span class="op">=</span> <span class="va">network_bws</span>,</span>
+<span>                                      arr_bws_time <span class="op">=</span> <span class="va">time_bws</span>,</span>
+<span>                                      diggle_correction <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>                                      study_area <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>                                      adaptive <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                                      trim_net_bws <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>                                      trim_time_bws <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>                                      max_depth <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>                                      digits<span class="op">=</span><span class="fl">5</span>,</span>
+<span>                                      tol<span class="op">=</span><span class="fl">0.1</span>,</span>
+<span>                                      agg<span class="op">=</span><span class="cn">NULL</span>,</span>
+<span>                                      sparse<span class="op">=</span><span class="cn">TRUE</span>,</span>
+<span>                                      zero_strat <span class="op">=</span> <span class="st">"min_double"</span>,</span>
+<span>                                      grid_shape<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span>,</span>
+<span>                                      sub_sample<span class="op">=</span><span class="fl">1</span>,</span>
+<span>                                      verbose<span class="op">=</span><span class="cn">FALSE</span>,</span>
+<span>                                      check<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
 <span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
 <span>  k <span class="op">=</span> <span class="fl">5</span><span class="op">:</span><span class="fl">25</span>,</span>
-<span>  score <span class="op">=</span> <span class="va">values</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span></span>
+<span>  score_dis <span class="op">=</span> <span class="va">scores_dis</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span>,</span>
+<span>  score_cont <span class="op">=</span> <span class="va">scores_cont</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span></span>
 <span><span class="op">)</span></span>
+<span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span> <span class="op">+</span> </span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">k</span>, y <span class="op">=</span> <span class="va">score</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">k</span>, y <span class="op">=</span> <span class="va">score</span><span class="op">)</span>, color <span class="op">=</span> <span class="st">'red'</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">k</span>, y <span class="op">=</span> <span class="va">score_dis</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">k</span>, y <span class="op">=</span> <span class="va">score_dis</span>, color <span class="op">=</span> <span class="st">'discontinuous'</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">k</span>, y <span class="op">=</span> <span class="va">score_cont</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">k</span>, y <span class="op">=</span> <span class="va">score_cont</span>, color <span class="op">=</span> <span class="st">'continuous'</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_color_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"discontinuous"</span> <span class="op">=</span> <span class="st">"red"</span>,</span>
+<span>                                <span class="st">"continuous"</span> <span class="op">=</span> <span class="st">"blue"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">''</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p><img src="AdaptiveBW_files/figure-html/unnamed-chunk-14-1.png" width="700"></p>
-<p>By checking the table above, we decide to select the 10th nearest
-neighbour because it clearly corresponds to the major elbow in the above
-figure. Also, the 21th neighbour gives the highest score.</p>
+<p>By checking the table above, we could decide to select the 10th
+nearest neighbour because it clearly corresponds to the major elbow in
+the above figure. Also, the 21th neighbour gives the highest score.</p>
 <div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-abramson1982bandwidth" class="csl-entry">
 Abramson, Ian S. 1982. <span>“On Bandwidth Variation in Kernel

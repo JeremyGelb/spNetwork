@@ -106,7 +106,7 @@
                         <h4 data-toc-skip class="author">Jeremy
 Gelb</h4>
             
-            <h4 data-toc-skip class="date">2023-11-01</h4>
+            <h4 data-toc-skip class="date">2024-01-01</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/JeremyGelb/spNetwork/blob/HEAD/vignettes/NKDE.Rmd" class="external-link"><code>vignettes/NKDE.Rmd</code></a></small>
       <div class="hidden name"><code>NKDE.Rmd</code></div>
@@ -846,24 +846,24 @@ up the calculation. It is also possible to run it on a subset of the
 dataset (based on the spatial grid) if running time is too long.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">bws_selection_cv</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bw_cv_likelihood_calc.html">bw_cv_likelihood_calc</a></span><span class="op">(</span></span>
-<span>  bws <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">200</span>,<span class="fl">700</span>,<span class="fl">50</span><span class="op">)</span>,</span>
+<span>  bws <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">50</span>,<span class="fl">700</span>,<span class="fl">50</span><span class="op">)</span>,</span>
 <span>  lines <span class="op">=</span> <span class="va">mtl_network</span>, events <span class="op">=</span> <span class="va">bike_accidents</span>,</span>
 <span>  w <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  kernel_name <span class="op">=</span> <span class="st">"quartic"</span>, method <span class="op">=</span> <span class="st">"discontinuous"</span>,</span>
 <span>  diggle_correction <span class="op">=</span> <span class="cn">FALSE</span>, study_area <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  max_depth <span class="op">=</span> <span class="fl">8</span>,</span>
-<span>  digits<span class="op">=</span><span class="fl">2</span>, tol<span class="op">=</span><span class="fl">0.1</span>, agg<span class="op">=</span><span class="fl">5</span>, </span>
+<span>  digits<span class="op">=</span><span class="fl">2</span>, tol<span class="op">=</span><span class="fl">0.1</span>, agg<span class="op">=</span><span class="fl">5</span>,</span>
 <span>  sparse<span class="op">=</span><span class="cn">TRUE</span>, grid_shape<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span>,</span>
 <span>  verbose<span class="op">=</span><span class="cn">FALSE</span>, check<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">bws_selection_cvl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bw_cvl_calc.html">bw_cvl_calc</a></span><span class="op">(</span></span>
-<span>  bws <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">50</span>,<span class="fl">700</span>, <span class="fl">50</span><span class="op">)</span>,</span>
+<span>  bws <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">50</span>,<span class="fl">700</span>,<span class="fl">50</span><span class="op">)</span>,</span>
 <span>  lines <span class="op">=</span> <span class="va">mtl_network</span>, events <span class="op">=</span> <span class="va">bike_accidents</span>,</span>
 <span>  w <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  kernel_name <span class="op">=</span> <span class="st">"quartic"</span>, method <span class="op">=</span> <span class="st">"discontinuous"</span>,</span>
 <span>  diggle_correction <span class="op">=</span> <span class="cn">FALSE</span>, study_area <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  max_depth <span class="op">=</span> <span class="fl">8</span>,</span>
-<span>  digits<span class="op">=</span><span class="fl">2</span>, tol<span class="op">=</span><span class="fl">0.1</span>, agg<span class="op">=</span><span class="fl">5</span>, </span>
+<span>  digits<span class="op">=</span><span class="fl">2</span>, tol<span class="op">=</span><span class="fl">0.1</span>, agg<span class="op">=</span><span class="fl">5</span>,</span>
 <span>  sparse<span class="op">=</span><span class="cn">TRUE</span>, grid_shape<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span>,</span>
 <span>  verbose<span class="op">=</span><span class="cn">FALSE</span>, check<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p>It is also possible to do bandwidth selection with adaptive
@@ -872,22 +872,52 @@ It requires more computation because for each bandwidth, we need to
 estimate the density twice, one with the global bandwidth, and one with
 the local bandwidths obtained from the density estimation.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">bws_selection_cv_adpt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bw_cv_likelihood_calc.html">bw_cv_likelihood_calc</a></span><span class="op">(</span></span>
-<span>  bws <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">200</span>,<span class="fl">700</span>,<span class="fl">50</span><span class="op">)</span>,</span>
-<span>  lines <span class="op">=</span> <span class="va">mtl_network</span>, events <span class="op">=</span> <span class="va">bike_accidents</span>,</span>
+<code class="sourceCode R"><span><span class="va">bws_selection_cv_adpt_dis</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bw_cv_likelihood_calc.html">bw_cv_likelihood_calc</a></span><span class="op">(</span></span>
+<span>  bws <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">50</span>,<span class="fl">700</span>,<span class="fl">50</span><span class="op">)</span>,</span>
+<span>  trim_bws <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">50</span>,<span class="fl">700</span>,<span class="fl">50</span><span class="op">)</span><span class="op">*</span><span class="fl">2</span>,</span>
+<span>  lines <span class="op">=</span> <span class="va">mtl_network</span>,</span>
+<span>  events <span class="op">=</span> <span class="va">bike_accidents</span>,</span>
 <span>  w <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  adaptive <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  kernel_name <span class="op">=</span> <span class="st">"quartic"</span>, method <span class="op">=</span> <span class="st">"discontinuous"</span>,</span>
-<span>  diggle_correction <span class="op">=</span> <span class="cn">FALSE</span>, study_area <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  kernel_name <span class="op">=</span> <span class="st">"quartic"</span>,</span>
+<span>  method <span class="op">=</span> <span class="st">"discontinuous"</span>,</span>
+<span>  diggle_correction <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  study_area <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  max_depth <span class="op">=</span> <span class="fl">8</span>,</span>
-<span>  digits<span class="op">=</span><span class="fl">2</span>, tol<span class="op">=</span><span class="fl">0.1</span>, agg<span class="op">=</span><span class="fl">5</span>, </span>
-<span>  sparse<span class="op">=</span><span class="cn">TRUE</span>, grid_shape<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span>,</span>
-<span>  verbose<span class="op">=</span><span class="cn">FALSE</span>, check<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span>  digits<span class="op">=</span><span class="fl">2</span>,</span>
+<span>  tol<span class="op">=</span><span class="fl">0.1</span>,</span>
+<span>  agg<span class="op">=</span><span class="fl">5</span>,</span>
+<span>  sparse<span class="op">=</span><span class="cn">TRUE</span>,</span>
+<span>  grid_shape<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span>,</span>
+<span>  verbose<span class="op">=</span><span class="cn">TRUE</span>,</span>
+<span>  check<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">bws_selection_cv_adpt_cont</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bw_cv_likelihood_calc.html">bw_cv_likelihood_calc</a></span><span class="op">(</span></span>
+<span>  bws <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">50</span>,<span class="fl">700</span>,<span class="fl">50</span><span class="op">)</span>,</span>
+<span>  trim_bws <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">50</span>,<span class="fl">700</span>,<span class="fl">50</span><span class="op">)</span><span class="op">*</span><span class="fl">2</span>,</span>
+<span>  lines <span class="op">=</span> <span class="va">mtl_network</span>,</span>
+<span>  events <span class="op">=</span> <span class="va">bike_accidents</span>,</span>
+<span>  w <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  adaptive <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  kernel_name <span class="op">=</span> <span class="st">"quartic"</span>,</span>
+<span>  method <span class="op">=</span> <span class="st">"continuous"</span>,</span>
+<span>  diggle_correction <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  study_area <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  max_depth <span class="op">=</span> <span class="fl">8</span>,</span>
+<span>  digits<span class="op">=</span><span class="fl">2</span>,</span>
+<span>  tol<span class="op">=</span><span class="fl">0.1</span>,</span>
+<span>  agg<span class="op">=</span><span class="fl">5</span>,</span>
+<span>  sparse<span class="op">=</span><span class="cn">TRUE</span>,</span>
+<span>  grid_shape<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span>,</span>
+<span>  verbose<span class="op">=</span><span class="cn">TRUE</span>,</span>
+<span>  check<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">cv_values</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
 <span>  <span class="st">"bw"</span> <span class="op">=</span> <span class="va">bws_selection_cv</span><span class="op">$</span><span class="va">bw</span>,</span>
 <span>  <span class="st">"cv_likelihood"</span> <span class="op">=</span> <span class="va">bws_selection_cv</span><span class="op">$</span><span class="va">cv_scores</span>,</span>
-<span>  <span class="st">"cvl_crit"</span> <span class="op">=</span> <span class="va">bws_selection_cvl</span><span class="op">$</span><span class="va">cvl_scores</span></span>
+<span>  <span class="st">"cvl_crit"</span> <span class="op">=</span> <span class="va">bws_selection_cvl</span><span class="op">$</span><span class="va">cvl_scores</span>,</span>
+<span>  <span class="st">"cv_likelihood_adpt_dis"</span> <span class="op">=</span> <span class="va">bws_selection_cv_adpt_dis</span><span class="op">$</span><span class="va">cv_scores</span>,</span>
+<span>  <span class="st">"cv_likelihood_adpt_cont"</span> <span class="op">=</span> <span class="va">bws_selection_cv_adpt_cont</span><span class="op">$</span><span class="va">cv_scores</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <thead><tr>
@@ -901,7 +931,10 @@ cv_likelihood
 cvl_crit
 </th>
 <th style="text-align:right;">
-cv_likelihood_adpt
+cv_likelihood_adpt_dis
+</th>
+<th style="text-align:right;">
+cv_likelihood_adpt_cont
 </th>
 </tr></thead>
 <tbody>
@@ -918,6 +951,9 @@ cv_likelihood_adpt
 <td style="text-align:right;">
 -616.01
 </td>
+<td style="text-align:right;">
+-391.58
+</td>
 </tr>
 <tr>
 <td style="text-align:right;">
@@ -931,6 +967,9 @@ cv_likelihood_adpt
 </td>
 <td style="text-align:right;">
 -361.06
+</td>
+<td style="text-align:right;">
+-211.81
 </td>
 </tr>
 <tr>
@@ -946,6 +985,9 @@ cv_likelihood_adpt
 <td style="text-align:right;">
 -158.79
 </td>
+<td style="text-align:right;">
+-125.84
+</td>
 </tr>
 <tr>
 <td style="text-align:right;">
@@ -959,6 +1001,9 @@ cv_likelihood_adpt
 </td>
 <td style="text-align:right;">
 -86.49
+</td>
+<td style="text-align:right;">
+-69.96
 </td>
 </tr>
 <tr>
@@ -974,6 +1019,9 @@ cv_likelihood_adpt
 <td style="text-align:right;">
 -48.56
 </td>
+<td style="text-align:right;">
+-32.20
+</td>
 </tr>
 <tr>
 <td style="text-align:right;">
@@ -987,6 +1035,9 @@ cv_likelihood_adpt
 </td>
 <td style="text-align:right;">
 -28.58
+</td>
+<td style="text-align:right;">
+-22.27
 </td>
 </tr>
 <tr>
@@ -1002,6 +1053,9 @@ cv_likelihood_adpt
 <td style="text-align:right;">
 -24.57
 </td>
+<td style="text-align:right;">
+-20.38
+</td>
 </tr>
 <tr>
 <td style="text-align:right;">
@@ -1015,6 +1069,9 @@ cv_likelihood_adpt
 </td>
 <td style="text-align:right;">
 -22.58
+</td>
+<td style="text-align:right;">
+-18.51
 </td>
 </tr>
 <tr>
@@ -1030,6 +1087,9 @@ cv_likelihood_adpt
 <td style="text-align:right;">
 -14.69
 </td>
+<td style="text-align:right;">
+-16.64
+</td>
 </tr>
 <tr>
 <td style="text-align:right;">
@@ -1043,6 +1103,9 @@ cv_likelihood_adpt
 </td>
 <td style="text-align:right;">
 -14.69
+</td>
+<td style="text-align:right;">
+-16.74
 </td>
 </tr>
 <tr>
@@ -1058,6 +1121,9 @@ cv_likelihood_adpt
 <td style="text-align:right;">
 -14.73
 </td>
+<td style="text-align:right;">
+-14.85
+</td>
 </tr>
 <tr>
 <td style="text-align:right;">
@@ -1071,6 +1137,9 @@ cv_likelihood_adpt
 </td>
 <td style="text-align:right;">
 -14.78
+</td>
+<td style="text-align:right;">
+-14.93
 </td>
 </tr>
 <tr>
@@ -1086,6 +1155,9 @@ cv_likelihood_adpt
 <td style="text-align:right;">
 -14.83
 </td>
+<td style="text-align:right;">
+-15.02
+</td>
 </tr>
 <tr>
 <td style="text-align:right;">
@@ -1100,6 +1172,9 @@ cv_likelihood_adpt
 <td style="text-align:right;">
 -14.89
 </td>
+<td style="text-align:right;">
+-15.10
+</td>
 </tr>
 </tbody>
 </table>
@@ -1107,7 +1182,8 @@ cv_likelihood_adpt
 between 550 and 600 metres, while the Cronie and Van Lieshout’s
 Criterion would suggest a bandwidth inferior to 50 metres and is
 probably not adapted for this dataset. With an adaptive bandwidth, the
-best bandwidth would be around 500 and 550 metres.</p>
+best bandwidth would be around 450 and 500 metres for the discontinuous
+kernel, and between 550 and 600 for the continuous kernel.</p>
 </div>
 <div class="section level3">
 <h3 id="complementary-functions">Complementary functions<a class="anchor" aria-label="anchor" href="#complementary-functions"></a>

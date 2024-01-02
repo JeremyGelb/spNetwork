@@ -98,6 +98,7 @@ densities <- nkde(lines = mtl_network,
 ```
 
 We can now map the result
+
 ```{r message=FALSE, warning=FALSE, fig.align= "center", fig.width = 8, fig.height = 8}
 
 # rescaling to help the mapping
@@ -181,6 +182,7 @@ tmap_animation(all_maps, filename = "images/animated_densities.gif",
 ```{r message=FALSE, warning=FALSE, fig.align= "center", out.width = "100%"}
 knitr::include_graphics("images/animated_densities.gif")
 ```
+
 With no suprise, the larger the bandwidth, the smoother the results
 
 ## Finding the optimal bandwidth
@@ -189,12 +191,13 @@ To complete the visual inspection we did above, we could select an optimal set o
 To do so, we can use the function `bw_cv_likelihood_calc` and we must create a matrix of bandwidths that will be evaluated.
 
 We will compare below the scores obtained for the local bandwidths based on the 5th to 25th nearest neighbours.
+
 ```{r message=FALSE, warning=FALSE}
 
 nearest_nb_mat <- knn_dists$distances[,5:25]
 colnames(nearest_nb_mat) <- 5:25
 
-bw_scores <- bw_cv_likelihood_calc(lines = mtl_network,
+bw_scores_dis <- bw_cv_likelihood_calc(lines = mtl_network,
                                    events = bike_accidents_agg,
                                    w = bike_accidents_agg$weight,
                                    kernel_name = 'quartic',
@@ -202,21 +205,41 @@ bw_scores <- bw_cv_likelihood_calc(lines = mtl_network,
                                    adaptive = TRUE,
                                    mat_bws = nearest_nb_mat,
                                    digits = 1,
-                                   tol = 0.01, 
-                                   max_depth = 10, agg = NULL, sparse = TRUE)
+                                   tol = 0.01,
+                                   grid_shape = c(2,2),
+                                   max_depth = 8, agg = NULL, sparse = TRUE)
+
+bw_scores_cont <- bw_cv_likelihood_calc(lines = mtl_network,
+                                   events = bike_accidents_agg,
+                                   w = bike_accidents_agg$weight,
+                                   kernel_name = 'quartic',
+                                   method = 'continuous',
+                                   adaptive = TRUE,
+                                   mat_bws = nearest_nb_mat,
+                                   digits = 1,
+                                   tol = 0.01,
+                                   grid_shape = c(2,2),
+                                   max_depth = 8, agg = NULL, sparse = TRUE)
 
 df <- data.frame(
   k = 5:25,
-  score = bw_scores[,2]
+  score_dis = bw_scores_dis[,2],
+  score_cont = bw_scores_cont[,2]
 )
+
 ggplot(df) + 
-  geom_line(aes(x = k, y = score)) + 
-  geom_point(aes(x = k, y = score), color = 'red') + 
+  geom_line(aes(x = k, y = score_dis)) + 
+  geom_point(aes(x = k, y = score_dis, color = 'discontinuous')) + 
+  geom_line(aes(x = k, y = score_cont)) + 
+  geom_point(aes(x = k, y = score_cont, color = 'continuous')) + 
+  scale_color_manual(values = c("discontinuous" = "red",
+                                "continuous" = "blue")) +
+  labs(color = '') +
   theme_bw()
 
 ```
 
-Based on these results, we decide to use the 8th nearest neighbour as an optimal bandwidth. It clearly minimizes the likelihood cross validation criterion.
+Based on these results, we decide to use the 8th nearest neighbour as an optimal bandwidth. It clearly maximizes the likelihood cross validation criterion for both the continuous and the discontinuous NKDE.
 
 # K nearest neighbours adaptive bandwidth for TNKDE
 
@@ -364,7 +387,7 @@ for(j in 5:25){
 }
 
 
-values <- bw_tnkde_cv_likelihood_calc(lines = mtl_network,
+scores_dis <- bw_tnkde_cv_likelihood_calc(lines = mtl_network,
                                       events = bike_accidents,
                                       time_field = "int_time",
                                       w = rep(1,nrow(bike_accidents)),
@@ -388,16 +411,48 @@ values <- bw_tnkde_cv_likelihood_calc(lines = mtl_network,
                                       verbose=FALSE,
                                       check=TRUE)
 
+scores_cont <- bw_tnkde_cv_likelihood_calc(lines = mtl_network,
+                                      events = bike_accidents,
+                                      time_field = "int_time",
+                                      w = rep(1,nrow(bike_accidents)),
+                                      kernel_name = 'quartic',
+                                      method = 'continuous',
+                                      arr_bws_net = network_bws,
+                                      arr_bws_time = time_bws,
+                                      diggle_correction = FALSE,
+                                      study_area = NULL,
+                                      adaptive = TRUE,
+                                      trim_net_bws = NULL,
+                                      trim_time_bws = NULL,
+                                      max_depth = 10,
+                                      digits=5,
+                                      tol=0.1,
+                                      agg=NULL,
+                                      sparse=TRUE,
+                                      zero_strat = "min_double",
+                                      grid_shape=c(1,1),
+                                      sub_sample=1,
+                                      verbose=FALSE,
+                                      check=TRUE)
+
 df <- data.frame(
   k = 5:25,
-  score = values[,1]
+  score_dis = scores_dis[,1],
+  score_cont = scores_cont[,1]
 )
+
 ggplot(df) + 
-  geom_line(aes(x = k, y = score)) + 
-  geom_point(aes(x = k, y = score), color = 'red') + 
+  geom_line(aes(x = k, y = score_dis)) + 
+  geom_point(aes(x = k, y = score_dis, color = 'discontinuous')) + 
+  geom_line(aes(x = k, y = score_cont)) + 
+  geom_point(aes(x = k, y = score_cont, color = 'continuous')) + 
+  scale_color_manual(values = c("discontinuous" = "red",
+                                "continuous" = "blue")) +
+  labs(color = '') +
   theme_bw()
+
 ```
 
-By checking the table above, we decide to select the 10th nearest neighbour because it clearly corresponds to the major elbow in the above figure. Also, the 21th neighbour gives the highest score.
+By checking the table above, we could decide to select the 10th nearest neighbour because it clearly corresponds to the major elbow in the above figure. Also, the 21th neighbour gives the highest score.
 
 
