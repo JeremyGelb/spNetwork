@@ -26,8 +26,8 @@
 //' each pair of bandwidths (mat(event, bws_net))
 //' @keywords internal
 arma::mat ess_kernel_loo_nkde(fptros kernel_func, arma::sp_imat &edge_mat,
-                                NumericVector &events,
-                                NumericVector &events_wid,
+                                IntegerVector &events,
+                                IntegerVector &events_wid,
                                 List &neighbour_list,
                                 int v, int wid,
                                 arma::rowvec &bws_net,
@@ -84,7 +84,7 @@ arma::mat ess_kernel_loo_nkde(fptros kernel_func, arma::sp_imat &edge_mat,
           // find the edge between the two nodes
           int edge_id = edge_mat(v,v2);
           double d2 = line_weights[edge_id-1] + d;
-          std::vector<int> index = get_all_indeces(events,v2);
+          std::vector<int> index = get_all_indeces_int(events,v2);
           if(index.size() >0 ){
             // il semble que v2 soit un noeud pour lequel au moins un evenement est present
             for(int ii = 0; ii < bws_net.n_elem ; ii++){
@@ -134,8 +134,8 @@ arma::mat ess_kernel_loo_nkde(fptros kernel_func, arma::sp_imat &edge_mat,
 //' @return a cube with the impact of the event v on each other events for
 //' each pair of bandwidths (cube(bws_net, bws_time, events))
 arma::mat esd_kernel_loo_nkde(fptros kernel_func, arma::sp_imat& edge_mat,
-                                NumericVector& events,
-                                NumericVector& events_wid,
+                                IntegerVector& events,
+                                IntegerVector& events_wid,
                                 List& neighbour_list,
                                 int v, int wid,
                                 arma::rowvec bws_net,
@@ -205,7 +205,7 @@ arma::mat esd_kernel_loo_nkde(fptros kernel_func, arma::sp_imat& edge_mat,
 
           //est ce que v2 est un evenement pour lequel on doit garder la valeur
 
-          std::vector<int> index = get_all_indeces(events,v2);
+          std::vector<int> index = get_all_indeces_int(events,v2);
           if(index.size() >0 ){
 
             for(int ii = 0; ii < bws_net.n_elem ; ii++){
@@ -257,8 +257,8 @@ arma::mat esd_kernel_loo_nkde(fptros kernel_func, arma::sp_imat& edge_mat,
 //' @return a cube with the impact of the event v on each other events for
 //' each pair of bandwidths (cube(bws_net, bws_time, events))
 arma::mat esc_kernel_loo_nkde(fptros kernel_func, arma::sp_imat& edge_mat,
-                                NumericVector& events,
-                                NumericVector& events_wid,
+                                IntegerVector& events,
+                                IntegerVector& events_wid,
                                 List& neighbour_list,
                                 int v, int wid,
                                 arma::rowvec bws_net,
@@ -303,7 +303,7 @@ arma::mat esc_kernel_loo_nkde(fptros kernel_func, arma::sp_imat& edge_mat,
     // we will update the densities on v
     // but only if v is a vertex on wich I can find an event
 
-    std::vector<int> index = get_all_indeces(events,v);
+    std::vector<int> index = get_all_indeces_int(events,v);
 
     if(index.size() >0 ){
       for(int ii = 0; ii < bws_net.n_elem ; ii++){
@@ -400,8 +400,10 @@ arma::mat esc_kernel_loo_nkde(fptros kernel_func, arma::sp_imat& edge_mat,
 //' # no example provided, this is an internal function
 // [[Rcpp::export]]
 arma::mat nkde_get_loo_values(std::string method, List neighbour_list,
-                               NumericVector sel_events, NumericVector sel_events_wid,
-                               NumericVector events, NumericVector events_wid,
+                               IntegerVector sel_events,
+                               IntegerVector sel_events_wid,
+                               IntegerVector events,
+                               IntegerVector events_wid,
                                arma::mat weights,
                                arma::mat bws_net, std::string kernel_name,
                                DataFrame line_list, int max_depth, bool cvl){
@@ -463,7 +465,7 @@ arma::mat nkde_get_loo_values(std::string method, List neighbour_list,
 
     // if y was a selected event, its own weight must be set to 0 (if cvl == FALSE)
     // otherwise I must add to its own weight (if simple or discontinuous)
-    int index = get_first_index(sel_events_wid,wid);
+    int index = get_first_index_int(sel_events_wid,wid);
     if(index >= 0){
       if(cvl == false){
         k.row(index).fill(0.0);

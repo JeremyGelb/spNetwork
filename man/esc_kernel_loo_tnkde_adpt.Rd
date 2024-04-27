@@ -36,3 +36,4 @@ each pair of bandwidths (cube(bws_net, bws_time, events))
 \description{
 The worker function to calculate continuous TNKDE likelihood cv (INTERNAL)
 }
+\keyword{internal}

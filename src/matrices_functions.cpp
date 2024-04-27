@@ -51,6 +51,17 @@ int get_first_index(NumericVector& v1, double x){
 }
 
 // a simple function to find the index of the first occurence of value in a numeric vector
+int get_first_index_int(IntegerVector& v1, int x){
+  int i;
+  for( i = 0; i < v1.size(); ++i) {
+    if(v1[i] == x){
+      return i;
+    }
+  }
+  return -1;
+}
+
+// a simple function to find the index of the first occurence of value in a numeric vector
 std::vector<int> get_all_indeces(NumericVector& v1, double x){
   int i;
   std::vector<int> idxs;
@@ -61,6 +72,19 @@ std::vector<int> get_all_indeces(NumericVector& v1, double x){
   }
   return idxs;
 }
+
+// a simple function to find the index of the first occurence of value in an integer vector
+std::vector<int> get_all_indeces_int(IntegerVector& v1, int x){
+  int i;
+  std::vector<int> idxs;
+  for( i = 0; i < v1.size(); ++i) {
+    if(v1[i] == x){
+      idxs.push_back(i);
+    }
+  }
+  return idxs;
+}
+
 
 
 // short function to create a matrix from the neighbour_list

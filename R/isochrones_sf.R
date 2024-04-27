@@ -12,7 +12,9 @@
 #' how to create smooth polygons from the returned sets of lines.
 #'
 #' @param lines A feature collection of lines representing the edges of the network
-#' @param dists A vector of the size of the desired isochrones
+#' @param dists A vector of the size of the desired isochrones. Can also be a list of vector
+#' when each start point must have its own distances. If so, the length of the list must be equal
+#' to the number of rows in start_points.
 #' @param start_points A feature collection of points representing the starting
 #' points if the isochrones
 #' @param donught A boolean indicating if the returned lines must overlap for
@@ -75,6 +77,25 @@
 #'                               direction = "direction")
 calc_isochrones <- function(lines, dists, start_points, donught = FALSE, mindist = 1, weight = NULL, direction = NULL){
 
+  # if we provided a vector instead of a matrix, we create the matrix here
+  if(is.list(dists) == FALSE){
+    dist_list <- lapply(1:nrow(start_points), function(i){dists})
+  }else{
+    dist_list <- dists
+  }
+
+  if(length(dist_list) != nrow(start_points)){
+    stop("When dists is a list, it must have a length equal to the number of rows in start_points")
+  }
+
+  if(st_crs(start_points) != st_crs(lines)){
+    stop("start_points and lines must have the same crs (st_crs(start_points) == st_crs(lines))")
+  }
+
+  if( (is_projected(start_points) + is_projected(lines)) < 2){
+    stop('both lines and start_points must use a cartesian crs and not lon/lat')
+  }
+
   # step1 : Check that some points are not too close to each other
   # before snapping
   if(nrow(start_points) >1){
@@ -127,7 +148,7 @@ calc_isochrones <- function(lines, dists, start_points, donught = FALSE, mindist
 
 
   # finding for each start points its corresponding node in the graph
-  maxdist <- max(dists)
+  maxdist <- max(sapply(dist_list, max))
   xynodes <- st_coordinates(graph_result$spvertices)
   xy_points <- st_coordinates(snapped_points)
 
@@ -139,12 +160,10 @@ calc_isochrones <- function(lines, dists, start_points, donught = FALSE, mindist
     "node_name" = graph_result$spvertices$name[start_nodes$id]
   )
 
-
-  # tm_shape(lines) + tm_lines("black") + tm_shape(start_points) + tm_dots("red", size = 0.5)
-
   # creating the isochrones: sets of linestrings
   all_multi_lignes <- lapply(1:nrow(df_start), function(i){
     row <- df_start[i,]
+    dists <- dist_list[[i]]
     # pour chaque point de depart calculer les distances a tous les autres points
     all_dists <- t(igraph::distances(graph_result$graph,
                                    to = row$node_idx,

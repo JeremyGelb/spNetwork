@@ -9,6 +9,10 @@ std::vector<int> seq_num2f(int start, int end, int step);
 
 int get_first_index(NumericVector& v1, double x);
 
+int get_first_index_int(IntegerVector& v1, int x);
+
+std::vector<int> get_all_indeces_int(IntegerVector& v1, int x);
+
 std::vector<int> get_all_indeces(NumericVector& v1, double x);
 
 IntegerMatrix make_matrix(DataFrame df, List neighbour_list);

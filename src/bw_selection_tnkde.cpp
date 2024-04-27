@@ -29,8 +29,8 @@
 //' each pair of bandwidths (cube(bws_net, bws_time, events))
 //' @keywords internal
 arma::cube ess_kernel_loo_tnkde(fptros kernel_func, arma::sp_imat &edge_mat,
-                                NumericVector &events,
-                                NumericVector &events_wid,
+                                IntegerVector &events,
+                                IntegerVector &events_wid,
                                 NumericVector &time_events,
                                 List &neighbour_list,
                                 int v, int wid, double v_time,
@@ -56,7 +56,7 @@ arma::cube ess_kernel_loo_tnkde(fptros kernel_func, arma::sp_imat &edge_mat,
   // avant de lancer les iteration, nous devons vérifier s'il est necessaire
   // de rajouter la densite a des evenement qui se situeraient sur le meme point
   // de depart !
-  std::vector<int> index = get_all_indeces(events,v);
+  std::vector<int> index = get_all_indeces_int(events,v);
   if(index.size() > 1){
     for(int ii = 0; ii < bws_net.n_elem ; ii++){
       bw_net = bws_net(ii);
@@ -105,7 +105,7 @@ arma::cube ess_kernel_loo_tnkde(fptros kernel_func, arma::sp_imat &edge_mat,
           // find the edge between the two nodes
           int edge_id = edge_mat(v,v2);
           double d2 = line_weights[edge_id-1] + d;
-          std::vector<int> index = get_all_indeces(events,v2);
+          std::vector<int> index = get_all_indeces_int(events,v2);
           if(index.size() >0 ){
             // il semble que v2 soit un noeud pour lequel au moins un evenement est present
             for(int ii = 0; ii < bws_net.n_elem ; ii++){
@@ -159,8 +159,8 @@ arma::cube ess_kernel_loo_tnkde(fptros kernel_func, arma::sp_imat &edge_mat,
 //' each pair of bandwidths (cube(bws_net, bws_time, events))
 //' @keywords internal
  arma::cube ess_kernel_loo_tnkde_adpt(fptros kernel_func, arma::sp_imat &edge_mat,
-                                 NumericVector &events,
-                                 NumericVector &events_wid,
+                                 IntegerVector &events,
+                                 IntegerVector &events_wid,
                                  NumericVector &time_events,
                                  List &neighbour_list,
                                  int v, int wid, double v_time,
@@ -190,7 +190,7 @@ arma::cube ess_kernel_loo_tnkde(fptros kernel_func, arma::sp_imat &edge_mat,
    // avant de lancer les iterations, il est important de verifier que
    // certains evenement ne se trouvent pas sur la meme vertex d'origine.
    // si c'est le cas, nous devons leur assigner la valeur de densite correspondante
-   std::vector<int> index = get_all_indeces(events,v);
+   std::vector<int> index = get_all_indeces_int(events,v);
    if(index.size() > 1){
      // Rcout << "See me ! I must add some density at the origin ! \n";
      for (int zz : index){
@@ -246,7 +246,7 @@ arma::cube ess_kernel_loo_tnkde(fptros kernel_func, arma::sp_imat &edge_mat,
            int edge_id = edge_mat(v,v2);
            double d2 = line_weights[edge_id-1] + d;
            //Rcout << "step5\n";
-           std::vector<int> index = get_all_indeces(events,v2);
+           std::vector<int> index = get_all_indeces_int(events,v2);
            //Rcout << "step6\n";
            if(index.size() >0 ){
              // Rcout << "step7\n";
@@ -313,8 +313,8 @@ arma::cube ess_kernel_loo_tnkde(fptros kernel_func, arma::sp_imat &edge_mat,
 //' @return a cube with the impact of the event v on each other event for
 //' each pair of bandwidths (cube(bws_net, bws_time, events))
 arma::cube esd_kernel_loo_tnkde(fptros kernel_func, arma::sp_imat &edge_mat,
-                                 NumericVector &events,
-                                 NumericVector &events_wid,
+                                 IntegerVector &events,
+                                 IntegerVector &events_wid,
                                  NumericVector &time_events,
                                  List &neighbour_list,
                                  int v, int wid, double v_time,
@@ -341,7 +341,7 @@ arma::cube esd_kernel_loo_tnkde(fptros kernel_func, arma::sp_imat &edge_mat,
   // avant de lancer les iteration, nous devons vérifier s'il est necessaire
   // de rajouter la densite a des evenement qui se situeraient sur le meme point
   // de depart !
-  std::vector<int> index = get_all_indeces(events,v);
+  std::vector<int> index = get_all_indeces_int(events,v);
   if(index.size() > 1){
     for(int ii = 0; ii < bws_net.n_elem ; ii++){
       bw_net = bws_net(ii);
@@ -407,7 +407,7 @@ arma::cube esd_kernel_loo_tnkde(fptros kernel_func, arma::sp_imat &edge_mat,
 
           //est ce que v2 est un evenement pour lequel on doit garder la valeur
 
-          std::vector<int> index = get_all_indeces(events,v2);
+          std::vector<int> index = get_all_indeces_int(events,v2);
           if(index.size() >0 ){
 
             for(int ii = 0; ii < bws_net.n_elem ; ii++){
@@ -462,8 +462,8 @@ arma::cube esd_kernel_loo_tnkde(fptros kernel_func, arma::sp_imat &edge_mat,
 //' each pair of bandwidths (cube(bws_net, bws_time, events))
 //' @keywords internal
  arma::cube esd_kernel_loo_tnkde_adpt(fptros kernel_func, arma::sp_imat &edge_mat,
-                                 NumericVector &events,
-                                 NumericVector &events_wid,
+                                 IntegerVector &events,
+                                 IntegerVector &events_wid,
                                  NumericVector &time_events,
                                  List& neighbour_list,
                                  int v, int wid, double v_time,
@@ -491,7 +491,7 @@ arma::cube esd_kernel_loo_tnkde(fptros kernel_func, arma::sp_imat &edge_mat,
    // avant de lancer les iterations, il est important de verifier que
    // certains evenement ne se trouvent pas sur la meme vertex d'origine.
    // si c'est le cas, nous devons leur assigner la valeur de densite correspondante
-   std::vector<int> index = get_all_indeces(events,v);
+   std::vector<int> index = get_all_indeces_int(events,v);
    if(index.size() > 1){
      // Rcout << "See me ! I must add some density at the origin ! \n";
      for (int zz : index){
@@ -561,7 +561,7 @@ arma::cube esd_kernel_loo_tnkde(fptros kernel_func, arma::sp_imat &edge_mat,
 
            //est ce que v2 est un evenement pour lequel on doit garder la valeur
 
-           std::vector<int> index = get_all_indeces(events,v2);
+           std::vector<int> index = get_all_indeces_int(events,v2);
            if(index.size() >0 ){
              for (int zz : index){
                //arma::mat slice_bw_net = bws_net.slice(zz);
@@ -632,8 +632,8 @@ arma::cube esd_kernel_loo_tnkde(fptros kernel_func, arma::sp_imat &edge_mat,
 //' @return a cube with the impact of the event v on each other event for
 //' each pair of bandwidths (cube(bws_net, bws_time, events))
 arma::cube esc_kernel_loo_tnkde(fptros kernel_func, arma::sp_imat &edge_mat,
-                                 NumericVector &events,
-                                 NumericVector &events_wid,
+                                 IntegerVector &events,
+                                 IntegerVector &events_wid,
                                  NumericVector &time_events,
                                  List &neighbour_list,
                                  int v, int wid, double v_time,
@@ -673,7 +673,7 @@ arma::cube esc_kernel_loo_tnkde(fptros kernel_func, arma::sp_imat &edge_mat,
   // avant de lancer les iteration, nous devons vérifier s'il est necessaire
   // de rajouter la densite a des evenement qui se situeraient sur le meme point
   // de depart !
-  std::vector<int> index = get_all_indeces(events,v);
+  std::vector<int> index = get_all_indeces_int(events,v);
   if(index.size() > 1){
     for(int ii = 0; ii < bws_net.n_elem ; ii++){
       bw_net = bws_net(ii);
@@ -714,14 +714,14 @@ arma::cube esc_kernel_loo_tnkde(fptros kernel_func, arma::sp_imat &edge_mat,
     // we will update the densities on v
     // but only if v is a vertex on wich I can find an event
 
-    std::vector<int> index = get_all_indeces(events,cas.v);
+    std::vector<int> index = get_all_indeces_int(events,cas.v);
 
     // NOTE : WE SHOULD FIRST CALCULATE THE COMPLETE NKDE DENSITY CAUSED BY AN EVENT
     // AND ONLY AFTER MULTIPLYING IT WITH THE TIME DENSITY
     if(index.size() >0 ){
       for(int ii = 0; ii < bws_net.n_elem ; ii++){
         bw_net = bws_net(ii);
-        double kernel_net =  kernel_func(cas.d,bw_net) * alpha;
+        double kernel_net =  kernel_func(cas.d,bw_net) * cas.alpha;
         // NOTE : we are not doing the bw scaling here but later
         for (int zz : index){
           net_k_values(zz,ii) = net_k_values(zz,ii) + kernel_net;
@@ -755,12 +755,12 @@ arma::cube esc_kernel_loo_tnkde(fptros kernel_func, arma::sp_imat &edge_mat,
             if(v2 == cas.prev_node){
               if(n>2){
                 double p2 = (2.0-n)/n;
-                double new_alpha = alpha * p2;
+                double new_alpha = cas.alpha * p2;
                 //data_holder.push_back(new_case);
                 data_holder.push_back((struct acase){v2,cas.v,new_depth,d2,new_alpha});
               }
             }else{
-              double new_alpha = alpha * (2.0/n);
+              double new_alpha = cas.alpha * (2.0/n);
               //data_holder.push_back(new_case);
               data_holder.push_back((struct acase){v2,cas.v,new_depth,d2,new_alpha});
             }
@@ -832,8 +832,8 @@ arma::cube esc_kernel_loo_tnkde(fptros kernel_func, arma::sp_imat &edge_mat,
 //' each pair of bandwidths (cube(bws_net, bws_time, events))
 //' @keywords internal
  arma::cube esc_kernel_loo_tnkde_adpt(fptros kernel_func, arma::sp_imat &edge_mat,
-                                 NumericVector &events,
-                                 NumericVector &events_wid,
+                                 IntegerVector &events,
+                                 IntegerVector &events_wid,
                                  NumericVector &time_events,
                                  List &neighbour_list,
                                  int v, int wid, double v_time,
@@ -876,7 +876,7 @@ arma::cube esc_kernel_loo_tnkde(fptros kernel_func, arma::sp_imat &edge_mat,
    // avant de lancer les iterations, il est important de verifier que
    // certains evenement ne se trouvent pas sur la meme vertex d'origine.
    // si c'est le cas, nous devons leur assigner la valeur de densite correspondante
-   std::vector<int> index = get_all_indeces(events,v);
+   std::vector<int> index = get_all_indeces_int(events,v);
    if(index.size() > 1){
      // Rcout << "See me ! I must add some density at the origin ! \n";
      for (int zz : index){
@@ -920,7 +920,7 @@ arma::cube esc_kernel_loo_tnkde(fptros kernel_func, arma::sp_imat &edge_mat,
      // we will update the densities on v
      // but only if v is a vertex on wich I can find an event
 
-     std::vector<int> index = get_all_indeces(events,v);
+     std::vector<int> index = get_all_indeces_int(events,v);
 
      // NOTE : WE SHOULD FIRST CALCULATE THE COMPLETE NKDE DENSITY CAUSED BY AN EVENT
      // AND ONLY AFTER MULTIPLYING IT WITH THE TIME DENSITY
@@ -1062,8 +1062,12 @@ arma::cube esc_kernel_loo_tnkde(fptros kernel_func, arma::sp_imat &edge_mat,
 //' # no example provided, this is an internal function
 // [[Rcpp::export]]
 arma::cube tnkde_get_loo_values(std::string method, List neighbour_list,
-                               NumericVector sel_events, NumericVector sel_events_wid, NumericVector sel_events_time,
-                               NumericVector events, NumericVector events_wid, NumericVector events_time,
+                               IntegerVector sel_events,
+                               IntegerVector sel_events_wid,
+                               NumericVector sel_events_time,
+                               IntegerVector events,
+                               IntegerVector events_wid,
+                               NumericVector events_time,
                                arma::cube weights,
                                arma::vec bws_net, arma::vec bws_time, std::string kernel_name,
                                DataFrame line_list, int max_depth, double min_tol){
@@ -1119,7 +1123,7 @@ arma::cube tnkde_get_loo_values(std::string method, List neighbour_list,
     }
 
     // if y was a selected event, its own weight must be set to 0
-    int index = get_first_index(sel_events_wid,wid);
+    int index = get_first_index_int(sel_events_wid,wid);
     if(index >= 0){
       k.slice(index).fill(0);
     }
@@ -1169,8 +1173,12 @@ arma::cube tnkde_get_loo_values(std::string method, List neighbour_list,
 //' # no example provided, this is an internal function
 // [[Rcpp::export]]
  arma::cube tnkde_get_loo_values2(std::string method, List neighbour_list,
-                                 NumericVector sel_events, NumericVector sel_events_wid, NumericVector sel_events_time,
-                                 NumericVector events, NumericVector events_wid, NumericVector events_time,
+                                 IntegerVector sel_events,
+                                 IntegerVector sel_events_wid,
+                                 NumericVector sel_events_time,
+                                 IntegerVector events,
+                                 IntegerVector events_wid,
+                                 NumericVector events_time,
                                  arma::cube weights,
                                  arma::cube bws_net, arma::cube bws_time, std::string kernel_name,
                                  DataFrame line_list, int max_depth, double min_tol){
@@ -1240,7 +1248,7 @@ arma::cube tnkde_get_loo_values(std::string method, List neighbour_list,
      }
 
      // if y was a selected event, its own weight must be set to 0
-     int index = get_first_index(sel_events_wid,wid);
+     int index = get_first_index_int(sel_events_wid,wid);
      if(index >= 0){
        k.slice(index).fill(0);
      }
@@ -1285,12 +1293,12 @@ arma::cube tnkde_get_loo_values(std::string method, List neighbour_list,
 //' # no example provided, this is an internal function
 // [[Rcpp::export]]
 arma::rowvec adaptive_bw_tnkde_cpp(std::string method,
-                               List neighbour_list,
-                                NumericVector sel_events,
-                                NumericVector sel_events_wid,
+                                List neighbour_list,
+                                IntegerVector sel_events,
+                                IntegerVector sel_events_wid,
                                 NumericVector sel_events_time,
-                                NumericVector events,
-                                NumericVector events_wid,
+                                IntegerVector events,
+                                IntegerVector events_wid,
                                 NumericVector events_time,
                                 arma::vec weights,
                                 arma::vec bws_net,
@@ -1390,11 +1398,11 @@ arma::rowvec adaptive_bw_tnkde_cpp(std::string method,
 // [[Rcpp::export]]
  arma::cube adaptive_bw_tnkde_cpp2(std::string method,
                                     List neighbour_list,
-                                    NumericVector sel_events,
-                                    NumericVector sel_events_wid,
+                                    IntegerVector sel_events,
+                                    IntegerVector sel_events_wid,
                                     NumericVector sel_events_time,
-                                    NumericVector events,
-                                    NumericVector events_wid,
+                                    IntegerVector events,
+                                    IntegerVector events_wid,
                                     NumericVector events_time,
                                     arma::vec weights,
                                     arma::vec bws_net,
