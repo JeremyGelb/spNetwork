@@ -7,6 +7,11 @@ This is an important release!
 * It is now possible to do bandwidth selection with adaptive bandwidths
 * One can also set local bandwidths manually for bandwidth selection
 
+## Enhancement
+
+* The function *snapPointsToLines2* has been refactored and is now significantly faster.
+* The package collapse is now used to increase the calculation speed on a lot of functions.
+
 ## Changes in functions
 
 * for all the function where the parameters *bw_range* and *bw_step* were used, they were replaced by a single argument *bws*. It gives more flexibility to the user. 
@@ -16,6 +21,8 @@ This is an important release!
 When using ESC-NKDE with bandwidths selection, negative density values could be obtained (with a small parameter of depth). It led to NAN values in LOO score. They are now treated like zeros.
 
 A small bug has been corrected in the functions *network_knn* and *network_knn.mc* caused with grids with very few number of points.
+
+Corrected the bug presented in issue 19.
 
 # spNetwork 0.4.3.7
 

@@ -109,16 +109,19 @@ reference:
     Some internal functions that must be exposed for multiprocessing
 - contents:
   - adaptive_bw_tnkde_cpp
+  - adaptive_bw_tnkde_cpp2
   - cross_gfunc_cpp
   - cross_kfunc_cpp
   - esc_kernel_loo_nkde
   - esc_kernel_loo_tnkde
   - esd_kernel_loo_nkde
   - esd_kernel_loo_tnkde
+  - esc_kernel_loo_tnkde_adpt
   - gfunc_cpp
   - kfunc_cpp
   - nkde_get_loo_values
   - tnkde_get_loo_values
+  - tnkde_get_loo_values2
   - tnkde_worker_bw_sel
   - worker_adaptive_bw_tnkde
   - bw_cv_likelihood_calc_tkde

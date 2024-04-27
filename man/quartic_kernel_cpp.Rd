@@ -2,16 +2,25 @@
 % Please edit documentation in R/RcppExports.R
 \name{quartic_kernel_cpp}
 \alias{quartic_kernel_cpp}
+\alias{quartic_kernel_int_cpp}
 \title{c++ quartic kernel}
 \usage{
 quartic_kernel_cpp(d, bw)
+
+quartic_kernel_int_cpp(d_start, d_end, bw)
 }
 \arguments{
 \item{d}{a vector of distances for which the density must be calculated}
 
 \item{bw}{a double representing the size of the kernel bandwidth}
+
+\item{d_start}{a vector of start distances for which the density must be calculated}
+
+\item{d_end}{a vector of end distances for which the density must be calculated}
 }
 \description{
 c++ quartic kernel
+
+c++ quartic kernel integral
 }
 \keyword{internal}

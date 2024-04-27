@@ -4,7 +4,13 @@
 \alias{snapPointsToLines2}
 \title{Snap points to lines}
 \usage{
-snapPointsToLines2(points, lines, idField = NA, snap_dist = 300, max_iter = 10)
+snapPointsToLines2(
+  points,
+  lines,
+  idField = NA,
+  snap_dist = 300,
+  max_iter = 100
+)
 }
 \arguments{
 \item{points}{A feature collection of points}

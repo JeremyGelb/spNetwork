@@ -202,7 +202,14 @@ calc_isochrones <- function(lines, dists, start_points, donught = FALSE, mindist
         df1 <- subset(df1, (is.na(df1$end_dist) & df1$direction == "TF") == FALSE)
         df1 <- subset(df1, (is.na(df1$start_dist) & df1$direction == "FT") == FALSE)
       }
-      ok_lines <- trim_lines_at(df1, graph_result, d, dd, i, donught)
+
+      if(nrow(df1) == 0){
+        return(NULL)
+      }else{
+        ok_lines <- trim_lines_at(df1, graph_result, d, dd, i, donught)
+      }
+
+
       # # we now have to cut the remaining edges
       # test <- is.na(df1$start_dist)==FALSE & is.na(df1$end_dist)==FALSE
       # no_cut <- subset(df1, test)
@@ -246,7 +253,7 @@ calc_isochrones <- function(lines, dists, start_points, donught = FALSE, mindist
       return(ok_lines)
 
     })
-    return(all_lignes)
+    return(all_lignes[lengths(all_lignes) > 0])
 
   })
 

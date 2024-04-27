@@ -770,6 +770,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// calcEuclideanDistance3
+arma::colvec calcEuclideanDistance3(arma::mat y, arma::mat x);
+RcppExport SEXP _spNetwork_calcEuclideanDistance3(SEXP ySEXP, SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type y(ySEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(calcEuclideanDistance3(y, x));
+    return rcpp_result_gen;
+END_RCPP
+}
 // continuous_nkde_cpp_arma_sparse
 DataFrame continuous_nkde_cpp_arma_sparse(List neighbour_list, NumericVector events, NumericVector weights, DataFrame samples, NumericVector bws, std::string kernel_name, DataFrame nodes, DataFrame line_list, int max_depth, bool verbose, std::string div);
 RcppExport SEXP _spNetwork_continuous_nkde_cpp_arma_sparse(SEXP neighbour_listSEXP, SEXP eventsSEXP, SEXP weightsSEXP, SEXP samplesSEXP, SEXP bwsSEXP, SEXP kernel_nameSEXP, SEXP nodesSEXP, SEXP line_listSEXP, SEXP max_depthSEXP, SEXP verboseSEXP, SEXP divSEXP) {
@@ -1005,6 +1017,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_spNetwork_seq_num2f", (DL_FUNC) &_spNetwork_seq_num2f, 3},
     {"_spNetwork_extend_matrix_by_ids", (DL_FUNC) &_spNetwork_extend_matrix_by_ids, 3},
     {"_spNetwork_reverseByRow", (DL_FUNC) &_spNetwork_reverseByRow, 1},
+    {"_spNetwork_calcEuclideanDistance3", (DL_FUNC) &_spNetwork_calcEuclideanDistance3, 2},
     {"_spNetwork_continuous_nkde_cpp_arma_sparse", (DL_FUNC) &_spNetwork_continuous_nkde_cpp_arma_sparse, 11},
     {"_spNetwork_continuous_nkde_cpp_arma", (DL_FUNC) &_spNetwork_continuous_nkde_cpp_arma, 11},
     {"_spNetwork_continuous_tnkde_cpp_arma_sparse", (DL_FUNC) &_spNetwork_continuous_tnkde_cpp_arma_sparse, 14},

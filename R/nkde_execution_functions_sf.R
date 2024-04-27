@@ -102,7 +102,9 @@ utils::globalVariables(c("spid", "weight", ".", "bws",'X','Y','wid','m_X','m_Y')
 #' @examples
 #' #This is an internal function, no example provided
 clean_events <- function(events,digits=5,agg=NULL){
+
   base_crs <- st_crs(events)
+
   if(is.null(agg)){
     events$spid <- sp_char_index(st_coordinates(events),digits)
 
@@ -114,7 +116,7 @@ clean_events <- function(events,digits=5,agg=NULL){
     new_events <- data.table(edf)
     n1 <- names(new_events)[names(new_events) %in% c("weight","spid") == FALSE]
 
-    #agg_events <- new_events[, .(sum(weight),sum(bws)), by = .(spid)]
+
     agg_events <- new_events[, lapply(.SD, max) , by = .(spid),  .SDcols = n1]
     agg_events$weight <- new_events[, .(sum(weight)), by = .(spid)][,2]
     if("time" %in% names(events)){
@@ -1031,6 +1033,7 @@ nkde_worker <- function(lines, events, samples, kernel_name, bw, bws, method, di
   snapped_samples <- snapPointsToLines2(samples,edges, snap_dist = max(bws), idField = "edge_id")
   samples$edge_id <- snapped_samples$nearest_line_id
 
+
   ## step3 finding for each event, its corresponding node
   events$vertex_id <- closest_points(events, nodes)
 
@@ -1340,15 +1343,18 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, tri
   n_quadra <- length(selections)
 
   dfs <- lapply(1:n_quadra,function(i){
+
     sel <- selections[[i]]
 
     if(verbose){
       print(paste("    quadra ",i,"/",n_quadra,sep=""))
     }
 
-    values <- nkde_worker(sel$lines, sel$events,
-                          sel$samples, kernel_name,bw,
-                          sel$events$bw, method, div, digits,
+    values <- nkde_worker(lines = sel$lines,
+                          events = sel$events,
+                          samples =  sel$samples,
+                          kernel_name = kernel_name, bw = bw,
+                          bws = sel$events$bw, method = method, div, digits,
                           tol,sparse, max_depth, verbose)
 
     df <- data.frame("goid"=sel$samples$goid,

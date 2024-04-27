@@ -184,14 +184,14 @@ NumericMatrix reverseByRow(NumericMatrix inmat) {
 
 
 //' @title euclidean distance between rows of a matrix and a vector (arma mode)
-//' @name calcEuclideanDistance3
-//' @param y a matrix
-//' @param x a vector (same length as ncol(matrix))
-//' @return a vector (same length as nrow(matrix))
-//' @export
-//' @keywords internal
-//'
-// [[Rcpp::export]]
+ //' @name calcEuclideanDistance3
+ //' @param y a matrix
+ //' @param x a vector (same length as ncol(matrix))
+ //' @return a vector (same length as nrow(matrix))
+ //' @export
+ //' @keywords internal
+ //'
+ // [[Rcpp::export]]
 arma::colvec calcEuclideanDistance3(arma::mat y, arma::mat x){
    return arma::sqrt(arma::sum(arma::pow(y.each_row() - x,2),1));
  }

@@ -1,0 +1,176 @@
+---
+title: "Analysing the impact of max_dept parameter for continuous NKDE"
+author: "Jeremy Gelb"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Analysing the impact of max_dept parameter for continuous NKDE}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: "../spnetwork_bilbio.bibtex"
+link-citations: yes
+colorlinks: yes
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+backup_option <- options()
+base_wd <- getwd()
+library(ggplot2)
+```
+
+# Introduction
+
+In this vignette, we quantify the impact of the parameter `max_dept` on the precision of the calculation of the continuous NKDE.
+
+The continuous NKDE is obtained by a recursive algorithm correcting the density values along the network when a interesction is encountered. This is the only NKDE that needs to go backward during its calculation, this makes it the slowest approach in terms of computation time.
+
+The parameter `max_dept` can be used to limit the number of recursion at the cost of a loss in precision. Indeed, at each intersection the density is split in each direction. After a few intersections, it could be considered safe to stop the calculation. The gain in precision is likely not worth the computation time.
+
+# Preparing the data
+
+We will calculate the impact of the parameter `max_dept` given several bandwidth for the data `bike_accidents`.
+
+For each bandwidth, we will recalculate the density with a `max_dept` value going from 4 to 14. We will then compare the densities obtain with the reference obtained with the highest `max_dept`. The differences will be summarized with a scaled root mean square error.
+
+$$ SRMSE = \sqrt(\frac{{RMSE}}{\sigma}) $$
+
+
+```{r message=FALSE, warning=FALSE}
+# first load data and packages
+library(sf)
+library(spNetwork)
+library(future)
+library(future.apply)
+
+data(mtl_network)
+data(bike_accidents)
+
+lixels <- lixelize_lines(mtl_network,200,mindist = 50)
+samples <- lines_center(lixels)
+
+# we select here the bandwidths for calculation
+bws <- seq(250,1250,100)
+
+# we select here the max_dept values
+max_depts <- seq(4,14,2)
+
+# we create here the dataframe will all the parameters
+params_df <- expand.grid(
+  bw = bws,
+  max_dept = max_depts
+)
+params_df$index <- 1:nrow(params_df)
+
+items <- split(params_df, 1:nrow(params_df))
+
+# to speed up the calculation, we will use some multiprocessing
+future::plan(future::multisession(workers=6))
+
+progressr::with_progress({
+      p <- progressr::progressor(along = items)
+      
+      all_densities <- future_lapply(items, function(row) {
+
+        values <- nkde(mtl_network,
+               events = bike_accidents,
+               w = rep(1,nrow(bike_accidents)),
+               samples = samples,
+               kernel_name = "quartic",
+               bw = row$bw, div= "bw",
+               adaptive = FALSE,
+               method = "continuous", digits = 1, tol = 1,
+               max_depth = row$max_dept,
+               agg = 10,
+               grid_shape = c(1,1),
+               verbose=FALSE)
+
+        p(sprintf("i=%g", row$index))
+        return(values)
+      }, future.packages = c("spNetwork"))
+})
+
+# # we can start the calculations of all the densities
+# all_densities <- lapply(items, function(row){
+#   
+#   values <- nkde(mtl_network,
+#                events = bike_accidents,
+#                w = rep(1,nrow(bike_accidents)),
+#                samples = samples,
+#                kernel_name = "quartic",
+#                bw = row$bw, div= "bw",
+#                adaptive = FALSE,
+#                method = "continuous", digits = 1, tol = 1,
+#                max_depth = row$max_dept,
+#                agg = 10,
+#                grid_shape = c(1,1),
+#                verbose=FALSE)
+#   
+#   return(values)
+#   
+# })
+
+
+```
+
+Great, now we will calculate a temporal distance matrix in days between the accidents.
+
+```{r message=FALSE, warning=FALSE}
+bike_accidents$dt <- as.POSIXct(bike_accidents$Date, format = "%Y/%m/%d")
+start_time <- min(bike_accidents$dt)
+bike_accidents$time <- difftime(bike_accidents$dt,start_time, units = "day")
+
+temporal_mat <- as.matrix(dist(bike_accidents$time))
+```
+
+# Calculating the intersection matrix
+
+We select here the two following thresholds: 500m and 25 days. We calculate a binary matrix indicating if two points are close enough in time and space to belong to the same cluster.
+
+```{r message=FALSE, warning=FALSE, out.width = "60%", fig.align= "center"}
+binary_mat <- as.integer(temporal_mat <= 25 & distance_mat_net<= 400)
+dim(binary_mat) <- dim(temporal_mat)
+```
+
+# Applying the dbscan algorithm
+
+The last step is to just apply the dbscan algorithm!
+
+```{r message=FALSE, warning=FALSE}
+result <- dbscan(binary_mat, eps = 1, minPts = 5)
+result
+```
+
+# Analysing the results
+
+We will first map the clusters (everybody loves map).
+
+```{r message=FALSE, warning=FALSE}
+tmap_mode("view")
+
+bike_accidents$cluster <- as.character(result$cluster)
+out_cluster <- subset(bike_accidents,bike_accidents$cluster == "0")
+in_cluster <- subset(bike_accidents,bike_accidents$cluster != "0")
+
+tm_shape(out_cluster) + 
+  tm_dots("black", alpha = 0.3, size = 0.01) + 
+  tm_shape(in_cluster) + 
+  tm_dots("cluster")
+
+
+```
+
+And finally, we will plot the time period of each cluster.
+
+```{r message=FALSE, warning=FALSE}
+
+ggplot(in_cluster) + 
+  geom_point(aes(x = dt, y = cluster, color = cluster)) +
+  scale_x_datetime(date_labels = "%Y/%m")
+```
+
+
+That's all folks! I hope this short example was interesting!

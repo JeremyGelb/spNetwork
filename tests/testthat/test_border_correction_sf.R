@@ -44,8 +44,8 @@ test_that("Testing the correction_factor function for a simple NKDE", {
 
   expected_vals <- c(1,1,expected_val)
   # let us calculate the observed value
-  observed <- correction_factor(polygons,event,all_lines,
-                    "simple", 2, "triangle", 0.1, 2, 8, sparse=TRUE)
+  observed <- correction_factor(study_area = polygons, events = event, lines = all_lines,
+                    method = "simple", bws = 2, "triangle", 0.1, 2, 8, sparse=TRUE)
 
   expect_equal(sum(expected_vals - observed),0)
 

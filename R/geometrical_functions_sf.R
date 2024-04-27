@@ -175,6 +175,23 @@ lines_coordinates_as_list <- function(lines){
   return(line_coords)
 }
 
+
+# list_coordinates_as_lines_OLD <- function(coord_list, crs){
+#
+#   lids <- do.call(c,lapply(1:length(coord_list), function(e){rep(e, nrow(coord_list[[e]]))}))
+#   new_coords <- data.frame(do.call(rbind, coord_list))
+#   new_coords$lineID <- lids
+#   pts <- st_as_sf(new_coords, coords = c(1,2), crs = crs)
+#
+#   final_lines <- pts %>%
+#     group_by(lineID) %>%
+#     summarise(do_union = FALSE) %>%
+#     st_cast("LINESTRING")
+#
+#   return(final_lines)
+# }
+
+
 #' @title List of coordinates as lines
 #'
 #' @description A function to convert a list of matrices to as sf object with linestring geometry type
@@ -182,8 +199,7 @@ lines_coordinates_as_list <- function(lines){
 #' @param coord_list A list of matrices
 #' @param crs The CRS to use to create the lines
 #' @return A sf object with linestring type geometries
-#' @importFrom sf st_coordinates st_cast
-#' @importFrom dplyr summarise group_by %>%
+#' @importFrom sf st_coordinates st_cast st_as_sf
 #' @keywords internal
 #' @examples
 #' #This is an internal function, no example provided
@@ -192,15 +208,15 @@ list_coordinates_as_lines <- function(coord_list, crs){
   lids <- do.call(c,lapply(1:length(coord_list), function(e){rep(e, nrow(coord_list[[e]]))}))
   new_coords <- data.frame(do.call(rbind, coord_list))
   new_coords$lineID <- lids
-  pts <- st_as_sf(new_coords, coords = c(1,2), crs = crs)
+  colnames(new_coords) <- c('X', 'Y', 'lineID')
 
-  final_lines <- pts %>%
-    group_by(lineID) %>%
-    summarise(do_union = FALSE) %>%
-    st_cast("LINESTRING")
+  final_lines <- sfheaders::sf_linestring(new_coords, x = "X", y = "Y", linestring_id = "lineID", keep = TRUE)
+  final_lines <- st_as_sf(final_lines)
+  st_crs(final_lines) <- crs
 
   return(final_lines)
 }
+
 
 
 #' @title Add vertices to a feature collection of linestrings
@@ -793,6 +809,43 @@ nearest_lines <- function(points, lines, snap_dist = 300, max_iter = 10){
 }
 
 
+# snapPointsToLines2_OLD <- function(points, lines ,idField = NA, snap_dist = 300, max_iter = 10) {
+#
+#     #nearest_line_index <- nearest(points,lines)
+#     if(is.na(idField)){
+#       lines$tmpjgid <- 1:nrow(lines)
+#       idField <- "tmpjgid"
+#     }
+#
+#     nearest_line_index <- nearest_lines(points, lines, snap_dist, max_iter)
+#     coordsLines <- lines_coordinates_as_list(lines)
+#     coordsPoints <- st_coordinates(points)
+#
+#     # Get coordinates of nearest points lying on nearest lines
+#     mNewCoords <- vapply(1:nrow(points),function(x){
+#             return(nearestPointOnLine(coordsLines[[nearest_line_index[x]]],
+#                                coordsPoints[x,]))}, FUN.VALUE=c(0,0))
+#
+#     # Recover lines' Ids (If no id field has been specified, take the sp-lines id)
+#     nearest_line_id <- lines[[idField]][nearest_line_index]
+#
+#     # Create data frame and sp points
+#     df <- data.frame(st_drop_geometry(points))
+#
+#     df$nearest_line_id <- nearest_line_id
+#     mNewCoords <- t(mNewCoords)
+#     df$Xx <- mNewCoords[,1]
+#     df$Yy <- mNewCoords[,2]
+#     final_points <- st_as_sf(df, coords = c("Xx","Yy"), crs = st_crs(lines))
+#     final_points$Xx <- NULL
+#     final_points$Yy <- NULL
+#
+#     return(final_points)
+#
+# }
+
+
+
 #' @title Snap points to lines
 #'
 #' @description Snap points to their nearest lines (edited from maptools)
@@ -823,38 +876,33 @@ nearest_lines <- function(points, lines, snap_dist = 300, max_iter = 10){
 #'     mtl_network,
 #'     "LineID"
 #' )
-snapPointsToLines2 <- function(points, lines ,idField = NA, snap_dist = 300, max_iter = 10) {
+snapPointsToLines2 <- function(points, lines ,idField = NA, snap_dist = 300, max_iter = 100) {
 
-    #nearest_line_index <- nearest(points,lines)
-    if(is.na(idField)){
-      lines$tmpjgid <- 1:nrow(lines)
-      idField <- "tmpjgid"
-    }
+  #nearest_line_index <- nearest(points,lines)
+  if(is.na(idField)){
+    lines$tmpjgid <- 1:nrow(lines)
+    idField <- "tmpjgid"
+  }
 
-    nearest_line_index <- nearest_lines(points, lines, snap_dist, max_iter)
-    coordsLines <- lines_coordinates_as_list(lines)
-    coordsPoints <- st_coordinates(points)
+  #nearest_line_index <- nearest_lines(points, lines, snap_dist, max_iter)
 
-    # Get coordinates of nearest points lying on nearest lines
-    mNewCoords <- vapply(1:nrow(points),function(x){
-            return(nearestPointOnLine(coordsLines[[nearest_line_index[x]]],
-                               coordsPoints[x,]))}, FUN.VALUE=c(0,0))
+  # we start by finding the nearest line for each point
+  nearest_line_index <- sf::st_nearest_feature(points, lines)
+  lines2 <- lines[nearest_line_index,]
 
-    # Recover lines' Ids (If no id field has been specified, take the sp-lines id)
-    nearest_line_id <- lines[[idField]][nearest_line_index]
+  # we can then project the points on theses lines
+  proj_lines <- sf::st_nearest_points(points, lines2, pairwise = TRUE, tolerance = 1e-9)
+  proj_pts <- st_cast(proj_lines, "POINT")
+  final_points <- st_as_sf(proj_pts[seq(2,length(proj_pts),2)])
 
-    # Create data frame and sp points
-    df <- data.frame(st_drop_geometry(points))
+  # we can then add the ids of the lines
+  final_points$nearest_line_id <- lines2[[idField]]
 
-    df$nearest_line_id <- nearest_line_id
-    mNewCoords <- t(mNewCoords)
-    df$Xx <- mNewCoords[,1]
-    df$Yy <- mNewCoords[,2]
-    final_points <- st_as_sf(df, coords = c("Xx","Yy"), crs = st_crs(lines))
-    final_points$Xx <- NULL
-    final_points$Yy <- NULL
+  # and we can create the final object
+  final_points <- cbind(final_points, st_drop_geometry(points))
+  st_geometry(final_points) <- 'geometry'
 
-    return(final_points)
+  return(final_points)
 
 }
 

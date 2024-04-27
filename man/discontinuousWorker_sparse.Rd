@@ -19,13 +19,9 @@ its neighbours}
 
 \item{samples_edgeid}{a vector associating each sample to an edge}
 
-\item{samples_x}{a vector with x coordinates of each sample}
+\item{samples_coords}{a matrix with the X and Y coordinates of the samples}
 
-\item{samples_ya}{vector with y coordinates of each sample}
-
-\item{nodes_x}{a vector with x coordinates of each node}
-
-\item{nodes_y}{a vector with y coordinates of each node}
+\item{nodes_coords}{a matrix with the X and Y coordinates of the nodes}
 
 \item{depth}{the actual recursion depth}
 

@@ -625,24 +625,24 @@ arma::vec esc_kernel_rcpp_arma(fptr kernel_func, List &neighbour_list, IntegerMa
 
 
 //' @title The main function to calculate continuous NKDE (with ARMADILO and sparse matrix)
-//' @name continuousfunction2
-//' @param neighbour_list a list of the neighbours of each node
-//' @param events a numeric vector of the node id of each event
-//' @param weights a numeric vector of the weight of each event
-//' @param samples a DataFrame of the samples (with spatial coordinates and belonging edge)
-//' @param bws the kernel bandwidths for each event
-//' @param kernel_name the name of the kernel to use
-//' @param nodes a DataFrame representing the nodes of the graph (with spatial coordinates)
-//' @param line_list a DataFrame representing the lines of the graph
-//' @param mat_dist_samples a matrix with the following columns : sampleid, lineid, nodeid, dist. It will be used to not recalculate euclidean distance too much
-//' @param max_depth the maximum recursion depth (after which recursion is stopped)
-//' @param verbose a boolean indicating if the function must print its progress
-//' @param div The divisor to use for the kernel. Must be "n" (the number of events within the radius around each sampling point), "bw" (the bandwidth) "none" (the simple sum).
-//' @return a DataFrame with two columns : the kernel values (sum_k) and the number of events for each sample (n)
-//' @export
-//' @keywords internal
-//'
-// [[Rcpp::export]]
+ //' @name continuousfunction2
+ //' @param neighbour_list a list of the neighbours of each node
+ //' @param events a numeric vector of the node id of each event
+ //' @param weights a numeric vector of the weight of each event
+ //' @param samples a DataFrame of the samples (with spatial coordinates and belonging edge)
+ //' @param bws the kernel bandwidths for each event
+ //' @param kernel_name the name of the kernel to use
+ //' @param nodes a DataFrame representing the nodes of the graph (with spatial coordinates)
+ //' @param line_list a DataFrame representing the lines of the graph
+ //' @param mat_dist_samples a matrix with the following columns : sampleid, lineid, nodeid, dist. It will be used to not recalculate euclidean distance too much
+ //' @param max_depth the maximum recursion depth (after which recursion is stopped)
+ //' @param verbose a boolean indicating if the function must print its progress
+ //' @param div The divisor to use for the kernel. Must be "n" (the number of events within the radius around each sampling point), "bw" (the bandwidth) "none" (the simple sum).
+ //' @return a DataFrame with two columns : the kernel values (sum_k) and the number of events for each sample (n)
+ //' @export
+ //' @keywords internal
+ //'
+ // [[Rcpp::export]]
  DataFrame continuous_nkde_cpp_arma_sparse(List neighbour_list, NumericVector events,
                                            NumericVector weights, DataFrame samples,
                                            NumericVector bws, std::string kernel_name,

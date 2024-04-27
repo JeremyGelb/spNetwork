@@ -19,4 +19,8 @@ arma::sp_mat make_edge_weight_sparse(DataFrame df, List neighbour_list);
 
 NumericMatrix reverseByRow(NumericMatrix inmat);
 
+arma::colvec calcEuclideanDistance3(arma::mat y, arma::mat x);
+
+arma::sp_imat make_imatrix_sparse(DataFrame df, List neighbour_list);
+
 #endif

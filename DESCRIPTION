@@ -1,7 +1,7 @@
 Package: spNetwork
 Type: Package
 Title: Spatial Analysis on Network
-Version: 0.4.4
+Version: 0.4.4.9000
 Authors@R: c(
     person("Jeremy", "Gelb", email = "jeremy.gelb@ucs.inrs.ca",role = c("aut", "cre"), comment = c(ORCID = "0000-0002-7114-2714")),
     person("Philippe", "Apparicio", email="philippe.apparicio@ucs.inrs.ca", role=c("ctb"), comment = c(ORCID = "0000-0001-6466-9342")))
@@ -44,9 +44,11 @@ Suggests:
     smoothr (>= 0.2.2),
     concaveman (>= 1.1.0),
     covr (>= 3.5.1),
+    collapse (>= 2.0.13),
+    sfheaders (>= 0.4.4),
     knitr,
     rmarkdown
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 Roxygen: list(markdown = TRUE)
 VignetteBuilder: 
     knitr
@@ -59,3 +61,4 @@ LinkingTo:
     BH
 RdMacros: Rdpack
 Language: en-CA
+SystemRequirements: C++17

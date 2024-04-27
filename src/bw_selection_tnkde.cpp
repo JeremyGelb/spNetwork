@@ -28,14 +28,14 @@
 //' @return a cube with the impact of the event v on each other event for
 //' each pair of bandwidths (cube(bws_net, bws_time, events))
 //' @keywords internal
-arma::cube ess_kernel_loo_tnkde(fptros kernel_func, arma::sp_mat& edge_mat,
-                                NumericVector& events,
-                                NumericVector& events_wid,
-                                NumericVector& time_events,
-                                List& neighbour_list,
+arma::cube ess_kernel_loo_tnkde(fptros kernel_func, arma::sp_imat &edge_mat,
+                                NumericVector &events,
+                                NumericVector &events_wid,
+                                NumericVector &time_events,
+                                List &neighbour_list,
                                 int v, int wid, double v_time,
-                                arma::vec bws_net, arma::vec bws_time,
-                                NumericVector& line_weights, int max_depth){
+                                arma::vec &bws_net, arma::vec &bws_time,
+                                NumericVector &line_weights, int max_depth){
 
   //step0 : generate the queue
   int depth = 0;
@@ -141,31 +141,31 @@ arma::cube ess_kernel_loo_tnkde(fptros kernel_func, arma::sp_mat& edge_mat,
 
 
 //' @title The worker function to calculate simple TNKDE likelihood cv (adaptive case)
- //' @name ess_kernel_loo_tnkde_adpt
- //' @param kernel_func a cpp pointer function (selected with the kernel name)
- //' @param edge_mat matrix, to find the id of each edge given two neighbours.
- //' @param events a NumericVector indicating the nodes in the graph being events
- //' @param time_events a NumericVector indicating the timestamp of each event
- //' @param neighbour_list a List, giving for each node an IntegerVector with
- //' its neighbours
- //' @param v the actual node to consider (int)
- //' @param v_time the time of v (double)
- //' @param bws_net an arma::mat with the network bandwidths to consider
- //' @param bws_time an arma::mat with the time bandwidths to consider
- //' @param line_weights a vector with the length of the edges
- //' @param depth the actual recursion depth
- //' @param max_depth the maximum recursion depth
- //' @return a cube with the impact of the event v on each other event for
- //' each pair of bandwidths (cube(bws_net, bws_time, events))
- //' @keywords internal
- arma::cube ess_kernel_loo_tnkde_adpt(fptros kernel_func, arma::sp_mat& edge_mat,
-                                 NumericVector& events,
-                                 NumericVector& events_wid,
-                                 NumericVector& time_events,
-                                 List& neighbour_list,
+//' @name ess_kernel_loo_tnkde_adpt
+//' @param kernel_func a cpp pointer function (selected with the kernel name)
+//' @param edge_mat matrix, to find the id of each edge given two neighbours.
+//' @param events a NumericVector indicating the nodes in the graph being events
+//' @param time_events a NumericVector indicating the timestamp of each event
+//' @param neighbour_list a List, giving for each node an IntegerVector with
+//' its neighbours
+//' @param v the actual node to consider (int)
+//' @param v_time the time of v (double)
+//' @param bws_net an arma::mat with the network bandwidths to consider
+//' @param bws_time an arma::mat with the time bandwidths to consider
+//' @param line_weights a vector with the length of the edges
+//' @param depth the actual recursion depth
+//' @param max_depth the maximum recursion depth
+//' @return a cube with the impact of the event v on each other event for
+//' each pair of bandwidths (cube(bws_net, bws_time, events))
+//' @keywords internal
+ arma::cube ess_kernel_loo_tnkde_adpt(fptros kernel_func, arma::sp_imat &edge_mat,
+                                 NumericVector &events,
+                                 NumericVector &events_wid,
+                                 NumericVector &time_events,
+                                 List &neighbour_list,
                                  int v, int wid, double v_time,
-                                 arma::mat bws_net, arma::mat bws_time,
-                                 NumericVector& line_weights, int max_depth){
+                                 arma::mat &bws_net, arma::mat &bws_time,
+                                 NumericVector &line_weights, int max_depth){
 
    //step0 : generate the queue
    // Rcout << "starting the new function !\n";
@@ -293,8 +293,9 @@ arma::cube ess_kernel_loo_tnkde(fptros kernel_func, arma::sp_mat& edge_mat,
 // THE FUNCTION TO CALCULATE BW SELECTION CV LOO TEMPORAL FOR DISCONTINUOUS NKDE
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 //' @title The worker function to calculate discontinuous TNKDE likelihood cv
-//' @name esd_kernel_loo_tnkde
+//' @name esd_kernel_loo_tnkde_old
 //' @description The worker function to calculate discontinuous TNKDE likelihood cv (INTERNAL)
 //' @param kernel_func a cpp pointer function (selected with the kernel name)
 //' @param edge_mat matrix, to find the id of each edge given two neighbours.
@@ -311,14 +312,14 @@ arma::cube ess_kernel_loo_tnkde(fptros kernel_func, arma::sp_mat& edge_mat,
 //' @param max_depth the maximum recursion depth
 //' @return a cube with the impact of the event v on each other event for
 //' each pair of bandwidths (cube(bws_net, bws_time, events))
-arma::cube esd_kernel_loo_tnkde(fptros kernel_func, arma::sp_mat& edge_mat,
-                                 NumericVector& events,
-                                 NumericVector& events_wid,
-                                 NumericVector& time_events,
-                                 List& neighbour_list,
+arma::cube esd_kernel_loo_tnkde(fptros kernel_func, arma::sp_imat &edge_mat,
+                                 NumericVector &events,
+                                 NumericVector &events_wid,
+                                 NumericVector &time_events,
+                                 List &neighbour_list,
                                  int v, int wid, double v_time,
-                                 arma::vec bws_net, arma::vec bws_time,
-                                 NumericVector& line_weights, int max_depth){
+                                 arma::vec &bws_net, arma::vec &bws_time,
+                                 NumericVector &line_weights, int max_depth){
 
   //step0 : generate the queue
   int depth = 0;
@@ -364,6 +365,7 @@ arma::cube esd_kernel_loo_tnkde(fptros kernel_func, arma::sp_mat& edge_mat,
     //unpacking (imagine some loop unrolling here with a function to deal with.)
     List cas = data_holder.front();
     data_holder.pop();
+
     int v = cas["v"];
     int depth = cas["depth"];
     double d = cas["d"];
@@ -441,32 +443,33 @@ arma::cube esd_kernel_loo_tnkde(fptros kernel_func, arma::sp_mat& edge_mat,
 
 
 //' @title The worker function to calculate discontinuous TNKDE likelihood cv (adaptive case)
- //' @name esd_kernel_loo_tnkde
- //' @description The worker function to calculate discontinuous TNKDE likelihood cv (INTERNAL)
- //' @param kernel_func a cpp pointer function (selected with the kernel name)
- //' @param edge_mat matrix, to find the id of each edge given two neighbours.
- //' @param events a NumericVector indicating the nodes in the graph being events
- //' @param time_events a NumericVector indicating the timestamp of each event
- //' @param neighbour_list a List, giving for each node an IntegerVector with
- //' its neighbours
- //' @param v the actual node to consider (int)
- //' @param v_time the time of v (double)
- //' @param bws_net an arma::mat with the network bandwidths to consider
- //' @param bws_time an arma::mat with the time bandwidths to consider
- //' @param line_weights a vector with the length of the edges
- //' @param depth the actual recursion depth
- //' @param max_depth the maximum recursion depth
- //' @return a cube with the impact of the event v on each other event for
- //' each pair of bandwidths (cube(bws_net, bws_time, events))
- arma::cube esd_kernel_loo_tnkde_adpt(fptros kernel_func, arma::sp_mat& edge_mat,
-                                 NumericVector& events,
-                                 NumericVector& events_wid,
-                                 NumericVector& time_events,
+//' @name esd_kernel_loo_tnkde
+//' @description The worker function to calculate discontinuous TNKDE likelihood cv (INTERNAL)
+//' @param kernel_func a cpp pointer function (selected with the kernel name)
+//' @param edge_mat matrix, to find the id of each edge given two neighbours.
+//' @param events a NumericVector indicating the nodes in the graph being events
+//' @param time_events a NumericVector indicating the timestamp of each event
+//' @param neighbour_list a List, giving for each node an IntegerVector with
+//' its neighbours
+//' @param v the actual node to consider (int)
+//' @param v_time the time of v (double)
+//' @param bws_net an arma::mat with the network bandwidths to consider
+//' @param bws_time an arma::mat with the time bandwidths to consider
+//' @param line_weights a vector with the length of the edges
+//' @param depth the actual recursion depth
+//' @param max_depth the maximum recursion depth
+//' @return a cube with the impact of the event v on each other event for
+//' each pair of bandwidths (cube(bws_net, bws_time, events))
+//' @keywords internal
+ arma::cube esd_kernel_loo_tnkde_adpt(fptros kernel_func, arma::sp_imat &edge_mat,
+                                 NumericVector &events,
+                                 NumericVector &events_wid,
+                                 NumericVector &time_events,
                                  List& neighbour_list,
                                  int v, int wid, double v_time,
-                                 arma::mat bws_net,
-                                 arma::mat bws_time,
-                                 NumericVector& line_weights, int max_depth){
+                                 arma::mat &bws_net,
+                                 arma::mat &bws_time,
+                                 NumericVector &line_weights, int max_depth){
 
    //step0 : generate the queue
    int depth = 0;
@@ -628,14 +631,14 @@ arma::cube esd_kernel_loo_tnkde(fptros kernel_func, arma::sp_mat& edge_mat,
 //' @param max_depth the maximum recursion depth
 //' @return a cube with the impact of the event v on each other event for
 //' each pair of bandwidths (cube(bws_net, bws_time, events))
-arma::cube esc_kernel_loo_tnkde(fptros kernel_func, arma::sp_mat& edge_mat,
-                                 NumericVector& events,
-                                 NumericVector& events_wid,
-                                 NumericVector& time_events,
-                                 List& neighbour_list,
+arma::cube esc_kernel_loo_tnkde(fptros kernel_func, arma::sp_imat &edge_mat,
+                                 NumericVector &events,
+                                 NumericVector &events_wid,
+                                 NumericVector &time_events,
+                                 List &neighbour_list,
                                  int v, int wid, double v_time,
-                                 arma::vec bws_net, arma::vec bws_time,
-                                 NumericVector& line_weights, int max_depth){
+                                 arma::vec &bws_net, arma::vec &bws_time,
+                                 NumericVector &line_weights, int max_depth){
   //step0 : generate the queue
   int depth = 0;
   struct acase{
@@ -696,11 +699,11 @@ arma::cube esc_kernel_loo_tnkde(fptros kernel_func, arma::sp_mat& edge_mat,
     //unpacking (imagine some loop unrolling here with a function to deal with.)
     acase cas = data_holder.back();
     data_holder.pop_back();
-    int v = cas.v;
-    int prev_node = cas.prev_node;
-    int depth = cas.depth;
-    double d = cas.d;
-    double alpha = cas.alpha;
+    // int v = cas.v;
+    // int prev_node = cas.prev_node;
+    // int depth = cas.depth;
+    // double d = cas.d;
+    // double alpha = cas.alpha;
 
     //Rcout << "v_old is : "<< prev_node <<"\n";
     //Rcout << "v is : "<< v <<"\n";
@@ -711,14 +714,14 @@ arma::cube esc_kernel_loo_tnkde(fptros kernel_func, arma::sp_mat& edge_mat,
     // we will update the densities on v
     // but only if v is a vertex on wich I can find an event
 
-    std::vector<int> index = get_all_indeces(events,v);
+    std::vector<int> index = get_all_indeces(events,cas.v);
 
     // NOTE : WE SHOULD FIRST CALCULATE THE COMPLETE NKDE DENSITY CAUSED BY AN EVENT
     // AND ONLY AFTER MULTIPLYING IT WITH THE TIME DENSITY
     if(index.size() >0 ){
       for(int ii = 0; ii < bws_net.n_elem ; ii++){
         bw_net = bws_net(ii);
-        double kernel_net =  kernel_func(d,bw_net) * alpha;
+        double kernel_net =  kernel_func(cas.d,bw_net) * alpha;
         // NOTE : we are not doing the bw scaling here but later
         for (int zz : index){
           net_k_values(zz,ii) = net_k_values(zz,ii) + kernel_net;
@@ -727,16 +730,16 @@ arma::cube esc_kernel_loo_tnkde(fptros kernel_func, arma::sp_mat& edge_mat,
     }
 
     // we can now prepare the next steps
-    if(max_bw_net >= d){
-      IntegerVector v_neighbours = neighbour_list[v-1];
+    if(max_bw_net >= cas.d){
+      IntegerVector v_neighbours = neighbour_list[cas.v-1];
       int n = v_neighbours.length();
       int new_depth;
 
       //updating depth
       if(n>2){
-        new_depth = depth+1;
+        new_depth = cas.depth+1;
       }else{
-        new_depth = depth;
+        new_depth = cas.depth;
       }
 
       if(n>1){
@@ -746,23 +749,20 @@ arma::cube esc_kernel_loo_tnkde(fptros kernel_func, arma::sp_mat& edge_mat,
           for(int j = 0; j < n ; j++){
             // ---- first, the simple case, we are not going back ----
             int v2 = v_neighbours[j];
-            int l2 = edge_mat(v,v2);
-            double d2 = d + line_weights[l2-1];
+            int l2 = edge_mat(cas.v,v2);
+            double d2 = cas.d + line_weights[l2-1];
             // first case, we must back fire
-            if(v2 == prev_node){
+            if(v2 == cas.prev_node){
               if(n>2){
                 double p2 = (2.0-n)/n;
                 double new_alpha = alpha * p2;
-                acase new_case = {v2,v,new_depth,d2,new_alpha};
-                //Rcout << "  adding this cas : d="<<d2<<", v2="<<v2<<", v3="<<v3<<", l2="<<l2<<" alpha="<<new_alpha<<"\n";
-                //data_holder.push(new_case);
-                data_holder.push_back(new_case);
+                //data_holder.push_back(new_case);
+                data_holder.push_back((struct acase){v2,cas.v,new_depth,d2,new_alpha});
               }
             }else{
               double new_alpha = alpha * (2.0/n);
-              acase new_case = {v2,v,new_depth,d2,new_alpha};
-              //Rcout << "  adding this cas : d="<<d2<<", v2="<<v2<<", v3="<<v3<<", l2="<<l2<<" alpha="<<new_alpha<<"\n";
-              data_holder.push_back(new_case);
+              //data_holder.push_back(new_case);
+              data_holder.push_back((struct acase){v2,cas.v,new_depth,d2,new_alpha});
             }
           }
         }
@@ -813,32 +813,33 @@ arma::cube esc_kernel_loo_tnkde(fptros kernel_func, arma::sp_mat& edge_mat,
 }
 
 //' @title The worker function to calculate continuous TNKDE likelihood cv (adaptive case)
- //' @name esc_kernel_loo_tnkde_adpt
- //' @description The worker function to calculate continuous TNKDE likelihood cv (INTERNAL)
- //' @param kernel_func a cpp pointer function (selected with the kernel name)
- //' @param edge_mat matrix, to find the id of each edge given two neighbours.
- //' @param events a NumericVector indicating the nodes in the graph being events
- //' @param time_events a NumericVector indicating the timestamp of each event
- //' @param neighbour_list a List, giving for each node an IntegerVector with
- //' its neighbours
- //' @param v the actual node to consider (int)
- //' @param v_time the time of v (double)
- //' @param bws_net an arma::mat with the network bandwidths to consider
- //' @param bws_time an arma::mat with the time bandwidths to consider
- //' @param line_weights a vector with the length of the edges
- //' @param depth the actual recursion depth
- //' @param max_depth the maximum recursion depth
- //' @return a cube with the impact of the event v on each other event for
- //' each pair of bandwidths (cube(bws_net, bws_time, events))
- arma::cube esc_kernel_loo_tnkde_adpt(fptros kernel_func, arma::sp_mat& edge_mat,
-                                 NumericVector& events,
-                                 NumericVector& events_wid,
-                                 NumericVector& time_events,
-                                 List& neighbour_list,
+//' @name esc_kernel_loo_tnkde_adpt
+//' @description The worker function to calculate continuous TNKDE likelihood cv (INTERNAL)
+//' @param kernel_func a cpp pointer function (selected with the kernel name)
+//' @param edge_mat matrix, to find the id of each edge given two neighbours.
+//' @param events a NumericVector indicating the nodes in the graph being events
+//' @param time_events a NumericVector indicating the timestamp of each event
+//' @param neighbour_list a List, giving for each node an IntegerVector with
+//' its neighbours
+//' @param v the actual node to consider (int)
+//' @param v_time the time of v (double)
+//' @param bws_net an arma::mat with the network bandwidths to consider
+//' @param bws_time an arma::mat with the time bandwidths to consider
+//' @param line_weights a vector with the length of the edges
+//' @param depth the actual recursion depth
+//' @param max_depth the maximum recursion depth
+//' @return a cube with the impact of the event v on each other event for
+//' each pair of bandwidths (cube(bws_net, bws_time, events))
+//' @keywords internal
+ arma::cube esc_kernel_loo_tnkde_adpt(fptros kernel_func, arma::sp_imat &edge_mat,
+                                 NumericVector &events,
+                                 NumericVector &events_wid,
+                                 NumericVector &time_events,
+                                 List &neighbour_list,
                                  int v, int wid, double v_time,
-                                 arma::mat bws_net,
-                                 arma::mat bws_time,
-                                 NumericVector& line_weights, int max_depth){
+                                 arma::mat &bws_net,
+                                 arma::mat &bws_time,
+                                 NumericVector &line_weights, int max_depth){
    //step0 : generate the queue
    int depth = 0;
    struct acase{
@@ -1078,8 +1079,8 @@ arma::cube tnkde_get_loo_values(std::string method, List neighbour_list,
   arma::cube base_k(bws_net.n_elem, bws_time.n_elem, sel_events.length());
 
   //calculer la matrice des lignes
-  //IntegerMatrix edge_mat = make_matrix(line_list,neighbour_list);
-  arma::sp_mat edge_mat = make_matrix_sparse(line_list,neighbour_list);
+  //arma::sp_mat edge_mat = make_matrix_sparse(line_list,neighbour_list);
+  arma::sp_imat edge_mat = make_imatrix_sparse(line_list, neighbour_list);
   arma::cube k;
   //step2 : iterer sur chaque event de la zone d'etude
   int cnt_e = events.length()-1;
@@ -1143,30 +1144,30 @@ arma::cube tnkde_get_loo_values(std::string method, List neighbour_list,
 
 
 //' @title The exposed function to calculate TNKDE likelihood cv
- //' @name tnkde_get_loo_values2
- //' @description The exposed function to calculate TNKDE likelihood cv (INTERNAL) when an adaptive bandwidth is used
- //' @param method a string, one of "simple", "continuous", "discontinuous"
- //' @param neighbour_list a List, giving for each node an IntegerVector with
- //' its neighbours
- //' @param sel_events a Numeric vector indicating the selected events (id of nodes)
- //' @param sel_events_wid a Numeric Vector indicating the unique if of the selected events
- //' @param sel_events_time a Numeric Vector indicating the time of the selected events
- //' @param events a NumericVector indicating the nodes in the graph being events
- //' @param events_wid a NumericVector indicating the unique id of all the events
- //' @param events_time a NumericVector indicating the timestamp of each event
- //' @param weights a cube with the weights associated with each event for each
- //' bws_net and bws_time.
- //' @param bws_net an arma::cube of three dimensions with the network bandwidths calculated for each observation for each global time and network bandwidths
- //' @param bws_time an arma::cube of three dimensions with the time bandwidths calculated for each observation for each global time and network bandwidths
- //' @param kernel_name a string with the name of the kernel to use
- //' @param line_list a DataFrame describing the lines
- //' @param max_depth the maximum recursion depth
- //' @param min_tol a double indicating by how much 0 in density values must be replaced
- //' @return a matrix with the CV score for each pair of global bandiwdths
- //' @export
- //' @examples
- //' # no example provided, this is an internal function
- // [[Rcpp::export]]
+//' @name tnkde_get_loo_values2
+//' @description The exposed function to calculate TNKDE likelihood cv (INTERNAL) when an adaptive bandwidth is used
+//' @param method a string, one of "simple", "continuous", "discontinuous"
+//' @param neighbour_list a List, giving for each node an IntegerVector with
+//' its neighbours
+//' @param sel_events a Numeric vector indicating the selected events (id of nodes)
+//' @param sel_events_wid a Numeric Vector indicating the unique if of the selected events
+//' @param sel_events_time a Numeric Vector indicating the time of the selected events
+//' @param events a NumericVector indicating the nodes in the graph being events
+//' @param events_wid a NumericVector indicating the unique id of all the events
+//' @param events_time a NumericVector indicating the timestamp of each event
+//' @param weights a cube with the weights associated with each event for each
+//' bws_net and bws_time.
+//' @param bws_net an arma::cube of three dimensions with the network bandwidths calculated for each observation for each global time and network bandwidths
+//' @param bws_time an arma::cube of three dimensions with the time bandwidths calculated for each observation for each global time and network bandwidths
+//' @param kernel_name a string with the name of the kernel to use
+//' @param line_list a DataFrame describing the lines
+//' @param max_depth the maximum recursion depth
+//' @param min_tol a double indicating by how much 0 in density values must be replaced
+//' @return a matrix with the CV score for each pair of global bandiwdths
+//' @export
+//' @examples
+//' # no example provided, this is an internal function
+// [[Rcpp::export]]
  arma::cube tnkde_get_loo_values2(std::string method, List neighbour_list,
                                  NumericVector sel_events, NumericVector sel_events_wid, NumericVector sel_events_time,
                                  NumericVector events, NumericVector events_wid, NumericVector events_time,
@@ -1186,8 +1187,8 @@ arma::cube tnkde_get_loo_values(std::string method, List neighbour_list,
    arma::cube base_k(bws_net.n_rows, bws_time.n_cols, sel_events.length());
 
    //calculer la matrice des lignes
-   //IntegerMatrix edge_mat = make_matrix(line_list,neighbour_list);
-   arma::sp_mat edge_mat = make_matrix_sparse(line_list,neighbour_list);
+   //arma::sp_mat edge_mat = make_matrix_sparse(line_list,neighbour_list);
+   arma::sp_imat edge_mat = make_imatrix_sparse(line_list, neighbour_list);
    arma::cube k;
    // Rcout << "Here is the neighbours wids : \n";
    // Rcout << events_wid << "\n\n";
@@ -1310,8 +1311,8 @@ arma::rowvec adaptive_bw_tnkde_cpp(std::string method,
   arma::cube base_k(bws_time.n_elem, bws_net.n_elem, sel_events.length());
 
   //calculer la matrice des lignes
-  //IntegerMatrix edge_mat = make_matrix(line_list,neighbour_list);
-  arma::sp_mat edge_mat = make_matrix_sparse(line_list,neighbour_list);
+  //arma::sp_mat edge_mat = make_matrix_sparse(line_list,neighbour_list);
+  arma::sp_imat edge_mat = make_imatrix_sparse(line_list, neighbour_list);
   arma::cube k;
   //step2 : iterer sur chaque event de la zone d'etude
   int cnt_e = events.length()-1;
@@ -1363,30 +1364,30 @@ arma::rowvec adaptive_bw_tnkde_cpp(std::string method,
 
 
 //' @title The exposed function to calculate adaptive bandwidth with space-time
- //' interaction for TNKDE (INTERNAL)
- //' @name adaptive_bw_tnkde_cpp2
- //' @param method a string, one of "simple", "continuous", "discontinuous"
- //' @param neighbour_list a List, giving for each node an IntegerVector with
- //' its neighbours
- //' @param sel_events a Numeric vector indicating the selected events (id of nodes)
- //' @param sel_events_wid a Numeric Vector indicating the unique if of the selected events
- //' @param sel_events_time a Numeric Vector indicating the time of the selected events
- //' @param events a NumericVector indicating the nodes in the graph being events
- //' @param events_wid a NumericVector indicating the unique id of all the events
- //' @param events_time a NumericVector indicating the timestamp of each event
- //' @param weights a cube with the weights associated with each event for each
- //' bws_net and bws_time.
- //' @param bws_net an arma::vec with the network bandwidths to consider
- //' @param bws_time an arma::vec with the time bandwidths to consider
- //' @param kernel_name a string with the name of the kernel to use
- //' @param line_list a DataFrame describing the lines
- //' @param max_depth the maximum recursion depth
- //' @param min_tol a double indicating by how much 0 in density values must be replaced
- //' @return a vector with the estimated density at each event location
- //' @export
- //' @examples
- //' # no example provided, this is an internal function
- // [[Rcpp::export]]
+//' interaction for TNKDE (INTERNAL)
+//' @name adaptive_bw_tnkde_cpp2
+//' @param method a string, one of "simple", "continuous", "discontinuous"
+//' @param neighbour_list a List, giving for each node an IntegerVector with
+//' its neighbours
+//' @param sel_events a Numeric vector indicating the selected events (id of nodes)
+//' @param sel_events_wid a Numeric Vector indicating the unique if of the selected events
+//' @param sel_events_time a Numeric Vector indicating the time of the selected events
+//' @param events a NumericVector indicating the nodes in the graph being events
+//' @param events_wid a NumericVector indicating the unique id of all the events
+//' @param events_time a NumericVector indicating the timestamp of each event
+//' @param weights a cube with the weights associated with each event for each
+//' bws_net and bws_time.
+//' @param bws_net an arma::vec with the network bandwidths to consider
+//' @param bws_time an arma::vec with the time bandwidths to consider
+//' @param kernel_name a string with the name of the kernel to use
+//' @param line_list a DataFrame describing the lines
+//' @param max_depth the maximum recursion depth
+//' @param min_tol a double indicating by how much 0 in density values must be replaced
+//' @return a vector with the estimated density at each event location
+//' @export
+//' @examples
+//' # no example provided, this is an internal function
+// [[Rcpp::export]]
  arma::cube adaptive_bw_tnkde_cpp2(std::string method,
                                     List neighbour_list,
                                     NumericVector sel_events,
@@ -1414,8 +1415,8 @@ arma::rowvec adaptive_bw_tnkde_cpp(std::string method,
    arma::cube base_k(bws_net.n_elem, bws_time.n_elem, sel_events.length());
    // Rcout << "step3\n";
    //calculer la matrice des lignes
-   //IntegerMatrix edge_mat = make_matrix(line_list,neighbour_list);
-   arma::sp_mat edge_mat = make_matrix_sparse(line_list,neighbour_list);
+   //arma::sp_mat edge_mat = make_matrix_sparse(line_list,neighbour_list);
+   arma::sp_imat edge_mat = make_imatrix_sparse(line_list, neighbour_list);
    arma::cube k;
    // Rcout << "step3\n";
    //step2 : iterer sur chaque event de la zone d'etude

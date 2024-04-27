@@ -18,8 +18,8 @@
 //' @param bw the kernel bandiwdth
 //' @param line_weights a vector with the length of the edges
 //' @param samples_edgeid a vector associating each sample to an edge
-//' @param samples_coords a matrix with the X and Y coordinates of the samples
-//' @param nodes_coords a matrix with the X and Y coordinates of the nodes
+ //' @param samples_coords a matrix with the X and Y coordinates of the samples
+ //' @param nodes_coords a matrix with the X and Y coordinates of the nodes
 //' @param depth the actual recursion depth
 //' @param max_depth the maximum recursion depth
 //' @return a vector with the kernel values calculated for each samples from

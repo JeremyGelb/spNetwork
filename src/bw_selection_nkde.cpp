@@ -25,13 +25,13 @@
 //' @return a matrix with the impact of the event v on each other events for
 //' each pair of bandwidths (mat(event, bws_net))
 //' @keywords internal
-arma::mat ess_kernel_loo_nkde(fptros kernel_func, arma::sp_mat& edge_mat,
-                                NumericVector& events,
-                                NumericVector& events_wid,
-                                List& neighbour_list,
+arma::mat ess_kernel_loo_nkde(fptros kernel_func, arma::sp_imat &edge_mat,
+                                NumericVector &events,
+                                NumericVector &events_wid,
+                                List &neighbour_list,
                                 int v, int wid,
-                                arma::rowvec bws_net,
-                                NumericVector& line_weights, int max_depth){
+                                arma::rowvec &bws_net,
+                                NumericVector &line_weights, int max_depth){
 
   //step0 : generate the queue
   int depth = 0;
@@ -50,6 +50,9 @@ arma::mat ess_kernel_loo_nkde(fptros kernel_func, arma::sp_mat& edge_mat,
   double bw_net;
 
   //lancement des iterations
+
+  // NB : no speed gained here by using a struc or reducing the number of variable declaration
+
   while(data_holder.empty()==FALSE){
     //unpacking (imagine some loop unrolling here with a function to deal with.)
     List cas = data_holder.front();
@@ -130,7 +133,7 @@ arma::mat ess_kernel_loo_nkde(fptros kernel_func, arma::sp_mat& edge_mat,
 //' @param max_depth the maximum recursion depth
 //' @return a cube with the impact of the event v on each other events for
 //' each pair of bandwidths (cube(bws_net, bws_time, events))
-arma::mat esd_kernel_loo_nkde(fptros kernel_func, arma::sp_mat& edge_mat,
+arma::mat esd_kernel_loo_nkde(fptros kernel_func, arma::sp_imat& edge_mat,
                                 NumericVector& events,
                                 NumericVector& events_wid,
                                 List& neighbour_list,
@@ -253,7 +256,7 @@ arma::mat esd_kernel_loo_nkde(fptros kernel_func, arma::sp_mat& edge_mat,
 //' @param max_depth the maximum recursion depth
 //' @return a cube with the impact of the event v on each other events for
 //' each pair of bandwidths (cube(bws_net, bws_time, events))
-arma::mat esc_kernel_loo_nkde(fptros kernel_func, arma::sp_mat& edge_mat,
+arma::mat esc_kernel_loo_nkde(fptros kernel_func, arma::sp_imat& edge_mat,
                                 NumericVector& events,
                                 NumericVector& events_wid,
                                 List& neighbour_list,
@@ -414,7 +417,7 @@ arma::mat nkde_get_loo_values(std::string method, List neighbour_list,
 
   //calculer la matrice des lignes
   //IntegerMatrix edge_mat = make_matrix(line_list,neighbour_list);
-  arma::sp_mat edge_mat = make_matrix_sparse(line_list,neighbour_list);
+  arma::sp_imat edge_mat = make_imatrix_sparse(line_list, neighbour_list);
   arma::mat k;
   //step2 : iterer sur chaque event de la zone d'etude
   int cnt_e = events.length()-1;
