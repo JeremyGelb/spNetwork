@@ -17,7 +17,7 @@ calc_isochrones(
 \arguments{
 \item{lines}{A feature collection of lines representing the edges of the network}
 
-\item{dists}{A vector of the size of the desired isochrones}
+\item{dists}{A vector of the size of the desired isochrones. Can also be a list of vector
 when each start point must have its own distances. If so, the length of the list must be equal
 to the number of rows in start_points.}
 
