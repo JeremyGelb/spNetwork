@@ -22,12 +22,16 @@
 //' @export
 //' @keywords internal
 // [[Rcpp::export]]
-List corrfactor_discontinuous_sparse(List neighbour_list, NumericVector events, DataFrame line_list, NumericVector bws, int max_depth){
+List corrfactor_discontinuous_sparse(List &neighbour_list,
+                                     IntegerVector &events,
+                                     DataFrame &line_list,
+                                     NumericVector &bws,
+                                     int max_depth){
 
   //extraire le poids des lignes
   arma::vec line_weights =  as<arma::vec>(line_list["weight"]);
   //preparer la matrice de voisinage
-  arma::sp_mat edge_mat = make_matrix_sparse(line_list,neighbour_list);
+  arma::sp_imat edge_mat = make_imatrix_sparse(line_list,neighbour_list);
   //preparer la list de DataFrame en sortie
   List list_df;
 
@@ -132,7 +136,11 @@ List corrfactor_discontinuous_sparse(List neighbour_list, NumericVector events, 
 //' @export
 //' @keywords internal
 // [[Rcpp::export]]
-List corrfactor_discontinuous(List neighbour_list, NumericVector events, DataFrame line_list, NumericVector bws, int max_depth){
+List corrfactor_discontinuous(List &neighbour_list,
+                              IntegerVector &events,
+                              DataFrame &line_list,
+                              NumericVector &bws,
+                              int max_depth){
 
   //extraire le poids des lignes
   arma::vec line_weights =  as<arma::vec>(line_list["weight"]);
@@ -246,12 +254,16 @@ List corrfactor_discontinuous(List neighbour_list, NumericVector events, DataFra
 //' @export
 //' @keywords internal
 // [[Rcpp::export]]
-List corrfactor_continuous_sparse(List neighbour_list, NumericVector events, DataFrame line_list, NumericVector bws, int max_depth){
+List corrfactor_continuous_sparse(List &neighbour_list,
+                                  IntegerVector &events,
+                                  DataFrame &line_list,
+                                  NumericVector &bws,
+                                  int max_depth){
 
   //extraire le poids des lignes
   arma::vec line_weights =  as<arma::vec>(line_list["weight"]);
   //preparer la matrice de voisinage
-  arma::sp_mat edge_mat = make_matrix_sparse(line_list,neighbour_list);
+  arma::sp_imat edge_mat = make_imatrix_sparse(line_list,neighbour_list);
   //preparer la list de DataFrame en sortie
   List list_df;
 
@@ -377,7 +389,11 @@ List corrfactor_continuous_sparse(List neighbour_list, NumericVector events, Dat
 //' @export
 //' @keywords internal
 // [[Rcpp::export]]
-List corrfactor_continuous(List neighbour_list, NumericVector events, DataFrame line_list, NumericVector bws, int max_depth){
+List corrfactor_continuous(List &neighbour_list,
+                           IntegerVector &events,
+                           DataFrame &line_list,
+                           NumericVector &bws,
+                           int max_depth){
 
   //extraire le poids des lignes
   arma::vec line_weights =  as<arma::vec>(line_list["weight"]);

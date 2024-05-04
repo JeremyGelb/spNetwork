@@ -133,13 +133,13 @@ arma::mat ess_kernel_loo_nkde(fptros kernel_func, arma::sp_imat &edge_mat,
 //' @param max_depth the maximum recursion depth
 //' @return a cube with the impact of the event v on each other events for
 //' each pair of bandwidths (cube(bws_net, bws_time, events))
-arma::mat esd_kernel_loo_nkde(fptros kernel_func, arma::sp_imat& edge_mat,
-                                IntegerVector& events,
-                                IntegerVector& events_wid,
-                                List& neighbour_list,
+arma::mat esd_kernel_loo_nkde(fptros kernel_func, arma::sp_imat &edge_mat,
+                                IntegerVector &events,
+                                IntegerVector &events_wid,
+                                List &neighbour_list,
                                 int v, int wid,
-                                arma::rowvec bws_net,
-                                NumericVector& line_weights, int max_depth){
+                                arma::rowvec &bws_net,
+                                NumericVector &line_weights, int max_depth){
 
   //step0 : generate the queue
   int depth = 0;
@@ -256,13 +256,13 @@ arma::mat esd_kernel_loo_nkde(fptros kernel_func, arma::sp_imat& edge_mat,
 //' @param max_depth the maximum recursion depth
 //' @return a cube with the impact of the event v on each other events for
 //' each pair of bandwidths (cube(bws_net, bws_time, events))
-arma::mat esc_kernel_loo_nkde(fptros kernel_func, arma::sp_imat& edge_mat,
-                                IntegerVector& events,
-                                IntegerVector& events_wid,
-                                List& neighbour_list,
+arma::mat esc_kernel_loo_nkde(fptros kernel_func, arma::sp_imat &edge_mat,
+                                IntegerVector &events,
+                                IntegerVector &events_wid,
+                                List &neighbour_list,
                                 int v, int wid,
-                                arma::rowvec bws_net,
-                                NumericVector& line_weights, int max_depth){
+                                arma::rowvec &bws_net,
+                                NumericVector &line_weights, int max_depth){
   //step0 : generate the queue
   int depth = 0;
   struct acase{
@@ -399,14 +399,14 @@ arma::mat esc_kernel_loo_nkde(fptros kernel_func, arma::sp_imat& edge_mat,
 //' @examples
 //' # no example provided, this is an internal function
 // [[Rcpp::export]]
-arma::mat nkde_get_loo_values(std::string method, List neighbour_list,
-                               IntegerVector sel_events,
-                               IntegerVector sel_events_wid,
-                               IntegerVector events,
-                               IntegerVector events_wid,
-                               arma::mat weights,
-                               arma::mat bws_net, std::string kernel_name,
-                               DataFrame line_list, int max_depth, bool cvl){
+arma::mat nkde_get_loo_values(std::string method, List &neighbour_list,
+                               IntegerVector &sel_events,
+                               IntegerVector &sel_events_wid,
+                               IntegerVector &events,
+                               IntegerVector &events_wid,
+                               arma::mat &weights,
+                               arma::mat &bws_net, std::string kernel_name,
+                               DataFrame &line_list, int max_depth, bool cvl){
 
   //selecting the kernel function
   fptros kernel_func = select_kernelos(kernel_name);

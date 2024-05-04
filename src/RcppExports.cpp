@@ -241,81 +241,81 @@ BEGIN_RCPP
 END_RCPP
 }
 // corrfactor_discontinuous_sparse
-List corrfactor_discontinuous_sparse(List neighbour_list, NumericVector events, DataFrame line_list, NumericVector bws, int max_depth);
+List corrfactor_discontinuous_sparse(List& neighbour_list, IntegerVector& events, DataFrame& line_list, NumericVector& bws, int max_depth);
 RcppExport SEXP _spNetwork_corrfactor_discontinuous_sparse(SEXP neighbour_listSEXP, SEXP eventsSEXP, SEXP line_listSEXP, SEXP bwsSEXP, SEXP max_depthSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< List >::type neighbour_list(neighbour_listSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type events(eventsSEXP);
-    Rcpp::traits::input_parameter< DataFrame >::type line_list(line_listSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type bws(bwsSEXP);
+    Rcpp::traits::input_parameter< List& >::type neighbour_list(neighbour_listSEXP);
+    Rcpp::traits::input_parameter< IntegerVector& >::type events(eventsSEXP);
+    Rcpp::traits::input_parameter< DataFrame& >::type line_list(line_listSEXP);
+    Rcpp::traits::input_parameter< NumericVector& >::type bws(bwsSEXP);
     Rcpp::traits::input_parameter< int >::type max_depth(max_depthSEXP);
     rcpp_result_gen = Rcpp::wrap(corrfactor_discontinuous_sparse(neighbour_list, events, line_list, bws, max_depth));
     return rcpp_result_gen;
 END_RCPP
 }
 // corrfactor_discontinuous
-List corrfactor_discontinuous(List neighbour_list, NumericVector events, DataFrame line_list, NumericVector bws, int max_depth);
+List corrfactor_discontinuous(List& neighbour_list, IntegerVector& events, DataFrame& line_list, NumericVector& bws, int max_depth);
 RcppExport SEXP _spNetwork_corrfactor_discontinuous(SEXP neighbour_listSEXP, SEXP eventsSEXP, SEXP line_listSEXP, SEXP bwsSEXP, SEXP max_depthSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< List >::type neighbour_list(neighbour_listSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type events(eventsSEXP);
-    Rcpp::traits::input_parameter< DataFrame >::type line_list(line_listSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type bws(bwsSEXP);
+    Rcpp::traits::input_parameter< List& >::type neighbour_list(neighbour_listSEXP);
+    Rcpp::traits::input_parameter< IntegerVector& >::type events(eventsSEXP);
+    Rcpp::traits::input_parameter< DataFrame& >::type line_list(line_listSEXP);
+    Rcpp::traits::input_parameter< NumericVector& >::type bws(bwsSEXP);
     Rcpp::traits::input_parameter< int >::type max_depth(max_depthSEXP);
     rcpp_result_gen = Rcpp::wrap(corrfactor_discontinuous(neighbour_list, events, line_list, bws, max_depth));
     return rcpp_result_gen;
 END_RCPP
 }
 // corrfactor_continuous_sparse
-List corrfactor_continuous_sparse(List neighbour_list, NumericVector events, DataFrame line_list, NumericVector bws, int max_depth);
+List corrfactor_continuous_sparse(List& neighbour_list, IntegerVector& events, DataFrame& line_list, NumericVector& bws, int max_depth);
 RcppExport SEXP _spNetwork_corrfactor_continuous_sparse(SEXP neighbour_listSEXP, SEXP eventsSEXP, SEXP line_listSEXP, SEXP bwsSEXP, SEXP max_depthSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< List >::type neighbour_list(neighbour_listSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type events(eventsSEXP);
-    Rcpp::traits::input_parameter< DataFrame >::type line_list(line_listSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type bws(bwsSEXP);
+    Rcpp::traits::input_parameter< List& >::type neighbour_list(neighbour_listSEXP);
+    Rcpp::traits::input_parameter< IntegerVector& >::type events(eventsSEXP);
+    Rcpp::traits::input_parameter< DataFrame& >::type line_list(line_listSEXP);
+    Rcpp::traits::input_parameter< NumericVector& >::type bws(bwsSEXP);
     Rcpp::traits::input_parameter< int >::type max_depth(max_depthSEXP);
     rcpp_result_gen = Rcpp::wrap(corrfactor_continuous_sparse(neighbour_list, events, line_list, bws, max_depth));
     return rcpp_result_gen;
 END_RCPP
 }
 // corrfactor_continuous
-List corrfactor_continuous(List neighbour_list, NumericVector events, DataFrame line_list, NumericVector bws, int max_depth);
+List corrfactor_continuous(List& neighbour_list, IntegerVector& events, DataFrame& line_list, NumericVector& bws, int max_depth);
 RcppExport SEXP _spNetwork_corrfactor_continuous(SEXP neighbour_listSEXP, SEXP eventsSEXP, SEXP line_listSEXP, SEXP bwsSEXP, SEXP max_depthSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< List >::type neighbour_list(neighbour_listSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type events(eventsSEXP);
-    Rcpp::traits::input_parameter< DataFrame >::type line_list(line_listSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type bws(bwsSEXP);
+    Rcpp::traits::input_parameter< List& >::type neighbour_list(neighbour_listSEXP);
+    Rcpp::traits::input_parameter< IntegerVector& >::type events(eventsSEXP);
+    Rcpp::traits::input_parameter< DataFrame& >::type line_list(line_listSEXP);
+    Rcpp::traits::input_parameter< NumericVector& >::type bws(bwsSEXP);
     Rcpp::traits::input_parameter< int >::type max_depth(max_depthSEXP);
     rcpp_result_gen = Rcpp::wrap(corrfactor_continuous(neighbour_list, events, line_list, bws, max_depth));
     return rcpp_result_gen;
 END_RCPP
 }
 // nkde_get_loo_values
-arma::mat nkde_get_loo_values(std::string method, List neighbour_list, IntegerVector sel_events, IntegerVector sel_events_wid, IntegerVector events, IntegerVector events_wid, arma::mat weights, arma::mat bws_net, std::string kernel_name, DataFrame line_list, int max_depth, bool cvl);
+arma::mat nkde_get_loo_values(std::string method, List& neighbour_list, IntegerVector& sel_events, IntegerVector& sel_events_wid, IntegerVector& events, IntegerVector& events_wid, arma::mat& weights, arma::mat& bws_net, std::string kernel_name, DataFrame& line_list, int max_depth, bool cvl);
 RcppExport SEXP _spNetwork_nkde_get_loo_values(SEXP methodSEXP, SEXP neighbour_listSEXP, SEXP sel_eventsSEXP, SEXP sel_events_widSEXP, SEXP eventsSEXP, SEXP events_widSEXP, SEXP weightsSEXP, SEXP bws_netSEXP, SEXP kernel_nameSEXP, SEXP line_listSEXP, SEXP max_depthSEXP, SEXP cvlSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::string >::type method(methodSEXP);
-    Rcpp::traits::input_parameter< List >::type neighbour_list(neighbour_listSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type sel_events(sel_eventsSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type sel_events_wid(sel_events_widSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type events(eventsSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type events_wid(events_widSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type weights(weightsSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type bws_net(bws_netSEXP);
+    Rcpp::traits::input_parameter< List& >::type neighbour_list(neighbour_listSEXP);
+    Rcpp::traits::input_parameter< IntegerVector& >::type sel_events(sel_eventsSEXP);
+    Rcpp::traits::input_parameter< IntegerVector& >::type sel_events_wid(sel_events_widSEXP);
+    Rcpp::traits::input_parameter< IntegerVector& >::type events(eventsSEXP);
+    Rcpp::traits::input_parameter< IntegerVector& >::type events_wid(events_widSEXP);
+    Rcpp::traits::input_parameter< arma::mat& >::type weights(weightsSEXP);
+    Rcpp::traits::input_parameter< arma::mat& >::type bws_net(bws_netSEXP);
     Rcpp::traits::input_parameter< std::string >::type kernel_name(kernel_nameSEXP);
-    Rcpp::traits::input_parameter< DataFrame >::type line_list(line_listSEXP);
+    Rcpp::traits::input_parameter< DataFrame& >::type line_list(line_listSEXP);
     Rcpp::traits::input_parameter< int >::type max_depth(max_depthSEXP);
     Rcpp::traits::input_parameter< bool >::type cvl(cvlSEXP);
     rcpp_result_gen = Rcpp::wrap(nkde_get_loo_values(method, neighbour_list, sel_events, sel_events_wid, events, events_wid, weights, bws_net, kernel_name, line_list, max_depth, cvl));
@@ -323,24 +323,24 @@ BEGIN_RCPP
 END_RCPP
 }
 // tnkde_get_loo_values
-arma::cube tnkde_get_loo_values(std::string method, List neighbour_list, IntegerVector sel_events, IntegerVector sel_events_wid, NumericVector sel_events_time, IntegerVector events, IntegerVector events_wid, NumericVector events_time, arma::cube weights, arma::vec bws_net, arma::vec bws_time, std::string kernel_name, DataFrame line_list, int max_depth, double min_tol);
+arma::cube tnkde_get_loo_values(std::string method, List& neighbour_list, IntegerVector& sel_events, IntegerVector& sel_events_wid, NumericVector& sel_events_time, IntegerVector& events, IntegerVector& events_wid, NumericVector& events_time, arma::cube& weights, arma::vec& bws_net, arma::vec& bws_time, std::string kernel_name, DataFrame& line_list, int max_depth, double min_tol);
 RcppExport SEXP _spNetwork_tnkde_get_loo_values(SEXP methodSEXP, SEXP neighbour_listSEXP, SEXP sel_eventsSEXP, SEXP sel_events_widSEXP, SEXP sel_events_timeSEXP, SEXP eventsSEXP, SEXP events_widSEXP, SEXP events_timeSEXP, SEXP weightsSEXP, SEXP bws_netSEXP, SEXP bws_timeSEXP, SEXP kernel_nameSEXP, SEXP line_listSEXP, SEXP max_depthSEXP, SEXP min_tolSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::string >::type method(methodSEXP);
-    Rcpp::traits::input_parameter< List >::type neighbour_list(neighbour_listSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type sel_events(sel_eventsSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type sel_events_wid(sel_events_widSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type sel_events_time(sel_events_timeSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type events(eventsSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type events_wid(events_widSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type events_time(events_timeSEXP);
-    Rcpp::traits::input_parameter< arma::cube >::type weights(weightsSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type bws_net(bws_netSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type bws_time(bws_timeSEXP);
+    Rcpp::traits::input_parameter< List& >::type neighbour_list(neighbour_listSEXP);
+    Rcpp::traits::input_parameter< IntegerVector& >::type sel_events(sel_eventsSEXP);
+    Rcpp::traits::input_parameter< IntegerVector& >::type sel_events_wid(sel_events_widSEXP);
+    Rcpp::traits::input_parameter< NumericVector& >::type sel_events_time(sel_events_timeSEXP);
+    Rcpp::traits::input_parameter< IntegerVector& >::type events(eventsSEXP);
+    Rcpp::traits::input_parameter< IntegerVector& >::type events_wid(events_widSEXP);
+    Rcpp::traits::input_parameter< NumericVector& >::type events_time(events_timeSEXP);
+    Rcpp::traits::input_parameter< arma::cube& >::type weights(weightsSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type bws_net(bws_netSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type bws_time(bws_timeSEXP);
     Rcpp::traits::input_parameter< std::string >::type kernel_name(kernel_nameSEXP);
-    Rcpp::traits::input_parameter< DataFrame >::type line_list(line_listSEXP);
+    Rcpp::traits::input_parameter< DataFrame& >::type line_list(line_listSEXP);
     Rcpp::traits::input_parameter< int >::type max_depth(max_depthSEXP);
     Rcpp::traits::input_parameter< double >::type min_tol(min_tolSEXP);
     rcpp_result_gen = Rcpp::wrap(tnkde_get_loo_values(method, neighbour_list, sel_events, sel_events_wid, sel_events_time, events, events_wid, events_time, weights, bws_net, bws_time, kernel_name, line_list, max_depth, min_tol));
@@ -348,24 +348,24 @@ BEGIN_RCPP
 END_RCPP
 }
 // tnkde_get_loo_values2
-arma::cube tnkde_get_loo_values2(std::string method, List neighbour_list, IntegerVector sel_events, IntegerVector sel_events_wid, NumericVector sel_events_time, IntegerVector events, IntegerVector events_wid, NumericVector events_time, arma::cube weights, arma::cube bws_net, arma::cube bws_time, std::string kernel_name, DataFrame line_list, int max_depth, double min_tol);
+arma::cube tnkde_get_loo_values2(std::string method, List& neighbour_list, IntegerVector& sel_events, IntegerVector& sel_events_wid, NumericVector& sel_events_time, IntegerVector& events, IntegerVector& events_wid, NumericVector& events_time, arma::cube& weights, arma::cube& bws_net, arma::cube& bws_time, std::string kernel_name, DataFrame& line_list, int max_depth, double min_tol);
 RcppExport SEXP _spNetwork_tnkde_get_loo_values2(SEXP methodSEXP, SEXP neighbour_listSEXP, SEXP sel_eventsSEXP, SEXP sel_events_widSEXP, SEXP sel_events_timeSEXP, SEXP eventsSEXP, SEXP events_widSEXP, SEXP events_timeSEXP, SEXP weightsSEXP, SEXP bws_netSEXP, SEXP bws_timeSEXP, SEXP kernel_nameSEXP, SEXP line_listSEXP, SEXP max_depthSEXP, SEXP min_tolSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::string >::type method(methodSEXP);
-    Rcpp::traits::input_parameter< List >::type neighbour_list(neighbour_listSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type sel_events(sel_eventsSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type sel_events_wid(sel_events_widSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type sel_events_time(sel_events_timeSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type events(eventsSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type events_wid(events_widSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type events_time(events_timeSEXP);
-    Rcpp::traits::input_parameter< arma::cube >::type weights(weightsSEXP);
-    Rcpp::traits::input_parameter< arma::cube >::type bws_net(bws_netSEXP);
-    Rcpp::traits::input_parameter< arma::cube >::type bws_time(bws_timeSEXP);
+    Rcpp::traits::input_parameter< List& >::type neighbour_list(neighbour_listSEXP);
+    Rcpp::traits::input_parameter< IntegerVector& >::type sel_events(sel_eventsSEXP);
+    Rcpp::traits::input_parameter< IntegerVector& >::type sel_events_wid(sel_events_widSEXP);
+    Rcpp::traits::input_parameter< NumericVector& >::type sel_events_time(sel_events_timeSEXP);
+    Rcpp::traits::input_parameter< IntegerVector& >::type events(eventsSEXP);
+    Rcpp::traits::input_parameter< IntegerVector& >::type events_wid(events_widSEXP);
+    Rcpp::traits::input_parameter< NumericVector& >::type events_time(events_timeSEXP);
+    Rcpp::traits::input_parameter< arma::cube& >::type weights(weightsSEXP);
+    Rcpp::traits::input_parameter< arma::cube& >::type bws_net(bws_netSEXP);
+    Rcpp::traits::input_parameter< arma::cube& >::type bws_time(bws_timeSEXP);
     Rcpp::traits::input_parameter< std::string >::type kernel_name(kernel_nameSEXP);
-    Rcpp::traits::input_parameter< DataFrame >::type line_list(line_listSEXP);
+    Rcpp::traits::input_parameter< DataFrame& >::type line_list(line_listSEXP);
     Rcpp::traits::input_parameter< int >::type max_depth(max_depthSEXP);
     Rcpp::traits::input_parameter< double >::type min_tol(min_tolSEXP);
     rcpp_result_gen = Rcpp::wrap(tnkde_get_loo_values2(method, neighbour_list, sel_events, sel_events_wid, sel_events_time, events, events_wid, events_time, weights, bws_net, bws_time, kernel_name, line_list, max_depth, min_tol));
@@ -373,24 +373,24 @@ BEGIN_RCPP
 END_RCPP
 }
 // adaptive_bw_tnkde_cpp
-arma::rowvec adaptive_bw_tnkde_cpp(std::string method, List neighbour_list, IntegerVector sel_events, IntegerVector sel_events_wid, NumericVector sel_events_time, IntegerVector events, IntegerVector events_wid, NumericVector events_time, arma::vec weights, arma::vec bws_net, arma::vec bws_time, std::string kernel_name, DataFrame line_list, int max_depth, double min_tol);
+arma::rowvec adaptive_bw_tnkde_cpp(std::string method, List& neighbour_list, IntegerVector& sel_events, IntegerVector& sel_events_wid, NumericVector& sel_events_time, IntegerVector& events, IntegerVector& events_wid, NumericVector& events_time, arma::vec& weights, arma::vec& bws_net, arma::vec& bws_time, std::string kernel_name, DataFrame& line_list, int max_depth, double min_tol);
 RcppExport SEXP _spNetwork_adaptive_bw_tnkde_cpp(SEXP methodSEXP, SEXP neighbour_listSEXP, SEXP sel_eventsSEXP, SEXP sel_events_widSEXP, SEXP sel_events_timeSEXP, SEXP eventsSEXP, SEXP events_widSEXP, SEXP events_timeSEXP, SEXP weightsSEXP, SEXP bws_netSEXP, SEXP bws_timeSEXP, SEXP kernel_nameSEXP, SEXP line_listSEXP, SEXP max_depthSEXP, SEXP min_tolSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::string >::type method(methodSEXP);
-    Rcpp::traits::input_parameter< List >::type neighbour_list(neighbour_listSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type sel_events(sel_eventsSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type sel_events_wid(sel_events_widSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type sel_events_time(sel_events_timeSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type events(eventsSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type events_wid(events_widSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type events_time(events_timeSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type weights(weightsSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type bws_net(bws_netSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type bws_time(bws_timeSEXP);
+    Rcpp::traits::input_parameter< List& >::type neighbour_list(neighbour_listSEXP);
+    Rcpp::traits::input_parameter< IntegerVector& >::type sel_events(sel_eventsSEXP);
+    Rcpp::traits::input_parameter< IntegerVector& >::type sel_events_wid(sel_events_widSEXP);
+    Rcpp::traits::input_parameter< NumericVector& >::type sel_events_time(sel_events_timeSEXP);
+    Rcpp::traits::input_parameter< IntegerVector& >::type events(eventsSEXP);
+    Rcpp::traits::input_parameter< IntegerVector& >::type events_wid(events_widSEXP);
+    Rcpp::traits::input_parameter< NumericVector& >::type events_time(events_timeSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type weights(weightsSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type bws_net(bws_netSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type bws_time(bws_timeSEXP);
     Rcpp::traits::input_parameter< std::string >::type kernel_name(kernel_nameSEXP);
-    Rcpp::traits::input_parameter< DataFrame >::type line_list(line_listSEXP);
+    Rcpp::traits::input_parameter< DataFrame& >::type line_list(line_listSEXP);
     Rcpp::traits::input_parameter< int >::type max_depth(max_depthSEXP);
     Rcpp::traits::input_parameter< double >::type min_tol(min_tolSEXP);
     rcpp_result_gen = Rcpp::wrap(adaptive_bw_tnkde_cpp(method, neighbour_list, sel_events, sel_events_wid, sel_events_time, events, events_wid, events_time, weights, bws_net, bws_time, kernel_name, line_list, max_depth, min_tol));
@@ -398,24 +398,24 @@ BEGIN_RCPP
 END_RCPP
 }
 // adaptive_bw_tnkde_cpp2
-arma::cube adaptive_bw_tnkde_cpp2(std::string method, List neighbour_list, IntegerVector sel_events, IntegerVector sel_events_wid, NumericVector sel_events_time, IntegerVector events, IntegerVector events_wid, NumericVector events_time, arma::vec weights, arma::vec bws_net, arma::vec bws_time, std::string kernel_name, DataFrame line_list, int max_depth, double min_tol);
+arma::cube adaptive_bw_tnkde_cpp2(std::string method, List& neighbour_list, IntegerVector& sel_events, IntegerVector& sel_events_wid, NumericVector& sel_events_time, IntegerVector& events, IntegerVector& events_wid, NumericVector& events_time, arma::vec& weights, arma::vec& bws_net, arma::vec& bws_time, std::string kernel_name, DataFrame& line_list, int max_depth, double min_tol);
 RcppExport SEXP _spNetwork_adaptive_bw_tnkde_cpp2(SEXP methodSEXP, SEXP neighbour_listSEXP, SEXP sel_eventsSEXP, SEXP sel_events_widSEXP, SEXP sel_events_timeSEXP, SEXP eventsSEXP, SEXP events_widSEXP, SEXP events_timeSEXP, SEXP weightsSEXP, SEXP bws_netSEXP, SEXP bws_timeSEXP, SEXP kernel_nameSEXP, SEXP line_listSEXP, SEXP max_depthSEXP, SEXP min_tolSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::string >::type method(methodSEXP);
-    Rcpp::traits::input_parameter< List >::type neighbour_list(neighbour_listSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type sel_events(sel_eventsSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type sel_events_wid(sel_events_widSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type sel_events_time(sel_events_timeSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type events(eventsSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type events_wid(events_widSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type events_time(events_timeSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type weights(weightsSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type bws_net(bws_netSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type bws_time(bws_timeSEXP);
+    Rcpp::traits::input_parameter< List& >::type neighbour_list(neighbour_listSEXP);
+    Rcpp::traits::input_parameter< IntegerVector& >::type sel_events(sel_eventsSEXP);
+    Rcpp::traits::input_parameter< IntegerVector& >::type sel_events_wid(sel_events_widSEXP);
+    Rcpp::traits::input_parameter< NumericVector& >::type sel_events_time(sel_events_timeSEXP);
+    Rcpp::traits::input_parameter< IntegerVector& >::type events(eventsSEXP);
+    Rcpp::traits::input_parameter< IntegerVector& >::type events_wid(events_widSEXP);
+    Rcpp::traits::input_parameter< NumericVector& >::type events_time(events_timeSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type weights(weightsSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type bws_net(bws_netSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type bws_time(bws_timeSEXP);
     Rcpp::traits::input_parameter< std::string >::type kernel_name(kernel_nameSEXP);
-    Rcpp::traits::input_parameter< DataFrame >::type line_list(line_listSEXP);
+    Rcpp::traits::input_parameter< DataFrame& >::type line_list(line_listSEXP);
     Rcpp::traits::input_parameter< int >::type max_depth(max_depthSEXP);
     Rcpp::traits::input_parameter< double >::type min_tol(min_tolSEXP);
     rcpp_result_gen = Rcpp::wrap(adaptive_bw_tnkde_cpp2(method, neighbour_list, sel_events, sel_events_wid, sel_events_time, events, events_wid, events_time, weights, bws_net, bws_time, kernel_name, line_list, max_depth, min_tol));

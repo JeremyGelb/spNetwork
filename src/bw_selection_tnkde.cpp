@@ -1061,16 +1061,18 @@ arma::cube esc_kernel_loo_tnkde(fptros kernel_func, arma::sp_imat &edge_mat,
 //' @examples
 //' # no example provided, this is an internal function
 // [[Rcpp::export]]
-arma::cube tnkde_get_loo_values(std::string method, List neighbour_list,
-                               IntegerVector sel_events,
-                               IntegerVector sel_events_wid,
-                               NumericVector sel_events_time,
-                               IntegerVector events,
-                               IntegerVector events_wid,
-                               NumericVector events_time,
-                               arma::cube weights,
-                               arma::vec bws_net, arma::vec bws_time, std::string kernel_name,
-                               DataFrame line_list, int max_depth, double min_tol){
+arma::cube tnkde_get_loo_values(std::string method, List &neighbour_list,
+                               IntegerVector &sel_events,
+                               IntegerVector &sel_events_wid,
+                               NumericVector &sel_events_time,
+                               IntegerVector &events,
+                               IntegerVector &events_wid,
+                               NumericVector &events_time,
+                               arma::cube &weights,
+                               arma::vec &bws_net,
+                               arma::vec &bws_time,
+                               std::string kernel_name,
+                               DataFrame &line_list, int max_depth, double min_tol){
 
   //selecting the kernel function
   fptros kernel_func = select_kernelos(kernel_name);
@@ -1172,16 +1174,18 @@ arma::cube tnkde_get_loo_values(std::string method, List neighbour_list,
 //' @examples
 //' # no example provided, this is an internal function
 // [[Rcpp::export]]
- arma::cube tnkde_get_loo_values2(std::string method, List neighbour_list,
-                                 IntegerVector sel_events,
-                                 IntegerVector sel_events_wid,
-                                 NumericVector sel_events_time,
-                                 IntegerVector events,
-                                 IntegerVector events_wid,
-                                 NumericVector events_time,
-                                 arma::cube weights,
-                                 arma::cube bws_net, arma::cube bws_time, std::string kernel_name,
-                                 DataFrame line_list, int max_depth, double min_tol){
+ arma::cube tnkde_get_loo_values2(std::string method, List &neighbour_list,
+                                 IntegerVector &sel_events,
+                                 IntegerVector &sel_events_wid,
+                                 NumericVector &sel_events_time,
+                                 IntegerVector &events,
+                                 IntegerVector &events_wid,
+                                 NumericVector &events_time,
+                                 arma::cube &weights,
+                                 arma::cube &bws_net,
+                                 arma::cube &bws_time,
+                                 std::string kernel_name,
+                                 DataFrame &line_list, int max_depth, double min_tol){
 
    //selecting the kernel function
    //Rcout << "print stage 1 ... \n";
@@ -1293,18 +1297,18 @@ arma::cube tnkde_get_loo_values(std::string method, List neighbour_list,
 //' # no example provided, this is an internal function
 // [[Rcpp::export]]
 arma::rowvec adaptive_bw_tnkde_cpp(std::string method,
-                                List neighbour_list,
-                                IntegerVector sel_events,
-                                IntegerVector sel_events_wid,
-                                NumericVector sel_events_time,
-                                IntegerVector events,
-                                IntegerVector events_wid,
-                                NumericVector events_time,
-                                arma::vec weights,
-                                arma::vec bws_net,
-                                arma::vec bws_time,
+                                List &neighbour_list,
+                                IntegerVector &sel_events,
+                                IntegerVector &sel_events_wid,
+                                NumericVector &sel_events_time,
+                                IntegerVector &events,
+                                IntegerVector &events_wid,
+                                NumericVector &events_time,
+                                arma::vec &weights,
+                                arma::vec &bws_net,
+                                arma::vec &bws_time,
                                 std::string kernel_name,
-                                DataFrame line_list,
+                                DataFrame &line_list,
                                 int max_depth,
                                 double min_tol){
 
@@ -1397,18 +1401,18 @@ arma::rowvec adaptive_bw_tnkde_cpp(std::string method,
 //' # no example provided, this is an internal function
 // [[Rcpp::export]]
  arma::cube adaptive_bw_tnkde_cpp2(std::string method,
-                                    List neighbour_list,
-                                    IntegerVector sel_events,
-                                    IntegerVector sel_events_wid,
-                                    NumericVector sel_events_time,
-                                    IntegerVector events,
-                                    IntegerVector events_wid,
-                                    NumericVector events_time,
-                                    arma::vec weights,
-                                    arma::vec bws_net,
-                                    arma::vec bws_time,
+                                    List &neighbour_list,
+                                    IntegerVector &sel_events,
+                                    IntegerVector &sel_events_wid,
+                                    NumericVector &sel_events_time,
+                                    IntegerVector &events,
+                                    IntegerVector &events_wid,
+                                    NumericVector &events_time,
+                                    arma::vec &weights,
+                                    arma::vec &bws_net,
+                                    arma::vec &bws_time,
                                     std::string kernel_name,
-                                    DataFrame line_list,
+                                    DataFrame &line_list,
                                     int max_depth,
                                     double min_tol){
    // Rcout << "step0\n";

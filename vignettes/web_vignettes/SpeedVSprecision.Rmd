@@ -63,12 +63,17 @@ params_df <- expand.grid(
   bw = bws,
   max_dept = max_depts
 )
+
+# we shuffle the dataframe to make the multicore processing
+# balanced
+params_df <- params_df[sample(1:nrow(params_df)),]
+
 params_df$index <- 1:nrow(params_df)
 
 items <- split(params_df, 1:nrow(params_df))
 
 # to speed up the calculation, we will use some multiprocessing
-future::plan(future::multisession(workers=6))
+future::plan(future::multisession(workers=4))
 
 progressr::with_progress({
       p <- progressr::progressor(along = items)
@@ -92,26 +97,6 @@ progressr::with_progress({
         return(values)
       }, future.packages = c("spNetwork"))
 })
-
-# # we can start the calculations of all the densities
-# all_densities <- lapply(items, function(row){
-#   
-#   values <- nkde(mtl_network,
-#                events = bike_accidents,
-#                w = rep(1,nrow(bike_accidents)),
-#                samples = samples,
-#                kernel_name = "quartic",
-#                bw = row$bw, div= "bw",
-#                adaptive = FALSE,
-#                method = "continuous", digits = 1, tol = 1,
-#                max_depth = row$max_dept,
-#                agg = 10,
-#                grid_shape = c(1,1),
-#                verbose=FALSE)
-#   
-#   return(values)
-#   
-# })
 
 
 ```
