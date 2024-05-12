@@ -18,7 +18,7 @@ spatial requesting (INTERNAL)."><!-- mathjax --><script src="https://cdnjs.cloud
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.4.9000</span>
       </span>
     </div>
 
@@ -58,6 +58,9 @@ spatial requesting (INTERNAL)."><!-- mathjax --><script src="https://cdnjs.cloud
     </li>
     <li>
       <a href="../articles/web_vignettes/SpaceTimeDBscan.html">Spatio-temporal dbscan with network distance</a>
+    </li>
+    <li>
+      <a href="../articles/web_vignettes/SpeedVSprecision.html">Analysing the impact of max_dept parameter for continuous NKDE</a>
     </li>
   </ul></li>
 <li>
@@ -107,7 +110,10 @@ spatial requesting (INTERNAL).</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co">#This is an internal function, no example provided</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span></span>
+<span><span class="va">tree</span> <span class="op">&lt;-</span> <span class="fu">build_quadtree</span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span></span>
+<span><span class="va">buff</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_unary.html" class="external-link">st_buffer</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">[</span><span class="fl">55</span>,<span class="op">]</span>, <span class="fl">50</span><span class="op">)</span></span>
+<span><span class="va">selection</span> <span class="op">&lt;-</span> <span class="fu"><a href="spatial_request.html">spatial_request</a></span><span class="op">(</span><span class="va">buff</span>, <span class="va">tree</span>, <span class="va">mtl_network</span><span class="op">)</span></span></code></pre></div>
     </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

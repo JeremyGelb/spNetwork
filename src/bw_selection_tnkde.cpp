@@ -295,7 +295,7 @@ arma::cube ess_kernel_loo_tnkde(fptros kernel_func, arma::sp_imat &edge_mat,
 
 
 //' @title The worker function to calculate discontinuous TNKDE likelihood cv
-//' @name esd_kernel_loo_tnkde_old
+//' @name esd_kernel_loo_tnkde
 //' @description The worker function to calculate discontinuous TNKDE likelihood cv (INTERNAL)
 //' @param kernel_func a cpp pointer function (selected with the kernel name)
 //' @param edge_mat matrix, to find the id of each edge given two neighbours.
@@ -443,7 +443,7 @@ arma::cube esd_kernel_loo_tnkde(fptros kernel_func, arma::sp_imat &edge_mat,
 
 
 //' @title The worker function to calculate discontinuous TNKDE likelihood cv (adaptive case)
-//' @name esd_kernel_loo_tnkde
+//' @name esd_kernel_loo_tnkde_adpt
 //' @description The worker function to calculate discontinuous TNKDE likelihood cv (INTERNAL)
 //' @param kernel_func a cpp pointer function (selected with the kernel name)
 //' @param edge_mat matrix, to find the id of each edge given two neighbours.

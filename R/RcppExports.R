@@ -350,7 +350,7 @@ NULL
 NULL
 
 #' @title The worker function to calculate discontinuous TNKDE likelihood cv
-#' @name esd_kernel_loo_tnkde_old
+#' @name esd_kernel_loo_tnkde
 #' @description The worker function to calculate discontinuous TNKDE likelihood cv (INTERNAL)
 #' @param kernel_func a cpp pointer function (selected with the kernel name)
 #' @param edge_mat matrix, to find the id of each edge given two neighbours.
@@ -370,7 +370,7 @@ NULL
 NULL
 
 #' @title The worker function to calculate discontinuous TNKDE likelihood cv (adaptive case)
-#' @name esd_kernel_loo_tnkde
+#' @name esd_kernel_loo_tnkde_adpt
 #' @description The worker function to calculate discontinuous TNKDE likelihood cv (INTERNAL)
 #' @param kernel_func a cpp pointer function (selected with the kernel name)
 #' @param edge_mat matrix, to find the id of each edge given two neighbours.
@@ -781,7 +781,6 @@ NULL
 #' @param kernel_name the name of the kernel to use
 #' @param nodes a DataFrame representing the nodes of the graph (with spatial coordinates)
 #' @param line_list a DataFrame representing the lines of the graph
-#' @param mat_dist_samples a matrix with the following columns : sampleid, lineid, nodeid, dist. It will be used to not recalculate euclidean distance too much
 #' @param max_depth the maximum recursion depth (after which recursion is stopped)
 #' @param verbose a boolean indicating if the function must print its progress
 #' @param div The divisor to use for the kernel. Must be "n" (the number of events within the radius around each sampling point), "bw" (the bandwidth) "none" (the simple sum).

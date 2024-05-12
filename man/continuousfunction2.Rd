@@ -41,8 +41,6 @@ continuous_nkde_cpp_arma_sparse(
 \item{verbose}{a boolean indicating if the function must print its progress}
 
 \item{div}{The divisor to use for the kernel. Must be "n" (the number of events within the radius around each sampling point), "bw" (the bandwidth) "none" (the simple sum).}
-
-\item{mat_dist_samples}{a matrix with the following columns : sampleid, lineid, nodeid, dist. It will be used to not recalculate euclidean distance too much}
 }
 \value{
 a DataFrame with two columns : the kernel values (sum_k) and the number of events for each sample (n)

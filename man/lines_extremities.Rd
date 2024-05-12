@@ -17,6 +17,6 @@ Generate a feature collection of points with the first and last vertex
 of each line in a feature collection of linestrings.
 }
 \examples{
-#This is an internal function, no example provided
+data(mtl_network)
+points <- lines_extremities(mtl_network)
 }
-\keyword{internal}

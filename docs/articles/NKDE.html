@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.4.9000</span>
       </span>
     </div>
 
@@ -76,6 +76,9 @@
     <li>
       <a href="../articles/web_vignettes/SpaceTimeDBscan.html">Spatio-temporal dbscan with network distance</a>
     </li>
+    <li>
+      <a href="../articles/web_vignettes/SpeedVSprecision.html">Analysing the impact of max_dept parameter for continuous NKDE</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -106,7 +109,7 @@
                         <h4 data-toc-skip class="author">Jeremy
 Gelb</h4>
             
-            <h4 data-toc-skip class="date">2024-01-01</h4>
+            <h4 data-toc-skip class="date">2024-05-11</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/JeremyGelb/spNetwork/blob/HEAD/vignettes/NKDE.Rmd" class="external-link"><code>vignettes/NKDE.Rmd</code></a></small>
       <div class="hidden name"><code>NKDE.Rmd</code></div>
@@ -144,16 +147,16 @@ distances.</li>
 <p>A picture is worth thousand words, so let us consider this
 situation:</p>
 <center>
-<div class="figure">
-<img src="images/step0.png" width="300" alt=""><p class="caption">Image Title</p>
+<div class="float">
+<img src="images/step0.png" width="300" alt="Image Title"><div class="figcaption">Image Title</div>
 </div>
 </center>
 <p>Each red point is an event and the lines constitute the network. One
 could calculate a simple KDE on that dataset and would obtain something
 like this:</p>
 <center>
-<div class="figure">
-<img src="images/example_pixels.png" width="300" alt=""><p class="caption">Image Title</p>
+<div class="float">
+<img src="images/example_pixels.png" width="300" alt="Image Title"><div class="figcaption">Image Title</div>
 </div>
 </center>
 <p>But this is only partially satisfying if we are interested in the
@@ -161,8 +164,8 @@ density of the events on the network.</p>
 <p>To perform a NKDE, the events must be snapped on the network. The
 snapped events are shown here in green.</p>
 <center>
-<div class="figure">
-<img src="images/step1.png" width="300" alt=""><p class="caption">Image Title</p>
+<div class="float">
+<img src="images/step1.png" width="300" alt="Image Title"><div class="figcaption">Image Title</div>
 </div>
 </center>
 <p>The mass of each event can be seen as a third dimension and is
@@ -179,8 +182,8 @@ function <em>K</em> within the bandwidth.</p>
 <p>For an easier representation, let us consider here the triangle
 kernel function.</p>
 <center>
-<div class="figure">
-<img src="images/step2.png" width="300" alt=""><p class="caption">Image Title</p>
+<div class="float">
+<img src="images/step2.png" width="300" alt="Image Title"><div class="figcaption">Image Title</div>
 </div>
 </center>
 <p>We can see that the “influence” of each point is limited within the
@@ -189,8 +192,8 @@ bandwidth and decreases when we move away from the event.</p>
 phenomenon at each location on the network. In the next figure, 3
 sampling points (s1, s2 and s3) are added in blue.</p>
 <center>
-<div class="figure">
-<img src="images/step3.png" width="300" alt=""><p class="caption">Image Title</p>
+<div class="float">
+<img src="images/step3.png" width="300" alt="Image Title"><div class="figcaption">Image Title</div>
 </div>
 </center>
 <p><span class="math display">\[d_{s1} =
@@ -271,86 +274,46 @@ limiting greatly the mass loss.</p>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
-<thead><tr>
-<th style="text-align:left;">
-kernel
-</th>
-<th style="text-align:right;">
-integrals
-</th>
+<thead><tr class="header">
+<th align="left">kernel</th>
+<th align="right">integrals</th>
 </tr></thead>
 <tbody>
-<tr>
-<td style="text-align:left;">
-gaussian
-</td>
-<td style="text-align:right;">
-0.683
-</td>
+<tr class="odd">
+<td align="left">gaussian</td>
+<td align="right">0.683</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-scaled gaussian
-</td>
-<td style="text-align:right;">
-0.997
-</td>
+<tr class="even">
+<td align="left">scaled gaussian</td>
+<td align="right">0.997</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-epanechnikov
-</td>
-<td style="text-align:right;">
-1.000
-</td>
+<tr class="odd">
+<td align="left">epanechnikov</td>
+<td align="right">1.000</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-quartic
-</td>
-<td style="text-align:right;">
-1.000
-</td>
+<tr class="even">
+<td align="left">quartic</td>
+<td align="right">1.000</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-triangle
-</td>
-<td style="text-align:right;">
-1.000
-</td>
+<tr class="odd">
+<td align="left">triangle</td>
+<td align="right">1.000</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-uniform
-</td>
-<td style="text-align:right;">
-1.000
-</td>
+<tr class="even">
+<td align="left">uniform</td>
+<td align="right">1.000</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-tricube
-</td>
-<td style="text-align:right;">
-1.000
-</td>
+<tr class="odd">
+<td align="left">tricube</td>
+<td align="right">1.000</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-triweight
-</td>
-<td style="text-align:right;">
-1.000
-</td>
+<tr class="even">
+<td align="left">triweight</td>
+<td align="right">1.000</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-cosine
-</td>
-<td style="text-align:right;">
-1.000
-</td>
+<tr class="odd">
+<td align="left">cosine</td>
+<td align="right">1.000</td>
 </tr>
 </tbody>
 </table>
@@ -387,9 +350,8 @@ available (<em>Details about NKDE</em>) to explore the three of them in
 <h3 id="simple-method">Simple method<a class="anchor" aria-label="anchor" href="#simple-method"></a>
 </h3>
 <p>The first method was proposed by <span class="citation">Xie and Yan
-(<a href="#ref-xie2008kernel" role="doc-biblioref">2008</a>)</span>.
-Considering the planar KDE, they defined the NKDE with the following
-formula:</p>
+(<a href="#ref-xie2008kernel">2008</a>)</span>. Considering the planar
+KDE, they defined the NKDE with the following formula:</p>
 <p><span class="math inline">\(d_{si} = \frac{1}{bw}\sum_{j=1}^{n}
 K(dist_{si;ej})\)</span></p>
 <p>with <span class="math inline">\(d_{si}\)</span> the density
@@ -402,14 +364,13 @@ the classical <span class="math inline">\(\frac{1}{bw^2}\)</span>, but
 <span class="math inline">\(\frac{1}{bw}\)</span>. This adjustment
 allows for a simpler interpretation of the density: <em>“Instead of
 calculating the density over an area unit, the equation estimates the
-density over a linear unit”</em> <span class="citation">(<a href="#ref-xie2008kernel" role="doc-biblioref">Xie and Yan 2008,
-398</a>)</span></p>
+density over a linear unit”</em> <span class="citation">(<a href="#ref-xie2008kernel">Xie and Yan 2008, 398</a>)</span></p>
 <p>In the next figure, we show in 3D what that kernel looks like. The
 red point is a simple event, the black lines are the network, and the
 blue lines are the calculated densities.</p>
 <center>
-<div class="figure">
-<img src="images/simple_nkde_ex.png" width="150" alt=""><p class="caption">Image Title</p>
+<div class="float">
+<img src="images/simple_nkde_ex.png" width="150" alt="Image Title"><div class="figcaption">Image Title</div>
 </div>
 </center>
 <p>As one can see, this NKDE is only determined by the distance between
@@ -452,32 +413,33 @@ decaying function.</li>
 <div class="section level3">
 <h3 id="discontinuous-nkde">Discontinuous NKDE<a class="anchor" aria-label="anchor" href="#discontinuous-nkde"></a>
 </h3>
-<p><span class="citation">Okabe and Sugihara (<a href="#ref-okabe2012spatial" role="doc-biblioref">2012</a>)</span> have
-criticized the previous method, arguing that the produced density
-estimator is biased, conducting to overestimation of density. To
-overcome this limit, they presented two heuristic techniques: the
-discontinuous and the continuous NKDE.</p>
+<p><span class="citation">Okabe and Sugihara (<a href="#ref-okabe2012spatial">2012</a>)</span> have criticized the
+previous method, arguing that the produced density estimator is biased,
+conducting to overestimation of density. To overcome this limit, they
+presented two heuristic techniques: the discontinuous and the continuous
+NKDE.</p>
 <p>The discontinuous NKDE is easily presented by a figure:</p>
 <center>
-<div class="figure">
-<img src="images/discontinuous.png" width="300" alt=""><p class="caption">Image Title</p>
+<div class="float">
+<img src="images/discontinuous.png" width="300" alt="Image Title"><div class="figcaption">Image Title</div>
 </div>
 </center>
 <p>The density of the kernel function is equally divided at
 intersections. Note that <strong>spNetwork</strong> implements the
 modified version proposed by <span class="citation">Sugihara, Satoh, and
-Okabe (<a href="#ref-sugihara2010simple" role="doc-biblioref">2010</a>)</span>, allowing for use in networks with
-cycles. In the case of a cycle, the multiple overlapping values of the
-kernel are added, as shown in the next figure.</p>
+Okabe (<a href="#ref-sugihara2010simple">2010</a>)</span>, allowing for
+use in networks with cycles. In the case of a cycle, the multiple
+overlapping values of the kernel are added, as shown in the next
+figure.</p>
 <center>
-<div class="figure">
-<img src="images/cycle_nkde.png" width="300" alt=""><p class="caption">Image Title</p>
+<div class="float">
+<img src="images/cycle_nkde.png" width="300" alt="Image Title"><div class="figcaption">Image Title</div>
 </div>
 </center>
 <p>With the case presented before, we obtain the following result.</p>
 <center>
-<div class="figure">
-<img src="images/discontinuous_nkde_ex.png" width="150" alt=""><p class="caption">Image Title</p>
+<div class="float">
+<img src="images/discontinuous_nkde_ex.png" width="150" alt="Image Title"><div class="figcaption">Image Title</div>
 </div>
 </center>
 <p>As one can see, the values of the NKDE are split at intersections to
@@ -517,15 +479,14 @@ of the two worlds: it adjusts the values of the NKDE at intersections to
 ensure that it integrates to 1 on its domain, and applies a backward
 correction to force the density values to be continuous. This process is
 accomplished by a recursive function, described in the book <em>Spatial
-Analysis Along Networks</em> <span class="citation">(<a href="#ref-okabe2012spatial" role="doc-biblioref">Okabe and Sugihara
-2012</a>)</span>. This function is more time consuming, so it might be
-necessary to stop it when the recursion is too deep. Considering that
-the kernel density is divided at each intersection, stopping the
-function at deep level 16 should give results almost identical to the
-true values.</p>
+Analysis Along Networks</em> <span class="citation">(<a href="#ref-okabe2012spatial">Okabe and Sugihara 2012</a>)</span>. This
+function is more time consuming, so it might be necessary to stop it
+when the recursion is too deep. Considering that the kernel density is
+divided at each intersection, stopping the function at deep level 16
+should give results almost identical to the true values.</p>
 <center>
-<div class="figure">
-<img src="images/continuous.png" width="300" alt=""><p class="caption">Image Title</p>
+<div class="float">
+<img src="images/continuous.png" width="300" alt="Image Title"><div class="figcaption">Image Title</div>
 </div>
 </center>
 <p>There are three different equations to calculate the kernel density
@@ -533,8 +494,8 @@ depending on the situation (here, q1, q2, q3).</p>
 <p>Again, with the case presented before, we obtain the following
 result.</p>
 <center>
-<div class="figure">
-<img src="images/continuous_nkde_ex.png" width="150" alt=""><p class="caption">Image Title</p>
+<div class="float">
+<img src="images/continuous_nkde_ex.png" width="150" alt="Image Title"><div class="figcaption">Image Title</div>
 </div>
 </center>
 <p>As one can see, the values of the NKDE are continuous, and the
@@ -581,7 +542,7 @@ possible not to split the study area with
 <code class="sourceCode R"><span><span class="co"># first load data and packages</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://jeremygelb.github.io/spNetwork/" class="external-link">spNetwork</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-tmap/tmap" class="external-link">tmap</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mtennekes/tmap" class="external-link">tmap</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span> </span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">)</span></span>
@@ -685,15 +646,15 @@ the work between two cores.</p>
 <p>The examples provided in the previous sections are using only a fixed
 bandwidth. If we relax the need for a fixed bandwidth, we obtain an
 adaptive estimator. In other words, the bandwidth may vary in the study
-area. <strong>spNetwork</strong> uses the method proposed by <span class="citation">Abramson (<a href="#ref-abramson1982bandwidth" role="doc-biblioref">1982</a>)</span>, implying a variation of the
-bandwidth that is inversely proportional to the square root of the
-target density itself. In other words, at places where the density of
-the spatial process is high, the bandwidth of the kernel will be smaller
-and inversely. The use of an adaptive bandwidth has many theoretical and
-practical advantages. First, it reduces the sensibility to outliers.
-Second, it reduces smoothing in sub-region with many events (giving more
-detailed density estimation) and increases the smoothing in sub-region
-with few events (giving fuzzier results because of the higher
+area. <strong>spNetwork</strong> uses the method proposed by <span class="citation">Abramson (<a href="#ref-abramson1982bandwidth">1982</a>)</span>, implying a variation
+of the bandwidth that is inversely proportional to the square root of
+the target density itself. In other words, at places where the density
+of the spatial process is high, the bandwidth of the kernel will be
+smaller and inversely. The use of an adaptive bandwidth has many
+theoretical and practical advantages. First, it reduces the sensibility
+to outliers. Second, it reduces smoothing in sub-region with many events
+(giving more detailed density estimation) and increases the smoothing in
+sub-region with few events (giving fuzzier results because of the higher
 uncertainty).</p>
 <p>The problem is that the true density itself is unknown (otherwise we
 would not have to estimate it with a smoothing method). To obtain the
@@ -834,12 +795,13 @@ validation by leave one out. The idea is to find a bandwidth that will
 produce the most similar results if an event is dropped.</li>
 <li>
 <code>bw_cvl_calc</code>, using the Cronie and Van Lieshout’s
-Criterion <span class="citation">(<a href="#ref-cronie2018non" role="doc-biblioref">Cronie and Van Lieshout 2018</a>)</span>. The goal
-is to minimize the difference between the size of the observation window
-and the sum of the reciprocal of the estimated kernel density at the
-events locations. In the network case, the size of the study area is the
-sum of the length of each line in the network. Thus, it is important to
-only use the relevant parts of the network.</li>
+Criterion <span class="citation">(<a href="#ref-cronie2018non">Cronie
+and Van Lieshout 2018</a>)</span>. The goal is to minimize the
+difference between the size of the observation window and the sum of the
+reciprocal of the estimated kernel density at the events locations. In
+the network case, the size of the study area is the sum of the length of
+each line in the network. Thus, it is important to only use the relevant
+parts of the network.</li>
 </ul>
 <p>For both, one can use the multicore version of the functions to speed
 up the calculation. It is also possible to run it on a subset of the
@@ -920,261 +882,118 @@ the local bandwidths obtained from the density estimation.</p>
 <span>  <span class="st">"cv_likelihood_adpt_cont"</span> <span class="op">=</span> <span class="va">bws_selection_cv_adpt_cont</span><span class="op">$</span><span class="va">cv_scores</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <table class="table">
-<thead><tr>
-<th style="text-align:right;">
-bw
-</th>
-<th style="text-align:right;">
-cv_likelihood
-</th>
-<th style="text-align:right;">
-cvl_crit
-</th>
-<th style="text-align:right;">
-cv_likelihood_adpt_dis
-</th>
-<th style="text-align:right;">
-cv_likelihood_adpt_cont
-</th>
+<colgroup>
+<col width="5%">
+<col width="17%">
+<col width="16%">
+<col width="29%">
+<col width="30%">
+</colgroup>
+<thead><tr class="header">
+<th align="right">bw</th>
+<th align="right">cv_likelihood</th>
+<th align="right">cvl_crit</th>
+<th align="right">cv_likelihood_adpt_dis</th>
+<th align="right">cv_likelihood_adpt_cont</th>
 </tr></thead>
 <tbody>
-<tr>
-<td style="text-align:right;">
-50
-</td>
-<td style="text-align:right;">
--640.03
-</td>
-<td style="text-align:right;">
-3.543131e+11
-</td>
-<td style="text-align:right;">
--616.01
-</td>
-<td style="text-align:right;">
--391.58
-</td>
+<tr class="odd">
+<td align="right">50</td>
+<td align="right">-640.03</td>
+<td align="right">3.543131e+11</td>
+<td align="right">-616.01</td>
+<td align="right">-391.58</td>
 </tr>
-<tr>
-<td style="text-align:right;">
-100
-</td>
-<td style="text-align:right;">
--397.16
-</td>
-<td style="text-align:right;">
-9.600025e+12
-</td>
-<td style="text-align:right;">
--361.06
-</td>
-<td style="text-align:right;">
--211.81
-</td>
+<tr class="even">
+<td align="right">100</td>
+<td align="right">-397.16</td>
+<td align="right">9.600025e+12</td>
+<td align="right">-361.06</td>
+<td align="right">-211.81</td>
 </tr>
-<tr>
-<td style="text-align:right;">
-150
-</td>
-<td style="text-align:right;">
--204.69
-</td>
-<td style="text-align:right;">
-4.274366e+13
-</td>
-<td style="text-align:right;">
--158.79
-</td>
-<td style="text-align:right;">
--125.84
-</td>
+<tr class="odd">
+<td align="right">150</td>
+<td align="right">-204.69</td>
+<td align="right">4.274366e+13</td>
+<td align="right">-158.79</td>
+<td align="right">-125.84</td>
 </tr>
-<tr>
-<td style="text-align:right;">
-200
-</td>
-<td style="text-align:right;">
--124.44
-</td>
-<td style="text-align:right;">
-1.165463e+14
-</td>
-<td style="text-align:right;">
--86.49
-</td>
-<td style="text-align:right;">
--69.96
-</td>
+<tr class="even">
+<td align="right">200</td>
+<td align="right">-124.44</td>
+<td align="right">1.165463e+14</td>
+<td align="right">-86.49</td>
+<td align="right">-69.96</td>
 </tr>
-<tr>
-<td style="text-align:right;">
-250
-</td>
-<td style="text-align:right;">
--78.48
-</td>
-<td style="text-align:right;">
-2.491374e+14
-</td>
-<td style="text-align:right;">
--48.56
-</td>
-<td style="text-align:right;">
--32.20
-</td>
+<tr class="odd">
+<td align="right">250</td>
+<td align="right">-78.48</td>
+<td align="right">2.491374e+14</td>
+<td align="right">-48.56</td>
+<td align="right">-32.20</td>
 </tr>
-<tr>
-<td style="text-align:right;">
-300
-</td>
-<td style="text-align:right;">
--52.54
-</td>
-<td style="text-align:right;">
-4.566083e+14
-</td>
-<td style="text-align:right;">
--28.58
-</td>
-<td style="text-align:right;">
--22.27
-</td>
+<tr class="even">
+<td align="right">300</td>
+<td align="right">-52.54</td>
+<td align="right">4.566083e+14</td>
+<td align="right">-28.58</td>
+<td align="right">-22.27</td>
 </tr>
-<tr>
-<td style="text-align:right;">
-350
-</td>
-<td style="text-align:right;">
--40.54
-</td>
-<td style="text-align:right;">
-7.517414e+14
-</td>
-<td style="text-align:right;">
--24.57
-</td>
-<td style="text-align:right;">
--20.38
-</td>
+<tr class="odd">
+<td align="right">350</td>
+<td align="right">-40.54</td>
+<td align="right">7.517414e+14</td>
+<td align="right">-24.57</td>
+<td align="right">-20.38</td>
 </tr>
-<tr>
-<td style="text-align:right;">
-400
-</td>
-<td style="text-align:right;">
--24.68
-</td>
-<td style="text-align:right;">
-1.147818e+15
-</td>
-<td style="text-align:right;">
--22.58
-</td>
-<td style="text-align:right;">
--18.51
-</td>
+<tr class="even">
+<td align="right">400</td>
+<td align="right">-24.68</td>
+<td align="right">1.147818e+15</td>
+<td align="right">-22.58</td>
+<td align="right">-18.51</td>
 </tr>
-<tr>
-<td style="text-align:right;">
-450
-</td>
-<td style="text-align:right;">
--20.69
-</td>
-<td style="text-align:right;">
-1.652851e+15
-</td>
-<td style="text-align:right;">
--14.69
-</td>
-<td style="text-align:right;">
--16.64
-</td>
+<tr class="odd">
+<td align="right">450</td>
+<td align="right">-20.69</td>
+<td align="right">1.652851e+15</td>
+<td align="right">-14.69</td>
+<td align="right">-16.64</td>
 </tr>
-<tr>
-<td style="text-align:right;">
-500
-</td>
-<td style="text-align:right;">
--16.76
-</td>
-<td style="text-align:right;">
-2.274182e+15
-</td>
-<td style="text-align:right;">
--14.69
-</td>
-<td style="text-align:right;">
--16.74
-</td>
+<tr class="even">
+<td align="right">500</td>
+<td align="right">-16.76</td>
+<td align="right">2.274182e+15</td>
+<td align="right">-14.69</td>
+<td align="right">-16.74</td>
 </tr>
-<tr>
-<td style="text-align:right;">
-550
-</td>
-<td style="text-align:right;">
--16.80
-</td>
-<td style="text-align:right;">
-3.020688e+15
-</td>
-<td style="text-align:right;">
--14.73
-</td>
-<td style="text-align:right;">
--14.85
-</td>
+<tr class="odd">
+<td align="right">550</td>
+<td align="right">-16.80</td>
+<td align="right">3.020688e+15</td>
+<td align="right">-14.73</td>
+<td align="right">-14.85</td>
 </tr>
-<tr>
-<td style="text-align:right;">
-600
-</td>
-<td style="text-align:right;">
--14.86
-</td>
-<td style="text-align:right;">
-3.898413e+15
-</td>
-<td style="text-align:right;">
--14.78
-</td>
-<td style="text-align:right;">
--14.93
-</td>
+<tr class="even">
+<td align="right">600</td>
+<td align="right">-14.86</td>
+<td align="right">3.898413e+15</td>
+<td align="right">-14.78</td>
+<td align="right">-14.93</td>
 </tr>
-<tr>
-<td style="text-align:right;">
-650
-</td>
-<td style="text-align:right;">
--14.91
-</td>
-<td style="text-align:right;">
-4.912651e+15
-</td>
-<td style="text-align:right;">
--14.83
-</td>
-<td style="text-align:right;">
--15.02
-</td>
+<tr class="odd">
+<td align="right">650</td>
+<td align="right">-14.91</td>
+<td align="right">4.912651e+15</td>
+<td align="right">-14.83</td>
+<td align="right">-15.02</td>
 </tr>
-<tr>
-<td style="text-align:right;">
-700
-</td>
-<td style="text-align:right;">
--14.95
-</td>
-<td style="text-align:right;">
-6.072565e+15
-</td>
-<td style="text-align:right;">
--14.89
-</td>
-<td style="text-align:right;">
--15.10
-</td>
+<tr class="even">
+<td align="right">700</td>
+<td align="right">-14.95</td>
+<td align="right">6.072565e+15</td>
+<td align="right">-14.89</td>
+<td align="right">-15.10</td>
 </tr>
 </tbody>
 </table>

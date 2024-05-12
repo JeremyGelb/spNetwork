@@ -15,3 +15,6 @@ a new instance of the spatial_index class (c++ pointer)
 An object (c++ pointer) that uses the geometry
 index library from boost to perform spatial queries
 }
+\examples{
+# no example provided, this is an internal class
+}

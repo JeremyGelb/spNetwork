@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.4.9000</span>
       </span>
     </div>
 
@@ -76,6 +76,9 @@
     <li>
       <a href="../articles/web_vignettes/SpaceTimeDBscan.html">Spatio-temporal dbscan with network distance</a>
     </li>
+    <li>
+      <a href="../articles/web_vignettes/SpeedVSprecision.html">Analysing the impact of max_dept parameter for continuous NKDE</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -106,7 +109,7 @@
                         <h4 data-toc-skip class="author">Jeremy
 Gelb</h4>
             
-            <h4 data-toc-skip class="date">2024-01-01</h4>
+            <h4 data-toc-skip class="date">2024-05-11</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/JeremyGelb/spNetwork/blob/HEAD/vignettes/KNetworkFunctions.Rmd" class="external-link"><code>vignettes/KNetworkFunctions.Rmd</code></a></small>
       <div class="hidden name"><code>KNetworkFunctions.Rmd</code></div>
@@ -132,16 +135,17 @@ radius <span class="math inline">\(r\)</span> the proportion of cells
 with a value bellow <span class="math inline">\(r\)</span> in the
 distance matrix between all the points <span class="math inline">\(D_{ij}\)</span>. In other words, the K-function
 estimates “the average number of neighbours of a typical random point”
-<span class="citation">(<a href="#ref-baddeley2015spatial" role="doc-biblioref">Baddeley, Rubak, and Turner 2015</a>)</span>.</p>
+<span class="citation">(<a href="#ref-baddeley2015spatial">Baddeley,
+Rubak, and Turner 2015</a>)</span>.</p>
 <p>A modified version of the K-function is the G-function (Pair
-Correlation Function) <span class="citation">(<a href="#ref-stoyan1996estimating" role="doc-biblioref">Stoyan and Stoyan
-1996</a>)</span>. The regular K-function is calculated for subsequent
-disks with increasing radii and thus is cumulative in nature. The
-G-function uses rings instead of disks and permits the analysis of the
-points concentrations at different geographical scales.</p>
+Correlation Function) <span class="citation">(<a href="#ref-stoyan1996estimating">Stoyan and Stoyan 1996</a>)</span>. The
+regular K-function is calculated for subsequent disks with increasing
+radii and thus is cumulative in nature. The G-function uses rings
+instead of disks and permits the analysis of the points concentrations
+at different geographical scales.</p>
 <center>
-<div class="figure">
-<img src="images/k-g-functions.png" style="width:45.0%" alt=""><p class="caption">Image Title</p>
+<div class="float">
+<img src="images/k-g-functions.png" style="width:45.0%" alt="Image Title"><div class="figcaption">Image Title</div>
 </div>
 </center>
 <p>When the points are located on a network, the use of the Euclidean
@@ -169,7 +173,7 @@ which the points are randomly located on the network.</p>
 libraries in Montreal.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://jeremygelb.github.io/spNetwork/" class="external-link">spNetwork</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-tmap/tmap" class="external-link">tmap</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mtennekes/tmap" class="external-link">tmap</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">main_network_mtl</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">mtl_libraries</span><span class="op">)</span></span>

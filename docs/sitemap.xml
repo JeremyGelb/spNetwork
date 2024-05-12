@@ -37,6 +37,9 @@
     <loc>/articles/web_vignettes/SpaceTimeDBscan.html</loc>
   </url>
   <url>
+    <loc>/articles/web_vignettes/SpeedVSprecision.html</loc>
+  </url>
+  <url>
     <loc>/authors.html</loc>
   </url>
   <url>
@@ -68,6 +71,9 @@
   </url>
   <url>
     <loc>/reference/adaptive_bw_tnkde_cpp.html</loc>
+  </url>
+  <url>
+    <loc>/reference/adaptive_bw_tnkde_cpp2.html</loc>
   </url>
   <url>
     <loc>/reference/add_center_lines.html</loc>
@@ -136,6 +142,9 @@
     <loc>/reference/bw_tnkde_cv_likelihood_calc.mc.html</loc>
   </url>
   <url>
+    <loc>/reference/calcEuclideanDistance3.html</loc>
+  </url>
+  <url>
     <loc>/reference/calc_gamma.html</loc>
   </url>
   <url>
@@ -152,6 +161,9 @@
   </url>
   <url>
     <loc>/reference/continuousfunction.html</loc>
+  </url>
+  <url>
+    <loc>/reference/continuousfunction2.html</loc>
   </url>
   <url>
     <loc>/reference/continuousWorker.html</loc>
@@ -247,6 +259,9 @@
     <loc>/reference/esc_kernel_loo_tnkde.html</loc>
   </url>
   <url>
+    <loc>/reference/esc_kernel_loo_tnkde_adpt.html</loc>
+  </url>
+  <url>
     <loc>/reference/esd_kernel_loo.html</loc>
   </url>
   <url>
@@ -256,6 +271,9 @@
     <loc>/reference/esd_kernel_loo_tnkde.html</loc>
   </url>
   <url>
+    <loc>/reference/esd_kernel_loo_tnkde_adpt.html</loc>
+  </url>
+  <url>
     <loc>/reference/ess_kernel.html</loc>
   </url>
   <url>
@@ -263,6 +281,9 @@
   </url>
   <url>
     <loc>/reference/ess_kernel_loo_tnkde.html</loc>
+  </url>
+  <url>
+    <loc>/reference/ess_kernel_loo_tnkde_adpt.html</loc>
   </url>
   <url>
     <loc>/reference/find_vertices.html</loc>
@@ -554,6 +575,9 @@
   </url>
   <url>
     <loc>/reference/tnkde_get_loo_values.html</loc>
+  </url>
+  <url>
+    <loc>/reference/tnkde_get_loo_values2.html</loc>
   </url>
   <url>
     <loc>/reference/tnkde_worker.html</loc>

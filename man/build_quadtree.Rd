@@ -17,5 +17,8 @@ Generate a quadtree object from package SearchTrees, useful to speed up
 spatial requesting (INTERNAL).
 }
 \examples{
-#This is an internal function, no example provided
+data(mtl_network)
+tree <- build_quadtree(mtl_network)
+buff <- sf::st_buffer(mtl_network[55,], 50)
+selection <- spatial_request(buff, tree, mtl_network)
 }

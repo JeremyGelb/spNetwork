@@ -2,15 +2,20 @@
 
 This is an important release!
 
+## Requirements
+
+* It is now required to use c++17 (necessary to use the package sfheaders).
+
 ## New Features
 
-* It is now possible to do bandwidth selection with adaptive bandwidths
-* One can also set local bandwidths manually for bandwidth selection
+* It is now possible to do bandwidth selection with adaptive bandwidths.
+* One can also set local bandwidths manually for bandwidth selection.
+* The function *lines_extremites* is now exported and available to the users.
 
 ## Enhancement
 
 * The function *snapPointsToLines2* has been refactored and is now significantly faster.
-* The package collapse is now used to increase the calculation speed on a lot of functions.
+* Several c++ functions have been cleaned and the calculation time has been reduced significantly for many of them.
 
 ## Changes in functions
 
@@ -18,15 +23,20 @@ This is an important release!
 
 ## corrected bugs
 
-When using ESC-NKDE with bandwidths selection, negative density values could be obtained (with a small parameter of depth). It led to NAN values in LOO score. They are now treated like zeros.
+When using ESC-NKDE with bandwidths selection, negative density values could be obtained (with a small parameter of depth). It led to NAN values in LOO score. They are now treated as zeros.
 
 A small bug has been corrected in the functions *network_knn* and *network_knn.mc* caused with grids with very few number of points.
 
 Corrected the bug presented in issue 19.
 
+## documentation
+
+* A new vignette on the website has been added. It illustrates the impact of the parameter *max_depth*.
+* The functions to perform spatial request with indexing are now documented.
+
 # spNetwork 0.4.3.7
 
-This is only a maintenance release. A bug in CRAN caused by multiprocessing in example caused the rejection of hte package.
+This is only a maintenance release. A bug in CRAN caused by multiprocessing in example caused the rejection of the package.
 All the test and examples are now using only one worker.
 
 # spNetwork 0.4.3.6.9001

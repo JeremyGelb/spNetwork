@@ -20,5 +20,8 @@ a subset of data, intersecting geometry
 Use a quadtree index to perform spatial request.
 }
 \examples{
-#This is an internal function, no example provided
+data(mtl_network)
+tree <- build_quadtree(mtl_network)
+buff <- sf::st_buffer(mtl_network[55,], 50)
+selection <- spatial_request(buff, tree, mtl_network)
 }

@@ -26,7 +26,10 @@ st_bbox_by_feature = function(x) {
 #' @return a spatial_index object (pointer to a c++ instance)
 #' @export
 #' @examples
-#' #This is an internal function, no example provided
+#' data(mtl_network)
+#' tree <- build_quadtree(mtl_network)
+#' buff <- sf::st_buffer(mtl_network[55,], 50)
+#' selection <- spatial_request(buff, tree, mtl_network)
 build_quadtree <- function(data){
   #step1 : extracting the bbox of the geometrie
   if(class(data)[[1]] != "sf"){
@@ -87,7 +90,10 @@ build_quadtree <- function(data){
 #' @importFrom sf st_intersects
 #' @export
 #' @examples
-#' #This is an internal function, no example provided
+#' data(mtl_network)
+#' tree <- build_quadtree(mtl_network)
+#' buff <- sf::st_buffer(mtl_network[55,], 50)
+#' selection <- spatial_request(buff, tree, mtl_network)
 spatial_request <- function(geometry,tree,data){
   ## step1 : find candidates
   #box <- t(raster::bbox(geometry))

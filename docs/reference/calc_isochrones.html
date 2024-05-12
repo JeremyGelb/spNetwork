@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.4.9000</span>
       </span>
     </div>
 
@@ -57,6 +57,9 @@
     </li>
     <li>
       <a href="../articles/web_vignettes/SpaceTimeDBscan.html">Spatio-temporal dbscan with network distance</a>
+    </li>
+    <li>
+      <a href="../articles/web_vignettes/SpeedVSprecision.html">Analysing the impact of max_dept parameter for continuous NKDE</a>
     </li>
   </ul></li>
 <li>
@@ -105,7 +108,9 @@
 
 
 <dt>dists</dt>
-<dd><p>A vector of the size of the desired isochrones</p></dd>
+<dd><p>A vector of the size of the desired isochrones. Can also be a list of vector
+when each start point must have its own distances. If so, the length of the list must be equal
+to the number of rows in start_points.</p></dd>
 
 
 <dt>start_points</dt>

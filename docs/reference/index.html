@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.4.9000</span>
       </span>
     </div>
 
@@ -57,6 +57,9 @@
     </li>
     <li>
       <a href="../articles/web_vignettes/SpaceTimeDBscan.html">Spatio-temporal dbscan with network distance</a>
+    </li>
+    <li>
+      <a href="../articles/web_vignettes/SpeedVSprecision.html">Analysing the impact of max_dept parameter for continuous NKDE</a>
     </li>
   </ul></li>
 <li>
@@ -277,6 +280,10 @@
         </td>
         <td><p>Centre points of lines</p></td>
       </tr><tr><td>
+          <p><code><a href="lines_extremities.html">lines_extremities()</a></code> </p>
+        </td>
+        <td><p>Get lines extremities</p></td>
+      </tr><tr><td>
           <p><code><a href="lines_direction.html">lines_direction()</a></code> </p>
         </td>
         <td><p>Unify lines direction</p></td>
@@ -325,14 +332,6 @@
         </td>
         <td><p>An object (c++ pointer) to do some spatial query of rectanlges (internal)</p></td>
       </tr><tr><td>
-          <p><code><a href="spatial_index-cash-new.html">spatial_index$new</a></code> </p>
-        </td>
-        <td><p>Constructor method for a spatial_index object</p></td>
-      </tr><tr><td>
-          <p><code><a href="spatial_index-cash-tree_request.html">spatial_index$tree_request</a></code> </p>
-        </td>
-        <td><p>spatial request on rtree index (internal)</p></td>
-      </tr><tr><td>
           <p><code><a href="st_bbox_by_feature.html">st_bbox_by_feature()</a></code> </p>
         </td>
         <td><p>Obtain all the bounding boxes of a feature collection</p></td>
@@ -374,6 +373,11 @@
         <td><p>The exposed function to calculate adaptive bandwidth with space-time
 interaction for TNKDE (INTERNAL)</p></td>
       </tr><tr><td>
+          <p><code><a href="adaptive_bw_tnkde_cpp2.html">adaptive_bw_tnkde_cpp2()</a></code> </p>
+        </td>
+        <td><p>The exposed function to calculate adaptive bandwidth with space-time
+interaction for TNKDE (INTERNAL)</p></td>
+      </tr><tr><td>
           <p><code><a href="cross_gfunc_cpp.html">cross_gfunc_cpp()</a></code> </p>
         </td>
         <td><p>c++ cross g function</p></td>
@@ -398,6 +402,10 @@ interaction for TNKDE (INTERNAL)</p></td>
         </td>
         <td><p>The worker function to calculate discontinuous TNKDE likelihood cv</p></td>
       </tr><tr><td>
+          <p><code><a href="esc_kernel_loo_tnkde_adpt.html">esc_kernel_loo_tnkde_adpt</a></code> </p>
+        </td>
+        <td><p>The worker function to calculate continuous TNKDE likelihood cv (adaptive case)</p></td>
+      </tr><tr><td>
           <p><code><a href="gfunc_cpp.html">gfunc_cpp()</a></code> </p>
         </td>
         <td><p>c++ g function</p></td>
@@ -411,6 +419,10 @@ interaction for TNKDE (INTERNAL)</p></td>
         <td><p>The exposed function to calculate NKDE likelihood cv</p></td>
       </tr><tr><td>
           <p><code><a href="tnkde_get_loo_values.html">tnkde_get_loo_values()</a></code> </p>
+        </td>
+        <td><p>The exposed function to calculate TNKDE likelihood cv</p></td>
+      </tr><tr><td>
+          <p><code><a href="tnkde_get_loo_values2.html">tnkde_get_loo_values2()</a></code> </p>
         </td>
         <td><p>The exposed function to calculate TNKDE likelihood cv</p></td>
       </tr><tr><td>

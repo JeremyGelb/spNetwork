@@ -27,8 +27,8 @@ Imports:
     Rdpack (>= 2.1.1),
     dbscan (>= 1.1-8),
     sf (>= 1.0-3),
-    dplyr (>= 0.8.3), 
-    abind (>= 1.4-5)
+    abind (>= 1.4-5),
+    sfheaders (>= 0.4.4)
 Depends:
     R (>= 3.6)
 Suggests:
@@ -44,8 +44,6 @@ Suggests:
     smoothr (>= 0.2.2),
     concaveman (>= 1.1.0),
     covr (>= 3.5.1),
-    collapse (>= 2.0.13),
-    sfheaders (>= 0.4.4),
     knitr,
     rmarkdown
 RoxygenNote: 7.3.1

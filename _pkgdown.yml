@@ -72,6 +72,7 @@ reference:
   - spatial_request
   - closest_points
   - lines_center
+  - lines_extremities
   - lines_direction
   - lines_points_along
   - lixelize_lines
@@ -90,8 +91,6 @@ reference:
 - contents:
   - simple_lines
   - spatial_index
-  - spatial_index$new
-  - spatial_index$tree_request
   - st_bbox_by_feature
 - title: "Data"
   desc: >

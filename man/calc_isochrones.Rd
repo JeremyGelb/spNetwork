@@ -82,12 +82,12 @@ wkt_lines <- c(
 linesdf <- data.frame(wkt = wkt_lines,
                       id = paste("l",1:length(wkt_lines),sep=""))
 
-lines <- st_as_sf(linesdf, wkt = "wkt")
+lines <- st_as_sf(linesdf, wkt = "wkt", crs = 32188)
 
 # and the definition of the starting point
 start_points <- data.frame(x=c(5),
                            y=c(-2.5))
-start_points <- st_as_sf(start_points, coords = c("x","y"))
+start_points <- st_as_sf(start_points, coords = c("x","y"), crs = 32188)
 
 # setting the directions
 

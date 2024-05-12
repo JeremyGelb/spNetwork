@@ -634,7 +634,6 @@ arma::vec esc_kernel_rcpp_arma(fptr kernel_func, List &neighbour_list, IntegerMa
 //' @param kernel_name the name of the kernel to use
 //' @param nodes a DataFrame representing the nodes of the graph (with spatial coordinates)
 //' @param line_list a DataFrame representing the lines of the graph
-//' @param mat_dist_samples a matrix with the following columns : sampleid, lineid, nodeid, dist. It will be used to not recalculate euclidean distance too much
 //' @param max_depth the maximum recursion depth (after which recursion is stopped)
 //' @param verbose a boolean indicating if the function must print its progress
 //' @param div The divisor to use for the kernel. Must be "n" (the number of events within the radius around each sampling point), "bw" (the bandwidth) "none" (the simple sum).

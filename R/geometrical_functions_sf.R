@@ -52,9 +52,10 @@ sp_char_index <- function(coords, digits) {
 #' @return A feature collection of points
 #' @importFrom sf st_coordinates st_drop_geometry st_crs st_as_sf
 #' @importFrom data.table as.data.table .SD .N
-#' @keywords internal
+#' @export
 #' @examples
-#' #This is an internal function, no example provided
+#' data(mtl_network)
+#' points <- lines_extremities(mtl_network)
 lines_extremities <- function(lines) {
   coords <- st_coordinates(lines)
   data <- st_drop_geometry(lines)

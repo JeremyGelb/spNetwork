@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.4.9000</span>
       </span>
     </div>
 
@@ -58,6 +58,9 @@
     <li>
       <a href="../articles/web_vignettes/SpaceTimeDBscan.html">Spatio-temporal dbscan with network distance</a>
     </li>
+    <li>
+      <a href="../articles/web_vignettes/SpeedVSprecision.html">Analysing the impact of max_dept parameter for continuous NKDE</a>
+    </li>
   </ul></li>
 <li>
   <a href="../news/index.html">Changelog</a>
@@ -87,7 +90,13 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">snapPointsToLines2</span><span class="op">(</span><span class="va">points</span>, <span class="va">lines</span>, idField <span class="op">=</span> <span class="cn">NA</span>, snap_dist <span class="op">=</span> <span class="fl">300</span>, max_iter <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">snapPointsToLines2</span><span class="op">(</span></span>
+<span>  <span class="va">points</span>,</span>
+<span>  <span class="va">lines</span>,</span>
+<span>  idField <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  snap_dist <span class="op">=</span> <span class="fl">300</span>,</span>
+<span>  max_iter <span class="op">=</span> <span class="fl">100</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
