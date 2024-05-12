@@ -85,6 +85,10 @@ jobs:
         with:
           token: ${{ secrets.RHUB_TOKEN }}
           job-config: ${{ matrix.config.job-config }}
+      - name: Query dependencies
+        run: |
+          install.packages('terra', repos='https://rspatial.r-universe.dev')
+        shell: Rscript {0}
       - uses: r-hub/actions/setup-deps@v1
         with:
           job-config: ${{ matrix.config.job-config }}
