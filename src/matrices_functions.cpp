@@ -1,6 +1,18 @@
 #include "spNetwork.h"
 
 // a simple function to create a vector of values between a start and an end with defined step
+std::vector<double> seq_num(double start, double end, double step){
+
+  std::vector<double> values;
+  double cumul = 0 - step;
+  while(cumul+step < end){
+    cumul+=step;
+    values.push_back(cumul);
+  }
+  return values;
+}
+
+// a simple function to create a vector of values between a start and an end with defined step
 // [[Rcpp::export]]
 std::vector<double> seq_num2(double start, double end, double step){
 
