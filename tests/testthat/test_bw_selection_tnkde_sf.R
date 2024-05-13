@@ -522,7 +522,33 @@ test_that("Testing the bw selection function with CV likelihood and simple kerne
                                           verbose=FALSE,
                                           check=FALSE)
 
-  expect_equal(obs_value[1,1], loo_value)
+  future::plan(future::multisession(workers=1))
+  obs_value2 <-bw_tnkde_cv_likelihood_calc.mc(bws_net = seq(10,20,5),
+                                              bws_time = seq(6,7,1),
+                                              lines = all_lines,
+                                              events = event,
+                                              time_field = "Time",
+                                              w = c(1,1,1,1),
+                                              kernel_name = "quartic",
+                                              method = "simple",
+                                              diggle_correction = FALSE,
+                                              study_area = NULL,
+                                              adaptive = TRUE,
+                                              trim_net_bws = c(20,30,40),
+                                              trim_time_bws = c(12,14),
+                                              max_depth = 15,
+                                              digits=5,
+                                              tol=0.001,
+                                              agg=NULL,
+                                              sparse=TRUE,
+                                              grid_shape=c(3,3),
+                                              sub_sample=1,
+                                              verbose=FALSE,
+                                              check=FALSE)
+
+  # and comparing it with the multicore !
+
+  expect_equal(obs_value[1,1],obs_value2[1,1], loo_value)
 })
 
 ## TEST POUR LA VERSION DISCONTINUE
