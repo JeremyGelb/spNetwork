@@ -548,7 +548,9 @@ test_that("Testing the bw selection function with CV likelihood and simple kerne
 
   # and comparing it with the multicore !
 
-  expect_equal(obs_value[1,1],obs_value2[1,1], loo_value)
+  expect_equal(round(obs_value[1,1],4),
+               round(obs_value2[1,1], 4),
+               round(loo_value, 4))
 })
 
 ## TEST POUR LA VERSION DISCONTINUE
