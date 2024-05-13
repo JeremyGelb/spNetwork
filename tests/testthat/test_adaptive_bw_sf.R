@@ -134,10 +134,31 @@ test_that("Testing the adaptive_bw.mc function", {
     check = FALSE
   )
 
+  observed2 <- nkde.mc(
+    events = event,
+    w = event$w,
+    samples = event,
+    lines = all_lines,
+    adaptive = TRUE,
+    bw = 3,
+    trim_bw = 5,
+    method = "discontinuous",
+    kernel_name = "quartic",
+    max_depth = 8,
+    tol = 0.1,
+    digits = 2,
+    sparse = TRUE,
+    verbose = FALSE,
+    grid_shape = c(3,3),
+    check = FALSE
+  )
+
   abws_2 <- observed$events$bw[match(event$sp_id, observed$events$spid)]
+  abws_3 <- observed2$events$bw[match(event$sp_id, observed2$events$spid)]
 
   diff <- sum(round(abs(abws - abws_2),6))
-  expect_equal(diff, 0)
+  diff2 <- sum(round(abs(abws - abws_3),6))
+  expect_equal(diff, 0, diff2)
 })
 
 
