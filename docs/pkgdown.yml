@@ -1,16 +1,16 @@
 pandoc: 3.1.1
-pkgdown: 2.0.7
+pkgdown: 2.0.9
 pkgdown_sha: ~
 articles:
+  AdaptiveBW: web_vignettes/AdaptiveBW.html
   Isochrones: Isochrones.html
   KNetworkFunctions: KNetworkFunctions.html
   NetworkBuilding: NetworkBuilding.html
   NKDE: NKDE.html
-  SpatialWeightMatrices: SpatialWeightMatrices.html
-  TNKDE: TNKDE.html
-  AdaptiveBW: web_vignettes/AdaptiveBW.html
   NKDEdetailed: web_vignettes/NKDEdetailed.html
   SpaceTimeDBscan: web_vignettes/SpaceTimeDBscan.html
+  SpatialWeightMatrices: SpatialWeightMatrices.html
   SpeedVSprecision: web_vignettes/SpeedVSprecision.html
-last_built: 2024-05-11T21:05Z
+  TNKDE: TNKDE.html
+last_built: 2024-05-20T02:52Z
 

@@ -408,3 +408,22 @@ We changed the functions using it to remove the dependency.
 
 **correction:**
 This has been replaced as suggested by the inherits function
+
+
+# Version 0.4.4.2
+
+submitted the 20/05/2024
+
+**Problem:**
+c++ compilation warning on gcc-14 (GCC) 14.1.0 x86_64-pc-linux-gnu
+
+Found the following significant warnings:
+  bw_selection_tnkde.cpp:760:85: warning: ISO C++ forbids compound-literals [-Wpedantic]
+  bw_selection_tnkde.cpp:765:83: warning: ISO C++ forbids compound-literals [-Wpedantic]
+  nkde_continuous.cpp:127:151: warning: ISO C++ forbids compound-literals [-Wpedantic]
+  nkde_continuous.cpp:134:145: warning: ISO C++ forbids compound-literals [-Wpedantic]
+  nkde_discontinuous.cpp:112:81: warning: ISO C++ forbids compound-literals [-Wpedantic]
+
+**correction:**
+The c++ code has been modified to avoid the compound-literals
+

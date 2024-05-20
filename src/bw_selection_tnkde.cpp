@@ -756,13 +756,15 @@ arma::cube esc_kernel_loo_tnkde(fptros kernel_func, arma::sp_imat &edge_mat,
               if(n>2){
                 double p2 = (2.0-n)/n;
                 double new_alpha = cas.alpha * p2;
-                //data_holder.push_back(new_case);
-                data_holder.push_back((struct acase){v2,cas.v,new_depth,d2,new_alpha});
+                acase new_case = {v2,cas.v,new_depth,d2,new_alpha};
+                data_holder.push_back(new_case);
+                //data_holder.push_back((struct acase){v2,cas.v,new_depth,d2,new_alpha});
               }
             }else{
               double new_alpha = cas.alpha * (2.0/n);
-              //data_holder.push_back(new_case);
-              data_holder.push_back((struct acase){v2,cas.v,new_depth,d2,new_alpha});
+              acase new_case = {v2,cas.v,new_depth,d2,new_alpha};
+              data_holder.push_back(new_case);
+              //data_holder.push_back((struct acase){v2,cas.v,new_depth,d2,new_alpha});
             }
           }
         }

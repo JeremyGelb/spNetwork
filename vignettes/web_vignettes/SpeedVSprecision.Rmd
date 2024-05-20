@@ -112,7 +112,6 @@ progressr::with_progress({
       }, future.packages = c("spNetwork"))
 })
 
-save(all_densities, params_df, file = 'speed_vs_precision_data.rda')
 ```
 
 ```{r message=FALSE, warning=FALSE, echo = FALSE, include = FALSE}
@@ -331,12 +330,12 @@ Lastly, we want to asses the impact of the `max_depth` parameter on the bandwidt
 
 items <- c(4,6,8,10,12,14)
 
-df_params <- data.frame(
+df_params2 <- data.frame(
   max_depth = c(4,6,8,10,12,14),
   index = c(1,2,3,4,5,6)
 )
 
-items <- split(df_params, 1:nrow(df_params))
+items <- split(df_params2, 1:nrow(df_params2))
 
 future::plan(future::multisession(workers=6))
 
@@ -365,7 +364,6 @@ progressr::with_progress({
       }, future.packages = c("spNetwork"))
 })
 
-save(all_bw_scores, file = 'speed_vs_precision_data2.rda')
 ```
 
 ```{r message=FALSE, warning=FALSE, echo = FALSE, include = FALSE}

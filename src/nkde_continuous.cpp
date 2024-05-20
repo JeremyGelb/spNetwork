@@ -123,15 +123,17 @@ arma::vec esc_kernel_rcpp_arma_sparse(fptr kernel_func, List &neighbour_list, ar
                 //acase new_case = {cas.v2,v3,l2,new_depth,d2,(cas.alpha * ((2.0-n)/n))};
                 //Rcout << "  adding this cas : d="<<d2<<", v2="<<v2<<", v3="<<v3<<", l2="<<l2<<" alpha="<<new_alpha<<"\n";
                 //data_holder.push(new_case);
-                //data_holder.push_back(new_case);
-                data_holder.push_back((struct acase){cas.v2,v3,edge_mat(cas.v2,v3),new_depth,(cas.d + line_weights[cas.l-1]),(cas.alpha * ((2.0-n)/n))});
+                acase new_case = {cas.v2,v3,edge_mat(cas.v2,v3),new_depth,(cas.d + line_weights[cas.l-1]),(cas.alpha * ((2.0-n)/n))};
+                data_holder.push_back(new_case);
+                //data_holder.push_back((struct acase){cas.v2,v3,edge_mat(cas.v2,v3),new_depth,(cas.d + line_weights[cas.l-1]),(cas.alpha * ((2.0-n)/n))});
               }
             }else{
               //acase new_case = {cas.v2,v3,l2,new_depth,d2,(cas.alpha * (2.0/n))};
               //Rcout << "  adding this cas : d="<<d2<<", v2="<<v2<<", v3="<<v3<<", l2="<<l2<<" alpha="<<new_alpha<<"\n";
               //data_holder.push(new_case);
-              //data_holder.push_back(new_case);
-              data_holder.push_back((struct acase){cas.v2,v3,edge_mat(cas.v2,v3),new_depth,(cas.d + line_weights[cas.l-1]),(cas.alpha * (2.0/n))});
+              acase new_case = {cas.v2,v3,edge_mat(cas.v2,v3),new_depth,(cas.d + line_weights[cas.l-1]),(cas.alpha * (2.0/n))};
+              data_holder.push_back(new_case);
+              //data_holder.push_back((struct acase){cas.v2,v3,edge_mat(cas.v2,v3),new_depth,(cas.d + line_weights[cas.l-1]),(cas.alpha * (2.0/n))});
             }
           }
         }
