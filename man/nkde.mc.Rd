@@ -132,7 +132,7 @@ densities <- nkde.mc(mtl_network,
                   adaptive = FALSE, agg = 15,
                   method = "discontinuous", digits = 1, tol = 1,
                   grid_shape = c(3,3),
-                  verbose=FALSE)
+                  verbose=TRUE)
 ## make sure any open connections are closed afterward
 if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
 }

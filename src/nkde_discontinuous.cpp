@@ -107,9 +107,9 @@ arma::vec esd_kernel_rcpp_arma_sparse(fptr kernel_func, arma::sp_imat &edge_mat,
           double d2 = line_weights[edge_id-1] + cas.d;
 
           if (d2<bw and new_depth<max_depth){
-            // acase new_cas = {d2,new_alpha,v2,v,new_depth};
-            //data_holder.push_back(new_cas);
-            data_holder.push_back((struct acase){d2,new_alpha,v2,cas.v,new_depth});
+            acase new_cas = {d2,new_alpha,v2,cas.v,new_depth};
+            data_holder.push_back(new_cas);
+            //data_holder.push_back((struct acase){d2,new_alpha,v2,cas.v,new_depth});
           }
         }
       }
