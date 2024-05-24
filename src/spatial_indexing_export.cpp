@@ -1,3 +1,6 @@
+// Include Rcpp system header file (e.g. <>)
+#include <RcppArmadillo.h>
+
 // Include our definition of the student file (e.g. "")
 #include "spatial_indexing.h"
 

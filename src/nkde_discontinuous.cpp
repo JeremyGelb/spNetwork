@@ -61,9 +61,10 @@ arma::vec esd_kernel_rcpp_arma_sparse(fptr kernel_func, arma::sp_imat &edge_mat,
     acase cas = data_holder.back();
     data_holder.pop_back();
 
+    int v = cas.v;
 
     //step1 : find all the neighbours
-    IntegerVector neighbours = neighbour_list[cas.v-1];
+    IntegerVector neighbours = neighbour_list[v-1];
 
     //step2 : iterate over the neighbours
     cnt_n = neighbours.length();
@@ -88,7 +89,7 @@ arma::vec esd_kernel_rcpp_arma_sparse(fptr kernel_func, arma::sp_imat &edge_mat,
         //on ne veut pas revenir en arriere !
         if(v2!=cas.prev_node){
           //find the edge between the two nodes
-          int edge_id = edge_mat(cas.v,v2);
+          int edge_id = edge_mat(v,v2);
           //find the samples on that edge
           arma::uvec test = arma::find(samples_edgeid==edge_id);
 
@@ -97,7 +98,7 @@ arma::vec esd_kernel_rcpp_arma_sparse(fptr kernel_func, arma::sp_imat &edge_mat,
 
           //extracting the X and Y coordinates of the starting node
 
-          arma::colvec x_dists =  arma::sqrt(arma::sum(arma::pow(sampling_coords.each_row() - nodes_coords.row((cas.v - 1)),2),1)) + cas.d;
+          arma::colvec x_dists =  arma::sqrt(arma::sum(arma::pow(sampling_coords.each_row() - nodes_coords.row((v - 1)),2),1)) + cas.d;
 
           //step3 calculating the values of the new kernel
           arma::vec new_k = kernel_func(x_dists,bw)*new_alpha;
@@ -107,7 +108,7 @@ arma::vec esd_kernel_rcpp_arma_sparse(fptr kernel_func, arma::sp_imat &edge_mat,
           double d2 = line_weights[edge_id-1] + cas.d;
 
           if (d2<bw and new_depth<max_depth){
-            acase new_cas = {d2,new_alpha,v2,cas.v,new_depth};
+            acase new_cas = {d2,new_alpha,v2,v,new_depth};
             data_holder.push_back(new_cas);
             //data_holder.push_back((struct acase){d2,new_alpha,v2,cas.v,new_depth});
           }
@@ -504,7 +505,8 @@ List discontinuous_tnkde_cpp_arma_sparse(List neighbour_list,
     // and create an awesome spatio-temporal matrix
     arma::mat k_mat(samples.nrows(), samples_time.n_elem);
 
-    for(int j = 0; j < temporal_density.n_elem; j++){
+    int mj = temporal_density.n_elem;
+    for(int j = 0; j < mj; j++){
       k_mat.col(j) = k * temporal_density[j];
     }
     // getting the actual base_k values (summed at each iteration)
@@ -583,6 +585,7 @@ List discontinuous_tnkde_cpp_arma(List neighbour_list,
   IntegerMatrix edge_mat = make_matrix(line_list, neighbour_list);
   int depth = 0;
 
+
   //step2 : iterer sur chaque event
   int cnt_e = events.length()-1;
   Progress p(cnt_e, verbose);
@@ -623,7 +626,8 @@ List discontinuous_tnkde_cpp_arma(List neighbour_list,
     // and create an awesome spatio-temporal matrix
     arma::mat k_mat(samples_x.n_elem, samples_time.n_elem);
 
-    for(int j = 0; j < temporal_density.n_elem; j++){
+    int mj = temporal_density.n_elem;
+    for(int j = 0; j < mj; j++){
       k_mat.col(j) = k * temporal_density[j];
     }
 

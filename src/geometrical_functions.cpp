@@ -63,7 +63,8 @@ linestring_t line_from_coords(NumericMatrix coords){
   // iterating on the coordinates to create a line
   linestring_t my_line;
   int j;
-  for(j = 0; j<coords.rows(); j++){
+  int rj = coords.rows();
+  for(j = 0; j < rj; j++){
     bg::append(my_line, point_t(coords(j,0),coords(j,1)));
   }
   return my_line;
@@ -77,7 +78,8 @@ lines_vector lines_vector_from_coordinates(List lines){
   int i;
   lines_vector my_lines;
   // iterating on the list of coordinates
-  for(i=0 ; i<lines.length() ; i++){
+  int ll = lines.length();
+  for(i=0 ; i < ll; i++){
     NumericMatrix line = lines(i);
     linestring_t my_line = line_from_coords(line);
     // append the line to the vector
@@ -106,7 +108,8 @@ lines_rtree build_rtree_for_lines(lines_vector lines){
 
   // iterating over the lines
   int i = 0;
-  for(i = 0 ; i < lines.size() ; i++){
+  int ls = lines.size();
+  for(i = 0 ; i < ls ; i++){
     bg::envelope(lines[i], abox);
     rtree_element el = std::make_pair(abox, i);
     mytree.insert(el);
@@ -703,7 +706,8 @@ List add_center_lines_cpp(List lines){
 
   // start the iterations
   int i,j;
-  for (i = 0; i < lines.length(); i++){
+  int ll = lines.length();
+  for (i = 0; i < ll ; i++){
     NumericMatrix line = lines(i);
 
     // determining the location of the new point
@@ -779,7 +783,8 @@ List split_lines_at_points_cpp(arma::mat Xmat, List lines, arma::colvec nearest_
 
       // step1 : calculating the cumulative distance for the points on the line
       arma::mat line_mat(line.nrow(),4);
-      for (j=0 ; j < line.nrow(); j++){
+      int ln = line.nrow();
+      for (j=0 ; j < ln ; j++){
         line_mat(j,0) = line(j,0);
         line_mat(j,1) = line(j,1);
         line_mat(j,3) = 1;

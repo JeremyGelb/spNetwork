@@ -1,6 +1,7 @@
 #' @useDynLib spNetwork
 #' @importFrom Rcpp sourceCpp
-NULL
+#' @import methods Rcpp
+"_PACKAGE"
 
 .onUnload <- function (libpath) {
   library.dynam.unload("spNetwork", libpath)

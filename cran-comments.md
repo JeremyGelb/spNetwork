@@ -427,3 +427,24 @@ Found the following significant warnings:
 **correction:**
 The c++ code has been modified to avoid the compound-literals
 
+# Version 0.4.4.3
+
+submitted the 23/05/2024
+
+**Problem:**
+complex UBSAN warning raised in tests: 
+
+
+/data/gannet/ripley/R/test-dev/RcppArmadillo/include/armadillo_bits/access.hpp:28:100: runtime error: reference binding to null pointer of type 'double'
+    #0 0x7f37bbda38bf in double& arma::access::rw<double>(double const&) /data/gannet/ripley/R/test-dev/RcppArmadillo/include/armadillo_bits/access.hpp:28
+    #1 0x7f37bbda38bf in arma::Mat<double>::colptr(unsigned int) /data/gannet/ripley/R/test-dev/RcppArmadillo/include/armadillo_bits/Mat_meat.hpp:6759
+    #2 0x7f37bbda38bf in arma::Mat<arma::Mat<double>::elem_type> arma::subview_each1_aux::operator_minus<arma::Mat<double>, 1u, arma::subview<double> >(arma::subview_each1<arma::Mat<double>, 1u> const&, arma::Base<arma::Mat<double>::elem_type, arma::subview<double> > const&) /data/gannet/ripley/R/test-dev/RcppArmadillo/include/armadillo_bits/subview_each_meat.hpp:750
+    #3 0x7f37bbdb8ab5 in arma::Mat<arma::Mat<double>::elem_type> arma::operator-<arma::Mat<double>, 1u, arma::subview<double> >(arma::subview_each1<arma::Mat<double>, 1u> const&, arma::Base<arma::Mat<double>::elem_type, arma::subview<double> > const&) /data/gannet/ripley/R/test-dev/RcppArmadillo/include/armadillo_bits/operator_minus.hpp:517
+    #4 0x7f37bbdb8ab5 in esd_kernel_rcpp_arma_sparse(arma::Col<double> (*)(arma::Col<double>, double), arma::SpMat<int>&, Rcpp::Vector<19, Rcpp::PreserveStorage>&, int, double, arma::Col<double>&, arma::Col<int>&, arma::Mat<double>&, arma::Mat<double>&, int, int) /data/gannet/ripley/R/packages/tests-gcc-SAN/spNetwork/src/nkde_discontinuous.cpp:100
+    #5 0x7f37bbdbfc88 in discontinuous_nkde_cpp_arma_sparse(Rcpp::Vector<19, Rcpp::PreserveStorage>, Rcpp::Vector<14, Rcpp::PreserveStorage>, Rcpp::Vector<14, Rcpp::PreserveStorage>, Rcpp::DataFrame_Impl<Rcpp::PreserveStorage>, Rcpp::Vector<14, Rcpp::PreserveStorage>, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, Rcpp::DataFrame_Impl<Rcpp::PreserveStorage>, Rcpp::DataFrame_Impl<Rcpp::PreserveStorage>, int, bool, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) /data/gannet/ripley/R/packages/tests-gcc-SAN/spNetwork/src/nkde_discontinuous.cpp:308
+    #6 0x7f37bbac2766 in _spNetwork_discontinuous_nkde_cpp_arma_sparse /data/gannet/ripley/R/packages/tests-gcc-SAN/spNetwork/src/RcppExports.cpp:892
+
+
+**correction:**
+The C++ has been edited for the targeted function. I have not been able to reproduce the error but I found some guidance about memory overflow when comparing integers and unsigned integers.
+

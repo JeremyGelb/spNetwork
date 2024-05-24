@@ -2,6 +2,12 @@
 #### spatial indexing ####
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+# Export the "spatial_index" C++ class by explicitly requesting spatial_index be
+# exported via roxygen2's export tag.
+#' @export spatial_index
+
+loadModule(module = "spatial_index_cpp", TRUE)
+
 
 #' @title Obtain all the bounding boxes of a feature collection
 #'

@@ -50,8 +50,10 @@ arma::vec esc_kernel_rcpp_arma_sparse(fptr kernel_func, List &neighbour_list, ar
 
   // let us prepare the first cases
   IntegerVector v_neighbours = neighbour_list[v-1];
-  double alpha = 2.0/v_neighbours.length();
-  for(int j = 0; j < v_neighbours.length(); j++){
+  int vl = v_neighbours.length();
+
+  double alpha = 2.0/vl;
+  for(int j = 0; j < vl ; j++){
     int v2 = v_neighbours[j];
     int l = edge_mat(v,v2);
     acase el = {v,v2,l,0,0.0,alpha};
@@ -66,6 +68,8 @@ arma::vec esc_kernel_rcpp_arma_sparse(fptr kernel_func, List &neighbour_list, ar
     acase cas = data_holder.back();
     data_holder.pop_back();
 
+    int v1 = cas.v1;
+    int v2 = cas.v2;
     //Rcout << "Iterating on this cas : d="<<d<<", v1="<<v1<<", v2="<<v2<<", l="<<l<<" alpha="<<alpha<<"\n";
 
 
@@ -81,7 +85,7 @@ arma::vec esc_kernel_rcpp_arma_sparse(fptr kernel_func, List &neighbour_list, ar
 
     //arma::colvec x_dists = calcEuclideanDistance3(sampling_coords, nodes_coords.row(cas.v1-1)) + cas.d;
 
-    arma::colvec x_dists =  arma::sqrt(arma::sum(arma::pow(sampling_coords.each_row() - nodes_coords.row(cas.v1-1),2),1)) + cas.d;
+    arma::colvec x_dists =  arma::sqrt(arma::sum(arma::pow(sampling_coords.each_row() - nodes_coords.row(v1-1),2),1)) + cas.d;
 
     //arma::vec x_dists = arma::sqrt(arma::pow((sampling_x - nodes_x[cas.v1-1]),2) + arma::pow((sampling_y - nodes_y[cas.v1-1]),2)) + cas.d;
     // NumericVector tempx = wrap(x_dists);
@@ -96,7 +100,7 @@ arma::vec esc_kernel_rcpp_arma_sparse(fptr kernel_func, List &neighbour_list, ar
     if(bw >= cas.d){
 
       // noice, now we can check the reachable nodes and create new cases
-      IntegerVector v2_neighbours = neighbour_list[cas.v2-1];
+      IntegerVector v2_neighbours = neighbour_list[v2-1];
       int n = v2_neighbours.length();
 
       int new_depth;
@@ -118,12 +122,12 @@ arma::vec esc_kernel_rcpp_arma_sparse(fptr kernel_func, List &neighbour_list, ar
             // int l2 = edge_mat(cas.v2,v3);
             // double d2 = cas.d + line_weights[cas.l-1];
             // first case, we must back fire
-            if(v3 == cas.v1){
+            if(v3 == v1){
               if(n>2){
                 //acase new_case = {cas.v2,v3,l2,new_depth,d2,(cas.alpha * ((2.0-n)/n))};
                 //Rcout << "  adding this cas : d="<<d2<<", v2="<<v2<<", v3="<<v3<<", l2="<<l2<<" alpha="<<new_alpha<<"\n";
                 //data_holder.push(new_case);
-                acase new_case = {cas.v2,v3,edge_mat(cas.v2,v3),new_depth,(cas.d + line_weights[cas.l-1]),(cas.alpha * ((2.0-n)/n))};
+                acase new_case = {cas.v2,v3,edge_mat(v2,v3),new_depth,(cas.d + line_weights[cas.l-1]),(cas.alpha * ((2.0-n)/n))};
                 data_holder.push_back(new_case);
                 //data_holder.push_back((struct acase){cas.v2,v3,edge_mat(cas.v2,v3),new_depth,(cas.d + line_weights[cas.l-1]),(cas.alpha * ((2.0-n)/n))});
               }
@@ -1091,7 +1095,8 @@ List continuous_tnkde_cpp_arma_sparse(List neighbour_list,
     // and create an awesome spatio-temporal matrix
     arma::mat k_mat(samples.nrows(), samples_time.n_elem);
 
-    for(int j = 0; j < temporal_density.n_elem; j++){
+    int mj = temporal_density.n_elem;
+    for(int j = 0; j < mj; j++){
       k_mat.col(j) = samples_k * temporal_density[j];
     }
 
@@ -1212,7 +1217,9 @@ List continuous_tnkde_cpp_arma(List neighbour_list,
     // and create an awesome spatio-temporal matrix
     arma::mat k_mat(samples_x.n_elem, samples_time.n_elem);
 
-    for(int j = 0; j < temporal_density.n_elem; j++){
+    int mj = temporal_density.n_elem;
+
+    for(int j = 0; j  <mj; j++){
       k_mat.col(j) = samples_k * temporal_density[j];
     }
 
