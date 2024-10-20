@@ -77,8 +77,8 @@ test_that("Testing on a simple scenario if the neighbouring functions are produc
   eventbuff <- sf::st_buffer(event, dist = 1)
 
 
-  listw1 <- network_listw(eventbuff,
-                         all_lines,
+  listw1 <- network_listw(origins = eventbuff,
+                         lines = all_lines,
                          method = "pointsalong",
                          point_dist = 0.25,
                          maxdistance = 8,

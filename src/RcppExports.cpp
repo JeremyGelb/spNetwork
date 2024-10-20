@@ -595,6 +595,110 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// kfunc_counting
+NumericMatrix kfunc_counting(arma::mat dist_mat, arma::rowvec wc, NumericVector wr, NumericVector breaks, bool cross);
+RcppExport SEXP _spNetwork_kfunc_counting(SEXP dist_matSEXP, SEXP wcSEXP, SEXP wrSEXP, SEXP breaksSEXP, SEXP crossSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type dist_mat(dist_matSEXP);
+    Rcpp::traits::input_parameter< arma::rowvec >::type wc(wcSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type wr(wrSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type breaks(breaksSEXP);
+    Rcpp::traits::input_parameter< bool >::type cross(crossSEXP);
+    rcpp_result_gen = Rcpp::wrap(kfunc_counting(dist_mat, wc, wr, breaks, cross));
+    return rcpp_result_gen;
+END_RCPP
+}
+// kfunc_cpp2
+NumericVector kfunc_cpp2(arma::mat dist_mat, float start, float end, float step, float Lt, int n, arma::rowvec wc, NumericVector wr, bool cross);
+RcppExport SEXP _spNetwork_kfunc_cpp2(SEXP dist_matSEXP, SEXP startSEXP, SEXP endSEXP, SEXP stepSEXP, SEXP LtSEXP, SEXP nSEXP, SEXP wcSEXP, SEXP wrSEXP, SEXP crossSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type dist_mat(dist_matSEXP);
+    Rcpp::traits::input_parameter< float >::type start(startSEXP);
+    Rcpp::traits::input_parameter< float >::type end(endSEXP);
+    Rcpp::traits::input_parameter< float >::type step(stepSEXP);
+    Rcpp::traits::input_parameter< float >::type Lt(LtSEXP);
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< arma::rowvec >::type wc(wcSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type wr(wrSEXP);
+    Rcpp::traits::input_parameter< bool >::type cross(crossSEXP);
+    rcpp_result_gen = Rcpp::wrap(kfunc_cpp2(dist_mat, start, end, step, Lt, n, wc, wr, cross));
+    return rcpp_result_gen;
+END_RCPP
+}
+// gfunc_counting
+NumericMatrix gfunc_counting(arma::mat dist_mat, arma::colvec wc, NumericVector wr, NumericVector breaks, float width);
+RcppExport SEXP _spNetwork_gfunc_counting(SEXP dist_matSEXP, SEXP wcSEXP, SEXP wrSEXP, SEXP breaksSEXP, SEXP widthSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type dist_mat(dist_matSEXP);
+    Rcpp::traits::input_parameter< arma::colvec >::type wc(wcSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type wr(wrSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type breaks(breaksSEXP);
+    Rcpp::traits::input_parameter< float >::type width(widthSEXP);
+    rcpp_result_gen = Rcpp::wrap(gfunc_counting(dist_mat, wc, wr, breaks, width));
+    return rcpp_result_gen;
+END_RCPP
+}
+// gfunc_cpp2
+NumericVector gfunc_cpp2(arma::mat dist_mat, float start, float end, float step, float width, float Lt, int n, arma::rowvec wc, NumericVector wr);
+RcppExport SEXP _spNetwork_gfunc_cpp2(SEXP dist_matSEXP, SEXP startSEXP, SEXP endSEXP, SEXP stepSEXP, SEXP widthSEXP, SEXP LtSEXP, SEXP nSEXP, SEXP wcSEXP, SEXP wrSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type dist_mat(dist_matSEXP);
+    Rcpp::traits::input_parameter< float >::type start(startSEXP);
+    Rcpp::traits::input_parameter< float >::type end(endSEXP);
+    Rcpp::traits::input_parameter< float >::type step(stepSEXP);
+    Rcpp::traits::input_parameter< float >::type width(widthSEXP);
+    Rcpp::traits::input_parameter< float >::type Lt(LtSEXP);
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< arma::rowvec >::type wc(wcSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type wr(wrSEXP);
+    rcpp_result_gen = Rcpp::wrap(gfunc_cpp2(dist_mat, start, end, step, width, Lt, n, wc, wr));
+    return rcpp_result_gen;
+END_RCPP
+}
+// kgfunc_counting
+List kgfunc_counting(arma::mat dist_mat, arma::rowvec wc, NumericVector wr, NumericVector breaks, float width, double cross);
+RcppExport SEXP _spNetwork_kgfunc_counting(SEXP dist_matSEXP, SEXP wcSEXP, SEXP wrSEXP, SEXP breaksSEXP, SEXP widthSEXP, SEXP crossSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type dist_mat(dist_matSEXP);
+    Rcpp::traits::input_parameter< arma::rowvec >::type wc(wcSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type wr(wrSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type breaks(breaksSEXP);
+    Rcpp::traits::input_parameter< float >::type width(widthSEXP);
+    Rcpp::traits::input_parameter< double >::type cross(crossSEXP);
+    rcpp_result_gen = Rcpp::wrap(kgfunc_counting(dist_mat, wc, wr, breaks, width, cross));
+    return rcpp_result_gen;
+END_RCPP
+}
+// kgfunc_cpp2
+NumericMatrix kgfunc_cpp2(arma::mat dist_mat, float start, float end, float step, float width, float Lt, int n, arma::rowvec wc, NumericVector wr, bool cross);
+RcppExport SEXP _spNetwork_kgfunc_cpp2(SEXP dist_matSEXP, SEXP startSEXP, SEXP endSEXP, SEXP stepSEXP, SEXP widthSEXP, SEXP LtSEXP, SEXP nSEXP, SEXP wcSEXP, SEXP wrSEXP, SEXP crossSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type dist_mat(dist_matSEXP);
+    Rcpp::traits::input_parameter< float >::type start(startSEXP);
+    Rcpp::traits::input_parameter< float >::type end(endSEXP);
+    Rcpp::traits::input_parameter< float >::type step(stepSEXP);
+    Rcpp::traits::input_parameter< float >::type width(widthSEXP);
+    Rcpp::traits::input_parameter< float >::type Lt(LtSEXP);
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< arma::rowvec >::type wc(wcSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type wr(wrSEXP);
+    Rcpp::traits::input_parameter< bool >::type cross(crossSEXP);
+    rcpp_result_gen = Rcpp::wrap(kgfunc_cpp2(dist_mat, start, end, step, width, Lt, n, wc, wr, cross));
+    return rcpp_result_gen;
+END_RCPP
+}
 // gfunc_cpp
 NumericVector gfunc_cpp(arma::mat dist_mat, float start, float end, float step, float width, float Lt, int n, arma::colvec w);
 RcppExport SEXP _spNetwork_gfunc_cpp(SEXP dist_matSEXP, SEXP startSEXP, SEXP endSEXP, SEXP stepSEXP, SEXP widthSEXP, SEXP LtSEXP, SEXP nSEXP, SEXP wSEXP) {
@@ -674,28 +778,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// k_nt_func_cpp2
-IntegerMatrix k_nt_func_cpp2(arma::imat dist_mat_net, arma::imat dist_mat_time, int start_net, int end_net, int step_net, int start_time, int end_time, int step_time, int Lt, int Tt, int n, arma::icolvec w);
-RcppExport SEXP _spNetwork_k_nt_func_cpp2(SEXP dist_mat_netSEXP, SEXP dist_mat_timeSEXP, SEXP start_netSEXP, SEXP end_netSEXP, SEXP step_netSEXP, SEXP start_timeSEXP, SEXP end_timeSEXP, SEXP step_timeSEXP, SEXP LtSEXP, SEXP TtSEXP, SEXP nSEXP, SEXP wSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::imat >::type dist_mat_net(dist_mat_netSEXP);
-    Rcpp::traits::input_parameter< arma::imat >::type dist_mat_time(dist_mat_timeSEXP);
-    Rcpp::traits::input_parameter< int >::type start_net(start_netSEXP);
-    Rcpp::traits::input_parameter< int >::type end_net(end_netSEXP);
-    Rcpp::traits::input_parameter< int >::type step_net(step_netSEXP);
-    Rcpp::traits::input_parameter< int >::type start_time(start_timeSEXP);
-    Rcpp::traits::input_parameter< int >::type end_time(end_timeSEXP);
-    Rcpp::traits::input_parameter< int >::type step_time(step_timeSEXP);
-    Rcpp::traits::input_parameter< int >::type Lt(LtSEXP);
-    Rcpp::traits::input_parameter< int >::type Tt(TtSEXP);
-    Rcpp::traits::input_parameter< int >::type n(nSEXP);
-    Rcpp::traits::input_parameter< arma::icolvec >::type w(wSEXP);
-    rcpp_result_gen = Rcpp::wrap(k_nt_func_cpp2(dist_mat_net, dist_mat_time, start_net, end_net, step_net, start_time, end_time, step_time, Lt, Tt, n, w));
-    return rcpp_result_gen;
-END_RCPP
-}
 // g_nt_func_cpp
 NumericMatrix g_nt_func_cpp(arma::mat dist_mat_net, arma::mat dist_mat_time, float start_net, float end_net, float step_net, float width_net, float start_time, float end_time, float step_time, float width_time, float Lt, float Tt, float n, arma::colvec w);
 RcppExport SEXP _spNetwork_g_nt_func_cpp(SEXP dist_mat_netSEXP, SEXP dist_mat_timeSEXP, SEXP start_netSEXP, SEXP end_netSEXP, SEXP step_netSEXP, SEXP width_netSEXP, SEXP start_timeSEXP, SEXP end_timeSEXP, SEXP step_timeSEXP, SEXP width_timeSEXP, SEXP LtSEXP, SEXP TtSEXP, SEXP nSEXP, SEXP wSEXP) {
@@ -720,6 +802,51 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// kgfunc_time_counting
+List kgfunc_time_counting(arma::mat dist_mat_net, arma::mat dist_mat_time, arma::rowvec wc, NumericVector wr, NumericVector breaks_net, NumericVector breaks_time, float width_net, float width_time, double cross);
+RcppExport SEXP _spNetwork_kgfunc_time_counting(SEXP dist_mat_netSEXP, SEXP dist_mat_timeSEXP, SEXP wcSEXP, SEXP wrSEXP, SEXP breaks_netSEXP, SEXP breaks_timeSEXP, SEXP width_netSEXP, SEXP width_timeSEXP, SEXP crossSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type dist_mat_net(dist_mat_netSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type dist_mat_time(dist_mat_timeSEXP);
+    Rcpp::traits::input_parameter< arma::rowvec >::type wc(wcSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type wr(wrSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type breaks_net(breaks_netSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type breaks_time(breaks_timeSEXP);
+    Rcpp::traits::input_parameter< float >::type width_net(width_netSEXP);
+    Rcpp::traits::input_parameter< float >::type width_time(width_timeSEXP);
+    Rcpp::traits::input_parameter< double >::type cross(crossSEXP);
+    rcpp_result_gen = Rcpp::wrap(kgfunc_time_counting(dist_mat_net, dist_mat_time, wc, wr, breaks_net, breaks_time, width_net, width_time, cross));
+    return rcpp_result_gen;
+END_RCPP
+}
+// k_g_nt_func_cpp2
+List k_g_nt_func_cpp2(arma::mat dist_mat_net, arma::mat dist_mat_time, float start_net, float end_net, float step_net, float start_time, float end_time, float step_time, float width_net, float width_time, float Lt, float Tt, int n, arma::rowvec wc, NumericVector wr, double cross);
+RcppExport SEXP _spNetwork_k_g_nt_func_cpp2(SEXP dist_mat_netSEXP, SEXP dist_mat_timeSEXP, SEXP start_netSEXP, SEXP end_netSEXP, SEXP step_netSEXP, SEXP start_timeSEXP, SEXP end_timeSEXP, SEXP step_timeSEXP, SEXP width_netSEXP, SEXP width_timeSEXP, SEXP LtSEXP, SEXP TtSEXP, SEXP nSEXP, SEXP wcSEXP, SEXP wrSEXP, SEXP crossSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type dist_mat_net(dist_mat_netSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type dist_mat_time(dist_mat_timeSEXP);
+    Rcpp::traits::input_parameter< float >::type start_net(start_netSEXP);
+    Rcpp::traits::input_parameter< float >::type end_net(end_netSEXP);
+    Rcpp::traits::input_parameter< float >::type step_net(step_netSEXP);
+    Rcpp::traits::input_parameter< float >::type start_time(start_timeSEXP);
+    Rcpp::traits::input_parameter< float >::type end_time(end_timeSEXP);
+    Rcpp::traits::input_parameter< float >::type step_time(step_timeSEXP);
+    Rcpp::traits::input_parameter< float >::type width_net(width_netSEXP);
+    Rcpp::traits::input_parameter< float >::type width_time(width_timeSEXP);
+    Rcpp::traits::input_parameter< float >::type Lt(LtSEXP);
+    Rcpp::traits::input_parameter< float >::type Tt(TtSEXP);
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< arma::rowvec >::type wc(wcSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type wr(wrSEXP);
+    Rcpp::traits::input_parameter< double >::type cross(crossSEXP);
+    rcpp_result_gen = Rcpp::wrap(k_g_nt_func_cpp2(dist_mat_net, dist_mat_time, start_net, end_net, step_net, start_time, end_time, step_time, width_net, width_time, Lt, Tt, n, wc, wr, cross));
+    return rcpp_result_gen;
+END_RCPP
+}
 // seq_num2
 std::vector<double> seq_num2(double start, double end, double step);
 RcppExport SEXP _spNetwork_seq_num2(SEXP startSEXP, SEXP endSEXP, SEXP stepSEXP) {
@@ -730,6 +857,19 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type end(endSEXP);
     Rcpp::traits::input_parameter< double >::type step(stepSEXP);
     rcpp_result_gen = Rcpp::wrap(seq_num2(start, end, step));
+    return rcpp_result_gen;
+END_RCPP
+}
+// seq_num3
+std::vector<float> seq_num3(float start, float end, float step);
+RcppExport SEXP _spNetwork_seq_num3(SEXP startSEXP, SEXP endSEXP, SEXP stepSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< float >::type start(startSEXP);
+    Rcpp::traits::input_parameter< float >::type end(endSEXP);
+    Rcpp::traits::input_parameter< float >::type step(stepSEXP);
+    rcpp_result_gen = Rcpp::wrap(seq_num3(start, end, step));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1007,13 +1147,21 @@ static const R_CallMethodDef CallEntries[] = {
     {"_spNetwork_points_along_lines_cpp", (DL_FUNC) &_spNetwork_points_along_lines_cpp, 2},
     {"_spNetwork_points_at_lines_centers_cpp", (DL_FUNC) &_spNetwork_points_at_lines_centers_cpp, 1},
     {"_spNetwork_kfunc_cpp", (DL_FUNC) &_spNetwork_kfunc_cpp, 7},
+    {"_spNetwork_kfunc_counting", (DL_FUNC) &_spNetwork_kfunc_counting, 5},
+    {"_spNetwork_kfunc_cpp2", (DL_FUNC) &_spNetwork_kfunc_cpp2, 9},
+    {"_spNetwork_gfunc_counting", (DL_FUNC) &_spNetwork_gfunc_counting, 5},
+    {"_spNetwork_gfunc_cpp2", (DL_FUNC) &_spNetwork_gfunc_cpp2, 9},
+    {"_spNetwork_kgfunc_counting", (DL_FUNC) &_spNetwork_kgfunc_counting, 6},
+    {"_spNetwork_kgfunc_cpp2", (DL_FUNC) &_spNetwork_kgfunc_cpp2, 10},
     {"_spNetwork_gfunc_cpp", (DL_FUNC) &_spNetwork_gfunc_cpp, 8},
     {"_spNetwork_cross_kfunc_cpp", (DL_FUNC) &_spNetwork_cross_kfunc_cpp, 9},
     {"_spNetwork_cross_gfunc_cpp", (DL_FUNC) &_spNetwork_cross_gfunc_cpp, 10},
     {"_spNetwork_k_nt_func_cpp", (DL_FUNC) &_spNetwork_k_nt_func_cpp, 12},
-    {"_spNetwork_k_nt_func_cpp2", (DL_FUNC) &_spNetwork_k_nt_func_cpp2, 12},
     {"_spNetwork_g_nt_func_cpp", (DL_FUNC) &_spNetwork_g_nt_func_cpp, 14},
+    {"_spNetwork_kgfunc_time_counting", (DL_FUNC) &_spNetwork_kgfunc_time_counting, 9},
+    {"_spNetwork_k_g_nt_func_cpp2", (DL_FUNC) &_spNetwork_k_g_nt_func_cpp2, 16},
     {"_spNetwork_seq_num2", (DL_FUNC) &_spNetwork_seq_num2, 3},
+    {"_spNetwork_seq_num3", (DL_FUNC) &_spNetwork_seq_num3, 3},
     {"_spNetwork_seq_num2f", (DL_FUNC) &_spNetwork_seq_num2f, 3},
     {"_spNetwork_extend_matrix_by_ids", (DL_FUNC) &_spNetwork_extend_matrix_by_ids, 3},
     {"_spNetwork_reverseByRow", (DL_FUNC) &_spNetwork_reverseByRow, 1},

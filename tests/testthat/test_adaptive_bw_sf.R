@@ -7,6 +7,7 @@ library(sf)
 
 test_that("Testing the adaptive_bw function", {
 
+  #skip_on_cran()
   # defining a simple situation
   wkt_lines <- c(
     "LINESTRING (0 5, 0 0)",

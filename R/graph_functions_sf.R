@@ -1,4 +1,4 @@
-#' @title Network generation
+#' @title Network generation with igraph
 #'
 #' @description Generate an igraph object from a feature collection of linestrings
 #'
@@ -98,6 +98,126 @@ build_graph <- function(lines, digits, line_weight, attrs = FALSE) {
     return(list(graph = graph, linelist = linelist, lines = lines,
                 spvertices = points, digits = digits, spedges = spedges))
 }
+
+
+#' @title Network generation with cppRouting
+#'
+#' @description Generate an cppRouting object from a feature collection of linestrings
+#'
+#' @details This function can be used to generate an undirected graph object (cppRouting
+#'   object). It uses the coordinates of the linestrings extremities to create
+#'   the nodes of the graph. This is why the number of digits in the coordinates
+#'   is important. Too high precision (high number of digits) might break some
+#'   connections.
+#'
+#' @param lines A feature collection of lines
+#' @param digits The number of digits to keep from the coordinates
+#' @param line_weight The name of the column giving the weight of the lines
+#' @param attrs A boolean indicating if the original lines' attributes should be
+#'   stored in the final object
+#' @return A list containing the following elements:
+#' \itemize{
+#'         \item graph: an cppRouting object;
+#'         \item linelist: the dataframe used to build the graph;
+#'         \item lines: the original feature collection of linestrings;
+#'         \item spvertices: a feature collection of points representing the vertices
+#'         of the graph;
+#'         \item digits : the number of digits kept for the coordinates.
+#' }
+#' @importFrom sf st_as_text st_length st_geometry st_geometry<-
+#' @importFrom utils strcapture
+#' @export
+#' @examples
+#' data(mtl_network)
+#' mtl_network$length <- as.numeric(sf::st_length(mtl_network))
+#' graph_result <- build_graph_cppr(mtl_network, 2, "length", attrs = TRUE)
+#'
+build_graph_cppr <- function(lines, digits, line_weight, attrs = FALSE, direction = NULL) {
+
+  if(is.null(direction)){
+
+    all_lines <- direct_lines(lines, rep(0, nrow(lines)))
+
+  }else{
+    # doubling the lines if needed
+    all_lines <- lines_direction(lines, direction)
+    dir <- ifelse(all_lines[[direction]] =="Both", 0,1)
+    all_lines <- direct_lines(lines, dir)
+
+  }
+
+  lines <- all_lines
+
+  # extracting lines coordinates lines_coords
+  extremites <- lines_extremities(lines)
+  extremites$name <- sp_char_index(st_coordinates(extremites), digits)
+
+  # extracting the coordinates of the starting and end points start_coords
+  start <- extremites[extremites$pttype == "start",]$name
+  end <- extremites[extremites$pttype == "end",]$name
+
+  weights <- lines[[line_weight]]
+
+  # building the line list
+  linelist <- data.frame(start = start, end = end, weight = weights,
+                         graph_id = 1:nrow(lines), wkt= st_as_text(st_geometry(lines)))
+
+  if (attrs) {
+    linelist <- cbind(linelist, st_drop_geometry(lines))
+  }
+
+  # establishing the coordinates
+  all_nodes <- data.frame(
+    name = unique(c(linelist$start, linelist$end)))
+  all_nodes$id <- 1:nrow(all_nodes)
+  ids <- match(all_nodes$name,extremites$name)
+  all_nodes$X <- extremites$X[ids]
+  all_nodes$Y <- extremites$Y[ids]
+
+  linelist$from <- all_nodes$id[match(linelist$start, all_nodes$name)]
+  linelist$to <- all_nodes$id[match(linelist$end, all_nodes$name)]
+
+
+  ## generating the graph
+  graph <- cppRouting::makegraph(linelist[c('from','to','weight')], coords = all_nodes[c('id','X','Y')])
+
+  # NOTE : in the dict, ref is the original id given, id is the code used in data.
+  # WARNING, in graph$coords, the column id is not the id, but the ref
+
+
+  ## building a spatial object for the vertices
+  vertices <- graph$coords
+  vertices$ref <- vertices$id
+  vertices$id <- graph$dict$id[match(vertices$id, graph$dict$ref)]
+
+  points <- sf_pts <- st_as_sf(
+    x = vertices,
+    coords = c("X","Y"),
+    crs = st_crs(lines)
+  )
+  points$x <- vertices$X
+  points$y <- vertices$Y
+
+
+  ##building a spatial object for the lines
+  ok_cols <- names(linelist)[!(names(linelist) %in% c('from', 'to', 'dist'))]
+  edge_df <- cbind(graph$data, linelist[ok_cols])
+
+  spedges <- st_as_sf(
+    edge_df,
+    wkt = "wkt",
+    crs = st_crs(lines)
+  )
+
+  return(list(graph = graph,
+              linelist = linelist,
+              lines = lines,
+              spvertices = points,
+              digits = digits,
+              spedges = spedges))
+}
+
+
 
 #' @title Directed network generation
 #'
@@ -231,7 +351,7 @@ build_graph_directed <- function(lines, digits, line_weight, direction, attrs = 
 #' @keywords internal
 #' @examples
 #' #This is an internal function, no example provided
-direct_lines<-function(lines,direction){
+direct_lines <- function(lines,direction){
   ##producing all the lines
   lines$jgtmpid <- 1:nrow(lines)
   to_reverse <- lines[direction == 0,]
@@ -240,41 +360,6 @@ direct_lines<-function(lines,direction){
   reversed <- st_reverse(to_reverse)
   final_lines <- rbind(to_keep, to_reverse, reversed)
   final_lines <- final_lines[order(final_lines$jgtmpid),]
-  # #allcoordinates <- coordinates(lines)
-  # allcoordinates <- unlist(coordinates(lines), recursive = FALSE)
-  # listlines <- lapply(1:nrow(lines),function(i){
-  #   #coords <- allcoordinates[[i]][[1]]
-  #   coords <- allcoordinates[[i]]
-  #   if(direction[[i]]==0){
-  #     c1 <- coords
-  #     c2 <- coords[nrow(coords):1,]
-  #     L1 <- Lines(list(Line(c1)), ID = cnt)
-  #     cnt <<- cnt+1
-  #     L2 <- Lines(list(Line(c2)), ID = cnt)
-  #     cnt <<- cnt+1
-  #     return (list(L1,L2))
-  #   }else{
-  #     c1 <- coords
-  #     L1 <- Lines(list(Line(c1)), ID = cnt)
-  #     cnt <<- cnt+1
-  #     return (list(L1))
-  #   }
-  # })
-  # alllines <- unlist(listlines)
-  # splines <- SpatialLines(alllines)
-  # ##producing all the data
-  # oids <- lapply(1:nrow(lines),function(i){
-  #   if(direction[[i]]==0){
-  #     return(c(i,i))
-  #   }else{
-  #     return(c(i))
-  #   }
-  # })
-  # oids <- do.call("c",oids)
-  # data <- lines@data[oids,]
-  # #combining the lines and the data
-  # df <- SpatialLinesDataFrame(splines,data,match.ID = FALSE)
-  # raster::crs(df) <- raster::crs(lines)
 
   return(final_lines)
 }
@@ -376,58 +461,39 @@ graph_checking <- function(lines,digits, max_search = 5, tol = 0.1){
 #' @param graph The Graph to use
 #' @param start The vertices to use as starting points
 #' @param end The vertices to use as ending points
+#' @param ... parameters passed to the function igraph::distances
 #' @return A matrix with the distances between the vertices
 #' @keywords internal
 #' @examples
 #' #This is an internal function, no example provided
-dist_mat_dupl <- function(graph, start, end ){ # nocov start
-  start <- as.numeric(start)
-  end <- as.numeric(end)
-  final_cols <- lapply(start, function(i){
-    rows <- data.frame(start = rep(i,length(end)),
-                       end = end)
-    return(rows)
-  })
-  final_cols <- data.frame(do.call(rbind, final_cols))
-  final_cols$oid <- paste(final_cols$start,final_cols$end, sep="_")
-  ustart <- unique(start)
-  udend <- unique(end)
-  distmat <- igraph::distances(graph,ustart,udend, mode = "out")
-  start_names <- row.names(distmat)
-  start_codes <- as.numeric(igraph::V(graph)[start_names])
-  end_names <- colnames(distmat)
-  end_codes <- as.numeric(igraph::V(graph)[end_names])
-  all_distances <- lapply(1:nrow(distmat),function(i){
-    row <- as.numeric(distmat[i,])
-    start_name <- start_codes[[i]]
-    rows <- data.frame(start = rep(start_name,length(row)),
-                       end = end_codes,
-                       dist = row)
-    return(rows)
-  })
-  all_distances <- do.call(rbind, all_distances)
-  all_distances$oid <- paste(all_distances$start,all_distances$end, sep="_")
-  ok_distances <- merge(final_cols, all_distances[c("oid","dist")], by = "oid", all.x = TRUE, all.y = FALSE)
-  sorted_distances <- ok_distances[order(ok_distances$start, ok_distances$end),]
-  # unmelting now
-  jump <- length(end)
-  rows <- lapply(1:length(start), function(i){
-    if (i==1){
-      i1 <- (i-1) * jump
-      i2 <- i1 + 150
-    }else {
-      i1 <- ((i-1) * jump)
-      i2 <- i1 + 150
-      i1 <- i1 + 1
-    }
-    dists <- sorted_distances[i1:i2,"dist"]
-    return(dists)
-  })
-  mat <- do.call(rbind,rows)
-  row.names(mat) <- start
-  colnames(mat) <- end
-  return(mat)
+dist_mat_dupl <- function(graph, start, end, ...){ # nocov start
+
+
+  ## we start by calculating the distance matrix with unique values
+
+  dist_mat <- igraph::distances(graph,v = unique(start),
+                                to = unique(end), ...)
+
+  ## we must expand the matrix !
+  L1 <- length(unique(start)) + length(unique(end))
+  L2 <- length(start) + length(end)
+
+  if(L1 != L2){
+
+    pos_row <- match(start, unique(start))
+    pos_col <- match(end, unique(end))
+    dist_mat2 <- t(sapply(pos_row, function(ii){
+      values <- dist_mat[ii,pos_col]
+      return(values)
+    }))
+    dist_mat <- dist_mat2
+  }
+
+  return(dist_mat)
+
 } # nocov end
+
+
 
 
 #' @title Split graph components

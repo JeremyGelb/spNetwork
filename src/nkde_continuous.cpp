@@ -76,25 +76,29 @@ arma::vec esc_kernel_rcpp_arma_sparse(fptr kernel_func, List &neighbour_list, ar
     // calculating the density values of the sample on that edge
 
     arma::uvec test = arma::find(samples_edgeid == cas.l);
-    arma::mat sampling_coords = samples_coords.rows(test);
 
-    // NOTE : I would like to use the precalcualte distance given here : mat_dist_samples
+    // we do the calculus only if we have some coords to calculate on
+    if(test.n_elem  > 0){
+      arma::mat sampling_coords = samples_coords.rows(test);
 
-    // and calculate their distance to the start node
-    // NOTE : I could use some memoization here ?
+      // and calculate their distance to the start node
+      // NOTE : I could use some memoization here ?
 
-    //arma::colvec x_dists = calcEuclideanDistance3(sampling_coords, nodes_coords.row(cas.v1-1)) + cas.d;
+      //arma::colvec x_dists = calcEuclideanDistance3(sampling_coords, nodes_coords.row(cas.v1-1)) + cas.d;
 
-    arma::colvec x_dists =  arma::sqrt(arma::sum(arma::pow(sampling_coords.each_row() - nodes_coords.row(v1-1),2),1)) + cas.d;
+      arma::colvec x_dists =  arma::sqrt(arma::sum(arma::pow(sampling_coords.each_row() - nodes_coords.row(v1-1),2),1)) + cas.d;
 
-    //arma::vec x_dists = arma::sqrt(arma::pow((sampling_x - nodes_x[cas.v1-1]),2) + arma::pow((sampling_y - nodes_y[cas.v1-1]),2)) + cas.d;
-    // NumericVector tempx = wrap(x_dists);
-    //Rcout << tempx <<"\n";
-    // and calculating the new kernel value
-    arma::vec new_k = kernel_func(x_dists,bw)*cas.alpha;
-    samples_k.elem(test) += new_k;
-    //NumericVector tempk = wrap(samples_k);
-    //Rcout << tempk <<"\n";
+      //arma::vec x_dists = arma::sqrt(arma::pow((sampling_x - nodes_x[cas.v1-1]),2) + arma::pow((sampling_y - nodes_y[cas.v1-1]),2)) + cas.d;
+      // NumericVector tempx = wrap(x_dists);
+      //Rcout << tempx <<"\n";
+      // and calculating the new kernel value
+      arma::vec new_k = kernel_func(x_dists,bw)*cas.alpha;
+      samples_k.elem(test) += new_k;
+      //NumericVector tempk = wrap(samples_k);
+      //Rcout << tempk <<"\n";
+    }
+
+
 
 
     if(bw >= cas.d){

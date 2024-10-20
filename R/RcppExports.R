@@ -607,6 +607,104 @@ kfunc_cpp <- function(dist_mat, start, end, step, Lt, n, w) {
     .Call(`_spNetwork_kfunc_cpp`, dist_mat, start, end, step, Lt, n, w)
 }
 
+#' @title c++ k function counting worker
+#' @name kfunc_counting
+#' @description c++ k function counting (INTERNAL)
+#' @param dist_mat A matrix with the distances between points
+#' @param wc The weight of the points represented by the columns (destinations)
+#' @param wr The weight of the points represented by the rows (origins)
+#' @param breaks A numeric vector with the distance to consider
+#' @param cross A boolean indicating if we are calculating a cross k function or not (default is FALSE)
+#' @return A numeric matrix with the countings of the k function evaluated at the required distances
+#' @export
+kfunc_counting <- function(dist_mat, wc, wr, breaks, cross = FALSE) {
+    .Call(`_spNetwork_kfunc_counting`, dist_mat, wc, wr, breaks, cross)
+}
+
+#' @title c++ k function 2
+#' @name kfunc_cpp 2
+#' @description c++ k function (INTERNAL)
+#' @param dist_mat A square matrix with the distances between points
+#' @param start A float, the start value for evaluating the k-function
+#' @param end A float, the last value for evaluating the k-function
+#' @param step A float, the jump between two evaluations of the k-function
+#' @param Lt The total length of the network
+#' @param n The number of points
+#' @param wc The weight of the points represented by the columns (destinations)
+#' @param wr The weight of the points represented by the rows (origins)
+#' @param cross A boolean indicating if we are calculating a cross k function or not (default is FALSE)
+#' @return A numeric vector with the values of the k function evaluated at the required distances
+#' @export
+kfunc_cpp2 <- function(dist_mat, start, end, step, Lt, n, wc, wr, cross = FALSE) {
+    .Call(`_spNetwork_kfunc_cpp2`, dist_mat, start, end, step, Lt, n, wc, wr, cross)
+}
+
+#' @title c++ g function counting worker
+#' @name gfunc_counting
+#' @description c++ k function counting (INTERNAL)
+#' @param dist_mat A matrix with the distances between points
+#' @param wc The weight of the points represented by the columns (destinations)
+#' @param wr The weight of the points represented by the rows (origins)
+#' @param breaks A numeric vector with the distance to consider
+#' @param width The width of each donut
+#' @return A numeric matrix with the countings of the g function evaluated at the required distances
+#' @export
+gfunc_counting <- function(dist_mat, wc, wr, breaks, width) {
+    .Call(`_spNetwork_gfunc_counting`, dist_mat, wc, wr, breaks, width)
+}
+
+#' @title c++ g function
+#' @name gfunc_cpp2
+#' @description c++ g function (INTERNAL)
+#' @param dist_mat A square matrix with the distances between points
+#' @param start A float, the start value for evaluating the g-function
+#' @param end A float, the last value for evaluating the g-function
+#' @param step A float, the jump between two evaluations of the k-function
+#' @param width The width of each donut
+#' @param Lt The total length of the network
+#' @param n The number of points
+#' @param wc The weight of the points represented by the columns (destinations)
+#' @param wr The weight of the points represented by the rows (origins)
+#' @return A numeric vector with the values of the g function evaluated at the required distances
+#' @export
+gfunc_cpp2 <- function(dist_mat, start, end, step, width, Lt, n, wc, wr) {
+    .Call(`_spNetwork_gfunc_cpp2`, dist_mat, start, end, step, width, Lt, n, wc, wr)
+}
+
+#' @title c++ k and g function counting worker
+#' @name kgfunc_counting
+#' @description c++ k function counting (INTERNAL)
+#' @param dist_mat A matrix with the distances between points
+#' @param wc The weight of the points represented by the columns (destinations)
+#' @param wr The weight of the points represented by the rows (origins)
+#' @param breaks A numeric vector with the distance to consider
+#' @param width The width of each donut
+#' @param cross A boolean indicating if we are calculating a cross k function or not (default is FALSE)
+#' @return A list  of two numeric matrices with the values of the k and g function evaluated at the required distances
+#' @export
+kgfunc_counting <- function(dist_mat, wc, wr, breaks, width, cross = FALSE) {
+    .Call(`_spNetwork_kgfunc_counting`, dist_mat, wc, wr, breaks, width, cross)
+}
+
+#' @title c++ k and g function
+#' @name kgfunc_cpp2
+#' @description c++ g function (INTERNAL)
+#' @param dist_mat A square matrix with the distances between points
+#' @param start A float, the start value for evaluating the g-function
+#' @param end A float, the last value for evaluating the g-function
+#' @param step A float, the jump between two evaluations of the k-function
+#' @param width The width of each donut
+#' @param Lt The total length of the network
+#' @param n The number of points
+#' @param wc The weight of the points represented by the columns (destinations)
+#' @param wr The weight of the points represented by the rows (origins)
+#' @param cross A boolean indicating if we are calculating a cross k function or not (default is FALSE)
+#' @return A numeric matrix with the values of the k (first col) and g (second col) function evaluated at the required distances
+#' @export
+kgfunc_cpp2 <- function(dist_mat, start, end, step, width, Lt, n, wc, wr, cross = FALSE) {
+    .Call(`_spNetwork_kgfunc_cpp2`, dist_mat, start, end, step, width, Lt, n, wc, wr, cross)
+}
+
 #' @title c++ g function
 #' @name gfunc_cpp
 #' @description c++ g function (INTERNAL)
@@ -675,10 +773,6 @@ k_nt_func_cpp <- function(dist_mat_net, dist_mat_time, start_net, end_net, step_
     .Call(`_spNetwork_k_nt_func_cpp`, dist_mat_net, dist_mat_time, start_net, end_net, step_net, start_time, end_time, step_time, Lt, Tt, n, w)
 }
 
-k_nt_func_cpp2 <- function(dist_mat_net, dist_mat_time, start_net, end_net, step_net, start_time, end_time, step_time, Lt, Tt, n, w) {
-    .Call(`_spNetwork_k_nt_func_cpp2`, dist_mat_net, dist_mat_time, start_net, end_net, step_net, start_time, end_time, step_time, Lt, Tt, n, w)
-}
-
 #' @title c++ g space-time function
 #' @name g_nt_func_cpp
 #' @param dist_mat_net A square matrix with the distances between points on the network
@@ -699,8 +793,50 @@ g_nt_func_cpp <- function(dist_mat_net, dist_mat_time, start_net, end_net, step_
     .Call(`_spNetwork_g_nt_func_cpp`, dist_mat_net, dist_mat_time, start_net, end_net, step_net, width_net, start_time, end_time, step_time, width_time, Lt, Tt, n, w)
 }
 
+#' @title c++ k and g function counting worker
+#' @name kgfunc_time_counting
+#' @description c++ k function counting (INTERNAL)
+#' @param dist_mat_net A matrix with the distances between points on the network
+#' @param dist_mat_time A matrix with the distances between points in time
+#' @param wc The weight of the points represented by the columns (destinations)
+#' @param wr The weight of the points represented by the rows (origins)
+#' @param breaks_net A numeric vector with the distance to consider on network
+#' @param breaks_time A numeric vector with the distance to consider in time
+#' @param width_net The width of each donut for the network dimension
+#' @param width_time The width of each donut for the time dimension
+#' @param cross A boolean indicating if we are calculating a cross k function or not (default is FALSE)
+#' @return A list  of two numeric matrices with the values of the k and g function evaluated at the required distances
+#' @export
+kgfunc_time_counting <- function(dist_mat_net, dist_mat_time, wc, wr, breaks_net, breaks_time, width_net, width_time, cross = FALSE) {
+    .Call(`_spNetwork_kgfunc_time_counting`, dist_mat_net, dist_mat_time, wc, wr, breaks_net, breaks_time, width_net, width_time, cross)
+}
+
+#' @title c++ k space-time function
+#' @name k_nt_func_cpp
+#' @param dist_mat_net A square matrix with the distances between points (network)
+#' @param dist_mat_time A square matrix with the distances between points (time)
+#' @param start_net A float, the start value for evaluating the k-function (network)
+#' @param end_net A float, the last value for evaluating the k-function (network)
+#' @param step_net A float, the jump between two evaluations of the k-function (network)
+#' @param start_time A float, the start value for evaluating the k-function (time)
+#' @param end_time A float, the last value for evaluating the k-function (time)
+#' @param step_time A float, the jump between two evaluations of the k-function (time)
+#' @param Lt The total length of the network
+#' @param Tt The total duration of study area
+#' @param n The number of points
+#' @param w The weight of the points (coincident points)
+#' @param cross a boolean indicating of we are calculating a cross k or g function
+#' @keywords internal
+k_g_nt_func_cpp2 <- function(dist_mat_net, dist_mat_time, start_net, end_net, step_net, start_time, end_time, step_time, width_net, width_time, Lt, Tt, n, wc, wr, cross = TRUE) {
+    .Call(`_spNetwork_k_g_nt_func_cpp2`, dist_mat_net, dist_mat_time, start_net, end_net, step_net, start_time, end_time, step_time, width_net, width_time, Lt, Tt, n, wc, wr, cross)
+}
+
 seq_num2 <- function(start, end, step) {
     .Call(`_spNetwork_seq_num2`, start, end, step)
+}
+
+seq_num3 <- function(start, end, step) {
+    .Call(`_spNetwork_seq_num3`, start, end, step)
 }
 
 seq_num2f <- function(start, end, step) {

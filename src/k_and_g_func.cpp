@@ -36,9 +36,340 @@ NumericVector kfunc_cpp(arma::mat dist_mat,float start,float end, float step, fl
 }
 
 
+//' @title c++ k function counting worker
+//' @name kfunc_counting
+//' @description c++ k function counting (INTERNAL)
+//' @param dist_mat A matrix with the distances between points
+//' @param wc The weight of the points represented by the columns (destinations)
+//' @param wr The weight of the points represented by the rows (origins)
+//' @param breaks A numeric vector with the distance to consider
+//' @param cross A boolean indicating if we are calculating a cross k function or not (default is FALSE)
+//' @return A numeric matrix with the countings of the k function evaluated at the required distances
+//' @export
+// [[Rcpp::export]]
+NumericMatrix kfunc_counting(arma::mat dist_mat, arma::rowvec wc, NumericVector wr, NumericVector breaks, bool cross = false){
+
+
+  float end = max(breaks);
+
+  NumericMatrix counting_k(dist_mat.n_rows, breaks.size());
+
+  int malus = 1;
+  if(cross){
+    malus = 0;
+  }
+
+  // we iterate over each row of dist_mat
+  for(int i = 0; i < dist_mat.n_rows; ++i) {
+
+    float wi = wr(i);
+    arma::rowvec row = dist_mat.row(i);
+
+    // we do a first test to remove all the distances that are way to big
+    arma::uvec test = arma::find(row <= end);
+
+    arma::vec ok_d = row.elem(test) ;
+    arma::vec ok_w = wc.elem(test);
+
+
+    for(int z = 0; z < breaks.size(); ++z) {
+
+      float dist = breaks[z];
+
+      // for each iteration we do a fist cleaning test
+      arma::uvec test3 = ok_d <= (dist);
+
+      ok_d = ok_d.elem(arma::find(test3)) ;
+      ok_w = ok_w.elem(arma::find(test3)) ;
+
+      // minus one here is important to remove self weight
+      counting_k(i,z) = (arma::sum(ok_w)-malus) * wi;
+
+    }
+
+  }
+
+  return counting_k;
+}
+
+
+//' @title c++ k function 2
+//' @name kfunc_cpp 2
+//' @description c++ k function (INTERNAL)
+//' @param dist_mat A square matrix with the distances between points
+//' @param start A float, the start value for evaluating the k-function
+//' @param end A float, the last value for evaluating the k-function
+//' @param step A float, the jump between two evaluations of the k-function
+//' @param Lt The total length of the network
+//' @param n The number of points
+//' @param wc The weight of the points represented by the columns (destinations)
+//' @param wr The weight of the points represented by the rows (origins)
+//' @param cross A boolean indicating if we are calculating a cross k function or not (default is FALSE)
+//' @return A numeric vector with the values of the k function evaluated at the required distances
+//' @export
+// [[Rcpp::export]]
+NumericVector kfunc_cpp2(arma::mat dist_mat,float start,float end, float step, float Lt, int n, arma::rowvec wc, NumericVector wr, bool cross = false){
+
+  std::vector<float> breaks0 = seq_num3(start,end,step);
+  std::reverse(breaks0.begin(), breaks0.end());
+  NumericVector breaks = wrap(breaks0);
+  float t1;
+  if(cross){
+    t1 = 1.0/((n)/Lt);
+  }else{
+    t1 = 1.0/((n-1.0)/Lt);
+  }
+
+
+
+  NumericMatrix counting = kfunc_counting(dist_mat, wc,wr, breaks, cross);
+
+  float div = sum(wr);
+
+  NumericVector k_values = rcppRev((colSums(counting) / div) * t1) ;
+
+  return k_values;
+}
+
+
+
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // #### base g function ####
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+//' @title c++ g function counting worker
+//' @name gfunc_counting
+//' @description c++ k function counting (INTERNAL)
+//' @param dist_mat A matrix with the distances between points
+//' @param wc The weight of the points represented by the columns (destinations)
+//' @param wr The weight of the points represented by the rows (origins)
+//' @param breaks A numeric vector with the distance to consider
+//' @param width The width of each donut
+//' @return A numeric matrix with the countings of the g function evaluated at the required distances
+//' @export
+// [[Rcpp::export]]
+NumericMatrix gfunc_counting(arma::mat dist_mat, arma::colvec wc, NumericVector wr, NumericVector breaks, float width){
+
+
+  NumericMatrix counting(dist_mat.n_rows, breaks.size());
+  float end = max(breaks);
+
+  // we iterate over each row of dist_mat
+  for(int i = 0; i < dist_mat.n_rows; ++i) {
+
+    arma::rowvec row = dist_mat.row(i);
+
+    float wi = wr(i);
+
+    // we do a first test to remove all the distances that are way to big
+    arma::uvec test = arma::find(row <= end+width);
+
+    arma::vec ok_d = row.elem(test) ;
+    arma::vec ok_w = wc.elem(test);
+    arma::vec ok_d2 = row.elem(test) ;
+    arma::vec ok_w2 = wc.elem(test);
+
+    for(int z = 0; z < breaks.size(); ++z) {
+
+      float dist = breaks[z];
+
+      // for each iterationm we do a the test in both direction separately
+      arma::uvec test1 = ok_d <= (dist+width);
+      arma::uvec test2 = ok_d >= (dist-width);
+
+      // we can the use them to do the test conjointly
+      arma::uvec trueTest = arma::find( (test1) && (test2) );
+
+
+      // with the full test we can get the values
+      ok_w2 = ok_w.elem(trueTest) ;
+      // minus one here is important to remove self weight
+      counting(i,z) = (arma::sum(ok_w2)-1) * wi;
+
+      // with the first part of the test, we can reduce the next research
+      ok_d = ok_d.elem(arma::find(test1)) ;
+      ok_w = ok_w.elem(arma::find(test1)) ;
+    }
+
+
+  }
+
+  return counting;
+}
+
+
+//' @title c++ g function
+//' @name gfunc_cpp2
+//' @description c++ g function (INTERNAL)
+//' @param dist_mat A square matrix with the distances between points
+//' @param start A float, the start value for evaluating the g-function
+//' @param end A float, the last value for evaluating the g-function
+//' @param step A float, the jump between two evaluations of the k-function
+//' @param width The width of each donut
+//' @param Lt The total length of the network
+//' @param n The number of points
+//' @param wc The weight of the points represented by the columns (destinations)
+//' @param wr The weight of the points represented by the rows (origins)
+//' @return A numeric vector with the values of the g function evaluated at the required distances
+//' @export
+// [[Rcpp::export]]
+NumericVector gfunc_cpp2(arma::mat dist_mat,float start,float end, float step, float width, float Lt, int n, arma::rowvec wc, NumericVector wr){
+
+
+  std::vector<float> breaks0 = seq_num3(start,end,step);
+  std::reverse(breaks0.begin(), breaks0.end());
+  NumericVector breaks = wrap(breaks0);
+  float t1 = 1.0/((n-1)/Lt);
+  width = width/2.0;
+
+  NumericMatrix counting = gfunc_counting(dist_mat, wc, wr, breaks, width);
+
+
+  float div = sum(wr);
+
+  NumericVector cppBreaks  = wrap(breaks) ;
+  NumericVector k_values = rcppRev((colSums(counting) / div) * t1) ;
+
+  return k_values;
+}
+
+
+
+//' @title c++ k and g function counting worker
+//' @name kgfunc_counting
+//' @description c++ k function counting (INTERNAL)
+//' @param dist_mat A matrix with the distances between points
+//' @param wc The weight of the points represented by the columns (destinations)
+//' @param wr The weight of the points represented by the rows (origins)
+//' @param breaks A numeric vector with the distance to consider
+//' @param width The width of each donut
+//' @param cross A boolean indicating if we are calculating a cross k function or not (default is FALSE)
+//' @return A list  of two numeric matrices with the values of the k and g function evaluated at the required distances
+//' @export
+// [[Rcpp::export]]
+List kgfunc_counting(arma::mat dist_mat, arma::rowvec wc, NumericVector wr, NumericVector breaks, float width, double cross = false){
+
+  // NumericMatrix counting(dist_mat.n_rows, breaks.size());
+  float end = max(breaks);
+
+  NumericMatrix counting_k(dist_mat.n_rows, breaks.size());
+  NumericMatrix counting_g(dist_mat.n_rows, breaks.size());
+
+  int cross_malus = 1;
+  if(cross){
+    cross_malus = 0;
+  }
+
+  // we iterate over each row of dist_mat
+  for(int i = 0; i < dist_mat.n_rows; ++i) {
+
+    float wi = wr(i);
+    arma::rowvec row = dist_mat.row(i);
+
+    // we do a first test to remove all the distances that are way to big
+    arma::uvec test = arma::find(row <= end+width);
+
+    arma::vec ok_d = row.elem(test) ;
+    arma::vec ok_w = wc.elem(test);
+    arma::vec ok_d2 = row.elem(test) ;
+    arma::vec ok_w2 = wc.elem(test);
+    arma::vec ok_w1 = wc.elem(test);
+
+
+    for(int z = 0; z < breaks.size(); ++z) {
+
+      float dist = breaks[z];
+      // for each iteration we do a the test in both direction separately
+      arma::uvec test1 = ok_d <= (dist+width);
+      arma::uvec test2 = ok_d >= (dist-width);
+      arma::uvec test3 = ok_d <= (dist);
+
+      // for the g func, we must check that dist - width is > 0, otherwise we must apply
+      // a malus to not do self counting
+      int malus = 0;
+      if(dist-width <= 0){
+        malus = 1;
+      }
+
+      // we can the use them to do the test conjointly
+      arma::uvec trueTest = arma::find((test1) && (test2));
+
+      // with the part test I can get the value of the k function
+      ok_w1 = ok_w.elem(arma::find(test3)) ;
+      // minus one here is important to remove self weight
+      counting_k(i,z) = (arma::sum(ok_w1)-cross_malus) * wi;
+
+
+      // with the full test we can get the values for the g function
+      ok_w2 = ok_w.elem(trueTest) ;
+      // for g we do not include minus one because the donut form will prevent self count
+      counting_g(i,z) = (arma::sum(ok_w2) - (malus * cross_malus)) * wi;
+
+      // with the first part of the test, we can reduce the next research
+      ok_d = ok_d.elem(arma::find(test1)) ;
+      ok_w = ok_w.elem(arma::find(test1)) ;
+    }
+
+  }
+
+  List results = List::create(counting_k, counting_g);
+
+  return results;
+}
+
+
+//' @title c++ k and g function
+//' @name kgfunc_cpp2
+//' @description c++ g function (INTERNAL)
+//' @param dist_mat A square matrix with the distances between points
+//' @param start A float, the start value for evaluating the g-function
+//' @param end A float, the last value for evaluating the g-function
+//' @param step A float, the jump between two evaluations of the k-function
+//' @param width The width of each donut
+//' @param Lt The total length of the network
+//' @param n The number of points
+//' @param wc The weight of the points represented by the columns (destinations)
+//' @param wr The weight of the points represented by the rows (origins)
+//' @param cross A boolean indicating if we are calculating a cross k function or not (default is FALSE)
+//' @return A numeric matrix with the values of the k (first col) and g (second col) function evaluated at the required distances
+//' @export
+// [[Rcpp::export]]
+NumericMatrix kgfunc_cpp2(arma::mat dist_mat,float start,float end, float step, float width, float Lt, int n, arma::rowvec wc, NumericVector wr, bool cross = false){
+
+
+  std::vector<float> breaks0 = seq_num3(start,end,step);
+  std::reverse(breaks0.begin(), breaks0.end());
+  NumericVector breaks = wrap(breaks0);
+  float t1;
+  if(cross){
+    t1 = 1.0/((n)/Lt);
+  }else{
+    t1 = 1.0/((n-1)/Lt);
+  }
+  width = width/2.0;
+
+  // we start here by counting for each distance how many points are
+  // reachable from each point
+  // the produced matrice have a number of column equal to the number
+  // of breaks, and a number of row equal to the number of point
+
+  List elements = kgfunc_counting(dist_mat, wc, wr, breaks, width, cross);
+
+  NumericMatrix counting_k = elements[0];
+  NumericMatrix counting_g = elements[1];
+
+
+  // we must apply here the weights to the rows when calculating the means
+  float div = sum(wr);
+
+  NumericVector k_values = rcppRev((colSums(counting_k) / div) * t1) ;
+  NumericVector g_values = rcppRev((colSums(counting_g) / div) * t1) ;
+  NumericMatrix final = cbind(k_values, g_values);
+
+  return final;
+}
+
 
 //' @title c++ g function
 //' @name gfunc_cpp
@@ -72,6 +403,7 @@ NumericVector gfunc_cpp(arma::mat dist_mat,float start,float end, float step, fl
   return k_values;
 }
 
+
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // #### base cross k function ####
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -93,7 +425,7 @@ NumericVector cross_kfunc_cpp(arma::mat dist_mat,float start,float end, float st
   // note : in the matrix, the rows are the b points
   // and the columns are the a points
   std::vector<double> breaks = seq_num2(start,end,step);
-  float t1 = (na)/Lt;
+  float t1 = 1.0/((na-1)/Lt);
 
   NumericVector k_values(breaks.size());
 
@@ -132,7 +464,7 @@ NumericVector cross_gfunc_cpp(arma::mat dist_mat,float start,float end, float st
   // note : in the matrix, the rows are the b points
   // and the columns are the a points
   std::vector<double> breaks = seq_num2(start,end,step);
-  float t1 = (na)/Lt;
+  float t1 = 1.0/((na-1)/Lt);
   width = width/2.0;
 
   NumericVector k_values(breaks.size());
@@ -206,42 +538,6 @@ NumericMatrix k_nt_func_cpp(arma::mat dist_mat_net, arma::mat dist_mat_time,
 }
 
 
-// [[Rcpp::export]]
-IntegerMatrix k_nt_func_cpp2(arma::imat dist_mat_net, arma::imat dist_mat_time,
-                            int start_net, int end_net, int step_net,
-                            int start_time,int end_time, int step_time,
-                            int Lt, int Tt, int n, arma::icolvec w){
-
-  std::vector<int> breaks_net = seq_num2f(start_net,end_net,step_net);
-  std::vector<int> breaks_time = seq_num2f(start_time,end_time,step_time);
-  int t1 = (n-1)/(Lt * Tt);
-
-  IntegerMatrix k_values(breaks_net.size(),breaks_time.size());
-  arma::imat int_mat(dist_mat_net.n_rows, dist_mat_net.n_cols);
-  int_mat.zeros();
-  arma::umat mat1(dist_mat_net.n_rows, dist_mat_net.n_cols);
-  mat1.zeros();
-
-  // pre-calculating the conditions in time
-  std::vector<arma::umat> umat_times;
-  for(int i = 0; i < breaks_time.size(); ++i){
-    umat_times.push_back(dist_mat_time <= breaks_time[i]);
-  }
-
-  for(int i = 0; i < breaks_net.size(); ++i) {
-    //mat1 = dist_mat_net <= breaks_net[i];
-    mat1.elem(arma::find(dist_mat_net <= breaks_net[i])).ones();
-    for(int j = 0; j < breaks_time.size(); ++j){
-      int_mat.elem( arma::find((mat1) && (umat_times[j]))).ones();
-      int_mat.each_col() %= w;
-      int_mat.diag().zeros();
-      k_values(i,j) = arma::accu(int_mat) * t1;
-      int_mat.zeros();
-    }
-    mat1.zeros();
-  }
-  return k_values;
-}
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // #### base g space-time function ####

@@ -339,7 +339,7 @@ add_vertices_lines <- function(lines, points, nearest_lines_idx, mindist) {
 #' data(mtl_network)
 #' lixels <- lixelize_lines(mtl_network,150,50)
 #' }
-lixelize_lines<- function(lines, lx_length, mindist = NULL) {
+lixelize_lines <- function(lines, lx_length, mindist = NULL) {
 
     if (is.null(mindist)) {
         mindist <- lx_length/10

@@ -5,6 +5,8 @@ std::vector<double> seq_num(double start, double end, double step);
 
 std::vector<double> seq_num2(double start, double end, double step);
 
+std::vector<float> seq_num3(float start, float end, float step);
+
 std::vector<int> seq_num2f(int start, int end, int step);
 
 int get_first_index(NumericVector& v1, double x);
@@ -26,5 +28,7 @@ NumericMatrix reverseByRow(NumericMatrix inmat);
 arma::colvec calcEuclideanDistance3(arma::mat y, arma::mat x);
 
 arma::sp_imat make_imatrix_sparse(DataFrame df, List neighbour_list);
+
+NumericVector rcppRev(NumericVector x);
 
 #endif

@@ -1,5 +1,14 @@
 #include "spNetwork.h"
 
+// a simple function to reverse the values in a vector
+NumericVector rcppRev(NumericVector x) {
+  NumericVector revX = clone<NumericVector>(x);
+  std::reverse(revX.begin(), revX.end());
+  ::Rf_copyMostAttrib(x, revX);
+  return revX;
+}
+
+
 // a simple function to create a vector of values between a start and an end with defined step
 std::vector<double> seq_num(double start, double end, double step){
 
@@ -24,6 +33,20 @@ std::vector<double> seq_num2(double start, double end, double step){
   }
   return values;
 }
+
+// a simple function to create a vector of values between a start and an end with defined step
+// [[Rcpp::export]]
+std::vector<float> seq_num3(float start, float end, float step){
+
+  std::vector<float> values;
+  float cumul = start - step;
+  while(cumul+step <= end){
+    cumul+=step;
+    values.push_back(cumul);
+  }
+  return values;
+}
+
 
 // a simple function to create a vector of values between a start and an end with defined step
 // [[Rcpp::export]]
@@ -152,7 +175,7 @@ arma::sp_imat make_imatrix_sparse(DataFrame df, List neighbour_list){
 
 
 arma::sp_mat make_edge_weight_sparse(DataFrame& df, List& neighbour_list){
-  List edge_list;
+
   IntegerVector starts = df["start_oid"];
   IntegerVector ends = df["end_oid"];
   NumericVector edge_weight = df["weight"];
@@ -219,3 +242,6 @@ NumericMatrix reverseByRow(NumericMatrix inmat) {
 arma::colvec calcEuclideanDistance3(arma::mat y, arma::mat x){
    return arma::sqrt(arma::sum(arma::pow(y.each_row() - x,2),1));
  }
+
+
+

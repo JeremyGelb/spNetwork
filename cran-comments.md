@@ -429,7 +429,7 @@ The c++ code has been modified to avoid the compound-literals
 
 # Version 0.4.4.3
 
-submitted the 23/05/2024
+submitted the 27/05/2024
 
 **Problem:**
 complex UBSAN warning raised in tests: 
@@ -447,4 +447,12 @@ complex UBSAN warning raised in tests:
 
 **correction:**
 The C++ has been edited for the targeted function. I have not been able to reproduce the error but I found some guidance about memory overflow when comparing integers and unsigned integers.
+
+
+resubmitted the 20/06/2024
+
+I have been able to reproduce the error with Docker and a custom image based on the rhub build.
+The error was caused by an empty table in armadillo.
+
+I added a check to ensure that the table is not empty before using it. The error was not raised anymore after a new test on the Docker.
 

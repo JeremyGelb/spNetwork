@@ -4,7 +4,7 @@
 \alias{dist_mat_dupl}
 \title{Distance matrix with dupicated}
 \usage{
-dist_mat_dupl(graph, start, end)
+dist_mat_dupl(graph, start, end, ...)
 }
 \arguments{
 \item{graph}{The Graph to use}
@@ -12,6 +12,8 @@ dist_mat_dupl(graph, start, end)
 \item{start}{The vertices to use as starting points}
 
 \item{end}{The vertices to use as ending points}
+
+\item{...}{parameters passed to the function igraph::distances}
 }
 \value{
 A matrix with the distances between the vertices

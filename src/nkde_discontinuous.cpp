@@ -1,7 +1,7 @@
 #include "spNetwork.h"
 #include "base_kernel_funtions.h"
 #include "matrices_functions.h"
-
+#include <cstdlib>
 
 //#####################################################################################
 // ######################  THE WORKER FUNCTIONS  ######################################
@@ -42,6 +42,7 @@ arma::vec esd_kernel_rcpp_arma_sparse(fptr kernel_func, arma::sp_imat &edge_mat,
     int prev_node;
     int depth;
   };
+
 
   std::vector<acase> data_holder;
 
@@ -93,16 +94,32 @@ arma::vec esd_kernel_rcpp_arma_sparse(fptr kernel_func, arma::sp_imat &edge_mat,
           //find the samples on that edge
           arma::uvec test = arma::find(samples_edgeid==edge_id);
 
-          arma::mat sampling_coords = samples_coords.rows(test);
+          // we do the calculus only if we have some coords to calculate on
+          if(test.n_elem  > 0){
+
+            arma::mat sampling_coords = samples_coords.rows(test);
 
 
-          //extracting the X and Y coordinates of the starting node
+            //extracting the X and Y coordinates of the starting node
 
-          arma::colvec x_dists =  arma::sqrt(arma::sum(arma::pow(sampling_coords.each_row() - nodes_coords.row((v - 1)),2),1)) + cas.d;
+            // Rcout << "Here is sampling_coords : \n";
+            // Rcout << sampling_coords << '\n';
+            // Rcout << "\n";
+            // Rcout << "Here is nodes_coords : \n";
+            // Rcout << nodes_coords.row((abs(v - 1))) << '\n';
+            // Rcout << "\n";
+            // Rcout << "Here is  cas.d : \n";
+            // Rcout <<  cas.d << '\n';
 
-          //step3 calculating the values of the new kernel
-          arma::vec new_k = kernel_func(x_dists,bw)*new_alpha;
-          samples_k.elem(test) += new_k;
+            arma::colvec x_dists =  arma::sqrt(arma::sum(arma::pow(sampling_coords.each_row() - nodes_coords.row((abs(v - 1))),2),1)) + cas.d;
+
+            //step3 calculating the values of the new kernel
+            arma::vec new_k = kernel_func(x_dists,bw)*new_alpha;
+            samples_k.elem(test) += new_k;
+
+          }
+
+
 
           //evaluating for the next move
           double d2 = line_weights[edge_id-1] + cas.d;

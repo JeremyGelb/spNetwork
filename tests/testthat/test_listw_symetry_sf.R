@@ -4,17 +4,23 @@ library(sf)
 test_that("A listw object returned by the function network_listw must be symetric and identic as one returned by network_listw.mc", {
 
   data(small_mtl_network)
-  
-  listw <- network_listw(small_mtl_network,small_mtl_network,
-                                  method="centroid",
-                                  maxdistance = 300,
-                                  dist_func = "squared inverse",
-                                  matrice_type = "B",
-                                  grid_shape = c(1,1),
-                                  verbose = FALSE,
-                                  mindist = 10,
-                                  digits = 3,
-                                  )
+
+  listw <- network_listw(origins = small_mtl_network,
+                         lines = small_mtl_network,
+                         method="centroid",
+                         maxdistance = 300,
+                         dist_func = "squared inverse",
+                         matrice_type = "B",
+                         grid_shape = c(1,1),
+                         verbose = FALSE,
+                         mindist = 10,
+                         digits = 3,
+                         direction = NULL,
+                         point_dist = NULL,
+                         snap_dist = Inf,
+                         line_weight = 'length',
+                         tol = 0.1
+                         )
   # test if symetric
   test1 <- spdep::is.symmetric.nb(listw$neighbours)
 
