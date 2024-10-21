@@ -76,10 +76,6 @@ jobs:
         config: ${{ fromJson(needs.setup.outputs.platforms) }}
 
     steps:
-      - name: Query dependencies
-        run: |
-          install.packages('terra', repos='https://rspatial.r-universe.dev')
-        shell: Rscript {0}
       - uses: r-hub/actions/checkout@v1
       - uses: r-hub/actions/setup-r@v1
         with:

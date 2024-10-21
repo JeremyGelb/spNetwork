@@ -116,6 +116,7 @@ progressr::with_progress({
 
 ```{r message=FALSE, warning=FALSE, echo = FALSE, include = FALSE}
 load('speed_vs_precision_data.rda')
+params_df$max_depth <- params_df$max_dept
 ```
 
 # Impacts on calculation time
