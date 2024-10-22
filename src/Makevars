@@ -1,0 +1,4 @@
+## -*- mode: makefile; -*-
+PKG_CPPFLAGS = -I../inst/i
+CXX_STD = @CXXSTD@
+CXX_STD=CXX17

@@ -8,14 +8,14 @@
 #include "spNetwork.h"
 
 // some boost libraries used to building an rtree
-#include <boost/geometry.hpp>
-#include <boost/geometry/geometries/geometries.hpp>
-#include <boost/geometry/geometries/point.hpp>
-#include <boost/geometry/geometries/box.hpp>
-#include <boost/geometry/index/rtree.hpp>
-#include <boost/geometry/algorithms/distance.hpp>
-#include <boost/foreach.hpp>
-#include <boost/geometry/index/predicates.hpp>
+#include <b/geometry.hpp>
+#include <b/geometry/geometries/geometries.hpp>
+#include <b/geometry/geometries/point.hpp>
+#include <b/geometry/geometries/box.hpp>
+#include <b/geometry/index/rtree.hpp>
+#include <b/geometry/algorithms/distance.hpp>
+#include <b/foreach.hpp>
+#include <b/geometry/index/predicates.hpp>
 
 // **** some namespaces related to boost ****
 namespace bg = boost::geometry;
