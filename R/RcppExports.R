@@ -707,6 +707,10 @@ seq_num2f <- function(start, end, step) {
     .Call(`_spNetwork_seq_num2f`, start, end, step)
 }
 
+seq_num3 <- function(start, end, step) {
+    .Call(`_spNetwork_seq_num3`, start, end, step)
+}
+
 extend_matrix_by_ids <- function(agg_mat, oids, locids) {
     .Call(`_spNetwork_extend_matrix_by_ids`, agg_mat, oids, locids)
 }

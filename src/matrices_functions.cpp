@@ -39,6 +39,21 @@ std::vector<int> seq_num2f(int start, int end, int step){
 }
 
 
+// a simple function to create a vector of values between a start and an end with defined step
+// [[Rcpp::export]]
+std::vector<float> seq_num3(float start, float end, float step){
+
+  std::vector<float> values;
+  float cumul = start - step;
+  while(cumul+step <= end){
+    cumul+=step;
+    values.push_back(cumul);
+  }
+  return values;
+}
+
+
+
 // a simple function to find the index of the first occurence of value in a numeric vector
 int get_first_index(NumericVector& v1, double x){
   int i;

@@ -1,3 +1,7 @@
+# spNetwork 0.4.4.3
+
+This is a patch release. The new clang 19 compiler is causing an error with a previous version of the c++ boost library. The owner of the package BH does not want to incldue the correction before december. We therefore must include all the required boost headers localy.
+
 # spNetwork 0.4.4
 
 This is an important release!

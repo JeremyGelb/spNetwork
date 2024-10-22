@@ -746,6 +746,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// seq_num3
+std::vector<float> seq_num3(float start, float end, float step);
+RcppExport SEXP _spNetwork_seq_num3(SEXP startSEXP, SEXP endSEXP, SEXP stepSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< float >::type start(startSEXP);
+    Rcpp::traits::input_parameter< float >::type end(endSEXP);
+    Rcpp::traits::input_parameter< float >::type step(stepSEXP);
+    rcpp_result_gen = Rcpp::wrap(seq_num3(start, end, step));
+    return rcpp_result_gen;
+END_RCPP
+}
 // extend_matrix_by_ids
 NumericMatrix extend_matrix_by_ids(NumericMatrix agg_mat, IntegerVector oids, IntegerVector locids);
 RcppExport SEXP _spNetwork_extend_matrix_by_ids(SEXP agg_matSEXP, SEXP oidsSEXP, SEXP locidsSEXP) {
@@ -1015,6 +1028,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_spNetwork_g_nt_func_cpp", (DL_FUNC) &_spNetwork_g_nt_func_cpp, 14},
     {"_spNetwork_seq_num2", (DL_FUNC) &_spNetwork_seq_num2, 3},
     {"_spNetwork_seq_num2f", (DL_FUNC) &_spNetwork_seq_num2f, 3},
+    {"_spNetwork_seq_num3", (DL_FUNC) &_spNetwork_seq_num3, 3},
     {"_spNetwork_extend_matrix_by_ids", (DL_FUNC) &_spNetwork_extend_matrix_by_ids, 3},
     {"_spNetwork_reverseByRow", (DL_FUNC) &_spNetwork_reverseByRow, 1},
     {"_spNetwork_calcEuclideanDistance3", (DL_FUNC) &_spNetwork_calcEuclideanDistance3, 2},

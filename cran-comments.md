@@ -427,3 +427,14 @@ Found the following significant warnings:
 **correction:**
 The c++ code has been modified to avoid the compound-literals
 
+# Version 0.4.4.2
+
+**Problem:**
+
+/home/hornik/tmp/R.check/r-devel-clang/Work/build/Packages/BH/include/boost/qvm/quat_traits.hpp:82:30: error: a template argument list is expected after a name prefixed by the template keyword [-Wmissing-template-arg-list-after-template-kw]
+   82 |     quat_traits<Q>::template write_element_idx(i, q) = s;
+   
+**correction:**
+
+A new version of boost has published. However, the maintainer of the BH package does not want to incldue this change before december 2024. Thus, we included all the required boost dependencies directly in spNetwork.
+
