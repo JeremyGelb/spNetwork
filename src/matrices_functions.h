@@ -5,7 +5,7 @@ std::vector<double> seq_num(double start, double end, double step);
 
 std::vector<double> seq_num2(double start, double end, double step);
 
-std::vector<double> seq_num3(float start, float end, float step);
+std::vector<float> seq_num3(float start, float end, float step);
 
 std::vector<int> seq_num2f(int start, int end, int step);
 

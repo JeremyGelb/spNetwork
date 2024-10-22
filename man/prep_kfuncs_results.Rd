@@ -4,7 +4,16 @@
 \alias{prep_kfuncs_results}
 \title{Preparing results for K functions}
 \usage{
-prep_kfuncs_results(k_vals, g_vals, all_values, conf_int, calc_g_func, cross)
+prep_kfuncs_results(
+  k_vals,
+  g_vals,
+  all_values,
+  conf_int,
+  calc_g_func,
+  cross,
+  dist_seq,
+  return_sims
+)
 }
 \arguments{
 \item{k_vals}{a numeric vector with the real K values}
@@ -18,6 +27,10 @@ prep_kfuncs_results(k_vals, g_vals, all_values, conf_int, calc_g_func, cross)
 \item{calc_g_func}{a boolean indicating if the G function has been calculated.}
 
 \item{cross}{a boolean indicating if we have calculated a simple (FALSE) or a cross function.}
+
+\item{dist_seq}{a numeric vector representing the distance used for calculation}
+
+\item{return_sims}{a boolean, indicating if the simulations must be returned}
 }
 \value{
 A list with the following values :

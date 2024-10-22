@@ -2,6 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{k_nt_func_cpp}
 \alias{k_nt_func_cpp}
+\alias{k_g_nt_func_cpp2}
 \title{c++ k space-time function}
 \usage{
 k_nt_func_cpp(
@@ -17,6 +18,25 @@ k_nt_func_cpp(
   Tt,
   n,
   w
+)
+
+k_g_nt_func_cpp2(
+  dist_mat_net,
+  dist_mat_time,
+  start_net,
+  end_net,
+  step_net,
+  start_time,
+  end_time,
+  step_time,
+  width_net,
+  width_time,
+  Lt,
+  Tt,
+  n,
+  wc,
+  wr,
+  cross = TRUE
 )
 }
 \arguments{
@@ -43,8 +63,12 @@ k_nt_func_cpp(
 \item{n}{The number of points}
 
 \item{w}{The weight of the points (coincident points)}
+
+\item{cross}{a boolean indicating of we are calculating a cross k or g function}
 }
 \description{
+c++ k space-time function
+
 c++ k space-time function
 }
 \keyword{internal}
