@@ -2,11 +2,12 @@
 
 // We define here the spatial_index class
 
+#include "spNetwork.h"
+#include "boost_importer.h"
+
 #ifndef spatial_index_H
 #define spatial_index_H
 
-#include "spNetwork.h"
-#include "boost_importer.h"
 
 
 //******************************************************

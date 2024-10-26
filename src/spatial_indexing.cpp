@@ -1,7 +1,6 @@
 #include "spatial_indexing.h"
 
 
-
 // --- spatial_index class constructor ----
 spatial_index::spatial_index (NumericMatrix x){
 

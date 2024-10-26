@@ -427,7 +427,9 @@ Found the following significant warnings:
 **correction:**
 The c++ code has been modified to avoid the compound-literals
 
-# Version 0.4.4.2
+
+
+# Version 0.4.4.4
 
 **Problem:**
 
@@ -438,3 +440,8 @@ The c++ code has been modified to avoid the compound-literals
 
 A new version of boost has published. However, the maintainer of the BH package does not want to incldue this change before december 2024. Thus, we included all the required boost dependencies directly in spNetwork.
 
+### Test environments
+
+* local R installation, Windows, latest R-devel
+* rhub : 'linux', 'macos-arm64', 'windows', 'clang19'
+* docker : Linux with gcc and UBSAN
