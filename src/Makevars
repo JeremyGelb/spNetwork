@@ -1,5 +1,5 @@
 ## -*- mode: makefile; -*-
 PKG_CPPFLAGS = -I../inst/i
 CXX_STD = @CXXSTD@
-CXX_STD=CXX17
+CXX_STD=CXX14
 fsanitize=undefined

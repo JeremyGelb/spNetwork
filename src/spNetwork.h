@@ -14,7 +14,7 @@
 using namespace Rcpp;
 using namespace arma;
 // [[Rcpp::depends(RcppProgress)]]
-//[[Rcpp::plugins(cpp17)]]
+//[[Rcpp::plugins(cpp14)]]
 typedef arma::vec (*fptr)(arma::vec, double);
 typedef double (*fptros)(double, double);
 

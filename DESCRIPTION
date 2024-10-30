@@ -58,4 +58,4 @@ LinkingTo:
     RcppArmadillo
 RdMacros: Rdpack
 Language: en-CA
-SystemRequirements: C++17
+SystemRequirements: C++14
