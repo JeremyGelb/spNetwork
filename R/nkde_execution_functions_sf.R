@@ -412,6 +412,117 @@ split_by_grid <- function(grid,samples,events,lines,bw,tol, digits, split_all = 
 }
 
 
+
+#' @title Split data with a grid
+#'
+#' @description Function to split the dataset according to a grid.
+#'
+#' @param grid A spatial grid to split the data within
+#' @param samples A feature collection of points representing the samples points
+#' @param events A feature collection of points representing the events points
+#' @param lines A feature collection of linestrings representing the network
+#' @param bw The kernel bandwidth (used to avoid edge effect)
+#' @param digits The number of digits to keep
+#' @param tol A float indicating the spatial tolerance when snapping events on
+#' lines
+#' @param split_all A boolean indicating if we must split the lines at each vertex
+#' (TRUE) or only at event vertices (FALSE)
+#' @return A list with the split dataset
+#' @keywords internal
+#' @examples
+#' #This is an internal function, no example provided
+split_by_grid_sf <- function(grid,samples,events,lines,bw,tol, digits, split_all = TRUE){
+
+  grid$grid_id <- as.character(grid$oid)
+  grid$oid <- NULL
+
+  ## step 1 : preparing the spatial intersections
+  inter_samples <- sf::st_join(samples, grid)
+  inter_samples <- split(inter_samples,inter_samples$grid_id)
+  inter_events <- sf::st_join(events, st_buffer(grid, dist=bw))
+  inter_events <- split(inter_events,inter_events$grid_id)
+  inter_lines <- sf::st_join(lines, st_buffer(grid, dist=(bw+0.5*bw)))
+  inter_lines <- split(inter_lines,inter_lines$grid_id)
+
+  ## step2 : split the datasets
+
+  selections <- lapply(1:nrow(grid),function(i){
+
+    gid <- grid$grid_id[[i]]
+
+    # selecting the samples in the grid
+    sel_samples <- inter_samples[[gid]]
+    sel_samples$grid_id <- NULL
+
+    # if there is no sampling points in the rectangle, then return NULL
+    if(is.null(sel_samples)){
+      return(NULL)
+    }
+
+    # selecting the events
+    sel_events <- inter_events[[gid]]
+    sel_events$grid_id <- NULL
+
+    # selecting the lines in a buffer
+    sel_lines <- inter_lines[[gid]]
+    sel_lines$grid_id <- NULL
+
+    sel_lines$oid <- 1:nrow(sel_lines)
+
+    # snapping the events on the lines
+    if(is.null(sel_events)){
+      new_lines <- sel_lines
+    }else{
+      a <- nrow(sel_events)
+      b <- nrow(sel_lines)
+      x <-  a*b
+      # if(is.na(x)){
+      #   stop(paste("The matrix size will be exceeded (",a," x ",b,"), please consider using a finer grid to split the study area",sep=""))
+      # }
+      # if(x >= 2*10^9){
+      #   stop(paste("The matrix size will be exceeded (",a," x ",b,"), please consider using a finer grid to split the study area",sep=""))
+      # }
+      sel_events <- snapPointsToLines2(sel_events,sel_lines,idField = "oid", snap_dist = bw)
+
+      if(split_all){
+        new_lines <- add_vertices_lines(sel_lines,sel_events,sel_events$nearest_line_id,tol)
+      }else{
+        new_lines <- split_lines_at_vertex(sel_lines,sel_events,sel_events$nearest_line_id,tol)
+      }
+
+    }
+
+    # split lines at events
+    if(split_all){
+      new_lines <- simple_lines(new_lines)
+    }
+    new_lines$length <- as.numeric(st_length(new_lines))
+    new_lines <- subset(new_lines,new_lines$length>0)
+
+    # remove lines that are loops
+    new_lines <- remove_loop_lines(new_lines,digits)
+    new_lines$oid <- 1:nrow(new_lines)
+    new_lines <- new_lines[c("length","oid")]
+
+
+    return(list("samples" = sel_samples,
+                "events" = sel_events,
+                "lines" = new_lines))
+  })
+  #let us remove all the empty quadra
+  selections <- selections[lengths(selections) != 0]
+
+  for(i in 1:length(selections)){
+    selections[[i]]$index <- i
+  }
+
+  return(selections)
+
+}
+
+
+
+
 #' @title Split data with a grid for the adaptive bw function
 #'
 #' @description Function to split the dataset according to a grid for the
