@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.4.3</span>
       </span>
     </div>
 
@@ -53,7 +53,7 @@
       <a href="../articles/web_vignettes/AdaptiveBW.html">K-nearest neighbour adaptive bandwidth</a>
     </li>
     <li>
-      <a href="../articles/Isochrones.html">Calculating isochrones</a>
+      <a href="../articles/web_vignettes/Isochrones.html">Calculating isochrones</a>
     </li>
     <li>
       <a href="../articles/KNetworkFunctions.html">Network k Functions</a>
@@ -109,7 +109,7 @@
                         <h4 data-toc-skip class="author">Jeremy
 Gelb</h4>
             
-            <h4 data-toc-skip class="date">2024-05-19</h4>
+            <h4 data-toc-skip class="date">2024-12-29</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/JeremyGelb/spNetwork/blob/HEAD/vignettes/KNetworkFunctions.Rmd" class="external-link"><code>vignettes/KNetworkFunctions.Rmd</code></a></small>
       <div class="hidden name"><code>KNetworkFunctions.Rmd</code></div>
@@ -154,12 +154,23 @@ These two functions can be extended for network spaces by using the
 network distance instead of the Euclidean distance. The value of the
 empirical k function on a network is calculated with the following
 formula:</p>
-<p><span class="math display">\[\hat{K}(r)=\frac{1}{(n-1)/Lt}
-\sum_{i=1}^{n} \sum_{j=1 \atop j \neq i}^{n} \mathbf{1}\left\{d_{i j}
-\leq r\right\}\]</span></p>
-<p>With <span class="math inline">\(Lt\)</span> the total length of the
+<p><span class="math display">\[\begin{equation}
+K(r)=\frac{1}{\frac{(n-1)}{Lt}} \frac{\sum_{i=1}^n n\left(r \mid
+p_i\right)}{n} .
+\end{equation}\]</span></p>
+<p>With:</p>
+<ul>
+<li>
+<span class="math inline">\(Lt\)</span> the total length of the
 network and <span class="math inline">\(n\)</span> the number of
-events.</p>
+events.</li>
+<li>
+<span class="math inline">\(n\left(r \mid p_i\right)\)</span> the
+number of events arround the event <em>i</em> within a distance
+<em>r</em>.</li>
+<li>
+<em>n</em> the total number of events.</li>
+</ul>
 </div>
 <div class="section level2">
 <h2 id="the-network-k-function-in-spnetwork">The network K-function in spNetwork<a class="anchor" aria-label="anchor" href="#the-network-k-function-in-spnetwork"></a>
@@ -189,10 +200,21 @@ libraries in Montreal.</p>
 <p>As one can see, the theatres seems to be more clustered than the
 libraries.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">kfun_theatre</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/kfunctions.html">kfunctions</a></span><span class="op">(</span><span class="va">main_network_mtl</span>, <span class="va">mtl_theatres</span>,</span>
-<span>                           start <span class="op">=</span> <span class="fl">0</span>, end <span class="op">=</span> <span class="fl">5000</span>, step <span class="op">=</span> <span class="fl">50</span>, </span>
-<span>                           width <span class="op">=</span> <span class="fl">1000</span>, nsim <span class="op">=</span> <span class="fl">50</span>, resolution <span class="op">=</span> <span class="fl">50</span>,</span>
-<span>                           verbose <span class="op">=</span> <span class="cn">FALSE</span>, conf_int <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">kfun_theatre</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/kfunctions.html">kfunctions</a></span><span class="op">(</span>lines <span class="op">=</span> <span class="va">main_network_mtl</span>,</span>
+<span>                           points <span class="op">=</span> <span class="va">mtl_theatres</span>,</span>
+<span>                           start <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>                           end <span class="op">=</span> <span class="fl">5000</span>,</span>
+<span>                           step <span class="op">=</span> <span class="fl">50</span>, </span>
+<span>                           width <span class="op">=</span> <span class="fl">1000</span>,</span>
+<span>                           nsim <span class="op">=</span> <span class="fl">50</span>,</span>
+<span>                           resolution <span class="op">=</span> <span class="fl">50</span>,</span>
+<span>                           verbose <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>                           conf_int <span class="op">=</span> <span class="fl">0.05</span>,</span>
+<span>                           digits <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>                           tol <span class="op">=</span> <span class="fl">0.1</span>,</span>
+<span>                           agg <span class="op">=</span> <span class="cn">NULL</span>, </span>
+<span>                           return_sims <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>                           calc_g_func <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">kfun_theatre</span><span class="op">$</span><span class="va">plotk</span></span></code></pre></div>
 <p><img src="KNetworkFunctions_files/figure-html/unnamed-chunk-4-1.png" width="700" style="display: block; margin: auto;"></p>
 <p>The blue line is the empirical network K-function of the theatres in
@@ -210,16 +232,28 @@ fact that we have a high concentration of theatres in the central
 neighbourhoods and then more dispersed points. We can perform the same
 analysis for libraries.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">kfun_biblio</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/kfunctions.html">kfunctions</a></span><span class="op">(</span><span class="va">main_network_mtl</span>, <span class="va">mtl_libraries</span>,</span>
-<span>                          start <span class="op">=</span> <span class="fl">0</span>, end <span class="op">=</span> <span class="fl">5000</span>, step <span class="op">=</span> <span class="fl">50</span>,</span>
-<span>                          width <span class="op">=</span> <span class="fl">1000</span>, nsim <span class="op">=</span> <span class="fl">50</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">kfun_biblio</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/kfunctions.html">kfunctions</a></span><span class="op">(</span><span class="va">main_network_mtl</span>,</span>
+<span>                          <span class="va">mtl_libraries</span>,</span>
+<span>                          start <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>                          end <span class="op">=</span> <span class="fl">5000</span>,</span>
+<span>                          step <span class="op">=</span> <span class="fl">50</span>,</span>
+<span>                          width <span class="op">=</span> <span class="fl">1000</span>,</span>
+<span>                          nsim <span class="op">=</span> <span class="fl">50</span>,</span>
+<span>                          resolution <span class="op">=</span> <span class="fl">50</span>,</span>
+<span>                          verbose <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>                          conf_int <span class="op">=</span> <span class="fl">0.05</span>,</span>
+<span>                          digits <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>                          tol <span class="op">=</span> <span class="fl">0.1</span>,</span>
+<span>                          agg <span class="op">=</span> <span class="cn">NULL</span>, </span>
+<span>                          return_sims <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>                          calc_g_func <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">kfun_biblio</span><span class="op">$</span><span class="va">plotk</span></span></code></pre></div>
 <p><img src="KNetworkFunctions_files/figure-html/unnamed-chunk-8-1.png" width="700" style="display: block; margin: auto;"></p>
-<p>For distances bellow two kilometres, the libraries are a bit
-dispersed. Above two kilometres, the libraries tend to be randomly
-located. The chart of the G-function confirms this observation, but with
-a lower limit (1.3 km) :</p>
+<p>Mostly, one can conclude form the charts that the libraries tend to
+be randomly spaced. Below two kilometers, we tend to observe a little
+bit of systematic diversion. The chart of the G-function confirms this
+observation :</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">kfun_biblio</span><span class="op">$</span><span class="va">plotg</span></span></code></pre></div>
 <p><img src="KNetworkFunctions_files/figure-html/unnamed-chunk-10-1.png" width="700" style="display: block; margin: auto;"></p>
@@ -235,13 +269,28 @@ following formula :</p>
 \sum_{i=1}^{n_a} \sum_{j=1}^{n_b} \mathbf{1}\left\{d_{i j} \leq
 r\right\}\]</span></p>
 <p>On a network, the formula is adapted:</p>
-<p><span class="math display">\[\hat{K}(r)=\frac{1}{n_a/Lt}
-\sum_{i=1}^{n_a} \sum_{j=1}^{n_b} \mathbf{1}\left\{d_{i j} \leq
-r\right\}\]</span></p>
-<p>with <span class="math inline">\(n_a\)</span> the number of points in
-A and <span class="math inline">\(n_b\)</span> the number of points in
-B, and <span class="math inline">\(Lt\)</span> the total length of the
-network.</p>
+<p><span class="math display">\[\begin{equation}
+K_{\mathrm{AB}}(r)=\frac{1}{\rho_{\mathrm{A}}}
+\frac{\sum_{i=1}^{n_{\mathrm{B}}} n\left(r \mid p_{\mathrm{B}
+i}\right)}{n_{\mathrm{B}}}
+\end{equation}\]</span></p>
+<p>With:</p>
+<ul>
+<li><span class="math inline">\(\rho_{\mathrm{A}} = n_{\mathrm{A}} /
+L_t\)</span></li>
+<li>
+<span class="math inline">\(n\left(r \mid p_{\mathrm{B}
+i}\right)\)</span> the number of points in group B counted arround the
+point <em>i</em> in group A within a radius <em>r</em>
+</li>
+<li>
+<span class="math inline">\(n_a\)</span> the number of points in A
+and <span class="math inline">\(n_b\)</span> the number of points in
+B</li>
+<li>
+<span class="math inline">\(Lt\)</span> the total length of the
+network.</li>
+</ul>
 <p>Note that the cross-K-function A to B is not necessarily the same
 results as the cross-K-function B to A. Again, in
 <strong>spNetwork</strong>, the inference is based on Monte Carlo
@@ -249,9 +298,23 @@ Simulations. The locations of the reference set of points are randomized
 to estimate if the current situation is more or less clustered that what
 we could expect at random.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cross_biblio_theatre</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cross_kfunctions.html">cross_kfunctions</a></span><span class="op">(</span><span class="va">main_network_mtl</span>, <span class="va">mtl_libraries</span>,</span>
-<span>                        <span class="va">mtl_theatres</span>, start <span class="op">=</span> <span class="fl">0</span>, end <span class="op">=</span> <span class="fl">5000</span>, step <span class="op">=</span> <span class="fl">50</span>,</span>
-<span>                        width <span class="op">=</span> <span class="fl">1000</span>, nsim <span class="op">=</span> <span class="fl">50</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">cross_biblio_theatre</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cross_kfunctions.html">cross_kfunctions</a></span><span class="op">(</span></span>
+<span>  lines <span class="op">=</span> <span class="va">main_network_mtl</span>,</span>
+<span>  pointsA <span class="op">=</span> <span class="va">mtl_libraries</span>,</span>
+<span>  pointsB <span class="op">=</span> <span class="va">mtl_theatres</span>,</span>
+<span>  start <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  end <span class="op">=</span> <span class="fl">5000</span>,</span>
+<span>  step <span class="op">=</span> <span class="fl">50</span>,</span>
+<span>  width <span class="op">=</span> <span class="fl">1000</span>,</span>
+<span>  nsim <span class="op">=</span> <span class="fl">50</span>,</span>
+<span>  conf_int <span class="op">=</span> <span class="fl">0.05</span>, </span>
+<span>  digits <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  tol <span class="op">=</span> <span class="fl">0.01</span>,</span>
+<span>  resolution <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  agg <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  return_sims <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  calc_g_func <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">cross_biblio_theatre</span><span class="op">$</span><span class="va">plotk</span></span></code></pre></div>
 <p><img src="KNetworkFunctions_files/figure-html/unnamed-chunk-12-1.png" width="700" style="display: block; margin: auto;"></p>
@@ -259,9 +322,23 @@ we could expect at random.</p>
 located around the theatres and display nor clustering nor dispersion
 around theatres.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cross_theatre_biblio</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cross_kfunctions.html">cross_kfunctions</a></span><span class="op">(</span><span class="va">main_network_mtl</span>, <span class="va">mtl_theatres</span>,</span>
-<span>                      <span class="va">mtl_libraries</span>, start <span class="op">=</span> <span class="fl">0</span>, end <span class="op">=</span> <span class="fl">5000</span>,</span>
-<span>                      step <span class="op">=</span> <span class="fl">50</span>, width <span class="op">=</span> <span class="fl">1000</span>, nsim <span class="op">=</span> <span class="fl">50</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">cross_theatre_biblio</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cross_kfunctions.html">cross_kfunctions</a></span><span class="op">(</span></span>
+<span>  lines <span class="op">=</span> <span class="va">main_network_mtl</span>,</span>
+<span>  pointsA <span class="op">=</span> <span class="va">mtl_theatres</span>,</span>
+<span>  pointsB <span class="op">=</span> <span class="va">mtl_libraries</span>,</span>
+<span>  start <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  end <span class="op">=</span> <span class="fl">5000</span>,</span>
+<span>  step <span class="op">=</span> <span class="fl">50</span>,</span>
+<span>  width <span class="op">=</span> <span class="fl">1000</span>,</span>
+<span>  nsim <span class="op">=</span> <span class="fl">50</span>,</span>
+<span>  conf_int <span class="op">=</span> <span class="fl">0.05</span>, </span>
+<span>  digits <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  tol <span class="op">=</span> <span class="fl">0.01</span>,</span>
+<span>  resolution <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  agg <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  return_sims <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  calc_g_func <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">cross_theatre_biblio</span><span class="op">$</span><span class="va">plotk</span></span></code></pre></div>
 <p><img src="KNetworkFunctions_files/figure-html/unnamed-chunk-14-1.png" width="700" style="display: block; margin: auto;"></p>
@@ -270,7 +347,170 @@ clustered around libraries. This is coherent with the map above. A
 random library is often located far from the theatres. But the theatres
 are concentrated in the city centre and close to some specific
 libraries.</p>
-<div id="refs" class="references csl-bib-body hanging-indent">
+</div>
+<div class="section level2">
+<h2 id="multicore-calculation">Multicore calculation<a class="anchor" aria-label="anchor" href="#multicore-calculation"></a>
+</h2>
+<p>The functions shown above have multicore counterparts :</p>
+<ul>
+<li><code>kfunctions.mc</code></li>
+<li><code>cross_kfunctions.mc</code></li>
+</ul>
+<p>They can be used to split the dataset with a grid and share the
+calculation through multiples core of the CPU. This add a little bit of
+overhead to prepare the data in each quadra, but with a big dataset, one
+could expect reduced calculation time.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="fu">future</span><span class="fu">::</span><span class="va"><a href="https://future.futureverse.org/reference/multisession.html" class="external-link">multisession</a></span>, workers <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">cross_biblio_theatre_mc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cross_kfunctions.mc.html">cross_kfunctions.mc</a></span><span class="op">(</span></span>
+<span>  lines <span class="op">=</span> <span class="va">main_network_mtl</span>,</span>
+<span>  pointsA <span class="op">=</span> <span class="va">mtl_libraries</span>,</span>
+<span>  pointsB <span class="op">=</span> <span class="va">mtl_theatres</span>,</span>
+<span>  start <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  end <span class="op">=</span> <span class="fl">5000</span>,</span>
+<span>  step <span class="op">=</span> <span class="fl">50</span>,</span>
+<span>  width <span class="op">=</span> <span class="fl">1000</span>,</span>
+<span>  nsim <span class="op">=</span> <span class="fl">50</span>,</span>
+<span>  conf_int <span class="op">=</span> <span class="fl">0.05</span>, </span>
+<span>  digits <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  tol <span class="op">=</span> <span class="fl">0.01</span>,</span>
+<span>  resolution <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  agg <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  return_sims <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  calc_g_func <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  grid_shape <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
+<p>Very small differences could be observed between the values obtained
+from the multicore and single core functions. This is caused by the
+gridding process and rounding during calculation.</p>
+</div>
+<div class="section level2">
+<h2 id="space-time-k-functions">Space-time K functions<a class="anchor" aria-label="anchor" href="#space-time-k-functions"></a>
+</h2>
+<p>It is also possible to analyze data with a temporal dimension. The
+idea is to count the number of events occurring within a network and a
+time bandwidth.</p>
+<p>For the K function, the formula is simply:</p>
+<p><span class="math display">\[\begin{equation}
+K(r_{net},r_{time})=\frac{1}{\frac{(n-1)}{L_{net} * L_{time}}}
+\frac{\sum_{i=1}^n n\left(r_{net},r_{time} \mid p_i\right)}{n} .
+\end{equation}\]</span></p>
+<p>With:</p>
+<ul>
+<li>
+<span class="math inline">\(L_{net}\)</span> and <span class="math inline">\(L_{time}\)</span> the total length of the network
+and the total observation period.</li>
+<li>
+<span class="math inline">\(n\left(r_{net},r_{time} \mid
+p_i\right)\)</span> the number of events around the event <em>i</em>
+within a distance <span class="math inline">\(r_{net}\)</span> on the
+network and <span class="math inline">\(r_{time}\)</span> in time.</li>
+</ul>
+<p>This feature is still experimental. More detailed examples and
+documentation will come in the future.</p>
+<p>We demonstrate here how to use it with the bike accidents data.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"bike_accidents"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"mtl_network"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_shape.html" class="external-link">tm_shape</a></span><span class="op">(</span><span class="va">mtl_network</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_lines.html" class="external-link">tm_lines</a></span><span class="op">(</span><span class="st">"black"</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_shape.html" class="external-link">tm_shape</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_symbols.html" class="external-link">tm_dots</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"red"</span>, size <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></span></code></pre></div>
+<p><img src="KNetworkFunctions_files/figure-html/unnamed-chunk-17-1.png" width="700" style="display: block; margin: auto;"></p>
+<p>We must first convert the date column as a numeric. It will be
+measured with days in this example.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="co"># converting the Date field to a numeric field</span></span>
+<span><span class="co"># (counting days from first accident)</span></span>
+<span></span>
+<span><span class="va">bike_accidents</span><span class="op">$</span><span class="va">Time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html" class="external-link">as.POSIXct</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">$</span><span class="va">Date</span>, format <span class="op">=</span> <span class="st">"%Y/%m/%d"</span><span class="op">)</span></span>
+<span><span class="va">start</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html" class="external-link">as.POSIXct</a></span><span class="op">(</span><span class="st">"2016/01/01"</span>, format <span class="op">=</span> <span class="st">"%Y/%m/%d"</span><span class="op">)</span></span>
+<span><span class="va">bike_accidents</span><span class="op">$</span><span class="va">Time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/difftime.html" class="external-link">difftime</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">$</span><span class="va">Time</span>, <span class="va">start</span>, units <span class="op">=</span> <span class="st">"days"</span><span class="op">)</span></span>
+<span><span class="va">bike_accidents</span><span class="op">$</span><span class="va">Time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">$</span><span class="va">Time</span><span class="op">)</span></span>
+<span></span>
+<span></span>
+<span><span class="va">net_time_values</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/k_nt_functions.html">k_nt_functions</a></span><span class="op">(</span></span>
+<span>  lines <span class="op">=</span> <span class="va">mtl_network</span>, </span>
+<span>  points <span class="op">=</span> <span class="va">bike_accidents</span>,</span>
+<span>  points_time <span class="op">=</span> <span class="va">bike_accidents</span><span class="op">$</span><span class="va">Time</span>, </span>
+<span>  start_net <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  end_net <span class="op">=</span> <span class="fl">1500</span>,</span>
+<span>  step_net <span class="op">=</span> <span class="fl">50</span>, </span>
+<span>  width_net <span class="op">=</span> <span class="fl">200</span>, </span>
+<span>  start_time <span class="op">=</span> <span class="fl">0</span>, </span>
+<span>  end_time <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">bike_accidents</span><span class="op">$</span><span class="va">Time</span><span class="op">)</span>,</span>
+<span>  step_time <span class="op">=</span> <span class="fl">7</span>,</span>
+<span>  width_time <span class="op">=</span> <span class="fl">14</span>,</span>
+<span>  nsim <span class="op">=</span> <span class="fl">500</span>, </span>
+<span>  conf_int <span class="op">=</span> <span class="fl">0.05</span>,</span>
+<span>  digits <span class="op">=</span> <span class="fl">2</span>, </span>
+<span>  tol <span class="op">=</span> <span class="fl">0.01</span>,</span>
+<span>  resolution <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  agg <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  calc_g_func <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>Because there is two dimensions (network and time), we cannot
+represent it with the classical plot.</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="va">df_plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">net_time_values</span><span class="op">$</span><span class="va">obs_k</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span><span class="op">{</span></span>
+<span>  </span>
+<span>  <span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>    k_obs <span class="op">=</span> <span class="va">net_time_values</span><span class="op">$</span><span class="va">obs_k</span><span class="op">[</span><span class="va">i</span>,<span class="op">]</span>,</span>
+<span>    k_low <span class="op">=</span> <span class="va">net_time_values</span><span class="op">$</span><span class="va">lower_k</span><span class="op">[</span><span class="va">i</span>,<span class="op">]</span>,</span>
+<span>    k_upp <span class="op">=</span> <span class="va">net_time_values</span><span class="op">$</span><span class="va">upper_k</span><span class="op">[</span><span class="va">i</span>,<span class="op">]</span>,</span>
+<span>    net_dist <span class="op">=</span> <span class="va">net_time_values</span><span class="op">$</span><span class="va">distances_net</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span>,</span>
+<span>    time_dist <span class="op">=</span> <span class="va">net_time_values</span><span class="op">$</span><span class="va">distances_time</span></span>
+<span>  <span class="op">)</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
+<span>  </span>
+<span><span class="op">}</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">df_plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="va">df_plot</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">df_plot</span><span class="op">$</span><span class="va">sign</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">df_plot</span><span class="op">$</span><span class="va">k_obs</span> <span class="op">&gt;</span> <span class="va">df_plot</span><span class="op">$</span><span class="va">k_upp</span>, <span class="st">'concentrated'</span>, <span class="st">'random'</span><span class="op">)</span></span>
+<span><span class="va">df_plot</span><span class="op">$</span><span class="va">sign</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">df_plot</span><span class="op">$</span><span class="va">k_obs</span> <span class="op">&lt;</span> <span class="va">df_plot</span><span class="op">$</span><span class="va">k_low</span>, <span class="st">'dispersed'</span>, <span class="va">df_plot</span><span class="op">$</span><span class="va">sign</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_tile.html" class="external-link">geom_raster</a></span><span class="op">(</span></span>
+<span>    data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">df_plot</span>, <span class="va">df_plot</span><span class="op">$</span><span class="va">sign</span> <span class="op">!=</span> <span class="st">'random'</span><span class="op">)</span>,</span>
+<span>    mapping <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time_dist</span>, y <span class="op">=</span> <span class="va">net_dist</span>, fill <span class="op">=</span> <span class="va">k_obs</span>  <span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_tile.html" class="external-link">geom_raster</a></span><span class="op">(</span></span>
+<span>    data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">df_plot</span>, <span class="va">df_plot</span><span class="op">$</span><span class="va">sign</span> <span class="op">==</span> <span class="st">'random'</span><span class="op">)</span>,</span>
+<span>    mapping <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time_dist</span>, y <span class="op">=</span> <span class="va">net_dist</span><span class="op">)</span>, fill <span class="op">=</span> <span class="st">'grey'</span><span class="op">)</span></span></code></pre></div>
+<p><img src="KNetworkFunctions_files/figure-html/unnamed-chunk-19-1.png" width="100%" style="display: block; margin: auto;"></p>
+<p>The above figure shows that the bike accidents are more concentrated
+than one would expect from random dispersion in both time and space.</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="va">df_plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">df_plot</span>, <span class="va">df_plot</span><span class="op">$</span><span class="va">net_dist</span> <span class="op">&gt;</span> <span class="fl">0</span> <span class="op">&amp;</span> <span class="va">df_plot</span><span class="op">$</span><span class="va">time_dist</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="va">df_plot</span><span class="op">$</span><span class="va">diff</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="va">df_plot</span><span class="op">$</span><span class="va">k_obs</span> <span class="op">-</span> <span class="va">df_plot</span><span class="op">$</span><span class="va">k_upp</span><span class="op">)</span> <span class="op">/</span> <span class="va">df_plot</span><span class="op">$</span><span class="va">k_obs</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_tile.html" class="external-link">geom_raster</a></span><span class="op">(</span></span>
+<span>    data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">df_plot</span>, <span class="va">df_plot</span><span class="op">$</span><span class="va">sign</span> <span class="op">!=</span> <span class="st">'random'</span><span class="op">)</span>,</span>
+<span>    mapping <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time_dist</span>, y <span class="op">=</span> <span class="va">net_dist</span>, fill <span class="op">=</span> <span class="va">diff</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_tile.html" class="external-link">geom_raster</a></span><span class="op">(</span></span>
+<span>    data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">df_plot</span>, <span class="va">df_plot</span><span class="op">$</span><span class="va">sign</span> <span class="op">==</span> <span class="st">'random'</span><span class="op">)</span>,</span>
+<span>    mapping <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time_dist</span>, y <span class="op">=</span> <span class="va">net_dist</span><span class="op">)</span>, fill <span class="op">=</span> <span class="st">'grey'</span><span class="op">)</span></span></code></pre></div>
+<p><img src="KNetworkFunctions_files/figure-html/unnamed-chunk-20-1.png" width="100%" style="display: block; margin: auto;"></p>
+<p>Also, it appears that the concentration of events is greater in the
+network dimension in comparison to the time dimension. The difference
+between the simulated values (random events locations) of K and the real
+values of K decreases faster with greater network radii than greater
+time radii.</p>
+</div>
+<div class="section level2">
+<h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
 <div id="ref-baddeley2015spatial" class="csl-entry">
 Baddeley, Adrian, Ege Rubak, and Rolf Turner. 2015. <em>Spatial Point
 Patterns: Methodology and Applications with r</em>. CRC press.

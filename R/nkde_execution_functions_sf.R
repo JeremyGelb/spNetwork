@@ -317,6 +317,8 @@ prepare_data <- function(samples,lines,events, w ,digits,tol, agg){
 
 
 
+
+
 #' @title Split data with a grid
 #'
 #' @description Function to split the dataset according to a grid.
@@ -337,102 +339,6 @@ prepare_data <- function(samples,lines,events, w ,digits,tol, agg){
 #' #This is an internal function, no example provided
 split_by_grid <- function(grid,samples,events,lines,bw,tol, digits, split_all = TRUE){
 
-  ## step1 : creating the spatial trees
-  tree_samples <- build_quadtree(samples)
-  tree_events <- build_quadtree(events)
-  tree_lines <- build_quadtree(lines)
-
-  ## step2 : split the datasets
-
-  selections <- lapply(1:nrow(grid),function(i){
-    square <- grid[i,]
-    # selecting the samples in the grid
-    sel_samples <- spatial_request(square,tree_samples,samples)
-    # if there is no sampling points in the rectangle, then return NULL
-    if(nrow(sel_samples)==0){
-      return(NULL)
-    }
-    # selecting the events in a buffer
-    buff <- st_buffer(square,dist=bw)
-    buff2 <- st_buffer(square,dist=(bw+0.5*bw))
-    sel_events <- spatial_request(buff,tree_events,events)
-    # selecting the lines in a buffer
-    sel_lines <- spatial_request(buff2,tree_lines,lines)
-    sel_lines$oid <- 1:nrow(sel_lines)
-
-    # snapping the events on the lines
-    if(nrow(sel_events)==0){
-      new_lines <- sel_lines
-    }else{
-      a <- nrow(sel_events)
-      b <- nrow(sel_lines)
-      x <-  a*b
-      # if(is.na(x)){
-      #   stop(paste("The matrix size will be exceeded (",a," x ",b,"), please consider using a finer grid to split the study area",sep=""))
-      # }
-      # if(x >= 2*10^9){
-      #   stop(paste("The matrix size will be exceeded (",a," x ",b,"), please consider using a finer grid to split the study area",sep=""))
-      # }
-      sel_events <- snapPointsToLines2(sel_events,sel_lines,idField = "oid", snap_dist = bw)
-
-      if(split_all){
-        new_lines <- add_vertices_lines(sel_lines,sel_events,sel_events$nearest_line_id,tol)
-      }else{
-        new_lines <- split_lines_at_vertex(sel_lines,sel_events,sel_events$nearest_line_id,tol)
-      }
-
-    }
-
-    # split lines at events
-    if(split_all){
-      new_lines <- simple_lines(new_lines)
-    }
-    new_lines$length <- as.numeric(st_length(new_lines))
-    new_lines <- subset(new_lines,new_lines$length>0)
-
-    # remove lines that are loops
-    new_lines <- remove_loop_lines(new_lines,digits)
-    new_lines$oid <- 1:nrow(new_lines)
-    new_lines <- new_lines[c("length","oid")]
-
-
-    return(list("samples" = sel_samples,
-                "events" = sel_events,
-                "lines" = new_lines))
-  })
-  #let us remove all the empty quadra
-  selections <- selections[lengths(selections) != 0]
-
-  for(i in 1:length(selections)){
-    selections[[i]]$index <- i
-  }
-
-  return(selections)
-
-}
-
-
-
-#' @title Split data with a grid
-#'
-#' @description Function to split the dataset according to a grid.
-#'
-#' @param grid A spatial grid to split the data within
-#' @param samples A feature collection of points representing the samples points
-#' @param events A feature collection of points representing the events points
-#' @param lines A feature collection of linestrings representing the network
-#' @param bw The kernel bandwidth (used to avoid edge effect)
-#' @param digits The number of digits to keep
-#' @param tol A float indicating the spatial tolerance when snapping events on
-#' lines
-#' @param split_all A boolean indicating if we must split the lines at each vertex
-#' (TRUE) or only at event vertices (FALSE)
-#' @return A list with the split dataset
-#' @keywords internal
-#' @examples
-#' #This is an internal function, no example provided
-split_by_grid_sf <- function(grid,samples,events,lines,bw,tol, digits, split_all = TRUE){
-
   grid$grid_id <- as.character(grid$oid)
   grid$oid <- NULL
 
@@ -441,8 +347,16 @@ split_by_grid_sf <- function(grid,samples,events,lines,bw,tol, digits, split_all
   inter_samples <- split(inter_samples,inter_samples$grid_id)
   inter_events <- sf::st_join(events, st_buffer(grid, dist=bw))
   inter_events <- split(inter_events,inter_events$grid_id)
+
+  # pour les lignes on doit souffrir un peu plus
   inter_lines <- sf::st_join(lines, st_buffer(grid, dist=(bw+0.5*bw)))
   inter_lines <- split(inter_lines,inter_lines$grid_id)
+
+  # inter_lines <- sf::st_intersects(lines, st_buffer(grid, dist=(bw+0.5*bw)))
+  # idxs_lines <- rep(1:nrow(inter_lines), lengths(inter_lines))
+  # idxs_gid <- unlist(inter_lines)
+  # inter_lines <- lines[idxs_lines,]
+  # inter_lines$grid_id <- idxs_gid
 
   ## step2 : split the datasets
 
@@ -522,7 +436,6 @@ split_by_grid_sf <- function(grid,samples,events,lines,bw,tol, digits, split_all
 
 
 
-
 #' @title Split data with a grid for the adaptive bw function
 #'
 #' @description Function to split the dataset according to a grid for the
@@ -542,30 +455,40 @@ split_by_grid_sf <- function(grid,samples,events,lines,bw,tol, digits, split_all
 #' #This is an internal function, no example provided
 split_by_grid_abw <- function(grid,events,lines,bw,tol,digits){
 
-  ## step1 : creating the spatial trees
-  tree_events <- build_quadtree(events)
-  tree_lines <- build_quadtree(lines)
+  grid$grid_id <- as.character(grid$oid)
+  grid$oid <- NULL
+
+  ## step1 : calculating the spatial joins
+  inter_events_rect <- st_join(events, grid)
+  inter_events_rect <- split(inter_events_rect,inter_events_rect$grid_id)
+
+  inter_events <-  st_join(events, st_buffer(grid, dist=bw))
+  inter_events <- split(inter_events,inter_events$grid_id)
+
+  inter_lines <- st_join(lines, st_buffer(grid,dist=(bw+0.5*bw)))
+  inter_lines <- split(inter_lines,inter_lines$grid_id)
 
   ## step2 : split the datasets
 
   selections <- lapply(1:nrow(grid),function(i){
-    square <- grid[i,]
+
+    gid <- grid$grid_id[[i]]
+
     # selecting the events in the grid
-    sel_events_rect <- spatial_request(square,tree_events,events)
+    sel_events_rect <- inter_events_rect[[gid]]
+
     # if there is no event points in the rectangle, then return NULL
-    if(nrow(sel_events_rect)==0){
+    if(is.null(sel_events_rect)){
       return(NULL)
     }
-    # selecting the events in a buffer
-    buff <- st_buffer(square,dist=bw)
-    buff2 <- st_buffer(square,dist=(bw+0.5*bw))
-    sel_events <- spatial_request(buff,tree_events,events)
+    sel_events <- inter_events[[gid]]
+
     # selecting the lines in a buffer
-    sel_lines <- spatial_request(buff2,tree_lines,lines)
+    sel_lines <- inter_lines[[gid]]
     sel_lines$oid <- 1:nrow(sel_lines)
 
     # snapping the events on the lines
-    if(nrow(sel_events)==0){
+    if(is.null(sel_events)){
       new_lines <- sel_lines
     }else{
       a <- nrow(sel_events)
@@ -609,14 +532,15 @@ split_by_grid_abw <- function(grid,events,lines,bw,tol,digits){
 }
 
 
-#' @title Split data with a grid (multicore)
+
+#' @title Split data with a grid
 #'
-#' @description Function to split the dataset according to a grid with multicore support.
+#' @description Function to split the dataset according to a grid.
 #'
 #' @param grid A spatial grid to split the data within
 #' @param samples A feature collection of points representing the samples points
 #' @param events A feature collection of points representing the events points
-#' @param lines A feautre collection of linestrings representing the network
+#' @param lines A feature collection of linestrings representing the network
 #' @param bw The kernel bandwidth (used to avoid edge effect)
 #' @param digits The number of digits to keep
 #' @param tol A float indicating the spatial tolerance when snapping events on
@@ -627,61 +551,69 @@ split_by_grid_abw <- function(grid,events,lines,bw,tol,digits){
 #' @keywords internal
 #' @examples
 #' #This is an internal function, no example provided
-split_by_grid.mc <- function(grid,samples,events,lines,bw,tol,digits, split_all = TRUE){
+split_by_grid.mc <- function(grid,samples,events,lines,bw,tol, digits, split_all = TRUE){
 
-  ## step1 creating the spatial trees
-  tree_samples <- build_quadtree(samples)
-  tree_events <- build_quadtree(events)
-  tree_lines <- build_quadtree(lines)
 
-  ## step2 split the datasets
-  #NB : because we can't send c++ pointer to child process, we must start with
-  #splitting the spatial objects in a sequential way and only after
-  #snapping and splitting in a multicore fashion
+  grid$grid_id <- as.character(grid$oid)
+  grid$oid <- NULL
 
-  sub_samples <- lapply(1:nrow(grid),function(i){
-    square <- grid[i,]
-    #selecting the samples in the grid
-    sel_samples <- spatial_request(square,tree_samples,samples)
-    ##return NULL if there is no sampling point in the rectangle
-    if(nrow(sel_samples)==0){
+  ## step 1 : preparing the spatial intersections (done on a single core for the moment)
+  inter_samples <- sf::st_join(samples, grid)
+  inter_samples <- split(inter_samples,inter_samples$grid_id)
+  inter_events <- sf::st_join(events, st_buffer(grid, dist=bw))
+  inter_events <- split(inter_events,inter_events$grid_id)
+
+  inter_lines <- sf::st_join(lines, st_buffer(grid, dist=(bw+0.5*bw)))
+  inter_lines <- split(inter_lines,inter_lines$grid_id)
+
+  dfs <- lapply(1:nrow(grid), function(i){
+
+    gid <- grid$grid_id[[i]]
+    # selecting the samples in the grid
+    sel_samples <- inter_samples[[gid]]
+    sel_samples$grid_id <- NULL
+    # selecting the events
+    sel_events <- inter_events[[gid]]
+    sel_events$grid_id <- NULL
+    # selecting the lines in a buffer
+    sel_lines <- inter_lines[[gid]]
+    sel_lines$grid_id <- NULL
+    sel_lines$oid <- 1:nrow(sel_lines)
+    return(
+      list(i, sel_samples, sel_events, sel_lines)
+    )
+
+  })
+
+  ## step2 : split the datasets (done on multiple cores)
+
+  selections <- future.apply::future_lapply(dfs,function(df){
+
+    i <- df[[1]]
+    sel_samples <- df[[2]]
+    sel_events <- df[[3]]
+    sel_lines <- df[[4]]
+
+    # if there is no sampling points in the rectangle, then return NULL
+    if(is.null(sel_samples)){
       return(NULL)
     }
-    #selecting the events in a buffer
-    buff <- st_buffer(square, dist = bw)
-    buff2 <- st_buffer(square, dist=(bw+0.5*bw))
 
-    sel_events <- spatial_request(buff,tree_events,events)
-    #selecting the lines in a buffer
-    sel_lines <- spatial_request(buff2,tree_lines,lines)
-    sel_lines$oid <- 1:nrow(sel_lines)
-    return(list("sel_lines" = sel_lines,
-                "sel_events"=sel_events,
-                "sel_samples"=sel_samples))
-    })
-
-  selections <- future.apply::future_lapply(sub_samples,function(sub){
-    if(is.null(sub)){
-      return (NULL)
-    }
-    sel_lines <- sub$sel_lines
-    sel_events <- sub$sel_events
-    sel_samples <- sub$sel_samples
-
-    #snapping the events on the lines
-    if(nrow(sel_events)==0){
+    # snapping the events on the lines
+    if(is.null(sel_events)){
       new_lines <- sel_lines
     }else{
       a <- nrow(sel_events)
       b <- nrow(sel_lines)
       x <-  a*b
-      if(is.na(x)){
-        stop(paste("The matrix size will be exceeded (",a," x ",b,"), please consider using a finer grid to split the study area",sep=""))
-      }
-      if(x >= 2*10^9){
-        stop(paste("The matrix size will be exceeded (",a," x ",b,"), please consider using a finer grid to split the study area",sep=""))
-      }
-      sel_events <- snapPointsToLines2(sel_events,sel_lines,idField = "oid")
+      # if(is.na(x)){
+      #   stop(paste("The matrix size will be exceeded (",a," x ",b,"), please consider using a finer grid to split the study area",sep=""))
+      # }
+      # if(x >= 2*10^9){
+      #   stop(paste("The matrix size will be exceeded (",a," x ",b,"), please consider using a finer grid to split the study area",sep=""))
+      # }
+      sel_events <- snapPointsToLines2(sel_events,sel_lines,idField = "oid", snap_dist = bw)
+
       if(split_all){
         new_lines <- add_vertices_lines(sel_lines,sel_events,sel_events$nearest_line_id,tol)
       }else{
@@ -690,7 +622,7 @@ split_by_grid.mc <- function(grid,samples,events,lines,bw,tol,digits, split_all 
 
     }
 
-    #split lines at events
+    # split lines at events
     if(split_all){
       new_lines <- simple_lines(new_lines)
     }
@@ -706,12 +638,11 @@ split_by_grid.mc <- function(grid,samples,events,lines,bw,tol,digits, split_all 
     return(list("samples" = sel_samples,
                 "events" = sel_events,
                 "lines" = new_lines))
-  }, future.packages = c("spNetwork"))
-  #let us remove the empty regions
-  selections <- selections[lengths(selections) != 0]
 
-  #randomize the elements to minimize calculation time
-  selections <- sample(selections)
+  }, future.packages = c("spNetwork"))
+
+  #let us remove all the empty quadra
+  selections <- selections[lengths(selections) != 0]
 
   for(i in 1:length(selections)){
     selections[[i]]$index <- i
@@ -720,6 +651,129 @@ split_by_grid.mc <- function(grid,samples,events,lines,bw,tol,digits, split_all 
   return(selections)
 
 }
+
+
+
+#' @title Split data with a grid
+#'
+#' @description Function to split the dataset according to a grid.
+#'
+#' @param grid A spatial grid to split the data within
+#' @param samples A feature collection of points representing the samples points
+#' @param events A feature collection of points representing the events points
+#' @param lines A feature collection of linestrings representing the network
+#' @param bw The kernel bandwidth (used to avoid edge effect)
+#' @param digits The number of digits to keep
+#' @param tol A float indicating the spatial tolerance when snapping events on
+#' lines
+#' @param split_all A boolean indicating if we must split the lines at each vertex
+#' (TRUE) or only at event vertices (FALSE)
+#' @return A list with the split dataset
+#' @keywords internal
+#' @examples
+#' #This is an internal function, no example provided
+split_by_grid.mc <- function(grid,samples,events,lines,bw,tol, digits, split_all = TRUE){
+
+
+  grid$grid_id <- as.character(grid$oid)
+  grid$oid <- NULL
+
+  ## step 1 : preparing the spatial intersections (done on a single core for the moment)
+  inter_samples <- sf::st_join(samples, grid)
+  inter_samples <- split(inter_samples,inter_samples$grid_id)
+  inter_events <- sf::st_join(events, st_buffer(grid, dist=bw))
+  inter_events <- split(inter_events,inter_events$grid_id)
+
+  inter_lines <- sf::st_join(lines, st_buffer(grid, dist=(bw+0.5*bw)))
+  inter_lines <- split(inter_lines,inter_lines$grid_id)
+
+  dfs <- lapply(1:nrow(grid), function(i){
+
+    gid <- grid$grid_id[[i]]
+    # selecting the samples in the grid
+    sel_samples <- inter_samples[[gid]]
+    sel_samples$grid_id <- NULL
+    # selecting the events
+    sel_events <- inter_events[[gid]]
+    sel_events$grid_id <- NULL
+    # selecting the lines in a buffer
+    sel_lines <- inter_lines[[gid]]
+    sel_lines$grid_id <- NULL
+    sel_lines$oid <- 1:nrow(sel_lines)
+    return(
+      list(i, sel_samples, sel_events, sel_lines)
+    )
+
+  })
+
+  ## step2 : split the datasets (done on multiple cores)
+
+  selections <- future.apply::future_lapply(dfs,function(df){
+
+    i <- df[[1]]
+    sel_samples <- df[[2]]
+    sel_events <- df[[3]]
+    sel_lines <- df[[4]]
+
+    # if there is no sampling points in the rectangle, then return NULL
+    if(is.null(sel_samples)){
+      return(NULL)
+    }
+
+    # snapping the events on the lines
+    if(is.null(sel_events)){
+      new_lines <- sel_lines
+    }else{
+      a <- nrow(sel_events)
+      b <- nrow(sel_lines)
+      x <-  a*b
+      # if(is.na(x)){
+      #   stop(paste("The matrix size will be exceeded (",a," x ",b,"), please consider using a finer grid to split the study area",sep=""))
+      # }
+      # if(x >= 2*10^9){
+      #   stop(paste("The matrix size will be exceeded (",a," x ",b,"), please consider using a finer grid to split the study area",sep=""))
+      # }
+      sel_events <- snapPointsToLines2(sel_events,sel_lines,idField = "oid", snap_dist = bw)
+
+      if(split_all){
+        new_lines <- add_vertices_lines(sel_lines,sel_events,sel_events$nearest_line_id,tol)
+      }else{
+        new_lines <- split_lines_at_vertex(sel_lines,sel_events,sel_events$nearest_line_id,tol)
+      }
+
+    }
+
+    # split lines at events
+    if(split_all){
+      new_lines <- simple_lines(new_lines)
+    }
+    new_lines$length <- as.numeric(st_length(new_lines))
+    new_lines <- subset(new_lines,new_lines$length>0)
+
+    # remove lines that are loops
+    new_lines <- remove_loop_lines(new_lines,digits)
+    new_lines$oid <- 1:nrow(new_lines)
+    new_lines <- new_lines[c("length","oid")]
+
+
+    return(list("samples" = sel_samples,
+                "events" = sel_events,
+                "lines" = new_lines))
+
+  }, future.packages = c("spNetwork"))
+
+  #let us remove all the empty quadra
+  selections <- selections[lengths(selections) != 0]
+
+  for(i in 1:length(selections)){
+    selections[[i]]$index <- i
+  }
+
+  return(selections)
+
+}
+
+
 
 
 #' @title Split data with a grid for the adaptive bw function (multicore)
@@ -740,35 +794,46 @@ split_by_grid.mc <- function(grid,samples,events,lines,bw,tol,digits, split_all 
 #' #This is an internal function, no example provided
 split_by_grid_abw.mc <- function(grid,events,lines,bw,tol,digits){
 
-  ## step1 creating the spatial trees
-  tree_events <- build_quadtree(events)
-  tree_lines <- build_quadtree(lines)
+  grid$grid_id <- as.character(grid$oid)
+  grid$oid <- NULL
+
+  ## step1 : calculating the spatial joins (single core for the moment)
+  inter_events_rect <- st_join(events, grid)
+  inter_events_rect <- split(inter_events_rect,inter_events_rect$grid_id)
+
+  inter_events <-  st_join(events, st_buffer(grid, dist=bw))
+  inter_events <- split(inter_events,inter_events$grid_id)
+
+  inter_lines <- st_join(lines, st_buffer(grid,dist=(bw+0.5*bw)))
+  inter_lines <- split(inter_lines,inter_lines$grid_id)
 
   ## step2 split the datasets
-  #NB : because we can't send c++ pointer to child process, we must start with
-  #splitting the spatial objects in a sequential way and only after
-  #snapping and splitting in a multicore fashion
 
   sub_samples <- lapply(1:nrow(grid),function(i){
-    square <- grid[i,]
+
+    gid <- grid$grid_id[[i]]
+
     #selecting the samples in the grid
-    sel_events_rect <- spatial_request(square,tree_events,events)
+    sel_events_rect <- inter_events_rect[[gid]]
+
     ##return NULL if there is no sampling point in the rectangle
-    if(nrow(sel_events_rect)==0){
+    if(is.null(sel_events_rect)){
       return(NULL)
     }
+
     #selecting the events in a buffer
-    buff <- st_buffer(square,dist = bw)
-    buff2 <- st_buffer(square,dist = (bw+0.5*bw))
-    sel_events <- spatial_request(buff,tree_events,events)
+    sel_events <- inter_events[[gid]]
 
     #selecting the lines in a buffer
-    sel_lines <- spatial_request(buff2,tree_lines,lines)
+    sel_lines <- inter_lines[[gid]]
     sel_lines$oid <- 1:nrow(sel_lines)
+
     return(list("sel_lines" = sel_lines,
                 "sel_events"=sel_events,
                 "sel_events_rect"=sel_events_rect))
+
   })
+
 
   selections <- future.apply::future_lapply(sub_samples,function(sub){
     if(is.null(sub)){
@@ -779,7 +844,7 @@ split_by_grid_abw.mc <- function(grid,events,lines,bw,tol,digits){
     sel_events_rect <- sub$sel_events_rect
 
     #snapping the events on the lines
-    if(nrow(sel_events)==0){
+    if(is.null(sel_events)){
       new_lines <- sel_lines
     }else{
       a <- nrow(sel_events)
@@ -851,7 +916,7 @@ split_by_grid_abw.mc <- function(grid,events,lines,bw,tol,digits){
 adaptive_bw <- function(grid,events,lines,bw,trim_bw,method,kernel_name,max_depth,tol,digits,sparse,verbose){
 
   ##step 1 split the datas !
-  selections <- split_by_grid_abw(grid,events,lines,max(trim_bw), tol, digits)
+  selections <- split_by_grid_abw(grid,events,lines, bw = max(trim_bw), tol, digits)
   ## step 2 calculating the temp NKDE values
   if(verbose){
     print("start calculating the kernel values for the adaptive bandwidth...")
@@ -1409,6 +1474,7 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, tri
 
   ## step2  creating the grid
   grid <- build_grid(grid_shape,list(lines,samples,events))
+  grid <- sf::st_as_sf(grid)
 
   ## adaptive bandwidth !
   if(adaptive == FALSE){
@@ -1464,9 +1530,16 @@ nkde <- function(lines, events, w, samples, kernel_name, bw, adaptive=FALSE, tri
     values <- nkde_worker(lines = sel$lines,
                           events = sel$events,
                           samples =  sel$samples,
-                          kernel_name = kernel_name, bw = bw,
-                          bws = sel$events$bw, method = method, div, digits,
-                          tol,sparse, max_depth, verbose)
+                          kernel_name = kernel_name,
+                          bw = bw,
+                          bws = sel$events$bw,
+                          method = method,
+                          div = div,
+                          digits = digits,
+                          tol = tol,
+                          sparse = sparse,
+                          max_depth = max_depth,
+                          verbose = verbose)
 
     df <- data.frame("goid"=sel$samples$goid,
                      "k" = values)

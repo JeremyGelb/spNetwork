@@ -378,7 +378,14 @@ bw_cv_likelihood_calc <- function(bws = NULL,
     print("Splittig the dataset within the grid ...")
   }
   # NB : here we select the events in the quadra (samples) and the events locations in the buffer (events_loc)
-  selections <- split_by_grid(grid, events, events_loc, lines,max_bw, tol, digits, split_all = FALSE)
+  selections <- split_by_grid(grid,
+                              samples = events,
+                              events = events_loc,
+                              lines = lines,
+                              bw = max_bw,
+                              tol = tol,
+                              digits = digits,
+                              split_all = FALSE)
 
   ## sub sampling the quadra if required
   if (sub_sample < 1){

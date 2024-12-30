@@ -5,6 +5,7 @@
 // #### base k function ####
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 //' @title c++ k function
 //' @name kfunc_cpp
 //' @description c++ k function (INTERNAL)
@@ -45,6 +46,7 @@ NumericVector kfunc_cpp(arma::mat dist_mat,float start,float end, float step, fl
 //' @param breaks A numeric vector with the distance to consider
 //' @param cross A boolean indicating if we are calculating a cross k function or not (default is FALSE)
 //' @return A numeric matrix with the countings of the k function evaluated at the required distances
+//' @keywords internal
 //' @export
 // [[Rcpp::export]]
 NumericMatrix kfunc_counting(arma::mat dist_mat, arma::rowvec wc, NumericVector wr, NumericVector breaks, bool cross = false){
@@ -94,7 +96,7 @@ NumericMatrix kfunc_counting(arma::mat dist_mat, arma::rowvec wc, NumericVector 
 
 
 //' @title c++ k function 2
-//' @name kfunc_cpp 2
+//' @name kfunc_cpp2
 //' @description c++ k function (INTERNAL)
 //' @param dist_mat A square matrix with the distances between points
 //' @param start A float, the start value for evaluating the k-function
@@ -106,6 +108,7 @@ NumericMatrix kfunc_counting(arma::mat dist_mat, arma::rowvec wc, NumericVector 
 //' @param wr The weight of the points represented by the rows (origins)
 //' @param cross A boolean indicating if we are calculating a cross k function or not (default is FALSE)
 //' @return A numeric vector with the values of the k function evaluated at the required distances
+//' @keywords internal
 //' @export
 // [[Rcpp::export]]
 NumericVector kfunc_cpp2(arma::mat dist_mat,float start,float end, float step, float Lt, int n, arma::rowvec wc, NumericVector wr, bool cross = false){
@@ -147,6 +150,7 @@ NumericVector kfunc_cpp2(arma::mat dist_mat,float start,float end, float step, f
 //' @param breaks A numeric vector with the distance to consider
 //' @param width The width of each donut
 //' @return A numeric matrix with the countings of the g function evaluated at the required distances
+//' @keywords internal
 //' @export
 // [[Rcpp::export]]
 NumericMatrix gfunc_counting(arma::mat dist_mat, arma::colvec wc, NumericVector wr, NumericVector breaks, float width){
@@ -212,6 +216,7 @@ NumericMatrix gfunc_counting(arma::mat dist_mat, arma::colvec wc, NumericVector 
 //' @param wc The weight of the points represented by the columns (destinations)
 //' @param wr The weight of the points represented by the rows (origins)
 //' @return A numeric vector with the values of the g function evaluated at the required distances
+//' @keywords internal
 //' @export
 // [[Rcpp::export]]
 NumericVector gfunc_cpp2(arma::mat dist_mat,float start,float end, float step, float width, float Lt, int n, arma::rowvec wc, NumericVector wr){
@@ -246,6 +251,7 @@ NumericVector gfunc_cpp2(arma::mat dist_mat,float start,float end, float step, f
 //' @param width The width of each donut
 //' @param cross A boolean indicating if we are calculating a cross k function or not (default is FALSE)
 //' @return A list  of two numeric matrices with the values of the k and g function evaluated at the required distances
+//' @keywords internal
 //' @export
 // [[Rcpp::export]]
 List kgfunc_counting(arma::mat dist_mat, arma::rowvec wc, NumericVector wr, NumericVector breaks, float width, double cross = false){
@@ -333,6 +339,7 @@ List kgfunc_counting(arma::mat dist_mat, arma::rowvec wc, NumericVector wr, Nume
 //' @param wr The weight of the points represented by the rows (origins)
 //' @param cross A boolean indicating if we are calculating a cross k function or not (default is FALSE)
 //' @return A numeric matrix with the values of the k (first col) and g (second col) function evaluated at the required distances
+//' @keywords internal
 //' @export
 // [[Rcpp::export]]
 NumericMatrix kgfunc_cpp2(arma::mat dist_mat,float start,float end, float step, float width, float Lt, int n, arma::rowvec wc, NumericVector wr, bool cross = false){

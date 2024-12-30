@@ -2,6 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{kgfunc_time_counting}
 \alias{kgfunc_time_counting}
+\alias{kfunc_time_counting}
 \title{c++ k and g function counting worker}
 \usage{
 kgfunc_time_counting(
@@ -13,6 +14,16 @@ kgfunc_time_counting(
   breaks_time,
   width_net,
   width_time,
+  cross = FALSE
+)
+
+kfunc_time_counting(
+  dist_mat_net,
+  dist_mat_time,
+  wc,
+  wr,
+  breaks_net,
+  breaks_time,
   cross = FALSE
 )
 }
@@ -36,8 +47,13 @@ kgfunc_time_counting(
 \item{cross}{A boolean indicating if we are calculating a cross k function or not (default is FALSE)}
 }
 \value{
-A list  of two numeric matrices with the values of the k and g function evaluated at the required distances
+A list  of two numeric cubes with the values of the k and g function evaluated at the required distances
+
+A list  of two numeric cubes with the values of the k and g function evaluated at the required distances
 }
 \description{
 c++ k function counting (INTERNAL)
+
+c++ k function counting (INTERNAL)
 }
+\keyword{internal}

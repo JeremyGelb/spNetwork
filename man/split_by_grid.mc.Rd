@@ -2,8 +2,19 @@
 % Please edit documentation in R/nkde_execution_functions_sf.R
 \name{split_by_grid.mc}
 \alias{split_by_grid.mc}
-\title{Split data with a grid (multicore)}
+\title{Split data with a grid}
 \usage{
+split_by_grid.mc(
+  grid,
+  samples,
+  events,
+  lines,
+  bw,
+  tol,
+  digits,
+  split_all = TRUE
+)
+
 split_by_grid.mc(
   grid,
   samples,
@@ -22,7 +33,7 @@ split_by_grid.mc(
 
 \item{events}{A feature collection of points representing the events points}
 
-\item{lines}{A feautre collection of linestrings representing the network}
+\item{lines}{A feature collection of linestrings representing the network}
 
 \item{bw}{The kernel bandwidth (used to avoid edge effect)}
 
@@ -36,11 +47,16 @@ lines}
 }
 \value{
 A list with the split dataset
+
+A list with the split dataset
 }
 \description{
-Function to split the dataset according to a grid with multicore support.
+Function to split the dataset according to a grid.
+
+Function to split the dataset according to a grid.
 }
 \examples{
+#This is an internal function, no example provided
 #This is an internal function, no example provided
 }
 \keyword{internal}

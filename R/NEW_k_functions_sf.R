@@ -152,8 +152,6 @@ prep_kfuncs_results <- function(k_vals, g_vals, all_values, conf_int, calc_g_fun
 #'
 #' @template kfunctions-arg
 #' @template common_kfunctions-arg
-#' @param return_sims a boolean indicating if the simulated k and g values must also
-#' be returned as matrices
 #'
 #' @return A list with the following values :
 #'
@@ -185,12 +183,15 @@ kfunctions <- function(lines, points,
                        conf_int = 0.05,
                        digits = 2,
                        tol = 0.1,
-                       resolution = NULL,
                        agg = NULL,
                        verbose = TRUE,
                        return_sims = FALSE,
-                       calc_g_func = TRUE
+                       calc_g_func = TRUE,
+                       resolution = NULL
                        ){
+
+  # this will be used latter as a strategy for randomization
+  pre_calculated = NULL
 
   ## step0 : clean the points
   if (verbose){
@@ -262,15 +263,13 @@ kfunctions <- function(lines, points,
     print("Calculating k and g functions ...")
   }
 
-  #diag(dist_mat) <- end+width+1
-
   if(calc_g_func){
     # if required, we also calculate the G function
     k_g_vals <- kgfunc_cpp2(dist_mat = dist_mat,
                             start = start,
                             end = end,
                             step = step,
-                            widt = width,
+                            width = width,
                             Lt = Lt,
                             n = n,
                             wc = snapped_events$weight,
@@ -292,7 +291,7 @@ kfunctions <- function(lines, points,
     pb <- txtProgressBar(min = 0, max = nsim, style = 3)
   }
 
-  # the case where we can must edit the network and create small chunks
+  # the case where we must edit the network and create small chunks
   if (is.null(resolution)==FALSE){
 
     # we start by creating the lixels
@@ -314,25 +313,102 @@ kfunctions <- function(lines, points,
 
   }
 
-  # we can now do the simulation by permutating the location of the events on
-  # the network.
+  ## There is two strategies here, the first one is to resample real locations
+  ## on the network and to recalculate matrix distances from them
+  ## The second approach is to pre-calculate a bunch of distances on the network
+  ## to have an empirical distribution of distances over the network
 
-  all_values <- lapply(1:nsim, function(i){
+  if(is.null(pre_calculated)){
 
-    vidx <- sample(graph$dict$ref, size = sum(snapped_events$weight))
-    dist_mat <- cppRouting::get_distance_matrix(graph, from = vidx, to = vidx)
+    #________________________________________
+    # this is the exact approach
+    all_values <- lapply(1:nsim, function(i){
 
-    #diag(dist_mat) <- end+width+1
+      vidx <- sample(graph$dict$ref, size = sum(snapped_events$weight))
+      dist_mat <- cppRouting::get_distance_matrix(graph, from = vidx, to = vidx)
 
-    if(calc_g_func){
-      k_g_vals <- kgfunc_cpp2(dist_mat,start,end,step,width,Lt,n,wc = snapped_events$weight, wr = snapped_events$weight)
-      return(k_g_vals)
-    }else{
-      k_vals <- kfunc_cpp2(dist_mat,start,end,step,Lt,n,wc = snapped_events$weight, wr = snapped_events$weight)
-      return(k_vals)
-    }
+      if(verbose){
+        setTxtProgressBar(pb, i)
+      }
 
-  })
+
+      if(calc_g_func){
+        k_g_vals <- kgfunc_cpp2(dist_mat,
+                                start,
+                                end,
+                                step,
+                                width,
+                                Lt,
+                                n,
+                                wc = rep(1, ncol(dist_mat)),
+                                wr = rep(1, nrow(dist_mat)))
+        return(k_g_vals)
+      }else{
+        k_vals <- kfunc_cpp2(dist_mat,
+                             start,
+                             end,
+                             step,
+                             Lt,
+                             n,
+                             wc = rep(1, ncol(dist_mat)),
+                             wr = rep(1, nrow(dist_mat)))
+        return(k_vals)
+      }
+
+    })
+  }else{
+
+    #________________________________________
+    # this is the precalculation approach
+    oris <- sample(graph$dict$ref, size = pre_calculated, replace = TRUE)
+    dests <- sample(graph$dict$ref, size = pre_calculated, replace = TRUE)
+    all_dists <- c(cppRouting::get_distance_matrix(graph, from = oris, to = dests))
+    N <- sum(snapped_events$weight)
+
+    tri_n <- (( N** 2) - N) / 2
+    dist_mat <- matrix(0,N,N)
+
+    all_values <- lapply(1:nsim, function(i){
+
+      dist_vals <- sample(all_dists, size = tri_n, replace = T)
+      dist_mat[upper.tri(dist_mat)] <-  dist_vals
+      dist_mat[lower.tri(dist_mat)] <-  dist_vals
+
+      if(verbose){
+        setTxtProgressBar(pb, i)
+      }
+
+
+      if(calc_g_func){
+        k_g_vals <- kgfunc_cpp2(dist_mat,
+                                start,
+                                end,
+                                step,
+                                width,
+                                Lt,
+                                n,
+                                wc = rep(1,ncol(dist_mat)),
+                                wr = rep(1,nrow(dist_mat)))
+        return(k_g_vals)
+      }else{
+        k_vals <- kfunc_cpp2(dist_mat,
+                             start,
+                             end,
+                             step,
+                             Lt,
+                             n,
+                             wc = rep(1,ncol(dist_mat)),
+                             wr = rep(1,nrow(dist_mat)))
+        return(k_vals)
+      }
+
+    })
+
+
+  }
+
+
+
 
 
   ## Then we can prepare the results
@@ -357,8 +433,6 @@ kfunctions <- function(lines, points,
 #'
 #' @template kfunctions-arg
 #' @template common_kfunctions-arg
-#' @param return_sims a boolean indicating if the simulated k and g values must also
-#' be returned as matrices
 #' @template grid_shape-arg
 #'
 #' @return A list with the following values :
@@ -369,6 +443,7 @@ kfunctions <- function(lines, points,
 #'
 #' @importFrom stats quantile
 #' @importFrom ggplot2 ggplot geom_ribbon geom_path aes_string labs
+#' @importFrom sf st_join
 #' @export
 #' @md
 #' @examples
@@ -382,20 +457,22 @@ kfunctions <- function(lines, points,
 #'      verbose = FALSE)
 #' }
 kfunctions.mc <- function(lines, points,
-                           start,
-                           end,
-                           step,
-                           width,
-                           nsim,
-                           conf_int = 0.05,
-                           digits = 2,
-                           tol = 0.1,
-                           resolution = NULL,
-                           agg = NULL,
-                           verbose = TRUE,
-                           return_sims = FALSE,
-                           calc_g_func = TRUE,
-                           grid_shape = c(1,1)){
+                          start,
+                          end,
+                          step,
+                          width,
+                          nsim,
+                          conf_int = 0.05,
+                          digits = 2,
+                          tol = 0.1,
+                          agg = NULL,
+                          verbose = TRUE,
+                          return_sims = FALSE,
+                          calc_g_func = TRUE,
+                          resolution = NULL,
+                          grid_shape = c(1,1)){
+
+  pre_calculated <- NULL
 
   ## step0 : clean the points
   if (verbose){
@@ -417,32 +494,41 @@ kfunctions.mc <- function(lines, points,
   ##______________________
   # Gridding process
 
+  if (verbose){
+    print("splitting the data in the grid ...")
+  }
   ## we will now define a grid
   grid <- build_grid(grid_shape = grid_shape, spatial = list(lines, points))
+  grid$grid <- as.character(grid$oid)
+  grid$oid <- NULL
 
-  ## we create two spatial indices to make the requests faster
-  tree_points <- build_quadtree(points)
-  tree_lines <- build_quadtree(lines)
+  ## we precalculate the spatial intersections
+  inter_points <- st_join(points, grid)
+  inter_points <- split(inter_points, inter_points$grid)
+
+  bw <- end + width
+  grid_buff <- st_buffer(grid,dist = bw)
+  inter_lines <- st_join(lines, grid_buff)
+  inter_lines <- split(inter_lines, inter_lines$grid)
+
+  inter_points2 <- st_join(points, grid_buff)
+  inter_points2 <- split(inter_points2, inter_points2$grid)
 
 
   ## and split my data according to this grid
-  selections <- lapply(1:nrow(grid),function(i){
-    square <- grid[i,]
+  selections <- lapply(grid$grid,function(gid){
+
     # selecting the points in the grid
-    sel_points <- spatial_request(square,tree_points,points)
+    sel_points <- inter_points[[gid]]
     # if there is no sampling points in the rectangle, then return NULL
-    if(nrow(sel_points)==0){
+    if(is.null(sel_points)){
       return(NULL)
     }
     # selecting the events in a buffer
-    bw <- end + width
-    buff <- st_buffer(square,dist = bw)
-
-    sel_points2 <- spatial_request(buff,tree_points,points)
+    sel_points2 <- inter_points2[[gid]]
 
     # selecting the lines in a buffer
-    sel_lines <- spatial_request(buff,tree_lines,lines)
-    sel_lines$oid <- 1:nrow(sel_lines)
+    sel_lines <- inter_lines[[gid]]
 
     return(list(
       'lines' = sel_lines,
@@ -458,6 +544,11 @@ kfunctions.mc <- function(lines, points,
   N <- sum(points$weight)
 
   selections <- selections[lengths(selections) != 0]
+  selections <- lapply(1:length(selections), function(i){
+    el <- selections[[i]]
+    el$index <- i
+    return(el)
+  })
 
 
   ##______________________
@@ -469,129 +560,205 @@ kfunctions.mc <- function(lines, points,
   # by sampling the vertices. We must take into account the local length of the network
   # to do so.
 
-  results <- lapply(1:length(selections), function(i){
-
-    # we extract the selections first
-    sel <- selections[[i]]
-    sub_lines <- sel$lines
-    origins <- sel$origins
-    destinations <- sel$destinations
-
-    # then, we snapp the points on the lines
-    snapped_events <- snapPointsToLines2(destinations, sub_lines, idField = "oid")
-    new_lines <- split_lines_at_vertex(sub_lines, snapped_events,
-                                       snapped_events$nearest_line_id, tol)
-
-    # we create a graph
-    new_lines$length <- as.numeric(st_length(new_lines))
-    new_lines <- subset(new_lines,new_lines$length>0)
+  if (verbose){
+    print("starting the calculation ...")
+    FUN <- progressr::with_progress
+  }else{
+    FUN <- progressr::without_progress
+  }
 
 
+  ##______________________
+  # RUNNING IN MULTICORE
 
-    new_lines$oid <- seq_len(nrow(new_lines))
-    new_lines <- new_lines[c("length","oid")]
-    local_Lt <- sum(as.numeric(st_length(new_lines)))
+  FUN({
 
-    new_lines$weight <- as.numeric(st_length(new_lines))
+    p <- progressr::progressor(along = selections)
 
-    graph_result <- build_graph_cppr(new_lines,digits = digits,
-                                     line_weight = "weight",
-                                     attrs = TRUE, direction = NULL)
+    results <- future.apply::future_lapply(1:length(selections), function(i){
 
-    graph <- graph_result$graph
-    nodes <- graph_result$spvertices
+      # we extract the selections first
+      sel <- selections[[i]]
+      sub_lines <- sel$lines
+      origins <- sel$origins
+      destinations <- sel$destinations
 
-    # we must find the the locations of the events on the graph
-    node_id <- closest_points(snapped_events, nodes)
-    snapped_events$vertex_id <- nodes$ref[node_id]
+      # then, we snapp the points on the lines
+      snapped_events <- snapPointsToLines2(destinations, sub_lines, idField = "oid")
+      new_lines <- split_lines_at_vertex(sub_lines, snapped_events,
+                                         snapped_events$nearest_line_id, tol)
 
-    start_nodes <- subset(snapped_events, snapped_events$goid %in% origins$goid)
-
-    # and calculate the distance matrix
-    dist_mat <- cppRouting::get_distance_matrix(graph, from = start_nodes$vertex_id, to = snapped_events$vertex_id)
-    values <- list()
-    values$sumw <- sum(start_nodes$weight)
-
-    # with this distance matrix, we can calculate the counting matrix for this square
-    if(calc_g_func){
-      matrices <- kgfunc_counting(dist_mat,
-                                  wc = snapped_events$weight,
-                                  wr = start_nodes$weight,
-                                  breaks = rev(seq_num3(start, end, step)),
-                                  width = width / 2)
-      values$k_counts <- matrices[[1]]
-      values$g_counts <- matrices[[2]]
-
-    }else{
-      values$k_counts <- kfunc_counting(dist_mat,
-                                  wc = snapped_events$weight,
-                                  wr = start_nodes$weight,
-                                  breaks = rev(seq_num3(start, end, step))
-                                 )
-
-    }
+      # we create a graph
+      new_lines$length <- as.numeric(st_length(new_lines))
+      new_lines <- subset(new_lines,new_lines$length>0)
 
 
-    ## Excellent ! The next step is to do the permutation locally. To do so, we must first apply the
-    ## sampling strategy provided by the user.
-    if (is.null(resolution)==FALSE){
 
-      # we start by creating the lixels
-      new_lines2 <- lixelize_lines(new_lines, resolution, mindist = resolution / 2.0)
-      new_lines2$weight <- as.numeric(st_length(new_lines2))
+      new_lines$oid <- seq_len(nrow(new_lines))
+      new_lines <- new_lines[c("length","oid")]
+      local_Lt <- sum(as.numeric(st_length(new_lines)))
 
+      new_lines$weight <- as.numeric(st_length(new_lines))
 
-      # we can now rebuild the network with these new lines
-      graph_result <- build_graph_cppr(new_lines2,digits = digits,
+      graph_result <- build_graph_cppr(new_lines,digits = digits,
                                        line_weight = "weight",
                                        attrs = TRUE, direction = NULL)
 
       graph <- graph_result$graph
       nodes <- graph_result$spvertices
 
-
+      # we must find the the locations of the events on the graph
       node_id <- closest_points(snapped_events, nodes)
-      snapped_events$vertex_id <- nodes$id[node_id]
+      snapped_events$vertex_id <- nodes$ref[node_id]
 
-    }
+      start_nodes <- subset(snapped_events, snapped_events$goid %in% origins$goid)
 
-    sample_size <- round((local_Lt / Lt) * N)
-
-    my_breaks <- rev(seq_num3(start, end, step))
-
-    simulations <- lapply(1:nsim, function(j){
-      vidx <- sample(graph$dict$ref, size = sample_size)
-      dist_mat <- cppRouting::get_distance_matrix(graph, from = vidx, to = vidx)
-
+      # and calculate the distance matrix
+      dist_mat <- cppRouting::get_distance_matrix(graph, from = start_nodes$vertex_id, to = snapped_events$vertex_id)
       values <- list()
-      values$sumw <- sample_size
+      values$sumw <- sum(start_nodes$weight)
 
       # with this distance matrix, we can calculate the counting matrix for this square
       if(calc_g_func){
         matrices <- kgfunc_counting(dist_mat,
-                                    wc = rep(1, ncol(dist_mat)),
-                                    wr = rep(1, nrow(dist_mat)),
-                                    breaks = my_breaks,
+                                    wc = snapped_events$weight,
+                                    wr = start_nodes$weight,
+                                    breaks = rev(seq_num3(start, end, step)),
                                     width = width / 2)
         values$k_counts <- matrices[[1]]
         values$g_counts <- matrices[[2]]
 
       }else{
         values$k_counts <- kfunc_counting(dist_mat,
-                                          wc = rep(1, ncol(dist_mat)),
-                                          wr = rep(1, nrow(dist_mat)),
-                                          breaks = my_breaks)
+                                          wc = snapped_events$weight,
+                                          wr = start_nodes$weight,
+                                          breaks = rev(seq_num3(start, end, step))
+        )
+
       }
+
+
+      ## Excellent ! The next step is to do the permutation locally. To do so, we must first apply the
+      ## sampling strategy provided by the user.
+      if (is.null(resolution)==FALSE){
+
+        # we start by creating the lixels
+        new_lines2 <- lixelize_lines(new_lines, resolution, mindist = resolution / 2.0)
+        new_lines2$weight <- as.numeric(st_length(new_lines2))
+
+
+        # we can now rebuild the network with these new lines
+        graph_result <- build_graph_cppr(new_lines2,digits = digits,
+                                         line_weight = "weight",
+                                         attrs = TRUE, direction = NULL)
+
+        graph <- graph_result$graph
+        nodes <- graph_result$spvertices
+
+
+        node_id <- closest_points(snapped_events, nodes)
+        snapped_events$vertex_id <- nodes$id[node_id]
+
+      }
+
+      # we must now apply one of the two strategy : the exat strategy or the
+      # precalculation strategy
+
+      sample_size <- round((local_Lt / Lt) * N)
+      my_breaks <- rev(seq_num3(start, end, step))
+
+      if(is.null(pre_calculated)){
+
+        #________________________________________
+        # we are applying here the exact strategy
+
+        simulations <- lapply(1:nsim, function(j){
+          vidx <- sample(graph$dict$ref, size = sample_size)
+          dist_mat <- cppRouting::get_distance_matrix(graph, from = vidx, to = vidx)
+
+          values <- list()
+          values$sumw <- sample_size
+
+          # with this distance matrix, we can calculate the counting matrix for this square
+          if(calc_g_func){
+            matrices <- kgfunc_counting(dist_mat,
+                                        wc = rep(1, ncol(dist_mat)),
+                                        wr = rep(1, nrow(dist_mat)),
+                                        breaks = my_breaks,
+                                        width = width / 2)
+            values$k_counts <- matrices[[1]]
+            values$g_counts <- matrices[[2]]
+
+          }else{
+            values$k_counts <- kfunc_counting(dist_mat,
+                                              wc = rep(1, ncol(dist_mat)),
+                                              wr = rep(1, nrow(dist_mat)),
+                                              breaks = my_breaks)
+          }
+          return(values)
+
+
+        })
+
+      }else{
+
+        #________________________________________
+        # we are applying here the pre-calculation strategy
+
+        oris <- sample(graph$dict$ref, size = pre_calculated, replace = TRUE)
+        dests <- sample(graph$dict$ref, size = pre_calculated, replace = TRUE)
+        all_dists <- c(cppRouting::get_distance_matrix(graph, from = oris, to = dests))
+
+        tri_n <- (( sample_size** 2) - sample_size) / 2
+        dist_mat <- matrix(0,sample_size,sample_size)
+
+
+        simulations <- lapply(1:nsim, function(j){
+
+          dist_vals <- sample(all_dists, size = tri_n, replace = T)
+          dist_mat[upper.tri(dist_mat)] <-  dist_vals
+          dist_mat[lower.tri(dist_mat)] <-  dist_vals
+
+          values <- list()
+          values$sumw <- sample_size
+
+          # with this distance matrix, we can calculate the counting matrix for this square
+          if(calc_g_func){
+            matrices <- kgfunc_counting(dist_mat,
+                                        wc = rep(1, ncol(dist_mat)),
+                                        wr = rep(1, nrow(dist_mat)),
+                                        breaks = my_breaks,
+                                        width = width / 2)
+            values$k_counts <- matrices[[1]]
+            values$g_counts <- matrices[[2]]
+
+          }else{
+            values$k_counts <- kfunc_counting(dist_mat,
+                                              wc = rep(1, ncol(dist_mat)),
+                                              wr = rep(1, nrow(dist_mat)),
+                                              breaks = my_breaks)
+          }
+          return(values)
+
+
+        })
+
+
+
+      }
+
+
+      values$simulations <- simulations
+
+      p(sprintf("i=%g", sel$index))
+
       return(values)
 
-
-    })
-
-    values$simulations <- simulations
-
-    return(values)
+    }, future.packages = c("spNetwork"))
 
   })
+
+
 
   ## its is time to combine the values obtained by the different tiles
 
@@ -646,6 +813,8 @@ kfunctions.mc <- function(lines, points,
 
 
 
+
+
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #### execution cross k functions ####
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -678,8 +847,6 @@ kfunctions.mc <- function(lines, points,
 #'
 #' @template kross_kfunctions-arg
 #' @template common_kfunctions-arg
-#' @param return_sims a boolean indicating if the simulated k and g values must also
-#' be returned as matrices
 #'
 #'
 #' @return A list with the following values : \cr \item{plotk}{ A
@@ -777,23 +944,26 @@ cross_kfunctions <- function(lines, pointsA, pointsB,
   nodes <- graph_result$spvertices
 
 
-  node_id <- closest_points(snapped_events, nodes)
-  snapped_events$vertex_id <- nodes$ref[node_id]
-
 
   ## step5 : calculating the distance matrix
-  snappedA <- subset(snapped_events, snapped_events$type == 'A')
-  snappedB <- subset(snapped_events, snapped_events$type == 'B')
-  dist_mat <- cppRouting::get_distance_matrix(graph, from = snappedB$vertex_id, to = snappedA$vertex_id)
 
+  pointsA$vertex_id <- nodes$ref[closest_points(pointsA, nodes)]
+  pointsB$vertex_id <- nodes$ref[closest_points(pointsB, nodes)]
+
+  dist_mat <- cppRouting::get_distance_matrix(graph, from = pointsB$vertex_id, to = pointsA$vertex_id)
+
+
+  if(verbose){
+    print("caclulating the observed K functions ...")
+  }
 
   ## step6 : calculating the k and g function
   if(calc_g_func){
-    k_g_vals <- kgfunc_cpp2(dist_mat,start,end,step,width,Lt,na,wc = snappedA$weight, wr = snappedB$weight, cross = TRUE)
+    k_g_vals <- kgfunc_cpp2(dist_mat,start,end,step,width,Lt,na,wc = pointsA$weight, wr = pointsB$weight, cross = TRUE)
     k_vals <- k_g_vals[,1]
     g_vals <- k_g_vals[,2]
   }else{
-    k_vals <- kfunc_cpp2(dist_mat,start,end,step,Lt,na,wc = snappedA$weight, wr = snappedB$weight, cross = TRUE)
+    k_vals <- kfunc_cpp2(dist_mat,start,end,step,Lt,na,wc = pointsA$weight, wr = pointsB$weight, cross = TRUE)
   }
 
 
@@ -823,10 +993,8 @@ cross_kfunctions <- function(lines, pointsA, pointsB,
     nodes <- graph_result$spvertices
 
 
-    node_id <- closest_points(snapped_events, nodes)
-    snapped_events$vertex_id <- nodes$id[node_id]
-    snappedA <- subset(snapped_events, snapped_events$type == 'A')
-    snappedB <- subset(snapped_events, snapped_events$type == 'B')
+    pointsA$vertex_id <- nodes$ref[closest_points(pointsA, nodes)]
+    pointsB$vertex_id <- nodes$ref[closest_points(pointsB, nodes)]
 
   }
 
@@ -835,15 +1003,38 @@ cross_kfunctions <- function(lines, pointsA, pointsB,
 
   all_values <- lapply(1:nsim, function(i){
 
-    vidxA <- sample(graph$dict$ref, size = sum(snappedA$weight))
-    vidxB <- sample(graph$dict$ref, size = sum(snappedB$weight))
+    # we must randomize only the destinations points (A)
+    vidxA <- sample(graph$dict$ref, size = sum(pointsA$weight))
+    vidxB <- pointsB$vertex_id
     dist_mat <- cppRouting::get_distance_matrix(graph, from = vidxB, to = vidxA)
 
+    if(verbose){
+      setTxtProgressBar(pb, i)
+    }
+
+
     if(calc_g_func){
-      k_g_vals <- kgfunc_cpp2(dist_mat,start,end,step,width,Lt,na,wc = snappedA$weight, wr = snappedB$weight, cross = TRUE)
+      k_g_vals <- kgfunc_cpp2(dist_mat,
+                              start,
+                              end,
+                              step,
+                              width,
+                              Lt,
+                              na,
+                              wc = rep(1, ncol(dist_mat)),
+                              wr = pointsB$weight,
+                              cross = TRUE)
       return(k_g_vals)
     }else{
-      k_vals <- kfunc_cpp2(dist_mat,start,end,step,Lt,na,wc = snappedA$weight, wr = snappedB$weight, cross = TRUE)
+      k_vals <- kfunc_cpp2(dist_mat,
+                           start,
+                           end,
+                           step,
+                           Lt,
+                           na,
+                           wc = rep(1, ncol(dist_mat)),
+                           wr = pointsB$weight,
+                           cross = TRUE)
       return(k_vals)
     }
 
@@ -859,6 +1050,301 @@ cross_kfunctions <- function(lines, pointsA, pointsB,
 
 
 
+# new_cross_kfunctions.mc <- function(lines,
+#                                     pointsA,
+#                                     pointsB,
+#                                     start,
+#                                     end,
+#                                     step,
+#                                     width,
+#                                     nsim,
+#                                     conf_int = 0.05,
+#                                     digits = 2,
+#                                     tol = 0.1,
+#                                     resolution = NULL,
+#                                     agg = NULL,
+#                                     verbose = TRUE,
+#                                     return_sims = FALSE,
+#                                     calc_g_func = TRUE,
+#                                     grid_shape = c(1,1)){
+#
+#   ## step0 : clean the points
+#   if(verbose){
+#     print("Preparing data ...")
+#   }
+#
+#   probs <- NULL
+#
+#   st_geometry(pointsA) <- 'geometry'
+#   st_geometry(pointsB) <- 'geometry'
+#
+#   pointsA$weight <- rep(1,nrow(pointsA))
+#   pointsA <- clean_events(pointsA,digits,agg)
+#   pointsA$goid <- seq_len(nrow(pointsA))
+#
+#   pointsB$weight <- rep(1,nrow(pointsB))
+#   pointsB <- clean_events(pointsB,digits,agg)
+#   pointsB$goid <- seq_len(nrow(pointsB))
+#
+#   na <- sum(pointsA$weight)
+#   nb <- sum(pointsB$weight)
+#
+#   ## step1 : clean the lines
+#   lines$length <- as.numeric(st_length(lines))
+#   lines <- subset(lines, lines$length>0)
+#   lines$oid <- seq_len(nrow(lines))
+#
+#
+#   ##______________________
+#   # Gridding process
+#
+#   ## we will now define a grid
+#   grid <- build_grid(grid_shape = grid_shape, spatial = list(lines, pointsA, pointsB))
+#
+#   ## we create two spatial indices to make the requests faster
+#   tree_pointsA <- build_quadtree(pointsA)
+#   tree_pointsB <- build_quadtree(pointsB)
+#   tree_lines <- build_quadtree(lines)
+#
+#
+#   ## and split my data according to this grid
+#   selections <- lapply(1:nrow(grid),function(i){
+#     square <- grid[i,]
+#
+#     # selecting the points in the grid
+#     sel_points <- spatial_request(square,tree_pointsB,pointsB)
+#     # if there is no sampling points in the rectangle, then return NULL
+#     if(nrow(sel_points)==0){
+#       return(NULL)
+#     }
+#     # selecting the events in a buffer
+#     bw <- end + width
+#     buff <- st_buffer(square,dist = bw)
+#
+#     sel_points2 <- spatial_request(buff,tree_pointsA,pointsA)
+#
+#     # selecting the lines in a buffer
+#     sel_lines <- spatial_request(buff,tree_lines,lines)
+#     sel_lines$oid <- 1:nrow(sel_lines)
+#
+#     return(list(
+#       'lines' = sel_lines,
+#       'origins' = sel_points,
+#       'destinations' = sel_points2
+#     ))
+#
+#   })
+#
+#   ##______________________
+#   # preparing values for randomisations
+#   Lt <- sum(as.numeric(st_length(lines)))
+#
+#   selections <- selections[lengths(selections) != 0]
+#
+#
+#   ##______________________
+#   # applying the function on the grid
+#
+#   # in this step, we will perform the network k and g functions on each element
+#   # of the grid. The idea is to obtain the counting matrices for each square and then
+#   # to calculate the means at each distance. The randomization is also done locally
+#   # by sampling the vertices. We must take into account the local length of the network
+#   # to do so.
+#
+#   results <- lapply(1:length(selections), function(i){
+#
+#     # we extract the selections first
+#     sel <- selections[[i]]
+#     sub_lines <- sel$lines
+#     origins <- sel$origins
+#     destinations <- sel$destinations
+#
+#     # then, we snapp the points on the lines
+#     origins$type <- "B"
+#     destinations$type <- "A"
+#
+#     all_events <- rbind(origins[c("type","goid","weight")],
+#                         destinations[c("type","goid","weight")])
+#
+#     snapped_events <- snapPointsToLines2(all_events, lines, idField = "oid")
+#
+#     new_lines <- split_lines_at_vertex(sub_lines, snapped_events,
+#                                        snapped_events$nearest_line_id, tol)
+#
+#     # we create a graph
+#     new_lines$length <- as.numeric(st_length(new_lines))
+#     new_lines <- subset(new_lines,new_lines$length>0)
+#
+#
+#
+#     new_lines$oid <- seq_len(nrow(new_lines))
+#     new_lines <- new_lines[c("length","oid")]
+#     local_Lt <- sum(as.numeric(st_length(new_lines)))
+#
+#     new_lines$weight <- as.numeric(st_length(new_lines))
+#
+#     graph_result <- build_graph_cppr(new_lines,digits = digits,
+#                                      line_weight = "weight",
+#                                      attrs = TRUE, direction = NULL)
+#
+#     graph <- graph_result$graph
+#     nodes <- graph_result$spvertices
+#
+#     # we must find the the locations of the events on the graph
+#     node_id <- closest_points(snapped_events, nodes)
+#     snapped_events$vertex_id <- nodes$ref[node_id]
+#
+#     start_nodes <- subset(snapped_events, snapped_events$type == 'B')
+#     end_nodes <- subset(snapped_events, snapped_events$type == 'A')
+#
+#     # and calculate the distance matrix
+#     dist_mat <- cppRouting::get_distance_matrix(graph, from = start_nodes$vertex_id, to = end_nodes$vertex_id)
+#     values <- list()
+#     values$sumw <- sum(start_nodes$weight)
+#
+#     # with this distance matrix, we can calculate the counting matrix for this square
+#     if(calc_g_func){
+#       matrices <- kgfunc_counting(dist_mat,
+#                                   wc = snapped_events$weight,
+#                                   wr = start_nodes$weight,
+#                                   breaks = rev(seq_num3(start, end, step)),
+#                                   width = width / 2, cross = TRUE)
+#       values$k_counts <- matrices[[1]]
+#       values$g_counts <- matrices[[2]]
+#
+#     }else{
+#       values$k_counts <- kfunc_counting(dist_mat,
+#                                         wc = snapped_events$weight,
+#                                         wr = start_nodes$weight,
+#                                         breaks = rev(seq_num3(start, end, step)),
+#                                         cross = TRUE
+#       )
+#
+#     }
+#
+#
+#     ## Excellent ! The next step is to do the permutation locally. To do so, we must first apply the
+#     ## sampling strategy provided by the user.
+#     if (is.null(resolution)==FALSE){
+#
+#       # we start by creating the lixels
+#       new_lines2 <- lixelize_lines(new_lines, resolution, mindist = resolution / 2.0)
+#       new_lines2$weight <- as.numeric(st_length(new_lines2))
+#
+#
+#       # we can now rebuild the network with these new lines
+#       graph_result <- build_graph_cppr(new_lines2,digits = digits,
+#                                        line_weight = "weight",
+#                                        attrs = TRUE, direction = NULL)
+#
+#       graph <- graph_result$graph
+#       nodes <- graph_result$spvertices
+#
+#
+#       node_id <- closest_points(snapped_events, nodes)
+#       snapped_events$vertex_id <- nodes$id[node_id]
+#
+#     }
+#
+#
+#     #sample_size <- round((local_Lt / Lt) * N)
+#     frac <- local_Lt / Lt
+#
+#     my_breaks <- rev(seq_num3(start, end, step))
+#
+#     simulations <- lapply(1:nsim, function(j){
+#
+#       vidxA <- sample(graph$dict$ref, size = round(na * frac) )
+#       vidxB <- sample(graph$dict$ref, size = round(nb * frac))
+#
+#       dist_mat <- cppRouting::get_distance_matrix(graph, from = vidxB, to = vidxA)
+#
+#       values <- list()
+#       #values$sumw <- sample_size
+#
+#       # with this distance matrix, we can calculate the counting matrix for this square
+#       if(calc_g_func){
+#         matrices <- kgfunc_counting(dist_mat,
+#                                     wc = rep(1, ncol(dist_mat)),
+#                                     wr = rep(1, nrow(dist_mat)),
+#                                     breaks = my_breaks,
+#                                     width = width / 2, cross = TRUE)
+#         values$k_counts <- matrices[[1]]
+#         values$g_counts <- matrices[[2]]
+#
+#       }else{
+#         values$k_counts <- kfunc_counting(dist_mat,
+#                                           wc = rep(1, ncol(dist_mat)),
+#                                           wr = rep(1, nrow(dist_mat)),
+#                                           breaks = my_breaks, cross = TRUE)
+#       }
+#       return(values)
+#
+#
+#     })
+#
+#     values$simulations <- simulations
+#
+#     return(values)
+#
+#   })
+#
+#   ## its is time to combine the values obtained by the different tiles
+#
+#   # let me start with the counts obtained for the k function
+#   k_counts <- do.call(rbind, lapply(results, function(x){x$k_counts}))
+#
+#   # the countings must be transformed in kvalues. For each distance, it is the mean of
+#   # the reached points multiplied by t1
+#   t1 <- 1.0/((na)/Lt)
+#   k_vals <- colSums(k_counts) / nb * t1
+#   k_vals <- rev(k_vals)
+#
+#   if(calc_g_func){
+#     g_counts <- do.call(rbind, lapply(results, function(x){x$g_counts}))
+#     g_vals <- colSums(g_counts) / nb * t1
+#     g_vals <- rev(g_vals)
+#   }
+#
+#
+#
+#   # and then the simulations
+#   # all values must be a list with an element per simulation. Each element will
+#   # be a matrix of two columns. One with the k values, and the second with the g values
+#
+#   all_values <- lapply(1:nsim, function(i){
+#     k_sim_vals <- do.call(rbind, lapply(results, function(x){
+#       x$simulations[[i]]$k_counts
+#     }))
+#     sims_k <- colSums(k_sim_vals) / nb * t1
+#     sims_k <- rev(sims_k)
+#     if(calc_g_func){
+#       g_sim_vals <- do.call(rbind, lapply(results, function(x){
+#         x$simulations[[i]]$g_counts
+#       }))
+#       sims_g <- colSums(g_sim_vals) / nb * t1
+#       sims_g <- rev(sims_g)
+#       return(cbind(sims_k,sims_g))
+#     }else{
+#       return(sims_k)
+#     }
+#   })
+#
+#
+#   ## Then we can prepare the results
+#   obj <- prep_kfuncs_results(k_vals, g_vals, all_values, conf_int, calc_g_func,
+#                              cross = FALSE, dist_seq = seq(start, end, step),
+#                              return_sims = return_sims)
+#
+#
+#   return(obj)
+# }
+
+
+
+
+
+
 
 #' @title Network cross k and g functions (maturing, multicore)
 #'
@@ -868,8 +1354,6 @@ cross_kfunctions <- function(lines, pointsA, pointsB,
 #'
 #' @template kross_kfunctions-arg
 #' @template common_kfunctions-arg
-#' @param return_sims a boolean indicating if the simulated k and g values must also
-#' be returned as matrices
 #' @template grid_shape-arg
 #'
 #' @return A list with the following values : \cr \item{plotk}{ A
@@ -886,12 +1370,13 @@ cross_kfunctions <- function(lines, pointsA, pointsB,
 #' data(main_network_mtl)
 #' data(mtl_libraries)
 #' data(mtl_theatres)
-#' result <- new_cross_kfunctions.mc(main_network_mtl, mtl_theatres, mtl_libraries,
+#' future::plan(future::multisession(workers=1))
+#' result <- cross_kfunctions.mc(main_network_mtl, mtl_theatres, mtl_libraries,
 #'                            start = 0, end = 2500, step = 10, width = 250,
 #'                            nsim = 50, conf_int = 0.05, digits = 2,
 #'                            tol = 0.1, agg = NULL, verbose = FALSE)
 #' }
-new_cross_kfunctions.mc <- function(lines,
+cross_kfunctions.mc <- function(lines,
                                     pointsA,
                                     pointsB,
                                     start,
@@ -939,33 +1424,45 @@ new_cross_kfunctions.mc <- function(lines,
   ##______________________
   # Gridding process
 
+  if(verbose){
+    print("Spliting the data into the grid ...")
+  }
+
   ## we will now define a grid
   grid <- build_grid(grid_shape = grid_shape, spatial = list(lines, pointsA, pointsB))
+  grid$grid <- as.character(grid$oid)
+  grid$oid <- NULL
 
-  ## we create two spatial indices to make the requests faster
-  tree_pointsA <- build_quadtree(pointsA)
-  tree_pointsB <- build_quadtree(pointsB)
-  tree_lines <- build_quadtree(lines)
+  ## we calculate the spatial intersections here to go faster
+  bw <- end + width
+  buff <- st_buffer(grid,dist = bw)
+
+  inter_pointsA <- st_join(pointsA, buff)
+  inter_pointsA <- split(inter_pointsA, inter_pointsA$grid)
+
+
+  inter_pointsB <- st_join(pointsB, grid)
+  inter_pointsB <- split(inter_pointsB, inter_pointsB$grid)
+
+  inter_lines <- st_join(lines, buff)
+  inter_lines <- split(inter_lines, inter_lines$grid)
+
 
 
   ## and split my data according to this grid
-  selections <- lapply(1:nrow(grid),function(i){
-    square <- grid[i,]
+  selections <- lapply(grid$grid,function(gid){
 
     # selecting the points in the grid
-    sel_points <- spatial_request(square,tree_pointsB,pointsB)
+    sel_points <- inter_pointsB[[gid]]
     # if there is no sampling points in the rectangle, then return NULL
-    if(nrow(sel_points)==0){
+    if(is.null(sel_points)){
       return(NULL)
     }
     # selecting the events in a buffer
-    bw <- end + width
-    buff <- st_buffer(square,dist = bw)
-
-    sel_points2 <- spatial_request(buff,tree_pointsA,pointsA)
+    sel_points2 <- inter_pointsA[[gid]]
 
     # selecting the lines in a buffer
-    sel_lines <- spatial_request(buff,tree_lines,lines)
+    sel_lines <- inter_lines[[gid]]
     sel_lines$oid <- 1:nrow(sel_lines)
 
     return(list(
@@ -981,6 +1478,11 @@ new_cross_kfunctions.mc <- function(lines,
   Lt <- sum(as.numeric(st_length(lines)))
 
   selections <- selections[lengths(selections) != 0]
+  selections <- lapply(1:length(selections), function(i){
+    el <- selections[[i]]
+    el$index <- i
+    return(el)
+  })
 
 
   ##______________________
@@ -992,145 +1494,167 @@ new_cross_kfunctions.mc <- function(lines,
   # by sampling the vertices. We must take into account the local length of the network
   # to do so.
 
-  results <- lapply(1:length(selections), function(i){
 
-    # we extract the selections first
-    sel <- selections[[i]]
-    sub_lines <- sel$lines
-    origins <- sel$origins
-    destinations <- sel$destinations
-
-    # then, we snapp the points on the lines
-    origins$type <- "B"
-    destinations$type <- "A"
-
-    all_events <- rbind(origins[c("type","goid","weight")],
-                        destinations[c("type","goid","weight")])
-
-    snapped_events <- snapPointsToLines2(all_events, lines, idField = "oid")
-
-    new_lines <- split_lines_at_vertex(sub_lines, snapped_events,
-                                       snapped_events$nearest_line_id, tol)
-
-    # we create a graph
-    new_lines$length <- as.numeric(st_length(new_lines))
-    new_lines <- subset(new_lines,new_lines$length>0)
+  if (verbose){
+    print("starting the calculation ...")
+    FUN <- progressr::with_progress
+  }else{
+    FUN <- progressr::without_progress
+  }
 
 
+  ##______________________
+  # RUNNING IN MULTICORE
 
-    new_lines$oid <- seq_len(nrow(new_lines))
-    new_lines <- new_lines[c("length","oid")]
-    local_Lt <- sum(as.numeric(st_length(new_lines)))
+  FUN({
 
-    new_lines$weight <- as.numeric(st_length(new_lines))
+    p <- progressr::progressor(along = selections)
+    results <- future.apply::future_lapply(1:length(selections), function(i){
 
-    graph_result <- build_graph_cppr(new_lines,digits = digits,
-                                     line_weight = "weight",
-                                     attrs = TRUE, direction = NULL)
+      # we extract the selections first
+      sel <- selections[[i]]
+      sub_lines <- sel$lines
+      origins <- sel$origins
+      destinations <- sel$destinations
 
-    graph <- graph_result$graph
-    nodes <- graph_result$spvertices
+      # then, we snapp the points on the lines
+      origins$type <- "B"
+      destinations$type <- "A"
 
-    # we must find the the locations of the events on the graph
-    node_id <- closest_points(snapped_events, nodes)
-    snapped_events$vertex_id <- nodes$ref[node_id]
+      all_events <- rbind(origins[c("type","goid","weight")],
+                          destinations[c("type","goid","weight")])
 
-    start_nodes <- subset(snapped_events, snapped_events$type == 'B')
-    end_nodes <- subset(snapped_events, snapped_events$type == 'A')
+      snapped_events <- snapPointsToLines2(all_events, lines, idField = "oid")
 
-    # and calculate the distance matrix
-    dist_mat <- cppRouting::get_distance_matrix(graph, from = start_nodes$vertex_id, to = end_nodes$vertex_id)
-    values <- list()
-    values$sumw <- sum(start_nodes$weight)
+      new_lines <- split_lines_at_vertex(sub_lines, snapped_events,
+                                         snapped_events$nearest_line_id, tol)
 
-    # with this distance matrix, we can calculate the counting matrix for this square
-    if(calc_g_func){
-      matrices <- kgfunc_counting(dist_mat,
-                                  wc = snapped_events$weight,
-                                  wr = start_nodes$weight,
-                                  breaks = rev(seq_num3(start, end, step)),
-                                  width = width / 2, cross = TRUE)
-      values$k_counts <- matrices[[1]]
-      values$g_counts <- matrices[[2]]
-
-    }else{
-      values$k_counts <- kfunc_counting(dist_mat,
-                                        wc = snapped_events$weight,
-                                        wr = start_nodes$weight,
-                                        breaks = rev(seq_num3(start, end, step)),
-                                        cross = TRUE
-      )
-
-    }
+      # we create a graph
+      new_lines$length <- as.numeric(st_length(new_lines))
+      new_lines <- subset(new_lines,new_lines$length>0)
 
 
-    ## Excellent ! The next step is to do the permutation locally. To do so, we must first apply the
-    ## sampling strategy provided by the user.
-    if (is.null(resolution)==FALSE){
 
-      # we start by creating the lixels
-      new_lines2 <- lixelize_lines(new_lines, resolution, mindist = resolution / 2.0)
-      new_lines2$weight <- as.numeric(st_length(new_lines2))
+      new_lines$oid <- seq_len(nrow(new_lines))
+      new_lines <- new_lines[c("length","oid")]
+      local_Lt <- sum(as.numeric(st_length(new_lines)))
 
+      new_lines$weight <- as.numeric(st_length(new_lines))
 
-      # we can now rebuild the network with these new lines
-      graph_result <- build_graph_cppr(new_lines2,digits = digits,
+      graph_result <- build_graph_cppr(new_lines,digits = digits,
                                        line_weight = "weight",
                                        attrs = TRUE, direction = NULL)
 
       graph <- graph_result$graph
       nodes <- graph_result$spvertices
 
+      # we must find the the locations of the events on the graph
+      origins$vertex_id <- nodes$ref[closest_points(origins, nodes)]
+      destinations$vertex_id <- nodes$ref[closest_points(destinations, nodes)]
 
-      node_id <- closest_points(snapped_events, nodes)
-      snapped_events$vertex_id <- nodes$id[node_id]
-
-    }
-
-
-    #sample_size <- round((local_Lt / Lt) * N)
-    frac <- local_Lt / Lt
-
-    my_breaks <- rev(seq_num3(start, end, step))
-
-    simulations <- lapply(1:nsim, function(j){
-
-      vidxA <- sample(graph$dict$ref, size = round(na * frac) )
-      vidxB <- sample(graph$dict$ref, size = round(nb * frac))
-
-      dist_mat <- cppRouting::get_distance_matrix(graph, from = vidxB, to = vidxA)
-
+      # and calculate the distance matrix
+      dist_mat <- cppRouting::get_distance_matrix(graph, from = origins$vertex_id, to = destinations$vertex_id)
       values <- list()
-      #values$sumw <- sample_size
+      values$sumw <- sum(origins$weight)
 
       # with this distance matrix, we can calculate the counting matrix for this square
       if(calc_g_func){
         matrices <- kgfunc_counting(dist_mat,
-                                    wc = rep(1, ncol(dist_mat)),
-                                    wr = rep(1, nrow(dist_mat)),
-                                    breaks = my_breaks,
+                                    wc = destinations$weight,
+                                    wr = origins$weight,
+                                    breaks = rev(seq_num3(start, end, step)),
                                     width = width / 2, cross = TRUE)
         values$k_counts <- matrices[[1]]
         values$g_counts <- matrices[[2]]
 
       }else{
         values$k_counts <- kfunc_counting(dist_mat,
-                                          wc = rep(1, ncol(dist_mat)),
-                                          wr = rep(1, nrow(dist_mat)),
-                                          breaks = my_breaks, cross = TRUE)
+                                          wc = destinations$weight,
+                                          wr = origins$weight,
+                                          breaks = rev(seq_num3(start, end, step)),
+                                          cross = TRUE
+        )
+
       }
+
+
+      ## Excellent ! The next step is to do the permutation locally. To do so, we must first apply the
+      ## sampling strategy provided by the user.
+      if (is.null(resolution)==FALSE){
+
+        # we start by creating the lixels
+        new_lines2 <- lixelize_lines(new_lines, resolution, mindist = resolution / 2.0)
+        new_lines2$weight <- as.numeric(st_length(new_lines2))
+
+
+        # we can now rebuild the network with these new lines
+        graph_result <- build_graph_cppr(new_lines2,digits = digits,
+                                         line_weight = "weight",
+                                         attrs = TRUE, direction = NULL)
+
+        graph <- graph_result$graph
+        nodes <- graph_result$spvertices
+
+
+        origins$vertex_id <- nodes$ref[closest_points(origins, nodes)]
+        destinations$vertex_id <- nodes$ref[closest_points(destinations, nodes)]
+
+      }
+
+
+      frac <- local_Lt / Lt
+
+      my_breaks <- rev(seq_num3(start, end, step))
+
+      simulations <- lapply(1:nsim, function(j){
+
+        vidxA <- sample(graph$dict$ref, size = round(na * frac))
+        # we randomize the positions of the destinations
+        vidxB <- origins$vertex_id
+
+        dist_mat <- cppRouting::get_distance_matrix(graph, from = vidxB, to = vidxA)
+
+        values <- list()
+        #values$sumw <- sample_size
+
+        # with this distance matrix, we can calculate the counting matrix for this square
+        if(calc_g_func){
+          matrices <- kgfunc_counting(dist_mat,
+                                      wc = rep(1, ncol(dist_mat)),
+                                      wr = origins$weight,
+                                      breaks = my_breaks,
+                                      width = width / 2, cross = TRUE)
+          values$k_counts <- matrices[[1]]
+          values$g_counts <- matrices[[2]]
+
+        }else{
+          values$k_counts <- kfunc_counting(dist_mat,
+                                            wc = rep(1, ncol(dist_mat)),
+                                            wr = origins$weight,
+                                            breaks = my_breaks, cross = TRUE)
+        }
+        return(values)
+
+
+      })
+
+      values$simulations <- simulations
+      p(sprintf("i=%g", sel$index))
+
       return(values)
 
-
-    })
-
-    values$simulations <- simulations
-
-    return(values)
+    }, future.packages = c("spNetwork"))
 
   })
 
+
+
+
   ## its is time to combine the values obtained by the different tiles
+
+  if(verbose){
+    print('Combining the results...')
+  }
 
   # let me start with the counts obtained for the k function
   k_counts <- do.call(rbind, lapply(results, function(x){x$k_counts}))
@@ -1180,4 +1704,3 @@ new_cross_kfunctions.mc <- function(lines,
 
   return(obj)
 }
-

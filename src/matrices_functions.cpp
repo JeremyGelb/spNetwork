@@ -244,4 +244,23 @@ arma::colvec calcEuclideanDistance3(arma::mat y, arma::mat x){
  }
 
 
+//' @title pairwise distance between two vectors
+//' @name pair_dists
+//' @param x a numeric vector
+//' @param y a numeric vector
+//' @return a matrix width dimenion l(x) * l(y)
+//' @export
+//' @keywords internal
+//'
+// [[Rcpp::export]]
+NumericMatrix pair_dists(NumericVector x, NumericVector y){
+
+  NumericMatrix result(x.length(), y.length());
+
+  for(int i = 0; i < x.length(); i++){
+    result.row(i) = abs(x[i] - y);
+  }
+
+  return result;
+}
 

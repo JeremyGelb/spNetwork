@@ -456,3 +456,8 @@ The error was caused by an empty table in armadillo.
 
 I added a check to ensure that the table is not empty before using it. The error was not raised anymore after a new test on the Docker.
 
+
+# Version 0.4.4.4
+
+BH has been updated on CRAN. I also removed the exported c++ class spatial_index causing error in the previous attempt.
+

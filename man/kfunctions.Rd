@@ -15,11 +15,11 @@ kfunctions(
   conf_int = 0.05,
   digits = 2,
   tol = 0.1,
-  resolution = NULL,
   agg = NULL,
   verbose = TRUE,
   return_sims = FALSE,
-  calc_g_func = TRUE
+  calc_g_func = TRUE,
+  resolution = NULL
 )
 }
 \arguments{
@@ -53,21 +53,21 @@ spatial coordinates}
 distance between these points and the lines' extremities. When points are
 closer, they are added at the extremity of the lines}
 
-\item{resolution}{When simulating random points on the network, selecting a
-resolution will reduce greatly the calculation time. When resolution is null
-the random points can occur everywhere on the graph. If a value is specified,
-the edges are split according to this value and the random points can only be
-vertices on the new network}
-
 \item{agg}{A double indicating if the events must be aggregated within a distance.
 If NULL, the events are aggregated only by rounding the coordinates}
 
 \item{verbose}{A Boolean indicating if progress messages should be displayed}
 
 \item{return_sims}{a boolean indicating if the simulated k and g values must also
-be returned as matrices}
+be returned.}
 
 \item{calc_g_func}{A Boolean indicating if the G function must also be calculated (TRUE by default). If FALSE, then only the K function is calculated}
+
+\item{resolution}{When simulating random points on the network, selecting a
+resolution will reduce greatly the calculation time. When resolution is null
+the random points can occur everywhere on the graph. If a value is specified,
+the edges are split according to this value and the random points can only be
+vertices on the new network}
 }
 \value{
 A list with the following values :
@@ -103,7 +103,7 @@ future releases (gain speed, advanced features, etc.).
 data(main_network_mtl)
 data(mtl_libraries)
 result <- kfunctions(main_network_mtl, mtl_libraries,
-     start = 0, end = 2500, step = 10,
+     start = 0, end = 2500, step = 100,
      width = 200, nsim = 50,
      conf_int = 0.05, tol = 0.1, agg = NULL,
      calc_g_func = TRUE,

@@ -45,11 +45,25 @@ simple_tnkde <- function(graph, events, samples, samples_time, bws_net, bws_time
                 ))
   }
 
-  sample_tree <- build_quadtree(samples)
-  edges_tree <- build_quadtree(edges)
+  # sample_tree <- build_quadtree(samples)
+  # edges_tree <- build_quadtree(edges)
+
+  # we find the snapped geometries
+  event_nodes <- nodes[events$vertex_id,]
+  event_nodes$order_id <- as.character(1:nrow(event_nodes))
+
+  # I must precalculate the spatial intersections for the samples for each event
+  samples_inter <- st_join(samples, st_buffer(event_nodes['order_id'], bws_net))
+  samples_inter <- split(samples_inter, samples_inter$order_id)
+
+  # and for the edges
+  edges_inter <- st_join(edges, st_buffer(event_nodes['order_id'], (bws_net + +0.1*bws_net)))
+  edges_inter <- split(edges_inter, edges_inter$order_id)
+
+
 
   ## NOTE: we can iterate several time on the same vertex as a start point
-  # It would be efficient to store the values of knonw vertex, but only if
+  # It would be efficient to store the values of known vertex, but only if
   # we will find this vertex several times
   count_verts <- table(events$vertex_id)
   dupp_verts <- as.numeric(unique(names(count_verts)[count_verts > 1]))
@@ -66,19 +80,22 @@ simple_tnkde <- function(graph, events, samples, samples_time, bws_net, bws_time
     y <- e$vertex_id
     w <- e$weight
 
+    selected_samples <- samples_inter[[as.character(i)]]
+    selected_edges <- edges_inter[[as.character(i)]]
+
     # calculating the network density values ! (reusing when possible)
     if(y %in% dupp_verts){
       if(is.null(stored_dens_values[y][[1]])){
-        samples_k <- ess_kernel(graph,y, bw_net, kernel_func, samples,
-                                nodes, edges, sample_tree, edges_tree)
-
+        # samples_k <- ess_kernel(graph,y, bw_net, kernel_func, samples, nodes, edges)
+    		samples_k <- ess_kernel(graph,y, bw_net, kernel_func, ok_samples = selected_samples,
+                                  nodes = nodes, ok_edges = selected_edges, N = nrow(samples))
         stored_dens_values[y] <- samples_k
       }else{
         samples_k <- stored_dens_values[y][[1]]
       }
     }else{
-      samples_k <- ess_kernel(graph,y, bw_net, kernel_func, samples,
-                              nodes, edges, sample_tree, edges_tree)
+      samples_k <- ess_kernel(graph,y, bw_net, kernel_func, ok_samples = selected_samples,
+                              nodes = nodes, ok_edges = selected_edges)
     }
 
     # calculating the temporal density values

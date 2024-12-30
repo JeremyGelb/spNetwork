@@ -18,7 +18,7 @@ network (maturing)."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/a
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.4.3</span>
       </span>
     </div>
 
@@ -36,7 +36,7 @@ network (maturing)."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/a
       <a href="../articles/web_vignettes/AdaptiveBW.html">K-nearest neighbour adaptive bandwidth</a>
     </li>
     <li>
-      <a href="../articles/Isochrones.html">Calculating isochrones</a>
+      <a href="../articles/web_vignettes/Isochrones.html">Calculating isochrones</a>
     </li>
     <li>
       <a href="../articles/KNetworkFunctions.html">Network k Functions</a>
@@ -82,7 +82,7 @@ network (maturing)."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/a
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Network k and g functions (maturing)</h1>
-    <small class="dont-index">Source: <a href="https://github.com/JeremyGelb/spNetwork/blob/HEAD/R/k_functions_sf.R" class="external-link"><code>R/k_functions_sf.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/JeremyGelb/spNetwork/blob/HEAD/R/NEW_k_functions_sf.R" class="external-link"><code>R/NEW_k_functions_sf.R</code></a></small>
     <div class="hidden name"><code>kfunctions.Rd</code></div>
     </div>
 
@@ -103,10 +103,11 @@ network (maturing).</p>
 <span>  conf_int <span class="op">=</span> <span class="fl">0.05</span>,</span>
 <span>  digits <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>  tol <span class="op">=</span> <span class="fl">0.1</span>,</span>
-<span>  resolution <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  agg <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  return_sims <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  return_sims <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  calc_g_func <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  resolution <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -162,14 +163,6 @@ distance between these points and the lines' extremities. When points are
 closer, they are added at the extremity of the lines</p></dd>
 
 
-<dt>resolution</dt>
-<dd><p>When simulating random points on the network, selecting a
-resolution will reduce greatly the calculation time. When resolution is null
-the random points can occur everywhere on the graph. If a value is specified,
-the edges are split according to this value and the random points can only be
-vertices on the new network</p></dd>
-
-
 <dt>agg</dt>
 <dd><p>A double indicating if the events must be aggregated within a distance.
 If NULL, the events are aggregated only by rounding the coordinates</p></dd>
@@ -181,7 +174,19 @@ If NULL, the events are aggregated only by rounding the coordinates</p></dd>
 
 <dt>return_sims</dt>
 <dd><p>a boolean indicating if the simulated k and g values must also
-be returned as matrices</p></dd>
+be returned.</p></dd>
+
+
+<dt>calc_g_func</dt>
+<dd><p>A Boolean indicating if the G function must also be calculated (TRUE by default). If FALSE, then only the K function is calculated</p></dd>
+
+
+<dt>resolution</dt>
+<dd><p>When simulating random points on the network, selecting a
+resolution will reduce greatly the calculation time. When resolution is null
+the random points can occur everywhere on the graph. If a value is specified,
+the edges are split according to this value and the random points can only be
+vertices on the new network</p></dd>
 
 </dl></div>
     <div id="value">
@@ -217,9 +222,10 @@ future releases (gain speed, advanced features, etc.).</p>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">main_network_mtl</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">mtl_libraries</span><span class="op">)</span></span>
 <span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu">kfunctions</span><span class="op">(</span><span class="va">main_network_mtl</span>, <span class="va">mtl_libraries</span>,</span>
-<span>     start <span class="op">=</span> <span class="fl">0</span>, end <span class="op">=</span> <span class="fl">2500</span>, step <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>     start <span class="op">=</span> <span class="fl">0</span>, end <span class="op">=</span> <span class="fl">2500</span>, step <span class="op">=</span> <span class="fl">100</span>,</span>
 <span>     width <span class="op">=</span> <span class="fl">200</span>, nsim <span class="op">=</span> <span class="fl">50</span>,</span>
 <span>     conf_int <span class="op">=</span> <span class="fl">0.05</span>, tol <span class="op">=</span> <span class="fl">0.1</span>, agg <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>     calc_g_func <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>     verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="co"># }</span></span></code></pre></div>
     </div>

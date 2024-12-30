@@ -47,35 +47,55 @@ network_knn_worker <- function(points, lines, k, direction = NULL, use_dest = FA
   }
   graph_lines$lx_weight <- (graph_lines$lx_length / graph_lines$line_length) * graph_lines$line_weight
 
-  if (is.null(direction)){
-    result_graph <- build_graph(graph_lines, digits = digits,
-                                attrs = TRUE, line_weight = "lx_weight")
-  }else{
-    #dir <- ifelse(graph_lines[[direction]]=="Both",0,1)
-    #graph_lines$direction <- graph_lines[[direction]]
 
-    result_graph <- build_graph_directed(graph_lines, digits = digits,
-                                         attrs = TRUE, line_weight='lx_weight',
-                                         direction = direction)
-  }
+  result_graph <- build_graph_cppr(graph_lines,
+                                   digits = digits,
+                                   line_weight = "lx_weight",
+                                   attrs = TRUE,
+                                   direction = direction)
+
+  # if (is.null(direction)){
+  #   result_graph <- build_graph(graph_lines, digits = digits,
+  #                               attrs = TRUE, line_weight = "lx_weight")
+  # }else{
+  #   #dir <- ifelse(graph_lines[[direction]]=="Both",0,1)
+  #   #graph_lines$direction <- graph_lines[[direction]]
+  #
+  #   result_graph <- build_graph_directed(graph_lines, digits = digits,
+  #                                        attrs = TRUE, line_weight='lx_weight',
+  #                                        direction = direction)
+  # }
+
+  # if(use_dest) {
+  #   endV <- unique(subset(points, points$type == "destination")$vertex)
+  #   startV <- unique(subset(points, points$pttype == "start" & points$type == "origin")$vertex)
+  # }else{
+  #   endV <- unique(points$vertex)
+  #   startV <- unique(subset(points, points$pttype == "start")$vertex)
+  # }
 
   points$vertex <- closest_points(points,result_graph$spvertices)
-
-  if(use_dest) {
-    endV <- unique(subset(points, points$type == "destination")$vertex)
-    startV <- unique(subset(points, points$pttype == "start" & points$type == "origin")$vertex)
-  }else{
-    endV <- unique(points$vertex)
-    startV <- unique(subset(points, points$pttype == "start")$vertex)
-  }
-
 
   ## step4 : calculating the distances between each vertex
   if(verbose){
     print("calculating the distances on the graph")
   }
-  distmat <- igraph::distances(result_graph$graph,
-                               mode = "out", v = startV, to = endV)
+  if(use_dest){
+    endV <- points$vertex[points$type == 'destination']
+    startV <- points$vertex[points$pttype == "start" & points$type == "origin"]
+    distmat <- cppRouting::get_distance_matrix(result_graph$graph,
+                                                from = startV,
+                                                to = endV
+                                                )
+  }else{
+    startV <- points$vertex[points$pttype == "start"]
+    endV <- points$vertex
+    distmat <- cppRouting::get_distance_matrix(result_graph$graph,
+                                                from = startV,
+                                                to = points$vertex
+    )
+  }
+
 
   rownames(distmat) <- startV
   colnames(distmat) <- endV
@@ -85,16 +105,26 @@ network_knn_worker <- function(points, lines, k, direction = NULL, use_dest = FA
   ok_points <- subset(points, points$type == "origin" & points$pttype == "start")
   raiseWarning <- FALSE
 
+
   ok_pt_data <- st_drop_geometry(ok_points)
 
   values <- lapply(1:nrow(ok_points), function(i){
+
     row <- ok_pt_data[i,]
     vert <- row$ch_vertex
     dists <- distmat[vert,]
-    bests <- sort(dists)[1:(k+1)]
-    sub <- subset(points, points$ch_vertex %in% names(bests) & points$oids != row$oids)
+
+    if(use_dest){
+      bests <- sort(dists)[1:k]
+      sub <- subset(points, points$ch_vertex %in% names(bests) & points$type == 'destination')
+    }else{
+      bests <- sort(dists)[1:(k+1)]
+      sub <- subset(points, points$ch_vertex %in% names(bests) & points$base_oid != row$base_oid)
+    }
+
+
     distsf <- bests[sub$ch_vertex]
-    fids <- sub$oids
+    fids <- sub$base_oid
     fids <- fids[order(distsf)]
     distsf <- distsf[order(distsf)]
     n <- length(fids)
@@ -129,8 +159,8 @@ network_knn_worker <- function(points, lines, k, direction = NULL, use_dest = FA
     return(l[[1]])
   }))
 
-  rownames(matdists) <- ok_points$oids
-  rownames(matoids) <- ok_points$oids
+  rownames(matdists) <- ok_points$base_oid
+  rownames(matoids) <- ok_points$base_oid
 
   return (list(matdists, matoids))
 }
@@ -230,9 +260,14 @@ network_knn <- function(origins, lines, k, destinations = NULL, maxdistance = 0,
       all_pts <- elements[[1]]
       selected_lines <- elements[[2]]
       #calculating the elements
-      values <- network_knn_worker(points = all_pts, lines = selected_lines, k = k, direction=direction,
-                                    use_dest = use_dest,
-                                    verbose = verbose, digits = digits, tol=tol)
+      values <- network_knn_worker(points = all_pts,
+                                   lines = selected_lines,
+                                   k = k,
+                                   direction=direction,
+                                   use_dest = use_dest,
+                                   verbose = verbose,
+                                   digits = digits,
+                                   tol=tol)
       return(values)
     }
   })
@@ -253,9 +288,6 @@ network_knn <- function(origins, lines, k, destinations = NULL, maxdistance = 0,
   if(k == 1){
     matoids <- matrix(matoids, ncol = 1)
     matdists <- matrix(matdists, ncol = 1)
-  }
-  if (use_dest){
-    matoids <- matoids - (nrow(origins))
   }
 
   return(list("distances" = matdists,
@@ -360,7 +392,9 @@ network_knn.mc <- function(origins, lines, k, destinations = NULL, maxdistance =
       all_pts <- elements[[1]]
       selected_lines <- elements[[2]]
       #calculating the elements
-      values <- network_knn_worker(all_pts, selected_lines, k, direction = direction,
+      values <- network_knn_worker(points = all_pts,
+                                   lines = selected_lines,
+                                   k = k, direction = direction,
                                    use_dest = use_dest,
                                    verbose = verbose, digits = digits, tol=tol)
       return(values)
@@ -384,9 +418,7 @@ network_knn.mc <- function(origins, lines, k, destinations = NULL, maxdistance =
     matoids <- matrix(matoids, ncol = 1)
     matdists <- matrix(matdists, ncol = 1)
   }
-  if (use_dest){
-    matoids <- matoids - (nrow(origins))
-  }
+
 
   return(list("distances" = matdists,
               "ids" = matoids))

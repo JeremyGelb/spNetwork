@@ -80,6 +80,170 @@ split_border <- function(polygon,bw){
 
 
 
+# correction_factor <- function(study_area, events, lines, method, bws, kernel_name, tol, digits, max_depth, sparse){
+#
+#   #merging the polygons (just in case)
+#   #study_area <- gUnaryUnion(study_area)
+#   study_area <- st_union(study_area)
+#
+#   kernel_func <- select_kernel(kernel_name)
+#   events$goid <- 1:nrow(events)
+#   events$bws <- bws
+#   bw <- max(bws)
+#
+#   # step 0 calculate the distances between the points and the border
+#   boundaries <- st_boundary(study_area)
+#   dists <- as.numeric(st_distance(events, boundaries))
+#   ok_events <- subset(events, dists < bw)
+#   # step 1 create the border elements
+#   chunks <- split_border(study_area,bw)
+#   chunks$oid <- 1:nrow(chunks)
+#   # step 2  associate each events to it closest chunk
+#   snapped <- snapPointsToLines2(ok_events,chunks)
+#   ok_events$nearest_line_id <- as.numeric(snapped$nearest_line_id)
+#   # step 2 select the elements in each chunks
+#   tree_lines <- build_quadtree(lines)
+#
+#   selections <- lapply(1:nrow(chunks),function(i){
+#     part <- chunks[i,]
+#     sel_events <- subset(ok_events,ok_events$nearest_line_id == part$oid)
+#
+#     #si on a aucun evenement ici, on passe
+#     if(nrow(sel_events)==0){
+#       return(NULL)
+#     }
+#     poly <- st_convex_hull(sel_events)
+#     buff <- st_buffer(poly, dist = bw)
+#     sel_lines <- spatial_request(buff,tree_lines,lines)
+#
+#     sel_lines$oid <- 1:nrow(sel_lines)
+#     # splitting the lines at the border intersection
+#     inter <- st_intersection(st_geometry(sel_lines),st_geometry(boundaries))
+#     if(length(inter) == 0){
+#       lines2 <- sel_lines
+#     }else{
+#       inter <- st_sf(ptid = 1:length(inter), geometry = inter)
+#       idx <- nearest_lines(inter, sel_lines, snap_dist = bw, max_iter = 10)
+#       lines2 <- add_vertices_lines(sel_lines,inter,idx,tol)
+#     }
+#
+#     #and finaly split the lines at the events
+#     sel_events <- snapPointsToLines2(sel_events,lines2,idField = "oid")
+#     new_lines <- add_vertices_lines(lines2,sel_events,
+#                                     sel_events$nearest_line_id,tol)
+#
+#     new_lines <- simple_lines(new_lines)
+#     new_lines$length <- as.numeric(st_length(new_lines))
+#     new_lines <- subset(new_lines,new_lines$length>0)
+#     new_lines$oid <- 1:nrow(new_lines)
+#     new_lines <- new_lines[c("length","oid")]
+#     return(list("sel_lines" = new_lines,
+#                 "sel_events" = sel_events))
+#   })
+#   selections <- selections[lengths(selections) != 0]
+#   # step 3 iterate over the selections and calculate the corrections factor
+#   values <- lapply(selections,function(sel){
+#     sel_lines <- sel$sel_lines
+#     sel_events <- sel$sel_events
+#
+#     #building the local graph
+#     graph_result <- build_graph(sel_lines, digits = digits,
+#                                 line_weight = "length")
+#     graph <- graph_result$graph
+#     nodes <- graph_result$spvertices
+#     edges <- graph_result$spedges
+#
+#     edges$is_inside <- st_within(edges,study_area, sparse = FALSE)[,1]
+#
+#     sel_events$vertex_id <- closest_points(sel_events, nodes)
+#
+#     neighbour_list <- adjacent_vertices(graph,nodes$id,mode="out")
+#
+#     neighbour_list <- lapply(neighbour_list,function(x){return (as.numeric(x))})
+#     # lets obtain the potential values of each line
+#     if(method=="continuous"){
+#       if(sparse){
+#         dfs <- corrfactor_continuous_sparse(neighbour_list,
+#                                                           sel_events$vertex_id,
+#                                                           graph_result$linelist,
+#                                                           bws, max_depth)
+#       }else{
+#         dfs <- corrfactor_continuous(neighbour_list,
+#                                                    sel_events$vertex_id,
+#                                                    graph_result$linelist,
+#                                                    bws, max_depth)
+#       }
+#     }
+#     if(method=="discontinuous"){
+#       if(sparse){
+#         dfs <- corrfactor_discontinuous_sparse(neighbour_list,
+#                                                              sel_events$vertex_id,
+#                                                              graph_result$linelist,
+#                                                              bws, max_depth)
+#       }else{
+#         dfs <- corrfactor_discontinuous(neighbour_list,
+#                                                       sel_events$vertex_id,
+#                                                       graph_result$linelist,
+#                                                       bws, max_depth)
+#       }
+#     }
+#     if(method=="simple"){
+#       #dfs <- corrfactor_simple(graph,sel_events,edges,sel_events$bws)
+#       dfs <- corrfactor_discontinuous_sparse(neighbour_list,
+#                                              sel_events$vertex_id,
+#                                              graph_result$linelist,
+#                                              bws, max_depth)
+#       dfs <- lapply(dfs, function(x){
+#         x$alpha <- 1
+#         return(x)
+#       })
+#     }
+#
+#     # and finaly calculate the correction factor by integrals
+#     # more exactly, it calculate the mass of the event OUTSIDE
+#     # the study area
+#     corrfactor <- sapply(1:length(dfs),function(j){
+#       df <- dfs[[j]]
+#       bw <- sel_events$bws[[j]]
+#       contribs <- sapply(1:nrow(df),function(i){
+#         row <- df[i,]
+#         start <- row$distances
+#         end <- row$edge_size + start
+#         if(bw-start<tol){
+#           return(0)
+#         }else{
+#           val <- cubintegrate(kernel_func,lower=start,upper=end,
+#                               bw=bw, relTol = 1e-15)
+#           return(val$integral * row$alpha)
+#         }
+#       })
+#       df$contribs <- contribs
+#       df2 <- merge(df,st_drop_geometry(edges[c("edge_id","is_inside")]),by="edge_id")
+#       outside <- subset(df2,df2$is_inside == FALSE)
+#       return(sum(outside$contribs))
+#     })
+#     #corrfactor <- ifelse(corrfactor==0,1,corrfactor)
+#     # and we get here the correction factor by getting the inverse of
+#     # the mass inside (1-outside)
+#     corrfactor <- 1/(1-corrfactor)
+#     df <- data.frame("corrfactor" = corrfactor,
+#                      "goid" = sel_events$goid)
+#     return(df)
+#   })
+#   comb_values <- do.call(rbind,values)
+#   events_df <- data.table(st_drop_geometry(events))
+#   B <- data.table(comb_values)
+#   events_df[B,  on = c("goid"),
+#             names(B) := mget(paste0("i.", names(B)))]
+#
+#   events_df$corrfactor <- ifelse(is.na(events_df$corrfactor), 1,
+#                                  events_df$corrfactor)
+#   return(events_df$corrfactor)
+# }
+
+
+
+
 #' @title Border correction for NKDE
 #'
 #' @description Function to calculate the border correction factor.
@@ -110,7 +274,7 @@ split_border <- function(polygon,bw){
 #'   used by the Rcpp functions. Regular matrices are faster, but require more
 #'   memory and could lead to error, in particular with multiprocessing. Sparse
 #'   matrices are slower, but require much less memory.
-#' @importFrom sf st_union st_boundary st_distance st_convex_hull st_buffer st_length st_intersection st_within
+#' @importFrom sf st_union st_boundary st_distance st_convex_hull st_buffer st_length st_intersection st_within st_crs<-
 #' @importFrom stats integrate
 #' @importFrom cubature cubintegrate
 #' @return A numeric vector with the correction factor values for each event
@@ -132,26 +296,41 @@ correction_factor <- function(study_area, events, lines, method, bws, kernel_nam
   boundaries <- st_boundary(study_area)
   dists <- as.numeric(st_distance(events, boundaries))
   ok_events <- subset(events, dists < bw)
+
   # step 1 create the border elements
   chunks <- split_border(study_area,bw)
-  chunks$oid <- 1:nrow(chunks)
+  chunks$oid <- as.character(1:nrow(chunks))
+
   # step 2  associate each events to it closest chunk
   snapped <- snapPointsToLines2(ok_events,chunks)
-  ok_events$nearest_line_id <- as.numeric(snapped$nearest_line_id)
+  ok_events$nearest_line_id <- as.character(snapped$nearest_line_id)
+
+  inter_events <- split(ok_events,ok_events$nearest_line_id)
+
   # step 2 select the elements in each chunks
-  tree_lines <- build_quadtree(lines)
+
+  polys <- do.call(rbind,lapply(inter_events, function(x){
+    sf::st_convex_hull(st_union(x))
+  }))
+  polys <- st_buffer(st_as_sf(st_as_sfc(polys)), bw)
+  st_crs(polys) <- st_crs(lines)
+  polys$chunk_id <- names(inter_events)
+
+
+  inter_lines <- sf::st_join(lines, polys)
+  inter_lines <- split(inter_lines,inter_lines$chunk_id)
 
   selections <- lapply(1:nrow(chunks),function(i){
-    part <- chunks[i,]
-    sel_events <- subset(ok_events,ok_events$nearest_line_id == part$oid)
+
+    chunk_id <- chunks$oid[[i]]
+    sel_events <- inter_events[[chunk_id]]
 
     #si on a aucun evenement ici, on passe
-    if(nrow(sel_events)==0){
+    if(is.null(sel_events)){
       return(NULL)
     }
-    poly <- st_convex_hull(sel_events)
-    buff <- st_buffer(poly, dist = bw)
-    sel_lines <- spatial_request(buff,tree_lines,lines)
+    sel_lines <- inter_lines[[chunk_id]]
+
     sel_lines$oid <- 1:nrow(sel_lines)
     # splitting the lines at the border intersection
     inter <- st_intersection(st_geometry(sel_lines),st_geometry(boundaries))
@@ -176,6 +355,7 @@ correction_factor <- function(study_area, events, lines, method, bws, kernel_nam
     return(list("sel_lines" = new_lines,
                 "sel_events" = sel_events))
   })
+
   selections <- selections[lengths(selections) != 0]
   # step 3 iterate over the selections and calculate the corrections factor
   values <- lapply(selections,function(sel){
@@ -200,27 +380,27 @@ correction_factor <- function(study_area, events, lines, method, bws, kernel_nam
     if(method=="continuous"){
       if(sparse){
         dfs <- corrfactor_continuous_sparse(neighbour_list,
-                                                          sel_events$vertex_id,
-                                                          graph_result$linelist,
-                                                          bws, max_depth)
+                                            sel_events$vertex_id,
+                                            graph_result$linelist,
+                                            bws, max_depth)
       }else{
         dfs <- corrfactor_continuous(neighbour_list,
-                                                   sel_events$vertex_id,
-                                                   graph_result$linelist,
-                                                   bws, max_depth)
+                                     sel_events$vertex_id,
+                                     graph_result$linelist,
+                                     bws, max_depth)
       }
     }
     if(method=="discontinuous"){
       if(sparse){
         dfs <- corrfactor_discontinuous_sparse(neighbour_list,
-                                                             sel_events$vertex_id,
-                                                             graph_result$linelist,
-                                                             bws, max_depth)
+                                               sel_events$vertex_id,
+                                               graph_result$linelist,
+                                               bws, max_depth)
       }else{
         dfs <- corrfactor_discontinuous(neighbour_list,
-                                                      sel_events$vertex_id,
-                                                      graph_result$linelist,
-                                                      bws, max_depth)
+                                        sel_events$vertex_id,
+                                        graph_result$linelist,
+                                        bws, max_depth)
       }
     }
     if(method=="simple"){

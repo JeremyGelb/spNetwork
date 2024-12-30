@@ -184,6 +184,7 @@ network_listw_worker<-function(points,lines,maxdistance,dist_func, direction=NUL
   ## step1 : adding the points to the lines
   lines$worker_id <- 1:nrow(lines)
   points$nearest_line_id <- as.numeric(as.character(points$nearest_line_id))
+
   joined <- data.table(st_drop_geometry(points))
   B <- data.table(st_drop_geometry(lines))
   joined[B,  on = c("nearest_line_id" = "tmpid"),
@@ -196,7 +197,7 @@ network_listw_worker<-function(points,lines,maxdistance,dist_func, direction=NUL
   # however, this is not required here, we could just split them
   # at points added in the network
   # new_lines <- add_vertices_lines(lines, points, joined$worker_id, 1)
-  graph_lines <- split_lines_at_vertex(lines, points, joined$worker_id, 1)
+  graph_lines <- split_lines_at_vertex(lines, points, joined$worker_id, mindist = mindist)
 
   ## step2 : splitting the lines on vertices and adjusting weights
   if(verbose){
@@ -286,6 +287,50 @@ network_listw_worker<-function(points,lines,maxdistance,dist_func, direction=NUL
 
 
 
+# prepare_elements_netlistw <- function(is,grid,snapped_points,lines,maxdistance){
+#
+#     ## step1 preparing the spatial indices
+#     lines_tree <- spNetwork::build_quadtree(lines)
+#     snapped_points_tree <-  spNetwork::build_quadtree(snapped_points)
+#
+#     snapped_points$oids <- 1:nrow(snapped_points)
+#     ## step 2 extracting the quadra
+#     results <- lapply(is,function(i){
+#         quadra <- grid[i,]
+#         #selecting the starting points
+#         start_pts <-  spNetwork::spatial_request(quadra,snapped_points_tree, snapped_points)
+#         if(nrow(start_pts)==0){
+#             return(NULL)
+#         }else{
+#             #start_pts <- snapped_points[snapped_points$fid %in% start_pts$fid,]
+#             start_pts$pttype <- "start"
+#             #selecting the endpoints
+#             poly <- st_bbox_geom(start_pts)
+#             buff <- st_buffer(poly, dist = maxdistance)
+#             if(nrow(start_pts)==nrow(snapped_points)){
+#                 all_pts <- start_pts
+#             }else{
+#                 end_pts <-  spNetwork::spatial_request(buff, snapped_points_tree, snapped_points)
+#                 end_pts <- subset(end_pts,(end_pts$oids %in% start_pts$oids)== FALSE)
+#                 if(nrow(end_pts) > 0){
+#                   end_pts$pttype <- "end"
+#                   #combining all the points
+#                   all_pts <- rbind(start_pts,end_pts)
+#                 }else{
+#                   all_pts <- start_pts
+#                 }
+#
+#             }
+#             #selecting the lines
+#             selected_lines <-  spNetwork::spatial_request(buff, lines_tree, lines)
+#             #calculating the elements
+#             return(list(all_pts,selected_lines))
+#         }
+#     })
+#     return(results)
+# }
+
+
 #' @title Data preparation for network_listw
 #'
 #' @description Function to prepare selected points and selected lines during
@@ -305,45 +350,56 @@ network_listw_worker<-function(points,lines,maxdistance,dist_func, direction=NUL
 #' #no example provided, this is an internal function
 prepare_elements_netlistw <- function(is,grid,snapped_points,lines,maxdistance){
 
-    ## step1 preparing the spatial indices
-    lines_tree <- spNetwork::build_quadtree(lines)
-    snapped_points_tree <-  spNetwork::build_quadtree(snapped_points)
+  ## step1 preparing the spatial indices
+  grid$grid_id <- as.character(is)
+  grid$oid <- NULL
 
-    snapped_points$oids <- 1:nrow(snapped_points)
-    ## step 2 extracting the quadra
-    results <- lapply(is,function(i){
-        quadra <- grid[i,]
-        #selecting the starting points
-        start_pts <-  spNetwork::spatial_request(quadra,snapped_points_tree, snapped_points)
-        if(nrow(start_pts)==0){
-            return(NULL)
+  # We precalculate the intersections
+  inter_pts <- st_join(snapped_points, grid)
+  inter_pts <- split(inter_pts, inter_pts$grid_id)
+
+  inter_end_pts <- st_join(snapped_points, st_buffer(grid, maxdistance))
+  inter_end_pts <- split(inter_end_pts, inter_end_pts$grid_id)
+
+  inter_lines <- st_join(lines, st_buffer(grid, maxdistance))
+  inter_lines <- split(inter_lines, inter_lines$grid_id)
+
+  snapped_points$oids <- 1:nrow(snapped_points)
+
+  ## step 2 extracting the quadra
+  results <- lapply(is,function(i){
+    quadra <- grid[i,]
+    gid <- quadra$grid_id
+    #selecting the starting points
+    start_pts <-  inter_pts[[gid]]
+
+    if(nrow(start_pts)==0){
+      return(NULL)
+    }else{
+      #start_pts <- snapped_points[snapped_points$fid %in% start_pts$fid,]
+      start_pts$pttype <- "start"
+      #selecting the endpoints
+      if(nrow(start_pts)==nrow(snapped_points)){
+        all_pts <- start_pts
+      }else{
+        end_pts <-  inter_end_pts[[gid]]
+        end_pts <- subset(end_pts,(end_pts$oids %in% start_pts$oids)== FALSE)
+        if(nrow(end_pts) > 0){
+          end_pts$pttype <- "end"
+          #combining all the points
+          all_pts <- rbind(start_pts,end_pts)
         }else{
-            #start_pts <- snapped_points[snapped_points$fid %in% start_pts$fid,]
-            start_pts$pttype <- "start"
-            #selecting the endpoints
-            poly <- st_bbox_geom(start_pts)
-            buff <- st_buffer(poly, dist = maxdistance)
-            if(nrow(start_pts)==nrow(snapped_points)){
-                all_pts <- start_pts
-            }else{
-                end_pts <-  spNetwork::spatial_request(buff, snapped_points_tree, snapped_points)
-                end_pts <- subset(end_pts,(end_pts$oids %in% start_pts$oids)== FALSE)
-                if(nrow(end_pts) > 0){
-                  end_pts$pttype <- "end"
-                  #combining all the points
-                  all_pts <- rbind(start_pts,end_pts)
-                }else{
-                  all_pts <- start_pts
-                }
-
-            }
-            #selecting the lines
-            selected_lines <-  spNetwork::spatial_request(buff, lines_tree, lines)
-            #calculating the elements
-            return(list(all_pts,selected_lines))
+          all_pts <- start_pts
         }
-    })
-    return(results)
+
+      }
+      #selecting the lines
+      selected_lines <-  inter_lines[[gid]]
+      #calculating the elements
+      return(list(all_pts,selected_lines))
+    }
+  })
+  return(results)
 }
 
 

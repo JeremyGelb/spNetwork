@@ -3,6 +3,7 @@
 \name{k_nt_func_cpp}
 \alias{k_nt_func_cpp}
 \alias{k_g_nt_func_cpp2}
+\alias{k_nt_func_cpp2}
 \title{c++ k space-time function}
 \usage{
 k_nt_func_cpp(
@@ -36,7 +37,24 @@ k_g_nt_func_cpp2(
   n,
   wc,
   wr,
-  cross = TRUE
+  cross = FALSE
+)
+
+k_nt_func_cpp2(
+  dist_mat_net,
+  dist_mat_time,
+  start_net,
+  end_net,
+  step_net,
+  start_time,
+  end_time,
+  step_time,
+  Lt,
+  Tt,
+  n,
+  wc,
+  wr,
+  cross = FALSE
 )
 }
 \arguments{
@@ -64,10 +82,16 @@ k_g_nt_func_cpp2(
 
 \item{w}{The weight of the points (coincident points)}
 
+\item{width_net}{A float indicating the width of the donught of the g-function (network)}
+
+\item{width_time}{A float indicating the width of the donught of the g-function (time)}
+
 \item{cross}{a boolean indicating of we are calculating a cross k or g function}
 }
 \description{
 c++ k space-time function
+
+c++ k and g space-time function
 
 c++ k space-time function
 }

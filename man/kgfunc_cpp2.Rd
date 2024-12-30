@@ -33,3 +33,4 @@ A numeric matrix with the values of the k (first col) and g (second col) functio
 \description{
 c++ g function (INTERNAL)
 }
+\keyword{internal}

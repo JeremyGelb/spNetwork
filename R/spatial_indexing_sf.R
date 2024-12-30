@@ -2,13 +2,6 @@
 #### spatial indexing ####
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-# Export the "spatial_index" C++ class by explicitly requesting spatial_index be
-# exported via roxygen2's export tag.
-#' @export spatial_index
-
-loadModule(module = "spatial_index_cpp", TRUE)
-
-
 #' @title Obtain all the bounding boxes of a feature collection
 #'
 #' @description Obtain all the bounding boxes of a feature collection (INTERNAL).
@@ -23,98 +16,36 @@ st_bbox_by_feature = function(x) {
 }
 
 
-#' @title Build a quadtree
-#'
-#' @description Generate a quadtree object from package SearchTrees, useful to speed up
-#' spatial requesting (INTERNAL).
-#'
-#' @param data a feature collection of linestrings or a feature collection of points
-#' @return a spatial_index object (pointer to a c++ instance)
-#' @export
-#' @examples
-#' data(mtl_network)
-#' tree <- build_quadtree(mtl_network)
-#' buff <- sf::st_buffer(mtl_network[55,], 50)
-#' selection <- spatial_request(buff, tree, mtl_network)
-build_quadtree <- function(data){
-  #step1 : extracting the bbox of the geometrie
-  if(class(data)[[1]] != "sf"){
-    stop("The data argument must be a feature collection from the package sf")
-  }
-
-  boxes <- st_bbox_by_feature(data)
-  spIndex <- new(spatial_index, boxes)
-
-  return(spIndex)
-}
-
 
 # build_quadtree <- function(data){
 #   #step1 : extracting the bbox of the geometrie
 #   if(class(data)[[1]] != "sf"){
 #     stop("The data argument must be a feature collection from the package sf")
 #   }
-#   geom_type <- unique(st_geometry_type(data))
 #
-#   if(geom_type == "LINESTRING"){
-#
-#     coords <- st_coordinates(data)
-#     ids <- coords[,3]
-#     coords_list <- split(coords[,1:2], f = ids)
-#
-#     bbox_coords <- lapply(coords_list,function(i){
-#       line_coords <- matrix(i, ncol = 2, byrow = FALSE)
-#       maxs <- apply(line_coords,MARGIN=2,FUN = max)
-#       mins <- apply(line_coords,MARGIN=2,FUN = min)
-#       row <- c(maxs,mins)
-#       return(row)
-#     })
-#
-#     bbox_coords <- do.call(rbind,bbox_coords)
-#     #step2 : generate the spatial index
-#     spIndex <- SearchTrees::createTree(bbox_coords,dataType = "rect")
-#
-#   }else if (geom_type == "POINT"){
-#     coords <- st_coordinates(data)
-#     spIndex <- SearchTrees::createTree(coords,dataType = "point")
-#   }else {
-#     stop("The supported geometry types are POINT and LINESTRING")
-#   }
+#   boxes <- st_bbox_by_feature(data)
+#   spIndex <- new(spatial_index, boxes)
 #
 #   return(spIndex)
 # }
-
-
-#' @title Spatial request
-#'
-#' @description Use a quadtree index to perform spatial request.
-#'
-#' @param geometry sf like object (feature collection or simple geometry)
-#' @param tree a tree object from package SearchTrees
-#' @param data the original data used to build the tree object
-#' @return a subset of data, intersecting geometry
-#' @importFrom sf st_intersects
-#' @export
-#' @examples
-#' data(mtl_network)
-#' tree <- build_quadtree(mtl_network)
-#' buff <- sf::st_buffer(mtl_network[55,], 50)
-#' selection <- spatial_request(buff, tree, mtl_network)
-spatial_request <- function(geometry,tree,data){
-  ## step1 : find candidates
-  #box <- t(raster::bbox(geometry))
-  box <- st_bbox(geometry)
-  idx <- tree$tree_request(box)
-  candidates <- data[idx,]
-  if(nrow(candidates) > 0){
-    ## step2 : find real intersection
-    final_vector <- st_intersects(candidates, geometry, sparse = FALSE)[,1]
-    final_data <- subset(candidates,final_vector)
-    return(final_data)
-  }else{
-    return(candidates)
-  }
-}
+#
+#
+#
+# spatial_request <- function(geometry,tree,data){
+#   ## step1 : find candidates
+#   #box <- t(raster::bbox(geometry))
+#   box <- st_bbox(geometry)
+#   idx <- tree$tree_request(box)
+#   candidates <- data[idx,]
+#   if(nrow(candidates) > 0){
+#     ## step2 : find real intersection
+#     final_vector <- st_intersects(candidates, geometry, sparse = FALSE)[,1]
+#     final_data <- subset(candidates,final_vector)
+#     return(final_data)
+#   }else{
+#     return(candidates)
+#   }
+# }
 
 
 #' @title Find closest points

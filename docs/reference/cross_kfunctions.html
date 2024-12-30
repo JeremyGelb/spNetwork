@@ -18,7 +18,7 @@ network. (maturing)"><!-- mathjax --><script src="https://cdnjs.cloudflare.com/a
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.4.3</span>
       </span>
     </div>
 
@@ -36,7 +36,7 @@ network. (maturing)"><!-- mathjax --><script src="https://cdnjs.cloudflare.com/a
       <a href="../articles/web_vignettes/AdaptiveBW.html">K-nearest neighbour adaptive bandwidth</a>
     </li>
     <li>
-      <a href="../articles/Isochrones.html">Calculating isochrones</a>
+      <a href="../articles/web_vignettes/Isochrones.html">Calculating isochrones</a>
     </li>
     <li>
       <a href="../articles/KNetworkFunctions.html">Network k Functions</a>
@@ -82,7 +82,7 @@ network. (maturing)"><!-- mathjax --><script src="https://cdnjs.cloudflare.com/a
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Network cross k and g functions (maturing)</h1>
-    <small class="dont-index">Source: <a href="https://github.com/JeremyGelb/spNetwork/blob/HEAD/R/k_functions_sf.R" class="external-link"><code>R/k_functions_sf.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/JeremyGelb/spNetwork/blob/HEAD/R/NEW_k_functions_sf.R" class="external-link"><code>R/NEW_k_functions_sf.R</code></a></small>
     <div class="hidden name"><code>cross_kfunctions.Rd</code></div>
     </div>
 
@@ -107,7 +107,8 @@ network. (maturing)</p>
 <span>  resolution <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  agg <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  return_sims <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  return_sims <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  calc_g_func <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -187,7 +188,11 @@ If NULL, the events are aggregated only by rounding the coordinates</p></dd>
 
 <dt>return_sims</dt>
 <dd><p>a boolean indicating if the simulated k and g values must also
-be returned as matrices</p></dd>
+be returned.</p></dd>
+
+
+<dt>calc_g_func</dt>
+<dd><p>A Boolean indicating if the G function must also be calculated (TRUE by default). If FALSE, then only the K function is calculated</p></dd>
 
 </dl></div>
     <div id="value">

@@ -117,7 +117,7 @@ build_graph <- function(lines, digits, line_weight, attrs = FALSE) {
 #'   stored in the final object
 #' @return A list containing the following elements:
 #' \itemize{
-#'         \item graph: an cppRouting object;
+#'         \item graph: a cppRouting object;
 #'         \item linelist: the dataframe used to build the graph;
 #'         \item lines: the original feature collection of linestrings;
 #'         \item spvertices: a feature collection of points representing the vertices
@@ -127,6 +127,7 @@ build_graph <- function(lines, digits, line_weight, attrs = FALSE) {
 #' @importFrom sf st_as_text st_length st_geometry st_geometry<-
 #' @importFrom utils strcapture
 #' @export
+#' @keywords internal
 #' @examples
 #' data(mtl_network)
 #' mtl_network$length <- as.numeric(sf::st_length(mtl_network))

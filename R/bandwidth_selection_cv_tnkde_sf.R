@@ -309,7 +309,7 @@ bw_tnkde_corr_factor_arr <- function(net_bws,time_bws, diggle_correction, study_
 #'
 #' # calculating the cross validation values
 #' cv_scores <- bw_tnkde_cv_likelihood_calc(
-#'   bws_net = seq(100,1000,100),
+#'   bws_net = seq(100,800,100),
 #'   bws_time = seq(10,60,5),
 #'   lines = mtl_network,
 #'   events = bike_accidents,
@@ -622,7 +622,7 @@ bw_tnkde_cv_likelihood_calc <- function(bws_net = NULL,
 #'
 #' # calculating the cross validation values
 #' cv_scores <- bw_tnkde_cv_likelihood_calc.mc(
-#'   bws_net = seq(100,1000,100),
+#'   bws_net = seq(100,800,100),
 #'   bws_time = seq(10,60,5),
 #'   lines = mtl_network,
 #'   events = bike_accidents,

@@ -31,3 +31,4 @@ A numeric vector with the values of the g function evaluated at the required dis
 \description{
 c++ g function (INTERNAL)
 }
+\keyword{internal}

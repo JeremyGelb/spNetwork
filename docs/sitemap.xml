@@ -31,6 +31,9 @@
     <loc>/articles/web_vignettes/AdaptiveBW.html</loc>
   </url>
   <url>
+    <loc>/articles/web_vignettes/Isochrones.html</loc>
+  </url>
+  <url>
     <loc>/articles/web_vignettes/NKDEdetailed.html</loc>
   </url>
   <url>
@@ -95,6 +98,9 @@
   </url>
   <url>
     <loc>/reference/build_graph.html</loc>
+  </url>
+  <url>
+    <loc>/reference/build_graph_cppr.html</loc>
   </url>
   <url>
     <loc>/reference/build_graph_directed.html</loc>
@@ -319,7 +325,13 @@
     <loc>/reference/gfunc.html</loc>
   </url>
   <url>
+    <loc>/reference/gfunc_counting.html</loc>
+  </url>
+  <url>
     <loc>/reference/gfunc_cpp.html</loc>
+  </url>
+  <url>
+    <loc>/reference/gfunc_cpp2.html</loc>
   </url>
   <url>
     <loc>/reference/gm_mean.html</loc>
@@ -349,7 +361,22 @@
     <loc>/reference/kfunctions.mc.html</loc>
   </url>
   <url>
+    <loc>/reference/kfunc_counting.html</loc>
+  </url>
+  <url>
     <loc>/reference/kfunc_cpp.html</loc>
+  </url>
+  <url>
+    <loc>/reference/kfunc_cpp2.html</loc>
+  </url>
+  <url>
+    <loc>/reference/kgfunc_counting.html</loc>
+  </url>
+  <url>
+    <loc>/reference/kgfunc_cpp2.html</loc>
+  </url>
+  <url>
+    <loc>/reference/kgfunc_time_counting.html</loc>
   </url>
   <url>
     <loc>/reference/k_nt_functions.html</loc>
@@ -445,6 +472,9 @@
     <loc>/reference/nkde_worker_bw_sel_cvl.html</loc>
   </url>
   <url>
+    <loc>/reference/pair_dists.html</loc>
+  </url>
+  <url>
     <loc>/reference/plot_graph.html</loc>
   </url>
   <url>
@@ -452,6 +482,9 @@
   </url>
   <url>
     <loc>/reference/prepare_elements_netlistw.html</loc>
+  </url>
+  <url>
+    <loc>/reference/prep_kfuncs_results.html</loc>
   </url>
   <url>
     <loc>/reference/quartic_kernel.html</loc>
@@ -476,6 +509,9 @@
   </url>
   <url>
     <loc>/reference/reverse_lines.html</loc>
+  </url>
+  <url>
+    <loc>/reference/rev_matrix.html</loc>
   </url>
   <url>
     <loc>/reference/sanity_check_knn.html</loc>

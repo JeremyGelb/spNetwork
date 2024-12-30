@@ -305,7 +305,7 @@ bw_cvl_calc <- function(bws = NULL,
     })
   }else{
     if(is.null(mat_bws)){
-      mat_bws <- adaptive_bw(grid, events, lines, all_bws, trim_bws, method,
+      mat_bws <- adaptive_bw(grid = grid, events = events, lines = lines, bw = all_bws, trim_bw = trim_bws, method = method,
                              kernel_name, max_depth, tol, digits, sparse, verbose)
     }else{
 

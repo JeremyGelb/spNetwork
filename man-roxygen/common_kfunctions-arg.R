@@ -22,3 +22,5 @@
 #' If NULL, the events are aggregated only by rounding the coordinates
 #' @param verbose A Boolean indicating if progress messages should be displayed
 #' @param calc_g_func A Boolean indicating if the G function must also be calculated (TRUE by default). If FALSE, then only the K function is calculated
+#' @param return_sims a boolean indicating if the simulated k and g values must also
+#' be returned.

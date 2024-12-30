@@ -145,7 +145,7 @@ future::plan(future::multisession(workers=1))
 
 # calculating the cross validation values
 cv_scores <- bw_tnkde_cv_likelihood_calc.mc(
-  bws_net = seq(100,1000,100),
+  bws_net = seq(100,800,100),
   bws_time = seq(10,60,5),
   lines = mtl_network,
   events = bike_accidents,

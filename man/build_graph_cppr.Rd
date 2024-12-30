@@ -19,7 +19,7 @@ stored in the final object}
 \value{
 A list containing the following elements:
 \itemize{
-\item graph: an cppRouting object;
+\item graph: a cppRouting object;
 \item linelist: the dataframe used to build the graph;
 \item lines: the original feature collection of linestrings;
 \item spvertices: a feature collection of points representing the vertices
@@ -43,3 +43,4 @@ mtl_network$length <- as.numeric(sf::st_length(mtl_network))
 graph_result <- build_graph_cppr(mtl_network, 2, "length", attrs = TRUE)
 
 }
+\keyword{internal}

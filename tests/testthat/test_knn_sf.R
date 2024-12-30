@@ -8,6 +8,7 @@ library(sf)
 test_that("Testing the knn function with a simple case", {
   ## creating the simple situation
   # start with de definition of some lines
+
   wkt_lines <- c(
     "LINESTRING (0 0, 1 0)",
     "LINESTRING (1 0, 2 0)",
@@ -60,7 +61,12 @@ test_that("Testing the knn function with a simple case", {
   )
 
   ## calculating the realvalues
-  mats <- network_knn(event, all_lines, k = 2, maxdistance = 100)
+  mats <- network_knn(origins = event,
+                      lines = all_lines,
+                      k = 2,
+                      maxdistance = 100,
+                      tol = 0.001)
+
   test1 <- sum(mats[[1]] != exp_dist)
   test2 <- sum(mats[[2]] != exp_oid)
   expect_true(test1 == 0 & test2 == 0)
@@ -368,9 +374,17 @@ test_that("Testing the knn function with a simple case, specific destinations an
 
   ## calculating the realvalues
   future::plan(future::multisession(workers=1))
-  mats <- network_knn.mc(event, all_lines,
+  mats <- network_knn.mc(origins = event,
+                         lines = all_lines,
                          destinations = destinations,
-                         k = 2, maxdistance = 100, direction = "dir")
+                         snap_dist = Inf,
+                         k = 2,
+                         maxdistance = 100,
+                         direction = "dir", line_weight = 'length',
+                         grid_shape = c(1,1),
+                         verbose = TRUE,
+                         digits = 2,
+                         tol = 0.01)
   test1 <- sum(mats[[1]] - exp_dist)
   test2 <- sum(mats[[2]] - exp_oid)
 

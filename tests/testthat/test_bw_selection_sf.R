@@ -829,7 +829,7 @@ test_that("Testing the bw selection function with CV likelihood and discontinuou
 
 
   #let us calculate the value with our function
-  obs_value <- bw_cv_likelihood_calc(seq(8,10,1),
+  obs_value <- bw_cv_likelihood_calc(bws = seq(8,10,1),
                                      lines = all_lines,
                                      events = event, w = event$w,
                                      check = F,
@@ -838,7 +838,9 @@ test_that("Testing the bw selection function with CV likelihood and discontinuou
                                      adaptive = TRUE,
                                      trim_bws = c(50,50,50),
                                      digits = 1,
-                                     agg = NULL, verbose = F,tol = 0.00001
+                                     agg = NULL,
+                                     verbose = F,
+                                     tol = 0.00001
   )
   expect_equal(obs_value[3,2], total)
 })

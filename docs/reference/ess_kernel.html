@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.4.3</span>
       </span>
     </div>
 
@@ -35,7 +35,7 @@
       <a href="../articles/web_vignettes/AdaptiveBW.html">K-nearest neighbour adaptive bandwidth</a>
     </li>
     <li>
-      <a href="../articles/Isochrones.html">Calculating isochrones</a>
+      <a href="../articles/web_vignettes/Isochrones.html">Calculating isochrones</a>
     </li>
     <li>
       <a href="../articles/KNetworkFunctions.html">Network k Functions</a>
@@ -90,17 +90,7 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">ess_kernel</span><span class="op">(</span></span>
-<span>  <span class="va">graph</span>,</span>
-<span>  <span class="va">y</span>,</span>
-<span>  <span class="va">bw</span>,</span>
-<span>  <span class="va">kernel_func</span>,</span>
-<span>  <span class="va">samples</span>,</span>
-<span>  <span class="va">nodes</span>,</span>
-<span>  <span class="va">edges</span>,</span>
-<span>  <span class="va">sample_tree</span>,</span>
-<span>  <span class="va">edges_tree</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">ess_kernel</span><span class="op">(</span><span class="va">graph</span>, <span class="va">y</span>, <span class="va">bw</span>, <span class="va">kernel_func</span>, <span class="va">ok_samples</span>, <span class="va">nodes</span>, <span class="va">ok_edges</span>, <span class="va">N</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -121,14 +111,14 @@
 <dd><p>a function obtained with the function select_kernel</p></dd>
 
 
+<dt>nodes</dt>
+<dd><p>a a feature collection of points representing the nodes of the network</p></dd>
+
+
 <dt>samples</dt>
 <dd><p>a a feature collection of points representing the sampling points. The
 samples must be snapped on the network. A column edge_id must indicate for
 each sample on which edge it is snapped.</p></dd>
-
-
-<dt>nodes</dt>
-<dd><p>a a feature collection of points representing the nodes of the network</p></dd>
 
 
 <dt>edges</dt>

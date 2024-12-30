@@ -9,10 +9,11 @@
 
 [![R-CMD-check](https://github.com/JeremyGelb/spNetwork/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/JeremyGelb/spNetwork/actions/workflows/R-CMD-check.yaml)
 
-[![](https://img.shields.io/badge/devel%20version-0.4.4.2-green.svg)](https://jeremygelb.github.io/spNetwork/)
+[![](https://img.shields.io/badge/devel%20version-0.4.4.3-green.svg)](https://jeremygelb.github.io/spNetwork/)
 [![](https://www.r-pkg.org/badges/version/spNetwork?color=blue)](https://cran.r-project.org/package=spNetwork)
 [![](http://cranlogs.r-pkg.org/badges/grand-total/spNetwork?color=blue)](https://cran.r-project.org/package=spNetwork)
 [![](http://cranlogs.r-pkg.org/badges/last-month/spNetwork?color=green)](https://cran.r-project.org/package=spNetwork)
+
 [![Codecov test
 coverage](https://codecov.io/gh/JeremyGelb/spNetwork/branch/master/graph/badge.svg)](https://app.codecov.io/gh/JeremyGelb/spNetwork?branch=master)
 <!-- badges: end -->
@@ -22,10 +23,26 @@ The package’s website is available
 
 ## Breaking news
 
+### Removing quad_tree
+
+In versions previous 0.4.4, we exported a class using c++ to do spatial
+indexing. It caused bugs on CRAN server and was removed because it was
+not significantly faster than `sf::st_join`.
+
+### Rework of the K functions
+
+We reworked (version 0.4.4) the functions to calculate K functions on
+network:
+`kfunctions`,`kfunctions.mc`,`cross_kfunctions`,`cross_kfunctions.mc`,`k_nt_functions`
+and `k_nt_functions.mc`. We are still working on the spatio-temporal
+version of the cross K functions. Also, the current implementation of
+the G function is quite literal and we will try to replace it by a more
+interesting one using kernel density for estimation.
+
 ### Changes in bandwidths selection functions
 
-The latest version (0.4.4) has modifications in the arguments of the
-functions `bw_cvl_calc`, `bw_cvl_calc.mc`, `bw_cv_likelihood_calc`,
+The version 0.4.4 has modifications in the arguments of the functions
+`bw_cvl_calc`, `bw_cvl_calc.mc`, `bw_cv_likelihood_calc`,
 `bw_cv_likelihood_calc`,`bw_tnkde_cv_likelihood_calc.mc`. The parameters
 about bandwidths range and step were replaced by a unique parameter
 requiring and **ordered** vector of bandwidths. Code from previous

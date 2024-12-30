@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.4.3</span>
       </span>
     </div>
 
@@ -35,7 +35,7 @@
       <a href="../articles/web_vignettes/AdaptiveBW.html">K-nearest neighbour adaptive bandwidth</a>
     </li>
     <li>
-      <a href="../articles/Isochrones.html">Calculating isochrones</a>
+      <a href="../articles/web_vignettes/Isochrones.html">Calculating isochrones</a>
     </li>
     <li>
       <a href="../articles/KNetworkFunctions.html">Network k Functions</a>
@@ -90,7 +90,7 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">dist_mat_dupl</span><span class="op">(</span><span class="va">graph</span>, <span class="va">start</span>, <span class="va">end</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">dist_mat_dupl</span><span class="op">(</span><span class="va">graph</span>, <span class="va">start</span>, <span class="va">end</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -105,6 +105,10 @@
 
 <dt>end</dt>
 <dd><p>The vertices to use as ending points</p></dd>
+
+
+<dt>...</dt>
+<dd><p>parameters passed to the function igraph::distances</p></dd>
 
 </dl></div>
     <div id="value">

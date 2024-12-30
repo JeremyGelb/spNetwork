@@ -25,3 +25,4 @@ A list  of two numeric matrices with the values of the k and g function evaluate
 \description{
 c++ k function counting (INTERNAL)
 }
+\keyword{internal}

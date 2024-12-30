@@ -63,13 +63,13 @@ samples <- lines_center(lixels)
 # we select here the bandwidths for calculation
 bws <- seq(200,1000,100)
 
-# we select here the max_dept values
-max_depts <- seq(4,14,2)
+# we select here the max_depth values
+max_depths <- seq(4,14,2)
 
 # we create here the dataframe will all the parameters
 params_df <- expand.grid(
   bw = bws,
-  max_dept = max_depts
+  max_depth = max_depths
 )
 
 # we shuffle the dataframe to make the multicore processing
@@ -101,7 +101,7 @@ progressr::with_progress({
                bw = row$bw, div= "bw",
                adaptive = FALSE,
                method = "continuous", digits = 1, tol = 1,
-               max_depth = row$max_dept,
+               max_depth = row$max_depth,
                agg = 10,
                grid_shape = c(1,1),
                verbose=FALSE)
@@ -203,7 +203,7 @@ plots <- lapply(1:length(comparison), function(i){
     geom_histogram(aes(x = diff)) + 
     theme_bw() + 
     labs(y = '', x = paste0('max_depth = ',ok_ids$max_depth[[i]]),
-         caption = paste0('95% error : ', vals[[1]], '% - ', vals[[2]], '%'))
+         caption = paste0('95% error : ', vals[[1]], '% ; ', vals[[2]], '%'))
   
   return(plot)
   
@@ -395,6 +395,6 @@ Here are the conclusions of this short analysis :
 
 1. The parameter `max_depth` can be used to reduce significantly the calculation time.
 2. However, it implies calculating a less accurate estimate of the density value.
-3. The absolute errors are correlated with the local estimates. When the bandwidth increase, the errors thend to be higher were the densities are the highest.
+3. The absolute errors are correlated with the local estimates. When the bandwidth increase, the errors tend to be higher were the densities are the highest.
 4. The errors do not affect much the bandwidth selection process. It seems to be safe to use a max_depth of 6 when doing bandwidth selection.
 

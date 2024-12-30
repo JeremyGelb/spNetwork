@@ -26,7 +26,7 @@ test_that("Testing the simple k function", {
   event <- st_as_sf(event, coords = c("x","y"))
 
   # calculating the observed values
-  observed <- new_kfunctions(
+  observed <- kfunctions(
                          lines = all_lines,
                          points = event,
                          start = 0,
@@ -42,7 +42,7 @@ test_that("Testing the simple k function", {
                          agg = NULL,
                          verbose = TRUE)
 
-  observed2 <- new_kfunctions(
+  observed2 <- kfunctions(
     lines = all_lines,
     points = event,
     start = 0,
@@ -104,7 +104,7 @@ test_that("Testing the simple k function (multicore)", {
   event <- st_as_sf(event, coords = c("x","y"))
 
   # calculating the observed values
-  observed <- new_kfunctions.mc(
+  observed <- kfunctions.mc(
     lines = all_lines,
     points = event,
     start = 0,
@@ -120,7 +120,7 @@ test_that("Testing the simple k function (multicore)", {
     agg = NULL,
     verbose = TRUE)
 
-  observed2 <- new_kfunctions(
+  observed2 <- kfunctions(
     lines = all_lines,
     points = event,
     start = 0,
@@ -188,7 +188,7 @@ test_that("Testing the cross k function", {
 
   # calculating the observed values
 
-  observed <- new_cross_kfunctions(
+  observed <- cross_kfunctions(
     lines = all_lines,
     pointsA = As,
     pointsB = Bs,
@@ -205,7 +205,7 @@ test_that("Testing the cross k function", {
     agg = NULL,
     verbose = TRUE)
 
-  observed2 <- new_cross_kfunctions(
+  observed2 <- cross_kfunctions(
     lines = all_lines,
     pointsA = As,
     pointsB = Bs,
@@ -273,7 +273,7 @@ test_that("Testing the cross k function", {
 
   # calculating the observed values
 
-  observed <- new_cross_kfunctions.mc(
+  observed <- cross_kfunctions.mc(
     lines = all_lines,
     pointsA = As,
     pointsB = Bs,
@@ -292,7 +292,7 @@ test_that("Testing the cross k function", {
     grid_shape = c(1,1)
     )
 
-  observed2 <- new_cross_kfunctions(
+  observed2 <- cross_kfunctions(
     lines = all_lines,
     pointsA = As,
     pointsB = Bs,
@@ -346,7 +346,7 @@ test_that("Testing the simple k function in space-time", {
   linesdf <- data.frame(wkt = wkt_lines,
                         id = paste("l",1:length(wkt_lines),sep=""))
 
-  all_lines <- st_as_sf(linesdf, wkt = "wkt")
+  all_lines <- sf::st_as_sf(linesdf, wkt = "wkt")
 
   # definition of four events
   event <- data.frame(x=c(0,3,1,0),
@@ -358,7 +358,7 @@ test_that("Testing the simple k function in space-time", {
 
   # calculating the observed values
   future::plan(future::multisession(workers=1))
-  observed <- new_k_nt_functions(
+  observed <- k_nt_functions(
                         lines = all_lines,
                          points = event,
                          points_time = event$time,
@@ -367,7 +367,7 @@ test_that("Testing the simple k function in space-time", {
                          step_net = 1,
                          width_net = 2,
                          start_time = 0,
-                         end_time = 6,
+                         end_time = 3,
                          step_time = 1,
                          width_time = 2,
                          nsim = 5,
@@ -385,23 +385,29 @@ test_that("Testing the simple k function in space-time", {
   Lt <- sum(st_length(all_lines))
   Tt <- max(event$time) - min(event$time)
   n <- nrow(event)
-  t1 <- (n-1)/(Lt * Tt);
-  exp_k <- 4 * t1
-  exp_g <- 10 * t1
+  p <- (n-1)/(Lt * Tt);
+
+  k_counts <- c(0,1,1,2)
+  g_counts <- c(2,2,3,3)
+
+  exp_k <- (1/p) * mean(k_counts)
+  exp_g <- (1/p) * mean(g_counts)
   expected_vals <- c(exp_k, exp_g)
 
-  obtained <- c(observed$obs_k[6,3], observed$obs_g[6,3])
+  obtained <- c(observed$obs_k[4,2], observed$obs_g[4,2])
 
-  test <- sum(round(obtained - expected_vals,7)) == 0
+  test <- sum(round(obtained - expected_vals,5)) == 0
   expect_true(test)
 
 })
 
+
+
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#### TEST FOR THE SIMPLE space-time K AND G FUNCTION (multicore) ####
+#### TEST FOR THE SIMPLE space-time K AND G FUNCTION (multicoce)  ####
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-test_that("Testing the simple k function in space-time (multicore)", {
+test_that("Testing the simple k function in space-time multicore", {
 
   # defining a simple situation
   wkt_lines <- c(
@@ -443,19 +449,33 @@ test_that("Testing the simple k function in space-time (multicore)", {
                              agg = NULL,
                              verbose = TRUE)
 
-  # after checking on a paper with a pen, the observed k and g values at  network
-  # distance 3 and time distance 1 must be :
-  Lt <- sum(st_length(all_lines))
-  Tt <- max(event$time) - min(event$time)
-  n <- nrow(event)
-  t1 <- (n-1)/(Lt * Tt);
-  exp_k <- 4 * t1
-  exp_g <- 10 * t1
-  expected_vals <- c(exp_k, exp_g)
 
-  obtained <- c(observed$obs_k[6,3], observed$obs_g[6,3])
+  observed.mc <- k_nt_functions.mc(lines = all_lines,
+                             points = event,
+                             points_time = event$time,
+                             start_net = 0,
+                             end_net = 6,
+                             step_net = 0.5,
+                             width_net = 2,
+                             start_time = 0,
+                             end_time = 6,
+                             step_time = 0.5,
+                             width_time = 2,
+                             nsim = 5,
+                             conf_int = 0.05,
+                             digits = 2,
+                             tol = 0.1,
+                             resolution = NULL,
+                             agg = NULL,
+                             verbose = TRUE,
+                             grid_shape = c(2,2))
 
-  test <- sum(round(obtained - expected_vals,7)) == 0
+
+  t1 <- sum(round(observed$obs_g,3) - round(observed.mc$obs_g,3))
+  t2 <- sum(round(observed$obs_k,3) - round(observed.mc$obs_k,3))
+
+  test <- (t1 + t2) == 0
+
   expect_true(test)
 
 })

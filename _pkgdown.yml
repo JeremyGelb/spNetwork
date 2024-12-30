@@ -68,8 +68,6 @@ reference:
   desc: >
     Functions to perform geometric operations.
 - contents:
-  - build_quadtree
-  - spatial_request
   - closest_points
   - lines_center
   - lines_extremities
@@ -90,7 +88,6 @@ reference:
     Functions used for specific spatial tasks
 - contents:
   - simple_lines
-  - spatial_index
   - st_bbox_by_feature
 - title: "Data"
   desc: >

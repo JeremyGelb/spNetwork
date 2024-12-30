@@ -58,3 +58,64 @@ test_that("A listw object returned by the function network_listw must be symetri
 
   expect_true(tottest)
 })
+
+
+
+test_that("The distances returned by network_listw are valid ", {
+
+
+  # defining a simple situation
+  wkt_lines <- c(
+    "LINESTRING (0 5, 0 0)",
+    "LINESTRING (-5 0, 0 0)",
+    "LINESTRING (0 -5, 0 0)",
+    "LINESTRING (5 0, 0 0)")
+
+  linesdf <- data.frame(wkt = wkt_lines,
+                        id = paste("l",1:length(wkt_lines),sep=""))
+
+  all_lines <- st_as_sf(linesdf, wkt = "wkt")
+
+  # definition of four events
+  event <- data.frame(x=c(0,3,1,0),
+                      y=c(3,0,0,1),
+                      id = c(1,2,3,4),
+                      time = c(1,1,3,2))
+
+  event <- st_as_sf(event, coords = c("x","y"))
+
+  listw <- network_listw(origins = event,
+                         lines = all_lines,
+                         method="centroid",
+                         maxdistance = 300,
+                         dist_func = "identity",
+                         matrice_type = "I",
+                         grid_shape = c(1,1),
+                         verbose = FALSE,
+                         mindist = 0.1,
+                         digits = 3,
+                         direction = NULL,
+                         point_dist = NULL,
+                         snap_dist = Inf,
+                         line_weight = 'length',
+                         tol = 0.1
+  )
+
+  expected <- rbind(
+    c(6,4,2),
+    c(6,2,4),
+    c(4,2,2),
+    c(2,4,2)
+  )
+
+  obtained <- do.call(rbind, listw$weights)
+
+  diff <- sum(round(expected - obtained,2))
+
+  expect_equal(diff, 0)
+
+})
+
+
+
+

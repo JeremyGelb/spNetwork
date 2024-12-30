@@ -256,6 +256,126 @@ calc_gamma <- function(k){
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
+
+# simple_nkde <- function(graph, events, samples, bws, kernel_func, nodes, edges, div = "bw"){
+#
+#   ## step 1 set all values to 0
+#   base_k <- rep(0,nrow(samples))
+#   base_count <- rep(0,nrow(samples))
+#
+#   #if the number of event is 0, then return only 0 values
+#   if(nrow(events)==0){
+#     return(data.frame("sum_k"=base_k,
+#                       "n"=base_count))
+#   }
+#
+#   sample_tree <- build_quadtree(samples)
+#   edges_tree <- build_quadtree(edges)
+#   ## step2 iterate over each event
+#   pb <- txtProgressBar(min = 0, max = nrow(events), style = 3)
+#   for(i in 1:nrow(events)){
+#     setTxtProgressBar(pb, i)
+#     bw <- bws[[i]]
+#     #extracting the starting values
+#     e <- events[i,]
+#     y <- e$vertex_id
+#     w <- e$weight
+#     #calculating the kernel values
+#     samples_k <- ess_kernel(graph,y,bw, kernel_func, samples,
+#                             nodes, edges, sample_tree, edges_tree)
+#
+#     samples_count <- ifelse(samples_k>0,1,0)
+#     if(div == "bw"){
+#       base_k <- (samples_k * w / bw) + base_k
+#     }else{
+#       base_k <- samples_k * w + base_k
+#     }
+#
+#     base_count <- base_count + (samples_count * w)
+#   }
+#   return(data.frame("sum_k"=base_k,
+#               "n"=base_count))
+# }
+
+
+
+# ess_kernel <- function(graph, y, bw, kernel_func, samples, nodes, edges, sample_tree, edges_tree){
+#   samples_k <- rep(0,nrow(samples))
+#   event_node <- nodes[y,]
+#   buff <- st_buffer(event_node, dist = bw)
+#   ## step1 find all the samples in the radius
+#   ok_samples <- spatial_request(buff,sample_tree,samples)
+#   if(nrow(ok_samples)==0){
+#     return(samples_k)
+#   }
+#   ## step2 find all the edges in the radius
+#   buff2 <- st_buffer(event_node, dist = bw+0.1*bw)
+#   ok_edges <- spatial_request(buff2,edges_tree,edges)$edge_id
+#   ## Step3 for each edge, find its two vertices
+#   vertices <- ends(graph,ok_edges,names = FALSE)
+#   ## step4 calculate the distance between the start node and each edge vertex
+#   un_vertices <- unique(c(vertices[,1],vertices[,2]))
+#   dist1 <- as.numeric(distances(graph,y,to=un_vertices,mode="out"))
+#
+#   dist_table <- data.frame("vertex"=un_vertices,
+#                            "distance" = dist1)
+#   ## step5 aggregate all the data
+#   df_edges <- data.frame("edge_id" = ok_edges,
+#                          "node1" = vertices[,1],
+#                          "node2" = vertices[,2]
+#                          )
+#   A1 <- data.table(df_edges)
+#   A2 <- data.table(df_edges)
+#   B <- data.table(dist_table)
+#   df_edges$d1 <- A1[B, on = c("node1" = "vertex"),
+#                    names(B) := mget(paste0("i.", names(B)))]$distance
+#   df_edges$d2 <- A2[B, on = c("node2" = "vertex"),
+#                    names(B) := mget(paste0("i.", names(B)))]$distance
+#   #df_edges$d1 <- left_join(df_edges,dist_table,by=c("node1"="vertex"))$distance
+#   #df_edges$d2 <- left_join(df_edges,dist_table,by=c("node2"="vertex"))$distance
+#
+#   ## now, we will calculate for each sample, the minimum distance for the two distances
+#   df1 <- df_edges[c("edge_id","node1","d1")]
+#   df2 <- df_edges[c("edge_id","node2","d2")]
+#
+#   ## getting the first part of the distances
+#   df_samples1 <- data.table(st_drop_geometry(ok_samples))
+#   df_samples2 <- data.table(st_drop_geometry(ok_samples))
+#   B <- data.table(df1)
+#   C <- data.table(df2)
+#
+#   df_samples1[B, on = "edge_id", names(B) := mget(paste0("i.", names(B)))]
+#   df_samples2[C, on = "edge_id", names(C) := mget(paste0("i.", names(C)))]
+#   #df_samples1 <-  left_join(ok_samples@data,df1,by="edge_id")
+#   #df_samples2 <-  left_join(ok_samples@data,df2,by="edge_id")
+#
+#   ## getting the second part of the distance
+#   nodes_ng <- st_drop_geometry(nodes)
+#   start_nodes1 <- nodes_ng[df_samples1$node1,]
+#   start_nodes2 <- nodes_ng[df_samples2$node2,]
+#
+#   dist1_b <- sqrt((df_samples1$X_coords - start_nodes1$X_coords)**2 +
+#                     (df_samples1$Y_coords - start_nodes1$Y_coords)**2)
+#
+#   dist2_b <- sqrt((df_samples2$X_coords - start_nodes2$X_coords)**2 +
+#                     (df_samples2$Y_coords - start_nodes2$Y_coords)**2)
+#
+#   ## getting the full distances
+#   full_dist1 <- dist1_b + df_samples1$d1
+#   full_dist2 <- dist2_b + df_samples2$d2
+#
+#   ok_distances <-ifelse(full_dist1 < full_dist2, full_dist1, full_dist2)
+#
+#
+#   ##and then, the final distance
+#
+#   k <- kernel_func(ok_distances,bw)
+#   samples_k[df_samples1$oid] <- k
+#   return(samples_k)
+# }
+
+
+
 #' @title Simple NKDE algorithm
 #'
 #' @description Function to perform the simple nkde.
@@ -291,8 +411,18 @@ simple_nkde <- function(graph, events, samples, bws, kernel_func, nodes, edges, 
                       "n"=base_count))
   }
 
-  sample_tree <- build_quadtree(samples)
-  edges_tree <- build_quadtree(edges)
+  # we find the snapped geometries
+  event_nodes <- nodes[events$vertex_id,]
+  event_nodes$order_id <- as.character(1:nrow(event_nodes))
+
+  # I must precalculate the spatial intersections for the samples for each event
+  samples_inter <- st_join(samples, st_buffer(event_nodes['order_id'], bws))
+  samples_inter <- split(samples_inter, samples_inter$order_id)
+
+  # and for the edges
+  edges_inter <- st_join(edges, st_buffer(event_nodes['order_id'], (bws + +0.1*bws )))
+  edges_inter <- split(edges_inter, edges_inter$order_id)
+
   ## step2 iterate over each event
   pb <- txtProgressBar(min = 0, max = nrow(events), style = 3)
   for(i in 1:nrow(events)){
@@ -302,21 +432,30 @@ simple_nkde <- function(graph, events, samples, bws, kernel_func, nodes, edges, 
     e <- events[i,]
     y <- e$vertex_id
     w <- e$weight
-    #calculating the kernel values
-    samples_k <- ess_kernel(graph,y,bw, kernel_func, samples,
-                            nodes, edges, sample_tree, edges_tree)
 
-    samples_count <- ifelse(samples_k>0,1,0)
-    if(div == "bw"){
-      base_k <- (samples_k * w / bw) + base_k
-    }else{
-      base_k <- samples_k * w + base_k
+    selected_samples <- samples_inter[[as.character(i)]]
+    selected_edges <- edges_inter[[as.character(i)]]
+
+    if( (!is.null(selected_samples)) & (!is.null(selected_edges))){
+      #calculating the kernel values
+      samples_k <- ess_kernel(graph,y,bw, kernel_func,
+                              ok_samples = selected_samples,
+                              nodes = nodes, ok_edges = selected_edges, N = nrow(samples))
+      samples_count <- ifelse(samples_k>0,1,0)
+      if(div == "bw"){
+        base_k <- (samples_k * w / bw) + base_k
+      }else{
+        base_k <- samples_k * w + base_k
+      }
+
+      base_count <- base_count + (samples_count * w)
     }
 
-    base_count <- base_count + (samples_count * w)
+
+
   }
   return(data.frame("sum_k"=base_k,
-              "n"=base_count))
+                    "n"=base_count))
 }
 
 
@@ -328,32 +467,23 @@ simple_nkde <- function(graph, events, samples, bws, kernel_func, nodes, edges, 
 #' @param y the index of the actual event
 #' @param bw a float indicating the kernel bandwidth (in meters)
 #' @param kernel_func a function obtained with the function select_kernel
-#' @param samples a a feature collection of points representing the sampling points. The
+#' @param ok_samples a a feature collection of points representing the sampling points. The
 #'   samples must be snapped on the network. A column edge_id must indicate for
 #'   each sample on which edge it is snapped.
 #' @param nodes a a feature collection of points representing the nodes of the network
-#' @param edges a a feature collection of linestrings representing the edges of the network
-#' @param sample_tree a quadtree object, the spatial index of the samples
-#' @param edges_tree a quadtree object, the spatial index of the edges
+#' @param ok_edges a a feature collection of linestrings representing the edges of the network
 #' @importFrom igraph get.edge.attribute
 #' @importFrom igraph ends distances
 #' @keywords internal
 #' @examples
 #' #This is an internal function, no example provided
-ess_kernel <- function(graph, y, bw, kernel_func, samples, nodes, edges, sample_tree, edges_tree){
-  samples_k <- rep(0,nrow(samples))
+ess_kernel <- function(graph, y, bw, kernel_func, ok_samples, nodes, ok_edges, N){
+
+  samples_k <- rep(0,N)
   event_node <- nodes[y,]
-  buff <- st_buffer(event_node, dist = bw)
-  ## step1 find all the samples in the radius
-  ok_samples <- spatial_request(buff,sample_tree,samples)
-  if(nrow(ok_samples)==0){
-    return(samples_k)
-  }
-  ## step2 find all the edges in the radius
-  buff2 <- st_buffer(event_node, dist = bw+0.1*bw)
-  ok_edges <- spatial_request(buff2,edges_tree,edges)$edge_id
+
   ## Step3 for each edge, find its two vertices
-  vertices <- ends(graph,ok_edges,names = FALSE)
+  vertices <- ends(graph,ok_edges$edge_id,names = FALSE)
   ## step4 calculate the distance between the start node and each edge vertex
   un_vertices <- unique(c(vertices[,1],vertices[,2]))
   dist1 <- as.numeric(distances(graph,y,to=un_vertices,mode="out"))
@@ -361,17 +491,17 @@ ess_kernel <- function(graph, y, bw, kernel_func, samples, nodes, edges, sample_
   dist_table <- data.frame("vertex"=un_vertices,
                            "distance" = dist1)
   ## step5 aggregate all the data
-  df_edges <- data.frame("edge_id" = ok_edges,
+  df_edges <- data.frame("edge_id" = ok_edges$edge_id,
                          "node1" = vertices[,1],
                          "node2" = vertices[,2]
-                         )
+  )
   A1 <- data.table(df_edges)
   A2 <- data.table(df_edges)
   B <- data.table(dist_table)
   df_edges$d1 <- A1[B, on = c("node1" = "vertex"),
-                   names(B) := mget(paste0("i.", names(B)))]$distance
+                    names(B) := mget(paste0("i.", names(B)))]$distance
   df_edges$d2 <- A2[B, on = c("node2" = "vertex"),
-                   names(B) := mget(paste0("i.", names(B)))]$distance
+                    names(B) := mget(paste0("i.", names(B)))]$distance
   #df_edges$d1 <- left_join(df_edges,dist_table,by=c("node1"="vertex"))$distance
   #df_edges$d2 <- left_join(df_edges,dist_table,by=c("node2"="vertex"))$distance
 
@@ -414,3 +544,9 @@ ess_kernel <- function(graph, y, bw, kernel_func, samples, nodes, edges, sample_
   samples_k[df_samples1$oid] <- k
   return(samples_k)
 }
+
+
+
+
+
+

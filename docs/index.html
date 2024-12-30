@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.4.3</span>
       </span>
     </div>
 
@@ -53,7 +53,7 @@
       <a href="articles/web_vignettes/AdaptiveBW.html">K-nearest neighbour adaptive bandwidth</a>
     </li>
     <li>
-      <a href="articles/Isochrones.html">Calculating isochrones</a>
+      <a href="articles/web_vignettes/Isochrones.html">Calculating isochrones</a>
     </li>
     <li>
       <a href="articles/KNetworkFunctions.html">Network k Functions</a>
@@ -112,16 +112,27 @@
 </h2>
 <!-- badges: start -->
 
-<p><a href="https://jeremygelb.github.io/spNetwork/" class="external-link"><img src="https://img.shields.io/badge/devel%20version-0.4.4-green.svg"></a> <a href="https://cran.r-project.org/package=spNetwork" class="external-link"><img src="https://www.r-pkg.org/badges/version/spNetwork?color=blue"></a> <a href="https://cran.r-project.org/package=spNetwork" class="external-link"><img src="http://cranlogs.r-pkg.org/badges/grand-total/spNetwork?color=blue"></a> <a href="https://cran.r-project.org/package=spNetwork" class="external-link"><img src="http://cranlogs.r-pkg.org/badges/last-month/spNetwork?color=green"></a> <a href="https://app.codecov.io/gh/JeremyGelb/spNetwork?branch=master" class="external-link"><img src="https://codecov.io/gh/JeremyGelb/spNetwork/branch/master/graph/badge.svg" alt="Codecov test coverage"></a> <!-- badges: end --></p>
+<p><a href="https://jeremygelb.github.io/spNetwork/" class="external-link"><img src="https://img.shields.io/badge/devel%20version-0.4.4.3-green.svg"></a> <a href="https://cran.r-project.org/package=spNetwork" class="external-link"><img src="https://www.r-pkg.org/badges/version/spNetwork?color=blue"></a> <a href="https://cran.r-project.org/package=spNetwork" class="external-link"><img src="http://cranlogs.r-pkg.org/badges/grand-total/spNetwork?color=blue"></a> <a href="https://cran.r-project.org/package=spNetwork" class="external-link"><img src="http://cranlogs.r-pkg.org/badges/last-month/spNetwork?color=green"></a></p>
+<p><a href="https://app.codecov.io/gh/JeremyGelb/spNetwork?branch=master" class="external-link"><img src="https://codecov.io/gh/JeremyGelb/spNetwork/branch/master/graph/badge.svg" alt="Codecov test coverage"></a> <!-- badges: end --></p>
 <p>The package’s website is available <a href="https://jeremygelb.github.io/spNetwork/" class="external-link">here</a></p>
 </div>
 <div class="section level2">
 <h2 id="breaking-news">Breaking news<a class="anchor" aria-label="anchor" href="#breaking-news"></a>
 </h2>
 <div class="section level3">
+<h3 id="removing-quad_tree">Removing quad_tree<a class="anchor" aria-label="anchor" href="#removing-quad_tree"></a>
+</h3>
+<p>In versions previous 0.4.4, we exported a class using c++ to do spatial indexing. It caused bugs on CRAN server and was removed because it was not significantly faster than <code><a href="https://r-spatial.github.io/sf/reference/st_join.html" class="external-link">sf::st_join</a></code>.</p>
+</div>
+<div class="section level3">
+<h3 id="rework-of-the-k-functions">Rework of the K functions<a class="anchor" aria-label="anchor" href="#rework-of-the-k-functions"></a>
+</h3>
+<p>We reworked (version 0.4.4) the functions to calculate K functions on network: <code>kfunctions</code>,<code>kfunctions.mc</code>,<code>cross_kfunctions</code>,<code>cross_kfunctions.mc</code>,<code>k_nt_functions</code> and <code>k_nt_functions.mc</code>. We are still working on the spatio-temporal version of the cross K functions. Also, the current implementation of the G function is quite literal and we will try to replace it by a more interesting one using kernel density for estimation.</p>
+</div>
+<div class="section level3">
 <h3 id="changes-in-bandwidths-selection-functions">Changes in bandwidths selection functions<a class="anchor" aria-label="anchor" href="#changes-in-bandwidths-selection-functions"></a>
 </h3>
-<p>The latest version (0.4.4) has modifications in the arguments of the functions <code>bw_cvl_calc</code>, <code>bw_cvl_calc.mc</code>, <code>bw_cv_likelihood_calc</code>, <code>bw_cv_likelihood_calc</code>,<code>bw_tnkde_cv_likelihood_calc.mc</code>. The parameters about bandwidths range and step were replaced by a unique parameter requiring and <strong>ordered</strong> vector of bandwidths. Code from previous version need to be modified accordingly.</p>
+<p>The version 0.4.4 has modifications in the arguments of the functions <code>bw_cvl_calc</code>, <code>bw_cvl_calc.mc</code>, <code>bw_cv_likelihood_calc</code>, <code>bw_cv_likelihood_calc</code>,<code>bw_tnkde_cv_likelihood_calc.mc</code>. The parameters about bandwidths range and step were replaced by a unique parameter requiring and <strong>ordered</strong> vector of bandwidths. Code from previous version need to be modified accordingly.</p>
 </div>
 <div class="section level3">
 <h3 id="moving-to-sf">Moving to sf<a class="anchor" aria-label="anchor" href="#moving-to-sf"></a>

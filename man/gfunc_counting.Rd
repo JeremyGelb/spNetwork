@@ -23,3 +23,4 @@ A numeric matrix with the countings of the g function evaluated at the required 
 \description{
 c++ k function counting (INTERNAL)
 }
+\keyword{internal}

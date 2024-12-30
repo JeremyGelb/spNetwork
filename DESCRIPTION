@@ -1,7 +1,7 @@
 Package: spNetwork
 Type: Package
 Title: Spatial Analysis on Network
-Version: 0.4.4.3
+Version: 0.4.4.4
 Authors@R: c(
     person("Jeremy", "Gelb", email = "jeremy.gelb@ucs.inrs.ca",role = c("aut", "cre"), comment = c(ORCID = "0000-0002-7114-2714")),
     person("Philippe", "Apparicio", email="philippe.apparicio@ucs.inrs.ca", role=c("ctb"), comment = c(ORCID = "0000-0001-6466-9342")))
@@ -28,7 +28,8 @@ Imports:
     dbscan (>= 1.1-8),
     sf (>= 1.0-3),
     abind (>= 1.4-5),
-    sfheaders (>= 0.4.4)
+    sfheaders (>= 0.4.4),
+    cppRouting (>= 3.1)
 Depends:
     R (>= 3.6)
 Suggests:
@@ -46,7 +47,7 @@ Suggests:
     covr (>= 3.5.1),
     knitr,
     rmarkdown
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
 Roxygen: list(markdown = TRUE)
 VignetteBuilder: 
     knitr
