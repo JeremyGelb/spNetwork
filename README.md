@@ -9,7 +9,7 @@
 
 [![R-CMD-check](https://github.com/JeremyGelb/spNetwork/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/JeremyGelb/spNetwork/actions/workflows/R-CMD-check.yaml)
 
-[![](https://img.shields.io/badge/devel%20version-0.4.4.3-green.svg)](https://jeremygelb.github.io/spNetwork/)
+[![](https://img.shields.io/badge/devel%20version-0.4.4.4-green.svg)](https://jeremygelb.github.io/spNetwork/)
 [![](https://www.r-pkg.org/badges/version/spNetwork?color=blue)](https://cran.r-project.org/package=spNetwork)
 [![](http://cranlogs.r-pkg.org/badges/grand-total/spNetwork?color=blue)](https://cran.r-project.org/package=spNetwork)
 [![](http://cranlogs.r-pkg.org/badges/last-month/spNetwork?color=green)](https://cran.r-project.org/package=spNetwork)
@@ -23,7 +23,7 @@ The package’s website is available
 
 ## Breaking news
 
-### Removing quad_tree
+### Removing spatial_index
 
 In versions previous 0.4.4, we exported a class using c++ to do spatial
 indexing. It caused bugs on CRAN server and was removed because it was
@@ -47,6 +47,13 @@ The version 0.4.4 has modifications in the arguments of the functions
 about bandwidths range and step were replaced by a unique parameter
 requiring and **ordered** vector of bandwidths. Code from previous
 version need to be modified accordingly.
+
+### Using cppRouting
+
+A very interesting package has been published with `cppRouting`. It
+allows for extremely fast shortest path calculation on network. We are
+slowly integrating it in `spNetwork`. The changes are not visible for
+the users
 
 ### Moving to sf
 

@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.4.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.4.4</span>
       </span>
     </div>
 
@@ -112,7 +112,7 @@
 </h2>
 <!-- badges: start -->
 
-<p><a href="https://jeremygelb.github.io/spNetwork/" class="external-link"><img src="https://img.shields.io/badge/devel%20version-0.4.4.3-green.svg"></a> <a href="https://cran.r-project.org/package=spNetwork" class="external-link"><img src="https://www.r-pkg.org/badges/version/spNetwork?color=blue"></a> <a href="https://cran.r-project.org/package=spNetwork" class="external-link"><img src="http://cranlogs.r-pkg.org/badges/grand-total/spNetwork?color=blue"></a> <a href="https://cran.r-project.org/package=spNetwork" class="external-link"><img src="http://cranlogs.r-pkg.org/badges/last-month/spNetwork?color=green"></a></p>
+<p><a href="https://jeremygelb.github.io/spNetwork/" class="external-link"><img src="https://img.shields.io/badge/devel%20version-0.4.4.4-green.svg"></a> <a href="https://cran.r-project.org/package=spNetwork" class="external-link"><img src="https://www.r-pkg.org/badges/version/spNetwork?color=blue"></a> <a href="https://cran.r-project.org/package=spNetwork" class="external-link"><img src="http://cranlogs.r-pkg.org/badges/grand-total/spNetwork?color=blue"></a> <a href="https://cran.r-project.org/package=spNetwork" class="external-link"><img src="http://cranlogs.r-pkg.org/badges/last-month/spNetwork?color=green"></a></p>
 <p><a href="https://app.codecov.io/gh/JeremyGelb/spNetwork?branch=master" class="external-link"><img src="https://codecov.io/gh/JeremyGelb/spNetwork/branch/master/graph/badge.svg" alt="Codecov test coverage"></a> <!-- badges: end --></p>
 <p>The package’s website is available <a href="https://jeremygelb.github.io/spNetwork/" class="external-link">here</a></p>
 </div>
@@ -120,7 +120,7 @@
 <h2 id="breaking-news">Breaking news<a class="anchor" aria-label="anchor" href="#breaking-news"></a>
 </h2>
 <div class="section level3">
-<h3 id="removing-quad_tree">Removing quad_tree<a class="anchor" aria-label="anchor" href="#removing-quad_tree"></a>
+<h3 id="removing-spatial_index">Removing spatial_index<a class="anchor" aria-label="anchor" href="#removing-spatial_index"></a>
 </h3>
 <p>In versions previous 0.4.4, we exported a class using c++ to do spatial indexing. It caused bugs on CRAN server and was removed because it was not significantly faster than <code><a href="https://r-spatial.github.io/sf/reference/st_join.html" class="external-link">sf::st_join</a></code>.</p>
 </div>
@@ -133,6 +133,11 @@
 <h3 id="changes-in-bandwidths-selection-functions">Changes in bandwidths selection functions<a class="anchor" aria-label="anchor" href="#changes-in-bandwidths-selection-functions"></a>
 </h3>
 <p>The version 0.4.4 has modifications in the arguments of the functions <code>bw_cvl_calc</code>, <code>bw_cvl_calc.mc</code>, <code>bw_cv_likelihood_calc</code>, <code>bw_cv_likelihood_calc</code>,<code>bw_tnkde_cv_likelihood_calc.mc</code>. The parameters about bandwidths range and step were replaced by a unique parameter requiring and <strong>ordered</strong> vector of bandwidths. Code from previous version need to be modified accordingly.</p>
+</div>
+<div class="section level3">
+<h3 id="using-cpprouting">Using cppRouting<a class="anchor" aria-label="anchor" href="#using-cpprouting"></a>
+</h3>
+<p>A very interesting package has been published with <code>cppRouting</code>. It allows for extremely fast shortest path calculation on network. We are slowly integrating it in <code>spNetwork</code>. The changes are not visible for the users</p>
 </div>
 <div class="section level3">
 <h3 id="moving-to-sf">Moving to sf<a class="anchor" aria-label="anchor" href="#moving-to-sf"></a>

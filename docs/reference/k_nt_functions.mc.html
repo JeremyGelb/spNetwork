@@ -18,7 +18,7 @@ network and in time (multicore, experimental, NOT READY FOR USE)."><!-- mathjax 
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.4.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.4.4</span>
       </span>
     </div>
 
@@ -112,7 +112,6 @@ network and in time (multicore, experimental, NOT READY FOR USE).</p>
 <span>  agg <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  calc_g_func <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  probs <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  grid_shape <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -206,6 +205,17 @@ If NULL, the events are aggregated only by rounding the coordinates</p></dd>
 
 <dt>verbose</dt>
 <dd><p>A Boolean indicating if progress messages should be displayed</p></dd>
+
+
+<dt>calc_g_func</dt>
+<dd><p>A boolean indicating if the G function must also be calculated</p></dd>
+
+
+<dt>grid_shape</dt>
+<dd><p>A vector of two values indicating how the study area
+must be split when performing the calculus. Default is c(1,1) (no split). A finer grid could
+reduce memory usage and increase speed when a large dataset is used. When using
+multiprocessing, the work in each grid is dispatched between the workers.</p></dd>
 
 </dl></div>
     <div id="value">

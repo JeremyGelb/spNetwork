@@ -18,7 +18,7 @@ network. For more details, see the document of the function cross_kfunctions."><
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.4.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.4.4</span>
       </span>
     </div>
 
@@ -227,7 +227,8 @@ plots</p></dd>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">main_network_mtl</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">mtl_libraries</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">mtl_theatres</span><span class="op">)</span></span>
-<span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu">new_cross_kfunctions.mc</span><span class="op">(</span><span class="va">main_network_mtl</span>, <span class="va">mtl_theatres</span>, <span class="va">mtl_libraries</span>,</span>
+<span><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/multisession.html" class="external-link">multisession</a></span><span class="op">(</span>workers<span class="op">=</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu">cross_kfunctions.mc</span><span class="op">(</span><span class="va">main_network_mtl</span>, <span class="va">mtl_theatres</span>, <span class="va">mtl_libraries</span>,</span>
 <span>                           start <span class="op">=</span> <span class="fl">0</span>, end <span class="op">=</span> <span class="fl">2500</span>, step <span class="op">=</span> <span class="fl">10</span>, width <span class="op">=</span> <span class="fl">250</span>,</span>
 <span>                           nsim <span class="op">=</span> <span class="fl">50</span>, conf_int <span class="op">=</span> <span class="fl">0.05</span>, digits <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>                           tol <span class="op">=</span> <span class="fl">0.1</span>, agg <span class="op">=</span> <span class="cn">NULL</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
