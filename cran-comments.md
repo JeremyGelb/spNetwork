@@ -461,3 +461,31 @@ I added a check to ensure that the table is not empty before using it. The error
 
 BH has been updated on CRAN. I also removed the exported c++ class spatial_index causing error in the previous attempt.
 
+submitted the 01/07/2025
+
+**Problem:**
+
+Examples with CPU (user + system) or elapsed time > 5s
+                  user system elapsed
+build_graph_cppr 5.013  0.087   2.074
+Examples with CPU time > 2.5 times elapsed time
+                  user system elapsed ratio
+lines_extremities 1.69  0.056   0.341  5.12
+
+**correction:**
+Both examples have been edited to prevent such note
+
+
+submitted the 01/10/2025
+
+
+**Problem:**
+
+* checking tests ... [73s/24s] NOTE
+  Running ‘testthat.R’ [73s/23s]
+Running R code in ‘testthat.R’ had CPU time 3.1 times elapsed time
+
+**correction:**
+
+I identified the most likely test that is responsible and simply remove it from tests on CRAN.
+The test is still performed on my side and when I upload the package on Github.

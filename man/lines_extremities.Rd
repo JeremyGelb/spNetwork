@@ -17,6 +17,16 @@ Generate a feature collection of points with the first and last vertex
 of each line in a feature collection of linestrings.
 }
 \examples{
-data(mtl_network)
-points <- lines_extremities(mtl_network)
+wkt_lines <- c(
+"LINESTRING (0 0, 1 0)",
+"LINESTRING (1 0, 2 0)",
+"LINESTRING (2 0, 3 0)",
+"LINESTRING (0 1, 1 1)")
+
+linesdf <- data.frame(wkt = wkt_lines,
+                      id = paste("l",1:length(wkt_lines),sep=""))
+
+all_lines <- sf::st_as_sf(linesdf, wkt = "wkt")
+all_lines <- cbind(linesdf$wkt,all_lines)
+points <- lines_extremities(all_lines)
 }

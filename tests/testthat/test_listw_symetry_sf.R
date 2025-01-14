@@ -3,6 +3,8 @@ library(sf)
 
 test_that("A listw object returned by the function network_listw must be symetric and identic as one returned by network_listw.mc", {
 
+  skip_on_cran()
+
   data(small_mtl_network)
 
   listw <- network_listw(origins = small_mtl_network,
@@ -63,6 +65,8 @@ test_that("A listw object returned by the function network_listw must be symetri
 
 test_that("The distances returned by network_listw are valid ", {
 
+
+  skip_on_cran()
 
   # defining a simple situation
   wkt_lines <- c(

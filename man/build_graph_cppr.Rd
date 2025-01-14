@@ -38,9 +38,10 @@ is important. Too high precision (high number of digits) might break some
 connections.
 }
 \examples{
+\donttest{
 data(mtl_network)
 mtl_network$length <- as.numeric(sf::st_length(mtl_network))
 graph_result <- build_graph_cppr(mtl_network, 2, "length", attrs = TRUE)
-
+}
 }
 \keyword{internal}

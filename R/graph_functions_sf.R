@@ -129,10 +129,11 @@ build_graph <- function(lines, digits, line_weight, attrs = FALSE) {
 #' @export
 #' @keywords internal
 #' @examples
+#' \donttest{
 #' data(mtl_network)
 #' mtl_network$length <- as.numeric(sf::st_length(mtl_network))
 #' graph_result <- build_graph_cppr(mtl_network, 2, "length", attrs = TRUE)
-#'
+#' }
 build_graph_cppr <- function(lines, digits, line_weight, attrs = FALSE, direction = NULL) {
 
   if(is.null(direction)){

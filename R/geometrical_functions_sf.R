@@ -54,8 +54,18 @@ sp_char_index <- function(coords, digits) {
 #' @importFrom data.table as.data.table .SD .N
 #' @export
 #' @examples
-#' data(mtl_network)
-#' points <- lines_extremities(mtl_network)
+#' wkt_lines <- c(
+#' "LINESTRING (0 0, 1 0)",
+#' "LINESTRING (1 0, 2 0)",
+#' "LINESTRING (2 0, 3 0)",
+#' "LINESTRING (0 1, 1 1)")
+#'
+#' linesdf <- data.frame(wkt = wkt_lines,
+#'                       id = paste("l",1:length(wkt_lines),sep=""))
+#'
+#' all_lines <- sf::st_as_sf(linesdf, wkt = "wkt")
+#' all_lines <- cbind(linesdf$wkt,all_lines)
+#' points <- lines_extremities(all_lines)
 lines_extremities <- function(lines) {
   coords <- st_coordinates(lines)
   data <- st_drop_geometry(lines)
