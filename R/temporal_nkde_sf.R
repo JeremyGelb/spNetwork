@@ -188,6 +188,10 @@ simple_tnkde <- function(graph, events, samples, samples_time, bws_net, bws_time
 tnkde_worker <- function(lines, events_loc, events, samples_loc, samples_time, kernel_name,bw_net, bw_time, bws_net, bws_time, method, div, digits, tol, sparse, max_depth, verbose = FALSE){
 
   # if we do not have event in that space, just return 0 values
+  if(is.null(events)){
+    values <- matrix(0, nrow = nrow(samples_loc), ncol = length(samples_time))
+    return(values)
+  }
   if(nrow(events)==0){
     values <- matrix(0, nrow = nrow(samples_loc), ncol = length(samples_time))
     return(values)
