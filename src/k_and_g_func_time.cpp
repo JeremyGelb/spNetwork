@@ -36,6 +36,7 @@ List kgfunc_time_counting(arma::mat dist_mat_net,
 
   // we need an extra dimension here to do the counting. For each point, for each bandwidth on the network
   // and in time, we will count how many other point it can reach.
+
   arma::cube counting_k(breaks_net.size(), breaks_time.size(), dist_mat_net.n_rows);
   arma::cube counting_g(breaks_net.size(), breaks_time.size(), dist_mat_net.n_rows);
 
@@ -49,7 +50,6 @@ List kgfunc_time_counting(arma::mat dist_mat_net,
   // we iterate over each row of dist_mat
   for(int i = 0; i < dist_mat_net.n_rows; ++i) {
 
-
     float wi = wr(i);
 
     arma::mat idata(3, dist_mat_net.n_cols);
@@ -58,6 +58,7 @@ List kgfunc_time_counting(arma::mat dist_mat_net,
     idata.row(1) = dist_mat_time.row(i);
     idata.row(2) = wc;
     idata = idata.t();
+
 
 
     // we do a first test to remove all the distances that are way to big
@@ -75,61 +76,78 @@ List kgfunc_time_counting(arma::mat dist_mat_net,
       // we filter it to remove points that are too far
       arma::mat ok_z1 = idata.rows(arma::find(idata.col(0) <= dist_net+width_net));
 
+      // we might end up with an empty ok_z1...
+      // we must just skip the remaining part in that case
 
-      // NOTE : we are precalculating the tests.
-      // for each other point in the network distance matrix, we check if
-      // it is in the donught range and below the max range (for g and k function)
-      // the results are stored in a matrix. Each col correspond to a test
-      arma::umat mat_test_net = join_rows(ok_z1.col(0) <= (dist_net+width_net),
-                                          ok_z1.col(0) >= (dist_net-width_net),
-                                          ok_z1.col(0) <= (dist_net));
+      if(ok_z1.n_rows > 0){
+
+        // NOTE : we are precalculating the tests.
+        // for each other point in the network distance matrix, we check if
+        // it is in the donught range and below the max range (for g and k function)
+        // the results are stored in a matrix. Each col correspond to a test
+        arma::umat mat_test_net = join_rows(ok_z1.col(0) <= (dist_net+width_net),
+                                            ok_z1.col(0) >= (dist_net-width_net),
+                                            ok_z1.col(0) <= (dist_net));
+
+        // we will also iterate over the time distances
+        for(int z2 = 0; z2 < breaks_time.size(); ++z2) {
+
+          float dist_time = breaks_time[z2];
+
+          // here I do the necessary checks for the temporal dimension
+          arma::uvec test1_time = ok_z1.col(1) <= (dist_time+width_time);
+          arma::uvec test2_time = ok_z1.col(1) >= (dist_time-width_time);
+          arma::uvec test3_time = ok_z1.col(1) <= (dist_time);
+
+          // HERE I HAVE TO DEAL WITH THE MALUS FOR THE G FUNCTION TO AVOID SELF COUNTING
+          // It is uncertain that we will do self-couting when we are using the g function
+          // because of its donught form.
+          // we must apply the malus only if the lower bound is below zero for both
+          // time and network
+          int malus = 0;
+          if( (dist_time-width_time <= 0) & (dist_net-width_net <= 0)){
+            malus = 1;
+          }
+
+          // we can the use them to do the test conjointly
+          arma::uvec trueTest = arma::find(
+            (mat_test_net.col(0)) && (test1_time) &&
+              (mat_test_net.col(1)) && (test2_time));
 
 
-      // we will also iterate over the time distances
-      for(int z2 = 0; z2 < breaks_time.size(); ++z2) {
+          // with the part test I can get the value of the k function
+          arma::vec ok_w = ok_z1.col(2);
+          arma::vec ok_w1 = ok_w.elem(arma::find(test3_time && mat_test_net.col(2)));
 
-        float dist_time = breaks_time[z2];
+          // idem, we must test that we do not have an empty vector here
+          if(ok_w1.n_elem > 0){
+            counting_k(z1, z2, i) = (arma::sum(ok_w1) - cross_malus) * wi;
+          }
 
-        // here I do the necessary checks for the temporal dimension
-        arma::uvec test1_time = ok_z1.col(1) <= (dist_time+width_time);
-        arma::uvec test2_time = ok_z1.col(1) >= (dist_time-width_time);
-        arma::uvec test3_time = ok_z1.col(1) <= (dist_time);
+          // with the full test we can get the values for the g function
+          arma::vec  ok_w2 = ok_w.elem(trueTest) ;
 
-        // HERE I HAVE TO DEAL WITH THE MALUS FOR THE G FUNCTION TO AVOID SELF COUNTING
-        // It is uncertain that we will do self-couting when we are using the g function
-        // because of its donught form.
-        // we must apply the malus only if the lower bound is below zero for both
-        // time and network
-        int malus = 0;
-        if( (dist_time-width_time <= 0) & (dist_net-width_net <= 0)){
-          malus = 1;
+          if(ok_w2.n_elem > 0){
+            // for g we do not include minus one because the donut form will prevent self count
+            counting_g(z1, z2, i) = (arma::sum(ok_w2) - (malus * cross_malus)) * wi;
+          }
+
+
+          // we do not want to retest all the distances so we will reduce the data in ok_z1
+          arma::uvec t1_filter = arma::find(ok_z1.col(1) <= dist_time+width_time);
+          ok_z1 = ok_z1.rows(t1_filter);
+          mat_test_net = mat_test_net.rows(t1_filter);
+
+
+          // we can break the loop if there is nothing left in ok_z1
+          if(ok_z1.n_rows == 0){
+            break;
+          }
+
         }
-
-        // we can the use them to do the test conjointly
-        arma::uvec trueTest = arma::find(
-          (mat_test_net.col(0)) && (test1_time) &&
-            (mat_test_net.col(1)) && (test2_time));
-
-
-        // with the part test I can get the value of the k function
-        arma::vec ok_w = ok_z1.col(2);
-        arma::vec ok_w1 = ok_w.elem(arma::find(test3_time && mat_test_net.col(2)));
-
-        counting_k(z1, z2, i) = (arma::sum(ok_w1) - cross_malus) * wi;
-
-        // with the full test we can get the values for the g function
-        arma::vec  ok_w2 = ok_w.elem(trueTest) ;
-
-        // for g we do not include minus one because the donut form will prevent self count
-        counting_g(z1, z2, i) = (arma::sum(ok_w2) - (malus * cross_malus)) * wi;
-
-
-        // we do not want to retest all the distances so we will reduce the data in ok_z1
-        arma::uvec t1_filter = arma::find(ok_z1.col(1) <= dist_time+width_time);
-        ok_z1 = ok_z1.rows(t1_filter);
-        mat_test_net = mat_test_net.rows(t1_filter);
-
       }
+
+
     }
 
   }
@@ -201,6 +219,12 @@ arma::cube kfunc_time_counting(arma::mat dist_mat_net,
 
       float dist_net = breaks_net[z1];
 
+      // we can break the calculation here if ok_d_net is empty
+      // this means that no distances within the two distance matrices are below the maximum given time or network distance
+      if(row_net.n_elem == 0){
+        break;
+      }
+
 
       // first col is net distance, then time distance, then weight
       arma::mat ok_z1(ok_d_net.n_elem,3);
@@ -219,6 +243,12 @@ arma::cube kfunc_time_counting(arma::mat dist_mat_net,
 
         // we filter it to remove points that are too far in time
         ok_z1 = ok_z1.rows(arma::find(ok_z1.col(1) <= (dist_time)));
+
+        // we can break the calculation here if ok_d_net is empty
+        // this means that no distances within the two distance matrices are below the maximum given time or network distance
+        if(ok_z1.n_elem == 0){
+          break;
+        }
 
         // now we can calculte the k value
         // minus one here is important to remove self weight

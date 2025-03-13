@@ -85,6 +85,8 @@ test_that("Testing the simple k function", {
 
 test_that("Testing the simple k function (multicore)", {
 
+  skip_on_cran()
+
   # defining a simple situation
   wkt_lines <- c(
     "LINESTRING (0 5, 0 0)",
@@ -256,6 +258,8 @@ test_that("Testing the cross k function", {
     "LINESTRING (0 -5, 0 0)",
     "LINESTRING (5 0, 0 0)")
 
+  skip_on_cran()
+
   linesdf <- data.frame(wkt = wkt_lines,
                         id = paste("l",1:length(wkt_lines),sep=""))
 
@@ -408,6 +412,8 @@ test_that("Testing the simple k function in space-time", {
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 test_that("Testing the simple k function in space-time multicore", {
+
+  skip_on_cran()
 
   # defining a simple situation
   wkt_lines <- c(

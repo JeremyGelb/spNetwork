@@ -1180,6 +1180,10 @@ adaptive_bw.mc <- function(grid,events,lines,bw,trim_bw,method,kernel_name,max_d
 nkde_worker <- function(lines, events, samples, kernel_name, bw, bws, method, div, digits, tol, sparse, max_depth, verbose = FALSE){
 
   # if we do not have event in that space, just return 0 values
+  if(is.null(events)){
+    values <- rep(0,nrow(samples))
+    return(values)
+  }
   if(nrow(events)==0){
     values <- rep(0,nrow(samples))
     return(values)

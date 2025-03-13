@@ -489,3 +489,30 @@ Running R code in ‘testthat.R’ had CPU time 3.1 times elapsed time
 
 I identified the most likely test that is responsible and simply remove it from tests on CRAN.
 The test is still performed on my side and when I upload the package on Github.
+
+# Version 0.4.4.5
+
+submitted the 01/15/2025
+
+**Problem:**
+
+/data/gannet/ripley/R/test-dev/RcppArmadillo/include/armadillo_bits/subview_meat.hpp:1420:54: runtime error: reference binding to null pointer of type 'const double'
+    #0 0x7f75fc5b7544 in arma::subview<double>::colptr(unsigned int) /data/gannet/ripley/R/test-dev/RcppArmadillo/include/armadillo_bits/subview_meat.hpp:1420
+    #1 0x7f75fc5b7544 in arma::subview_col<double>::subview_col(arma::Mat<double> const&, unsigned int) /data/gannet/ripley/R/test-dev/RcppArmadillo/include/armadillo_bits/subview_meat.hpp:3274
+    #2 0x7f75fc70d025 in arma::Mat<double>::col(unsigned int) /data/gannet/ripley/R/test-dev/RcppArmadillo/include/armadillo_bits/Mat_meat.hpp:3229
+    #3 0x7f75fc70d025 in kgfunc_time_counting(arma::Mat<double>, arma::Mat<double>, arma::Row<double>, Rcpp::Vector<14, Rcpp::PreserveStorage>, Rcpp::Vector<14, Rcpp::PreserveStorage>, Rcpp::Vector<14, Rcpp::PreserveStorage>, float, float, bool) /data/gannet/ripley/R/packages/tests-gcc-SAN/spNetwork/src/k_and_g_func_time.cpp:85
+    #4 0x7f75fc50bd41 in _spNetwork_kgfunc_time_counting /data/gannet/ripley/R/packages/tests-gcc-SAN/spNetwork/src/RcppExports.cpp:820
+    
+**solution:**
+The error was raised because in some edge cases some sub-matrices in the calculation are empty. I added some checks to stop calculation when it happens.
+
+
+submitted the 01/19/2025
+
+**Problem:**
+
+unable to load shared object 'D:/RCompile/CRANpkg/lib/4.5/cppRouting/libs/x64/cppRouting.dll':
+    LoadLibrary failure:  Das angegebene Modul wurde nicht gefunden.
+
+**solution:**
+This error is likely due to a bug on the CRAN server... No solution applied

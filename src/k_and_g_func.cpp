@@ -76,6 +76,10 @@ NumericMatrix kfunc_counting(arma::mat dist_mat, arma::rowvec wc, NumericVector 
 
     for(int z = 0; z < breaks.size(); ++z) {
 
+      if(ok_d.n_elem == 0){
+        break;
+      }
+
       float dist = breaks[z];
 
       // for each iteration we do a fist cleaning test
@@ -284,6 +288,10 @@ List kgfunc_counting(arma::mat dist_mat, arma::rowvec wc, NumericVector wr, Nume
 
 
     for(int z = 0; z < breaks.size(); ++z) {
+
+      if(ok_d.n_elem == 0){
+        break;
+      }
 
       float dist = breaks[z];
       // for each iteration we do a the test in both direction separately
