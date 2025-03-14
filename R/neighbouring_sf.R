@@ -373,6 +373,9 @@ prepare_elements_netlistw <- function(is,grid,snapped_points,lines,maxdistance){
     #selecting the starting points
     start_pts <-  inter_pts[[gid]]
 
+    if(is.null(start_pts)){
+      return(NULL)
+    }
     if(nrow(start_pts)==0){
       return(NULL)
     }else{
