@@ -1,6 +1,8 @@
 # spNetwork 0.4.5.9000
 
 Correction of the issue [27](https://github.com/JeremyGelb/spNetwork/issues/27)
+Correction of the issue [29](https://github.com/JeremyGelb/spNetwork/issues/29)
+Correction of the issue [30](https://github.com/JeremyGelb/spNetwork/issues/30)
 
 # spNetwork 0.4.5
 

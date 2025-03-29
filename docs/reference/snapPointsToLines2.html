@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.4.5.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.4.5.9001</span>
       </span>
     </div>
 
@@ -90,13 +90,7 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">snapPointsToLines2</span><span class="op">(</span></span>
-<span>  <span class="va">points</span>,</span>
-<span>  <span class="va">lines</span>,</span>
-<span>  idField <span class="op">=</span> <span class="cn">NA</span>,</span>
-<span>  snap_dist <span class="op">=</span> <span class="fl">300</span>,</span>
-<span>  max_iter <span class="op">=</span> <span class="fl">100</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">snapPointsToLines2</span><span class="op">(</span><span class="va">points</span>, <span class="va">lines</span>, idField <span class="op">=</span> <span class="cn">NA</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -113,18 +107,8 @@
 <dd><p>The name of the column to use as index for the lines</p></dd>
 
 
-<dt>snap_dist</dt>
-<dd><p>A distance (float) given to find for each point its
-nearest line in a spatial index. A too big value will produce
-unnecessary distance calculations and a too short value will lead to
-more iterations to find neighbours. In extrem cases, a too short value
-could lead to points not associated with lines (index = -1).</p></dd>
-
-
-<dt>max_iter</dt>
-<dd><p>An integer indicating how many iteration the search
-algorithm must perform in the spatial index to find lines close to a
-point. At each iteration, the snap_dist is doubled to find candidates.</p></dd>
+<dt>...</dt>
+<dd><p>unused</p></dd>
 
 </dl></div>
     <div id="value">

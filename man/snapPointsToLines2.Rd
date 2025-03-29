@@ -4,13 +4,7 @@
 \alias{snapPointsToLines2}
 \title{Snap points to lines}
 \usage{
-snapPointsToLines2(
-  points,
-  lines,
-  idField = NA,
-  snap_dist = 300,
-  max_iter = 100
-)
+snapPointsToLines2(points, lines, idField = NA, ...)
 }
 \arguments{
 \item{points}{A feature collection of points}
@@ -19,15 +13,7 @@ snapPointsToLines2(
 
 \item{idField}{The name of the column to use as index for the lines}
 
-\item{snap_dist}{A distance (float) given to find for each point its
-nearest line in a spatial index. A too big value will produce
-unnecessary distance calculations and a too short value will lead to
-more iterations to find neighbours. In extrem cases, a too short value
-could lead to points not associated with lines (index = -1).}
-
-\item{max_iter}{An integer indicating how many iteration the search
-algorithm must perform in the spatial index to find lines close to a
-point. At each iteration, the snap_dist is doubled to find candidates.}
+\item{...}{unused}
 }
 \value{
 A feature collection of points with the projected geometries

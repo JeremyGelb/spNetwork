@@ -864,14 +864,7 @@ nearest_lines <- function(points, lines, snap_dist = 300, max_iter = 10){
 #' @param points A feature collection of points
 #' @param lines A feature collection of linestrings
 #' @param idField The name of the column to use as index for the lines
-#' @param snap_dist A distance (float) given to find for each point its
-#' nearest line in a spatial index. A too big value will produce
-#' unnecessary distance calculations and a too short value will lead to
-#' more iterations to find neighbours. In extrem cases, a too short value
-#' could lead to points not associated with lines (index = -1).
-#' @param max_iter An integer indicating how many iteration the search
-#' algorithm must perform in the spatial index to find lines close to a
-#' point. At each iteration, the snap_dist is doubled to find candidates.
+#' @param ... unused
 #'
 #' @return A feature collection of points with the projected geometries
 #' @keywords internal
@@ -887,7 +880,7 @@ nearest_lines <- function(points, lines, snap_dist = 300, max_iter = 10){
 #'     mtl_network,
 #'     "LineID"
 #' )
-snapPointsToLines2 <- function(points, lines ,idField = NA, snap_dist = 300, max_iter = 100) {
+snapPointsToLines2 <- function(points, lines ,idField = NA, ...) {
 
   #nearest_line_index <- nearest(points,lines)
   if(is.na(idField)){
