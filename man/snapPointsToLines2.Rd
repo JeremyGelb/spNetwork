@@ -4,7 +4,7 @@
 \alias{snapPointsToLines2}
 \title{Snap points to lines}
 \usage{
-snapPointsToLines2(points, lines, idField = NA, ...)
+snapPointsToLines2(points, lines, idField = NA, snap_dist = Inf, ...)
 }
 \arguments{
 \item{points}{A feature collection of points}
@@ -12,6 +12,13 @@ snapPointsToLines2(points, lines, idField = NA, ...)
 \item{lines}{A feature collection of linestrings}
 
 \item{idField}{The name of the column to use as index for the lines}
+
+\item{snap_dist}{A distance (float) given to find for each point its
+nearest line in a spatial index. A too big value will produce
+unnecessary distance calculations and a too short value will lead to
+more iterations to find neighbours. The default value
+is Inf. The function will raise an error if some points are too far from
+a line.}
 
 \item{...}{unused}
 }

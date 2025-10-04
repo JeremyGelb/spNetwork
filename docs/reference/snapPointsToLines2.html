@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spNetwork</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.4.5.9001</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.4.7</span>
       </span>
     </div>
 
@@ -90,7 +90,7 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">snapPointsToLines2</span><span class="op">(</span><span class="va">points</span>, <span class="va">lines</span>, idField <span class="op">=</span> <span class="cn">NA</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">snapPointsToLines2</span><span class="op">(</span><span class="va">points</span>, <span class="va">lines</span>, idField <span class="op">=</span> <span class="cn">NA</span>, snap_dist <span class="op">=</span> <span class="cn">Inf</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -105,6 +105,15 @@
 
 <dt>idField</dt>
 <dd><p>The name of the column to use as index for the lines</p></dd>
+
+
+<dt>snap_dist</dt>
+<dd><p>A distance (float) given to find for each point its
+nearest line in a spatial index. A too big value will produce
+unnecessary distance calculations and a too short value will lead to
+more iterations to find neighbours. The default value
+is Inf. The function will raise an error if some points are too far from
+a line.</p></dd>
 
 
 <dt>...</dt>

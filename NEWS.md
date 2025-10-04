@@ -1,3 +1,9 @@
+# spNetwork 0.4.5.6
+
+This version is published to allow the package concaveman to drop its dependency on tibble.
+We add temporarily a suggested dependecy to tibble.
+When the new version of concaveman will be on cran, we will try to remove this dependecy to.
+
 # spNetwork 0.4.5.9000
 
 Correction of the issue [27](https://github.com/JeremyGelb/spNetwork/issues/27)
